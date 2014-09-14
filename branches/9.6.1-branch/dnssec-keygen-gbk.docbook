@@ -1,0 +1,327 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2004, 2005, 2007, 2008  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2000-2003  Internet Software Consortium.
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: dnssec-keygen.docbook,v 1.22 2008/10/14 14:32:50 jreed Exp $ -->
+<refentry id="man.dnssec-keygen">
+  <refentryinfo>
+    <date>June 30, 2000</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-keygen</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-keygen</application></refname>
+    <refpurpose>DNSSEC密钥生成工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2007</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <year>2002</year>
+      <year>2003</year>
+      <holder>Internet Software Consortium.</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>dnssec-keygen</command>
+      <arg choice="req">-a <replaceable class="parameter">algorithm</replaceable></arg>
+      <arg choice="req">-b <replaceable class="parameter">keysize</replaceable></arg>
+      <arg choice="req">-n <replaceable class="parameter">nametype</replaceable></arg>
+      <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg><option>-e</option></arg>
+      <arg><option>-f <replaceable class="parameter">flag</replaceable></option></arg>
+      <arg><option>-g <replaceable class="parameter">generator</replaceable></option></arg>
+      <arg><option>-h</option></arg>
+      <arg><option>-k</option></arg>
+      <arg><option>-p <replaceable class="parameter">protocol</replaceable></option></arg>
+      <arg><option>-r <replaceable class="parameter">randomdev</replaceable></option></arg>
+      <arg><option>-s <replaceable class="parameter">strength</replaceable></option></arg>
+      <arg><option>-t <replaceable class="parameter">type</replaceable></option></arg>
+      <arg><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg choice="req">name</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+	  <command>dnssec-keygen</command>为DNSSEC（安全DNS）生成密钥，
+	  在RFC 2535和RFC 4034中定义。它也可以为使用TSIG（事务签名）
+	  生成密钥，在RFC 2845中定义。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-a <replaceable class="parameter">algorithm</replaceable></term>
+        <listitem>
+          <para>
+            选择加密算法。<option>algorithm</option>的值必须为
+	    RSAMD5（RSA），
+	    RSASHA1，DSA，NSEC3RSASHA1，NSEC3DSA，DH（Diffie Hellman），
+	    或HMAC-MD5之一。这些值是大小写不敏感的。
+          </para>
+          <para>
+	    注1：对DNSSEC来说，RSASHA1是必须实现的算法，而DSA是推荐的。
+	    对TSIG来说，HMAC-MD5是必须的。
+          </para>
+          <para>
+            注2：HMAC-MD5和DH自动设置-k标志。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-b <replaceable class="parameter">keysize</replaceable></term>
+        <listitem>
+          <para>
+            指定密钥的位数。密钥大小的选择依赖于所使用的算法。
+	    RSAMD5/RSASHA1密钥必须在512和2048位之间。Diffie Hellman密钥必须在
+	    128和4096位之间。DSA密钥必须在512和1024位之间并且是64的整数倍。
+	    HMAC-MD5密钥必须在1和512位之间。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-n <replaceable class="parameter">nametype</replaceable></term>
+        <listitem>
+          <para>
+            指定密钥的拥有者类型。<option>nametype</option>的值要么是ZONE
+	    （对DNSSEC的区密钥（KEY/DNSKEY）），HOST或ENTITY（对一个与主机
+	    （KEY）相关的密钥），USER（对一个与用户（KEY）相关的密钥）或
+	    OTHER（DNSKEY）。这些值是大小写不敏感的。缺省是ZONE，用于DNSKEY
+	    生成。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">class</replaceable></term>
+        <listitem>
+          <para>
+	    指示包含密钥的DNS记录应该具有指定的类。如果未指定，使用类IN。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-e</term>
+        <listitem>
+          <para>
+            如果生成一个RSAMD5/RSASHA1密钥，使用一个大的指数。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-f <replaceable class="parameter">flag</replaceable></term>
+        <listitem>
+          <para>
+	    在KEY/DNSKEY记录的标志字段中设置特定的标志。唯一识别的标志
+	    是KSK（密钥签名密钥）DNSKEY。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-g <replaceable class="parameter">generator</replaceable></term>
+        <listitem>
+          <para>
+	    如果生成一个Diffie Hellman密钥，使用这个生成器。允许值为2到
+	    5。如果未指定生成器，如果可能使用来自RFC 2539的著名素数；否
+	    则缺省为2。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-h</term>
+        <listitem>
+          <para>
+	    打印<command>dnssec-keygen</command>的选项和参数的简短摘要。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k</term>
+        <listitem>
+          <para>
+            生成KEY记录而不是DNSKEY记录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable class="parameter">protocol</replaceable></term>
+        <listitem>
+          <para>
+	    为生成密钥设置协议值。协议是一个0到255之间的数。缺省是3
+	    （DNSSEC）。这个参数的其它可能值在RFC 2535及其后继中列出。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-r <replaceable class="parameter">randomdev</replaceable></term>
+        <listitem>
+          <para>
+            指定随机性的源。如果操作系统不提供
+            <filename>/dev/random</filename>或等效的设备，缺省的随机性的源为
+            键盘输入。<filename>randomdev</filename>指定一个字符设备名或包含
+            随机数据的文件名，用来替代缺省值。特定值
+            <filename>keyboard</filename>指示使用键盘输入。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable class="parameter">strength</replaceable></term>
+        <listitem>
+          <para>
+            指定密钥的强度值。这个强度是0到15之间的一个数，当前在
+			DNSSEC中没有定义其意图。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-t <replaceable class="parameter">type</replaceable></term>
+        <listitem>
+          <para>
+	    指定密钥的使用。<option>type</option>必须是AUTOCONF，
+	    NOAUTHCONF，NOAUTH或NOCONF之一。缺省是AUTHCONF。AUTH为认证
+	    数据的能力，而CONF为加密数据的能力。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v <replaceable class="parameter">level</replaceable></term>
+        <listitem>
+          <para>
+	    设置调试级别。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>生成的密钥</title>
+    <para>
+      当<command>dnssec-keygen</command>完全成功时，它打印一个
+      <filename>Knnnn.+aaa+iiiii</filename>格式的字符串到标准输出。这是
+      其生成的密钥的标识字符串。
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para><filename>nnnn</filename>是密钥名。
+        </para>
+      </listitem>
+      <listitem>
+        <para><filename>aaa</filename>是算法的数字表示。
+        </para>
+      </listitem>
+      <listitem>
+        <para><filename>iiiii</filename>是密钥标识符（或足迹）。
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      <command>dnssec-keygen</command>创建两个文件，其名字类似这个打印
+      的字符串。<filename>Knnnn.+aaa+iiiii.key</filename>包含公钥，
+      而<filename>Knnnn.+aaa+iiiii.private</filename>包含私钥。
+    </para>
+    <para>
+      <filename>.key</filename>文件包含一个DNS KEY记录，可以
+      （直接或使用一个$INCLUDE语句）插入到一个区文件中。
+    </para>
+    <para>
+      <filename>.private</filename>文件包含算法相关字段。由于明显
+      的安全原因，这个文件不能具有任何人可读的权限。
+    </para>
+    <para>
+      <filename>.key</filename>和<filename>.private</filename>文件都
+	  是由对称加密算法，如HMAC-MD5，生成，即使公钥和私钥是等价的。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>例子</title>
+    <para>
+      要为域<userinput>example.com</userinput>生成一个768位的DSA密钥，
+	  需要执行下列命令：
+    </para>
+    <para><userinput>dnssec-keygen -a DSA -b 768 -n ZONE example.com</userinput>
+    </para>
+    <para>
+      命令将会打印下列格式的字符串：
+    </para>
+    <para><userinput>Kexample.com.+003+26160</userinput>
+    </para>
+    <para>
+      在这个例子中，<command>dnssec-keygen</command>建立文件
+	  <filename>Kexample.com.+003+26160.key</filename>和
+	  <filename>Kexample.com.+003+26160.private</filename>。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>,
+      <citetitle>RFC 2535</citetitle>,
+      <citetitle>RFC 2845</citetitle>,
+      <citetitle>RFC 2539</citetitle>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

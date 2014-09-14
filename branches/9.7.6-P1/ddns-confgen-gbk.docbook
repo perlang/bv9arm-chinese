@@ -1,0 +1,205 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+	       "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2009  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: ddns-confgen.docbook,v 1.6 2009/09/18 22:08:55 fdupont Exp $ -->
+<refentry id="man.ddns-confgen">
+  <refentryinfo>
+    <date>Jan 29, 2009</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>ddns-confgen</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>ddns-confgen</application></refname>
+    <refpurpose>ddns密钥生成工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2009</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>ddns-confgen</command>
+      <arg><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
+      <arg><option>-h</option></arg>
+      <arg><option>-k <replaceable class="parameter">keyname</replaceable></option></arg>
+      <arg><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
+      <group>
+        <arg choice="plain">-s <replaceable class="parameter">name</replaceable></arg>
+        <arg choice="plain">-z <replaceable class="parameter">zone</replaceable></arg>
+      </group>
+      <arg><option>-q</option></arg>
+      <arg choice="opt">name</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para><command>ddns-confgen</command>
+      为<command>nsupdate</command>和<command>named</command>
+      生成一个密钥。它通过生成一个密钥并为使用它提供
+      <command>nsupdate</command>和
+      <command>named.conf</command>语法，还包含一个
+      <command>update-policy</command>语句的例子，
+      而简化了动态区的配置。
+    </para>
+
+    <para>
+      如果在命令行中指定了一个域名，它将被用于所生成密钥的名字中，
+      以及用于<command>named.conf</command>样例语法中。
+      例如，<command>ddns-confgen example.com</command>将会生成一个
+      被称为“ddns-key.example.com”的密钥，和<command>named.conf</command>
+      样例命令，后者可以被用于“example.com”的区定义。
+    </para>
+
+    <para>
+      注意<command>named</command>自己可以配置一个本地DDNS密钥，
+      并用于<command>nsupdate -l</command>。
+      <command>ddns-confgen</command>只在更复杂的配置才需要：
+      例如，如果<command>nsupdate</command>来自一个远程系统。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+	<term>-a <replaceable class="parameter">algorithm</replaceable></term>
+	<listitem>
+	  <para>
+            指定用于TSIG密钥的算法。可用的选择为：hmac-md5，hmac-sha1，
+            hmac-sha224，hmac-sha256，hmac-sha384和hmac-sha512。缺省为
+            hmac-sha256。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-h</term>
+	<listitem>
+	  <para>
+            打印<command>ddns-confgen</command>的选项和参数的简短摘要。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-k <replaceable class="parameter">keyname</replaceable></term>
+	<listitem>
+	  <para>
+	    指定DDNS认证密钥的密钥名。当既没有指定
+	    <option>-s</option>，也没有指定<option>-z</option>选项时，
+	    缺省是<constant>ddns-key</constant>；否则，缺省将
+	    <constant>ddns-key</constant>作为一个独立的标记，后跟选项的
+	    参数，例如，<constant>ddns-key.example.com.</constant>。
+	    密钥名必须是合法的域名，由字母，数字，连字符和点组成。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-q</term>
+	<listitem>
+	  <para>
+	    安静模式：只打印密钥，没有解释的文本或用法举例。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-r <replaceable class="parameter">randomfile</replaceable></term>
+	<listitem>
+	  <para>
+            指定生成授权的随机数据的源。如果操作系统不提供
+            <filename>/dev/random</filename>或等效的设备，缺省的随机性的源为
+            键盘输入。<filename>randomdev</filename>指定一个字符设备名或包含
+            随机数据的文件名，用来替代缺省值。特定值
+            <filename>keyboard</filename>指示使用键盘输入。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-s <replaceable class="parameter">name</replaceable></term>
+	<listitem>
+	  <para>
+            单个主机模式：例子<command>named.conf</command>文本显示了
+            如何使用“name”名字类型为指定的
+            <replaceable class="parameter">name</replaceable>设置一个
+            更新策略。
+            缺省的密钥名字是
+            ddns-key.<replaceable class="parameter">name</replaceable>。
+            注意“self”名字类型不再使用，因为要被更新的名字可能
+            与密钥名不同。
+	    这个选项不能与<option>-z</option>选项同时使用。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-z <replaceable class="parameter">zone</replaceable></term>
+	<listitem>
+	  <para>
+	    区模式：例子<command>named.conf</command>文本展示了如何
+	    为所指定的<replaceable class="parameter">zone</replaceable>
+	    设置一个更新策略，使用“zonesub”名字类型，允许更新
+	    <replaceable class="parameter">zone</replaceable>内所有
+	    子域。
+	    这个选项不能与<option>-s</option>选项同时使用。
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+	<refentrytitle>nsupdate</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+	<refentrytitle>named.conf</refentrytitle><manvolnum>5</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+	<refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

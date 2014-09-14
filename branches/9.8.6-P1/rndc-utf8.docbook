@@ -1,0 +1,572 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2004, 2005, 2007, 2013  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2000, 2001  Internet Software Consortium.
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: rndc.docbook,v 1.21 2007/12/14 20:39:14 marka Exp $ -->
+<refentry id="man.rndc">
+  <refentryinfo>
+    <date>June 7, 2013</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>rndc</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>rndc</application></refname>
+    <refpurpose>名字服务器控制工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2007</year>
+      <year>2013</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <holder>Internet Software Consortium.</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>rndc</command>
+      <arg><option>-b <replaceable class="parameter">source-address</replaceable></option></arg>
+      <arg><option>-c <replaceable class="parameter">config-file</replaceable></option></arg>
+      <arg><option>-k <replaceable class="parameter">key-file</replaceable></option></arg>
+      <arg><option>-s <replaceable class="parameter">server</replaceable></option></arg>
+      <arg><option>-p <replaceable class="parameter">port</replaceable></option></arg>
+      <arg><option>-V</option></arg>
+      <arg><option>-y <replaceable class="parameter">key_id</replaceable></option></arg>
+      <arg choice="req">command</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+      <command>rndc</command>控制一个名字服务器的运行。它替代了旧BIND发布版本所
+      提供的<command>ndc</command>工具。如果<command>rndc</command>在没有命令行
+      选项或参数时被调用，它将打印出其所支持的命令和可用选项和参数的简短总结。
+    </para>
+    <para>
+      <command>rndc</command>通过一个TCP连接与名字服务器通信，发送经过数字签名
+      认证的命令。在当前版本的<command>rndc</command>和<command>named</command>
+      中，唯一支持的认证算法是HMAC-MD5，在连接的两端使用共享密钥。它为命令请求
+      和名字服务器的响应提供TSIG类型的认证。所有经由通道发送的命令都必须被一个
+      服务器所知道的key_id签名。
+    </para>
+    <para>
+      <command>rndc</command>读一个配置文件来决定如何联系名字服务器并决定使用哪
+      一个算法和密钥。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-b <replaceable class="parameter">source-address</replaceable></term>
+        <listitem>
+          <para>
+            使用<replaceable class="parameter">source-address</replaceable>作为
+            连接服务器的源地址。允许多个实例设置其IPv4和IPv6源地址。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">config-file</replaceable></term>
+        <listitem>
+          <para>
+            使用<replaceable class="parameter">config-file</replaceable>作为缺
+            省的配置文件<filename>/etc/rndc.conf</filename>的替代。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k <replaceable class="parameter">key-file</replaceable></term>
+        <listitem>
+          <para>
+            使用<replaceable class="parameter">key-file</replaceable>作为缺省的
+            密钥文件<filename>/etc/rndc.key</filename>的替代。如果
+            <replaceable class="parameter">config-file</replaceable>不存在，
+            <filename>/etc/rndc.key</filename>中的密钥将用于认证发向服务器的命
+            令。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable class="parameter">server</replaceable></term>
+        <listitem>
+          <para>
+            <replaceable class="parameter">server</replaceable>是与
+            <command>rndc</command>的配置文件中server语句相匹配的服务器
+            的名字或地址。如果命令行没有提供服务器，会使用
+            <command>rndc</command>配置文件中options语句中的default-server
+            子句所命名的主机。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable class="parameter">port</replaceable></term>
+        <listitem>
+          <para>
+            发送命令到TCP端口
+            <replaceable class="parameter">port</replaceable>，
+            以取代BIND 9的缺省控制通道端口，953。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-V</term>
+        <listitem>
+          <para>
+             打开冗余日志。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-y <replaceable class="parameter">key_id</replaceable></term>
+        <listitem>
+          <para>
+            使用配置文件中的密钥
+            <replaceable class="parameter">key_id</replaceable>。
+            <replaceable class="parameter">key_id</replaceable>必须被named
+            所知道，带有同样的算法和密钥字符串，以便成功通过控制消息的验证。
+            如果没有指定
+            <replaceable class="parameter">key_id</replaceable>，
+            <command>rndc</command>将首先在所用的服务器的server语句中查找
+            key子句，或者如果没有为主机提供server语句，就查找options语句中
+            的default-key子句。注意配置文件中包含有用于发送认证控制命令到
+            名字服务器的共享密钥。因此它不应该具有通常的读或写的权限。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+   </refsect1>
+
+   <refsect1>
+     <title>命令</title>
+     <para>
+       <command>rndc</command>所支持的命令列表，可以通过不带任何参数运行
+       <command>rndc</command>来查看。
+     </para>
+     <para>
+       当前支持的命令是：
+     </para>
+
+     <variablelist>
+       <varlistentry>
+         <term><userinput>reload</userinput></term>
+         <listitem>
+           <para>
+             重新载入配置文件和区文件。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>reload <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             重新载入指定的区文件。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>refresh <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             对指定的区进行区维护。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>retransfer <replaceable>zone</replaceable>
+           <optional><replaceable>class</replaceable>
+           <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             重新从主服务器传送指定的区文件。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>sign <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             从密钥目录取给定区的所有DNSSEC密钥（参见BIND 9管理员参考手册
+             中的<command>key-directory</command>），
+             如果它们在其发布期内，将它们合并到区的DNSKEY资源记录集中。
+             如果DNSKEY资源记录集发生了变化，就自动使用新的密钥集合对区重新
+             签名。
+           </para>
+           <para>
+             这个命令要求<command>auto-dnssec</command>区选项被设置为
+             <literal>allow</literal>或<literal>maintain</literal>，还要求区
+             被配置为允许动态更新。（更详细情况参见管理员参考手册中的
+             “动态更新策略”。）
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>loadkeys <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             从密钥目录取给定区的所有DNSSEC密钥。如果它们在其发布期内，将它们
+             合并到区的DNSKEY资源记录集中。然而，与<command>rndc sign</command>
+             不同，不会立即使用新密钥重签区，但是允许随时间推移进行增量重签。
+           </para>
+           <para>
+             这个命令要求<command>auto-dnssec</command>区选项
+             被设置为<literal>maintain</literal>，而且还要求区被配置
+             为允许动态DNS。（更详细情况参见管理员参考手册中的
+             “动态更新策略”。）
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>freeze <optional><replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             冻结对一个动态更新区的更新。如果没有指定区，就冻结对
+             所有区的更新。这就允许对一个动态更新方式正常更新的区
+             进行手工编辑。它也会导致日志文件中的变化被同步到
+             主区文件，然后删除日志文件。在区被冻结时，所有的
+             动态更新尝试都会被拒绝。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>thaw <optional><replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             解冻一个被冻结的动态更新区。如果没有指定区，就解冻所有
+             被冻结的区。它会导致服务器重新从磁盘载入区，并在载入
+             完成后打开动态更新功能。在解冻一个区后。动态更新请求将
+             不会被拒绝。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>notify <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             重新发出区的NOTIFY消息。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>reconfig</userinput></term>
+         <listitem>
+           <para>
+             重新载入配置文件和新的区，但是不载入已经存在的区文件，
+             即使其已经被修改过。这在有大量区的时候可以比完全的
+             <command>reload</command>更快，因为它避免了去检查
+             区文件的修改时间。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>stats</userinput></term>
+         <listitem>
+           <para>
+             写服务器的统计信息到统计文件。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>querylog</userinput></term>
+         <listitem>
+           <para>
+             触发请求日志。请求日志也可以显式设定，通过在
+             <filename>named.conf</filename>的
+             <command>logging</command>部份指定
+             <command>queries</command> <command>category</command>
+             到一个<command>channel</command>，或者在
+             <filename>named.conf</filename>的
+             <command>options</command>部份指定
+             <command>querylog yes;</command>。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>dumpdb <optional>-all|-cache|-zone</optional> <optional><replaceable>view ...</replaceable></optional></userinput></term>
+         <listitem>
+           <para>
+             转储服务器指定视图的缓存（缺省情况）和/或区到
+             转储文件中。如果未指定视图就转储所有视图。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>secroots <optional><replaceable>view ...</replaceable></optional></userinput></term>
+         <listitem>
+           <para>
+             转储服务器的安全根到指定视图的secroots文件中。如果
+             没有指定视图，就转储所有视图的安全根。
+           </para>
+         </listitem>
+       </varlistentry>
+
+	<varlistentry>
+          <term><userinput>stop <optional>-p</optional></userinput></term>
+	    <listitem>
+	      <para>
+		停止服务器，在之前先确保所有通过动态更新或IXFR所作的
+		最新修改第一时间被存入被修改区的区文件中。如果指定了
+		<option>-p</option>，将返回<command>named</command>的
+		进程号。这可以让一个外部进程来检查
+		<command>named</command>是否完全被停止。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>halt <optional>-p</optional></userinput></term>
+	    <listitem>
+	      <para>
+		立即停止服务器。所有由动态更新或IXFR所作的最新改变没有
+		被存到区文件中，但是在服务器重新启动时，将从日志文件中
+		向前滚动。如果指定了<option>-p</option>，将返回
+		<command>named</command>的进程号。这可以让一个外部进程
+		来检查<command>named</command>是否完全被中断。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>trace</userinput></term>
+	    <listitem>
+	      <para>
+		将服务器的调试级别增加1。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>trace <replaceable>level</replaceable></userinput></term>
+	    <listitem>
+	      <para>
+		将服务器的调试级别设置为指定的值。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>notrace</userinput></term>
+	    <listitem>
+	      <para>
+		将服务器的调试级别设置为0。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>flush</userinput></term>
+	    <listitem>
+	      <para>
+		刷新服务器的缓存。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>flushname</userinput> <replaceable>name</replaceable></term>
+	    <listitem>
+	      <para>
+		刷新指定名字在服务器上的缓存。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>status</userinput></term>
+	    <listitem>
+	      <para>
+		显示服务器的状态。注意，区数目包括内部的
+		<command>bind/CH</command>区，如果没有显式配置根区
+		还包括缺省的<command>./IN</command>区。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>recursing</userinput></term>
+	    <listitem>
+	      <para>
+		转储<command>named</command>当前为其提供递归服务的
+		请求列表。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>validation ( on | off | check ) <optional><replaceable>view ...</replaceable></optional> </userinput></term>
+	    <listitem>
+	      <para>
+		打开，关闭DNSSEC验证或检查DNSSEC验证的状态。
+		注意<command>dnssec-enable</command>也需要设置成
+		<userinput>yes</userinput>或<userinput>auto</userinput>才能
+                生效。缺省打开的。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>tsig-list</userinput></term>
+	    <listitem>
+	      <para>
+		列出当前被配置由<command>named</command>所使用的每个视图
+		中的全部TSIG密钥的名字。这个列表包含静态配置的密钥和动态
+		TKEY协商的密钥。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>tsig-delete</userinput>
+	     <replaceable>keyname</replaceable>
+	     <optional><replaceable>view</replaceable></optional></term>
+	    <listitem>
+	      <para>
+		从服务器删除所给出的TKEY协商的密钥。（这个命令不会删除
+		静态配置的TSIG密钥。）
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>addzone <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> <replaceable>configuration</replaceable>
+	    </userinput></term>
+	    <listitem>
+	      <para>
+		在服务器运行时增加一个区。这个命令要求
+		<command>allow-new-zones</command>选项被设置为
+		<userinput>yes</userinput>。在命令行所指定的
+		<replaceable>configuration</replaceable>字符串就是
+		通常被放在<filename>named.conf</filename>中的区配置
+		文本。
+	      </para>
+	      <para>
+		配置被保存在名为
+	        <filename><replaceable>hash</replaceable>.nzf</filename>
+		的文件中，其中<replaceable>hash</replaceable>是由视图
+		的名字加密hash后所生成的。当<command>named</command>被
+		重启时，这个文件将被转载到视图的配置中，这样被添加的区
+		将会在重启后能够持续。
+	      </para>
+	      <para>
+		这个例子<command>addzone</command>命令将会添加区
+		<literal>example.com</literal>到缺省视图：
+	      </para>
+	      <para>
+<prompt>$ </prompt><userinput>rndc addzone example.com '{ type master; file "example.com.db"; };'</userinput>
+	      </para>
+	      <para>
+		（注意围绕区配置文本的花括号和分号。）
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><userinput>delzone <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> </userinput></term>
+            <listitem>
+              <para>
+                在服务器运行时删除一个区。只有最初由
+                <command>rndc addzone</command>所增加的区才能用这种
+                方式删除。
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>限制</title>
+    <para>
+      <command>rndc</command>还不支持BIND 8的<command>ndc</command>工具中的所有
+      命令。
+    </para>
+    <para>
+      当前没有在不使用配置文件的方式下提供共享密钥<option>key_id</option>的方式。
+    </para>
+    <para>
+      几个错误消息可以被清除。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>rndc.conf</refentrytitle><manvolnum>5</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>rndc-confgen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>named.conf</refentrytitle><manvolnum>5</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>ndc</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

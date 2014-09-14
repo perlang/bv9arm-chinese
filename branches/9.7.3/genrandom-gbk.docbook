@@ -1,0 +1,118 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2009, 2010  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: genrandom.docbook,v 1.4.88.2 2010-05-17 23:49:51 tbox Exp $ -->
+<refentry id="man.genrandom">
+  <refentryinfo>
+    <date>Feb 19, 2009</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>genrandom</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>genrandom</application></refname>
+    <refpurpose>生成一个包含随机数据的文件</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2009</year>
+      <year>2010</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>genrandom</command>
+      <arg><option>-n <replaceable class="parameter">number</replaceable></option></arg>
+      <arg choice="req"><replaceable class="parameter">size</replaceable></arg>
+      <arg choice="req"><replaceable class="parameter">filename</replaceable></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+      <command>genrandom</command>
+      生成一个或多个包含指定数量的伪随机数据的文件，在没有随机设备的系统上，
+      这些数据可以用作其它命令的熵源。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参数</title>
+    <variablelist>
+      <varlistentry>
+        <term>-n <replaceable class="parameter">number</replaceable></term>
+        <listitem>
+          <para>
+            代替生成一个文件，生成<option>number</option>（从2到9）个文件，
+	    在文件名后面附加<option>number</option>。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>size</term>
+        <listitem>
+          <para>
+            要生成的文件大小，以千字节为单位。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>domain</term>
+        <listitem>
+          <para>
+            要写入随机数据的文件名。
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para>
+      <citerefentry>
+        <refentrytitle>rand</refentrytitle><manvolnum>3</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>arc4random</refentrytitle><manvolnum>3</manvolnum>
+      </citerefentry>
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

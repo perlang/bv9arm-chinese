@@ -1,0 +1,229 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2004, 2005, 2007  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2000, 2001  Internet Software Consortium.
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: rndc.docbook,v 1.8.18.13 2007/12/14 20:53:58 marka Exp $ -->
+<refentry id="man.rndc">
+  <refentryinfo>
+    <date>June 30, 2000</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>rndc</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>rndc</application></refname>
+    <refpurpose>名字服务器控制工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2007</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <holder>Internet Software Consortium.</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>rndc</command>
+      <arg><option>-b <replaceable class="parameter">source-address</replaceable></option></arg>
+      <arg><option>-c <replaceable class="parameter">config-file</replaceable></option></arg>
+      <arg><option>-k <replaceable class="parameter">key-file</replaceable></option></arg>
+      <arg><option>-s <replaceable class="parameter">server</replaceable></option></arg>
+      <arg><option>-p <replaceable class="parameter">port</replaceable></option></arg>
+      <arg><option>-V</option></arg>
+      <arg><option>-y <replaceable class="parameter">key_id</replaceable></option></arg>
+      <arg choice="req">command</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+      <command>rndc</command>控制一个名字服务器的运行。它替代了旧BIND发布版本所
+      提供的<command>ndc</command>工具。如果<command>rndc</command>在没有命令行
+      选项或参数时被调用，它将打印出其所支持的命令和可用选项和参数的简短总结。
+    </para>
+    <para>
+      <command>rndc</command>通过一个TCP连接与名字服务器通信，发送经过数字签名
+      认证的命令。在当前版本的<command>rndc</command>和<command>named</command>
+      中，唯一支持的认证算法是HMAC-MD5，在连接的两端使用共享密钥。它为命令请求
+      和名字服务器的响应提供TSIG类型的认证。所有经由通道发送的命令都必须被一个
+      服务器所知道的key_id签名。
+    </para>
+    <para>
+      <command>rndc</command>读一个配置文件来决定如何联系名字服务器并决定使用哪
+      一个算法和密钥。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-b <replaceable class="parameter">source-address</replaceable></term>
+        <listitem>
+          <para>
+            使用<replaceable class="parameter">source-address</replaceable>作为
+            连接服务器的源地址。允许多个实例设置其IPv4和IPv6源地址。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">config-file</replaceable></term>
+        <listitem>
+          <para>
+            使用<replaceable class="parameter">config-file</replaceable>作为缺
+            省的配置文件<filename>/etc/rndc.conf</filename>的替代。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k <replaceable class="parameter">key-file</replaceable></term>
+        <listitem>
+          <para>
+            使用<replaceable class="parameter">key-file</replaceable>作为缺省的
+            密钥文件<filename>/etc/rndc.key</filename>的替代。如果
+            <replaceable class="parameter">config-file</replaceable>不存在，
+            <filename>/etc/rndc.key</filename>中的密钥将用于认证发向服务器的命
+            令。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable class="parameter">server</replaceable></term>
+        <listitem>
+          <para>
+            <replaceable class="parameter">server</replaceable>是与
+            <command>rndc</command>的配置文件中server语句相匹配的服务器
+            的名字或地址。如果命令行没有提供服务器，会使用
+            <command>rndc</command>配置文件中options语句中的default-server
+            子句所命名的主机。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable class="parameter">port</replaceable></term>
+        <listitem>
+          <para>
+            发送命令到TCP端口
+            <replaceable class="parameter">port</replaceable>，
+            以取代BIND 9的缺省控制通道端口，953。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-V</term>
+        <listitem>
+          <para>
+             打开冗余日志。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-y <replaceable class="parameter">key_id</replaceable></term>
+        <listitem>
+          <para>
+            使用配置文件中的密钥
+            <replaceable class="parameter">key_id</replaceable>。
+            <replaceable class="parameter">key_id</replaceable>必须被named
+            所知道，带有同样的算法和密钥字符串，以便成功通过控制消息的验证。
+            如果没有指定
+            <replaceable class="parameter">key_id</replaceable>，
+            <command>rndc</command>将首先在所用的服务器的server语句中查找
+            key子句，或者如果没有为主机提供server语句，就查找options语句中
+            的default-key子句。注意配置文件中包含有用于发送认证控制命令到
+            名字服务器的共享密钥。因此它不应该具有通常的读或写的权限。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+
+    <para>
+      关于<command>rndc</command>所支持的命令的完整集合，参见BIND 9管理员
+      参考手册或者不带任何参数运行<command>rndc</command>来查看其帮助信息。
+      message.
+    </para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>限制</title>
+    <para>
+      <command>rndc</command>还不支持BIND 8的<command>ndc</command>工具中的所有
+      命令。
+    </para>
+    <para>
+      当前没有在不使用配置文件的方式下提供共享密钥<option>key_id</option>的方式。
+    </para>
+    <para>
+      几个错误消息可以被清除。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>rndc.conf</refentrytitle><manvolnum>5</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>rndc-confgen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>named.conf</refentrytitle><manvolnum>5</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>ndc</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

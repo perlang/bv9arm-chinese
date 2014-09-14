@@ -1,0 +1,21 @@
+
+2008.12.22
+environment:
+  Fedora 10
+  texlive 2008
+  Perl with module Encode
+  Font ...
+
+...
+
+2008.12.28
+TODO
+ mixed chinese character with ASCII character lead not align. (resolved with \sloppy)
+ replace with a GPL chinese font.
+ check and errate.
+ hyperref with chinese label ?
+ Makefile
+
+2008.12.30
+TODO
+  Text Selection in pdf file.

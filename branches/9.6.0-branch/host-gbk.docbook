@@ -1,0 +1,225 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2004, 2005, 2007, 2008  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2000-2002  Internet Software Consortium.
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: host.docbook,v 1.18 2008/04/04 23:47:01 tbox Exp $ -->
+<refentry id="man.host">
+
+  <refentryinfo>
+    <date>Jun 30, 2000</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>host</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>host</refname>
+    <refpurpose>DNS查找工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2007</year>
+      <year>2008</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <year>2002</year>
+      <holder>Internet Software Consortium.</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>host</command>
+      <arg><option>-aCdlnrsTwv</option></arg>
+      <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg><option>-N <replaceable class="parameter">ndots</replaceable></option></arg>
+      <arg><option>-R <replaceable class="parameter">number</replaceable></option></arg>
+      <arg><option>-t <replaceable class="parameter">type</replaceable></option></arg>
+      <arg><option>-W <replaceable class="parameter">wait</replaceable></option></arg>
+      <arg><option>-m <replaceable class="parameter">flag</replaceable></option></arg>
+      <arg><option>-4</option></arg>
+      <arg><option>-6</option></arg>
+      <arg choice="req">name</arg>
+      <arg choice="opt">server</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+
+    <para>
+      <command>host</command>是一个进行DNS查找的简单工具。它通常用于转换名字到
+      IP地址或相反的操作。在没有给出参数或选项时，<command>host</command>打印出
+      其命令行参数和选项的简短摘要。
+    </para>
+
+    <para>
+      <parameter>name</parameter>是要查找的域名。它也可以是一个点分十进制的IPv4
+      地址或者一个冒号分隔的IPv6地址，在这种情况下<command>host</command>缺省将
+      会对那个地址执行一个反向查找。
+      <parameter>server</parameter>是一个可选参数，可以是名字服务器的名字或IP
+      地址，<command>host</command>应该查询这个服务器，而不是
+      <filename>/etc/resolv.conf</filename>中的服务器或服务器列表。
+    </para>
+
+    <para>
+      <option>-a</option>（全部）选项与设置<option>-v</option>选项并让
+      <command>host</command>发一个ANY类型的请求等效。
+    </para>
+
+    <para>
+      当使用了<option>-C</option>选项，<command>host</command>会试图从这个区的
+      所有列出的权威名字服务器中显示区<parameter>name</parameter>的SOA记录。名
+      字服务器的列表是由所找到的这个区的NS记录所定义的。
+    </para>
+
+    <para>
+      <option>-c</option>选项指示生成一个类<parameter>class</parameter>的请求。
+      这个可以用于查找Hesiod或者Chaosnet类的资源记录。缺省类是IN（Internet）。
+    </para>
+
+    <para>
+      在使用<option>-d</option>或<option>-v</option>选项时，
+      <command>host</command>产生冗余输出。这两个选项是等效的。它们提供了向后兼
+      容性。在先前的版本，<option>-d</option>选项打开调试跟踪而
+      <option>-v</option>打开冗余输出。
+    </para>
+
+    <para>
+      <option>-l</option>选项选择列表模式。这使<command>host</command>对区
+      <parameter>name</parameter>执行一个区传送。传送区并打印出NS，PTR和地址记
+      录（A/AAAA）。如果与<option>-a</option>组合，就打印全部记录。
+    </para>
+
+    <para>
+      <option>-i</option>选项指定对Ipv6地址的反向查找应该使用IP6.INT域，这个域
+      是在RFC1886中定义的。缺省是使用IP6.ARPA。
+    </para>
+
+    <para>
+      <option>-N</option>选项设置出现在被当做决定名字的
+      <parameter>name</parameter>中的点的数目。缺失值是在
+      <filename>/etc/resolv.conf</filename>中用ndots语句定义的值，或者为1，如果
+      没有使用ndots语句。少于这个数目的点的名字会被解释为相对名字，并在
+      <filename>/etc/resolv.conf</filename>的<type>search</type>或
+      <type>domain</type>指令所列的域名中搜索。
+    </para>
+
+    <para>
+      一个查找的UDP重试次数可以使用<option>-R</option>选项改变。
+      <parameter>number</parameter>指示<command>host</command>将会在没有收到回
+      答时重发多少次请求。缺省的重试次数是1.如果<parameter>number</parameter>是
+      负数或为0，重试次数缺省为1。
+    </para>
+
+    <para>
+      可以通过<option>-r</option>选项生成非递归请求。设置这个选项清除
+      <command>host</command>生成的请求中的<type>RD</type> &mdash; 期望递归
+      &mdash; 位。这意谓着名字服务器在收到这个请求后不会试图去解析
+      <parameter>name</parameter>。<option>-r</option>选项使
+      <command>host</command>能够模仿一个名字服务器的行为，通过生成非递归请求并
+      期望接收这些请求的回答，这些回答通常是对其它名字服务器指向。
+    </para>
+
+    <para>
+      缺省情况<command>host</command>使用UDP生成请求。<option>-T</option>选项使
+      其在请求名字服务器时使用一个TCP连接。在需要时，会自动为请求选择TCP，例如
+      区传送（AXFR）请求。
+    </para>
+
+    <para>
+      <option>-4</option>选项强制<command>host</command>只使用IPv4请求传输。
+      <option>-6</option>选项强制<command>host</command>只使用IPv6请求传输。
+    </para>
+
+    <para>
+      <option>-t</option>选项用于选择请求类型。<parameter>type</parameter>可以
+      是任何可识别的请求类型：CNAME, NS, SOA, SIG, KEY, AXFR等等。没有指定请求
+      类型时，<command>host</command>自动选择一个合适的请求类型。缺省情况它查找
+      A记录，但是如果给出<option>-C</option>选项，请求将查找SOA记录，如果
+      <parameter>name</parameter>是一个点分十进制IPv4地址或冒号分隔的IPv6地址，
+      <command>host</command>将查找PTR记录。如果选择一个IXFR请求类型，可以通过
+      附加一个等号和开始序列号（例如，-t IXFR=12345678）来指定开始序列号。
+    </para>
+
+    <para>
+      等待响应的时间可以通过<option>-W</option>和<option>-w</option>选项来控制。
+      <option>-W</option>选项使<command>host</command>等待
+      <parameter>wait</parameter>秒。如果<parameter>wait</parameter>小于1，等待
+      间隔就设置为1秒。如果使用<option>-w</option>选项，<command>host</command>
+      将有效地永远等待一个响应。等待一个响应的时间可以设置成由硬件的最大整数所
+      给出的秒数。
+    </para>
+
+    <para>
+      <option>-s</option>选项告诉<command>host</command>如果任何服务器响应了一
+      个SERVFAIL，<emphasis>不</emphasis>发送请求到下一个名字服务器，这与普通的
+      存根解析器行为相反。
+    </para>
+
+    <para>
+      <option>-m</option>可以用于设置内存使用调试标志
+      <parameter>record</parameter>，<parameter>usage</parameter>和
+      <parameter>trace</parameter>。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>IDN支持</title>
+    <para>
+      如果编译<command>host</command>时带有IDN（internationalized domain name，
+      国际化域名）支持，它可以接受和显示非ASCII域名。<command>host</command>会
+      在发送一个请求到DNS服务器或显示一个来自服务器的回复之前正确地转换域名的字
+      符编码。如果由于某种原因你想关闭IDN支持，就定义<envar>IDN_DISABLE</envar>
+      环境变量。在<command>host</command>运行时，如果变量已设置，IDN支持就是关
+      闭的。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>文件</title>
+    <para><filename>/etc/resolv.conf</filename>
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>dig</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>.
+    </para>
+
+  </refsect1>
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

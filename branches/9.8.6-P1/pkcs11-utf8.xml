@@ -1,0 +1,364 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+               [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2010, 2012, 2013  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id$ -->
+
+<sect1 id="pkcs11">
+  <title>PKCS #11 (Cryptoki) support</title>
+  <para>PKCS #11 (公钥加密标准 #11)为控制硬件安全模块（HSM）和其它
+  密码支持设备定义了一个平台独立的API。</para>
+  <para>BIND 9可以支持两种HSM：Sun SCA 6000密码加速板，在Solaris x86
+  下通过测试，以及AEP Keyper网络密钥存储设备，在Debian Linux，
+  Solaris x86和Windows Server 2003。</para>
+  <sect2>
+    <title>Prerequisites</title>
+    <para>关于HSM的安装，初始化，测试和故障解决方面的信息，参见
+    HSM厂商的文档。</para>
+    <para>BIND 9使用OpenSSL进行加解密，但是当前的OpenSSL不完全支持
+    PKCS #11。然而，在OpenSolaris项目中有一个可用于OpenSSL的
+    PKCS #11引擎。ISC修改了它，使其能够与BIND 9配合工作，并提供了
+    新的特征，如PIN管理和密钥引用（key by reference）。</para>
+    <para>打过补丁的OpenSSL依赖一个“PKCS #11提供者”。这是一个
+    共享库，它为HSM硬件提供了一个低级PKCS #11接口。它是由OpenSSL
+    在运行时动态装载的。PKCS #11提供者来自HSM厂商，并且对应于
+    被其控制的特定HSM。</para>
+    <para>打过补丁的OpenSSL提供了两种PKCS #11新“美味”，其中一种
+    必须在配置时选择。正确的选择依赖于HSM硬件：</para>
+    <itemizedlist>
+      <listitem>
+        <para>'crypto-accelerator'用于具有硬件加密加速的HSM，如
+        SCA 6000板。这使得OpenSSL在HSM中运行所有支持的加密操作。</para>
+      </listitem>
+      <listitem>
+        <para>'sign-only'用于设计功能主要时作为密钥存储设备，即缺乏
+        硬件加速的HSM。这类设备是高安全的，但是不需要在加密时比系统
+        CPU更快 &mdash; 通常，他们会更慢。因此，最高效的方法是仅将其
+        用于要求访问安全私钥的加密功能，而其它所有计算密集性操作都使用
+        系统CPU。AEP Keyper是这类设备的一个例子。</para>
+      </listitem>
+    </itemizedlist>
+    <para>修改的OpenSSL代码包含在BIND 9发行版中，以针对最新OpenSSL版本的带上下
+        文的diff结果的形式。OpenSSL 0.9.8，1.0.0和1.0.1都被支持；分别有各自版本
+        的diff文件。在后面的例子中，我们使用了OpenSSL 0.9.8，但是同样的方法也
+        适用于OpenSSL 1.0.0和1.0.1。
+    </para>
+    <note>
+      这个版本的BIND发布时的最新OpenSSL版本是0.9.8y，1.0.0k和1.0.1e。ISC在新版
+      本的OpenSSL发布时会提供一个升级的补丁。在以下例子中的版本号预期
+      也会改变。</note>
+    <para>
+    在构建带PKCS #11支持的BIND 9之前，需要在适当的位置使用这个补丁构建
+    OpenSSL并通知其到达HSM专有的PKCS #11提供者库的路径。</para>
+    <para>获取OpenSSL 0.9.8s:</para>
+    <screen>
+$ <userinput>wget <ulink>http://www.openssl.org/source/openssl-0.9.8s.tar.gz</ulink></userinput>
+</screen>
+    <para>解压tar包：</para>
+    <screen>
+$ <userinput>tar zxf openssl-0.9.8s.tar.gz</userinput>
+</screen>
+    <para>应用BIND 9发行版所带的补丁：</para>
+    <screen>
+$ <userinput>patch -p1 -d openssl-0.9.8s \
+            &lt; bind-9.7.0/bin/pkcs11/openssl-0.9.8s-patch</userinput>
+</screen>
+    <note>（注意，补丁文件可能与不同操作系统下的“patch”应用
+    不兼容。你可能需要安装GNU patch。）
+    </note>
+    <para>在构建OpenSSL时，将其放在一个非标准的位置，这样它不会
+    干扰系统上的OpenSSL库。在下面的例子中，我们选择安装到
+    "/opt/pkcs11/usr"。我们将在配置BIND 9时使用这个位置。</para>
+    <sect3>
+      <!-- Example 1 -->
+      <title>在Linux上为AEP Keyper构建OpenSSL</title>
+      <para>AEP Keyper是一个高安全密钥存储设备，但是不提供硬件加密加速。
+      它能够执行加密操作，但是可能会减慢你的系统CPU。因此，我们在构建
+      OpenSSL时选择'sign-only'选项。</para>
+      <para>Keyper专用的PKCS #11提供者库是随同Keyper软件分发的。在这个例子
+      中，我们将其放在/opt/pkcs11/usr/lib下：</para>
+      <screen>
+$ <userinput>cp pkcs11.GCC4.0.2.so.4.05 /opt/pkcs11/usr/lib/libpkcs11.so</userinput>
+</screen>
+      <para>这个库仅仅通过32位二进制提供给Linux的。如果我们要在一台
+      64位Linux系统上编译，需要强制进行一个32位的构建，在构建时指定
+      -m32选项。</para>
+      <para>最后，Keyper库要求线程，所以我们必须指定-pthread。</para>
+      <screen>
+$ <userinput>cd openssl-0.9.8s</userinput>
+$ <userinput>./Configure linux-generic32 -m32 -pthread \
+            --pk11-libname=/opt/pkcs11/usr/lib/libpkcs11.so \
+            --pk11-flavor=sign-only \
+            --prefix=/opt/pkcs11/usr</userinput>
+</screen>
+      <para>在配置之后，运行“<command>make</command>”和
+      “<command>make test</command>”。如果“<command>make test</command>”
+      失败并输出“pthread_atfork() not found”，你可能忘记加上前面提到的
+      -pthread了。</para>
+    </sect3>
+    <sect3>
+      <!-- Example 2 -->
+      <title>为Solaris上的SCA 6000构建OpenSSL</title>
+      <para>SCA-6000 PKCS #11提供者是作为一个系统库libpkcs11安装的。
+      它是一个真正的加密加速器，能够比任何CPU快4倍以上，所以特性应该
+      是‘crypto-accelerator’。</para>
+      <para>在这个例子中，我们正在AMD64系统上的Solaris x86平台上构建。</para>
+      <screen>
+$ <userinput>cd openssl-0.9.8s</userinput>
+$ <userinput>./Configure solaris64-x86_64-cc \
+            --pk11-libname=/usr/lib/64/libpkcs11.so \
+            --pk11-flavor=crypto-accelerator \
+            --prefix=/opt/pkcs11/usr</userinput>
+</screen>
+      <para>(For a 32-bit build, use "solaris-x86-cc" and
+      /usr/lib/libpkcs11.so.)</para>
+      <para>在配置之后，运行<command>make</command>和
+      <command>make test</command>。</para>
+    </sect3>
+    <sect3>
+      <!-- Example 3 -->
+      <title>为SoftHSM构建OpenSSL</title>
+      <para>SoftHSM是一个由OpenDNSSEC项目（http://www.opendnssec.org）所提供的
+      软件库，它为PKCS#11接口提供了一个虚拟HSM，是以在本地文件系统上加密数据的
+      形式实现的。它使用Botan库来加密，使用SQLite3来做数据存储。虽然比真正的HSM
+      更不安全，但它比传统的密钥文件提供了更安全的密钥存储，并且可以让你在没有
+      HSM可用时试验PKCS#11。</para>
+      <para>在与OpenSSL一起使用SoftHSM之前，必须安装和初始化SoftHSM加密存储，
+      并且SOFTHSM_CONF环境变量必须总是指向SoftHSM配置文件：</para>
+      <screen>
+$ <userinput> cd softhsm-1.3.0 </userinput>
+$ <userinput> configure --prefix=/opt/pkcs11/usr </userinput>
+$ <userinput> make </userinput>
+$ <userinput> make install </userinput>
+$ <userinput> export SOFTHSM_CONF=/opt/pkcs11/softhsm.conf </userinput>
+$ <userinput> echo "0:/opt/pkcs11/softhsm.db" > $SOFTHSM_CONF </userinput>
+$ <userinput> /opt/pkcs11/usr/bin/softhsm --init-token 0 --slot 0 --label softhsm </userinput>
+      </screen>
+      <para>SoftHSM可以执行所有的加密操作，但是由于它只使用你系统的CPU，没有
+      必要在除了签名之外的其它事务上使用它。因此，我们在构建OpenSSL时选择
+      ‘sign-only’特性。</para>
+      <screen>
+$ <userinput>cd openssl-0.9.8s</userinput>
+$ <userinput>./Configure linux-x86_64 -pthread \
+            --pk11-libname=/opt/pkcs11/usr/lib/libpkcs11.so \
+            --pk11-flavor=sign-only \
+            --prefix=/opt/pkcs11/usr</userinput>
+</screen>
+      <para>在配置之后，运行<command>make</command>和
+      <command>make test</command>。</para>
+    </sect3>
+    <para>一旦你完成构建OpenSSL，运行
+    “<command>apps/openssl engine pkcs11</command>”来确认PKCS #11支持
+    是正确编译的。输出应该是下列行中的一种，具体取决于所选的特性：</para>
+    <screen>
+        (pkcs11) PKCS #11 engine support (sign only)
+</screen>
+    <para>或：</para>
+    <screen>
+        (pkcs11) PKCS #11 engine support (crypto accelerator)
+</screen>
+    <para>接下来，运行
+    “<command>apps/openssl engine pkcs11 -t</command>”。这将试图
+    初始化PKCS #11引擎。如果能够顺利完成，它将会报告
+    <quote><literal>[ available ]</literal></quote>.</para>
+    <para>如果输出正确，运行“<command>make install</command>”，将会
+    把修改后的OpenSSL套件安装到<filename>/opt/pkcs11/usr</filename>。</para>
+  </sect2>
+  <sect2>
+    <title>构建带PKCS#11支持的BIND 9</title>
+    <para>在构建BIND 9时，必须通过配置指定定制构建的OpenSSL库的位置。</para>
+    <sect3>
+      <!-- Example 4 -->
+      <title>为Linux配置带AEP Keyper的BIND 9</title>
+      <para>为了链接到PKCS #11提供者，在构建BIND 9时必须打开对线程的支持。
+      </para>
+      <para>AEP Keyper的PKCS #11库当前只作为一个32位二进制提供。如果我们要
+      在一个64位的主机上构建，我们必须通过在“configure”命令行的CC选项中
+      添加“-m32”来强制进行一个32位的构建。</para>
+      <screen>
+$ <userinput>cd ../bind9</userinput>
+$ <userinput>./configure CC="gcc -m32" --enable-threads \
+           --with-openssl=/opt/pkcs11/usr \
+           --with-pkcs11=/opt/pkcs11/usr/lib/libpkcs11.so</userinput>
+</screen>
+    </sect3>
+    <sect3>
+      <!-- Example 5 -->
+      <title>为Solaris配置带SCA 6000的BIND 9</title>
+      <para>为链接到PKCS #11提供者，必须在BIND 9构建时打开对线程的支持。
+      </para>
+      <screen>
+$ <userinput>cd ../bind9</userinput>
+$ <userinput>./configure CC="cc -xarch=amd64" --enable-threads \
+            --with-openssl=/opt/pkcs11/usr \
+            --with-pkcs11=/usr/lib/64/libpkcs11.so</userinput>
+</screen>
+      <para>（对一个32位的构建，省略CC="cc -xarch=amd64"。）</para>
+      <para>如果configure报告OpenSSL不工作，你可能有一个32/64位混合
+      搭配的体系结构。或者，你可能没有为OpenSSL指定正确的路径（这个
+      路径应该与OpenSSL配置时的--prefix参数一样）。</para>
+    </sect3>
+    <sect3>
+      <!-- Example 6 -->
+      <title>为SoftHSM配置BIND 9</title>
+      <screen>
+$ <userinput>cd ../bind9</userinput>
+$ <userinput>./configure --enable-threads \
+           --with-openssl=/opt/pkcs11/usr \
+           --with-pkcs11=/opt/pkcs11/usr/lib/libpkcs11.so</userinput>
+</screen>
+    </sect3>
+    <para>在配置后，运行
+    "<command>make</command>",
+    "<command>make test</command>" and
+    "<command>make install</command>"。</para>
+    <para>（注意：如果“make test“在“pkcs11“系统测试中失败，你可能是忘记设置
+    SOFTHSM_CONF环境变量了。）</para>
+  </sect2>
+  <sect2>
+    <title>PKCS #11工具</title>
+    <para>BIND 9包含一个用以操作HSM的工具的最小集合，包括
+    <command>pkcs11-keygen</command>，用于在HSM内生成一个新的密钥对，
+    <command>pkcs11-list</command>，用于列出当前可用的对象，和
+    <command>pkcs11-destroy</command>，用于删除对象。</para>
+    <para>在UNIX/Linux构建中，这些工具仅在BIND 9使用--with-pkcs11选项
+    配置时才被构建。（注意：如果--with-pkcs11被设置为“yes”，而不是
+    PKCS #11提供者的路径，这时这些工具会被构建，但是提供者将会保持
+    未定义的状态。使用-m选项或PKCS11_PROVIDER环境变量来指定提供者的路径。
+    </para>
+  </sect2>
+  <sect2>
+    <title>使用HSM</title>
+    <para>首先，我们必须设置运行时环境，以便装载OpenSSL和PKCS #11库：</para>
+    <screen>
+$ <userinput>export LD_LIBRARY_PATH=/opt/pkcs11/usr/lib:${LD_LIBRARY_PATH}</userinput>
+</screen>
+    <para>在操作一个AEP Keyper时，也需要指定“machine”文件的位置，它
+    存放PKCS #11提供者库所用到的Keyper的信息。如果机器文件在
+    <filename>/opt/Keyper/PKCS11Provider/machine</filename>,
+    使用：</para>
+    <screen>
+$ <userinput>export KEYPER_LIBRARY_PATH=/opt/Keyper/PKCS11Provider</userinput>
+</screen>
+    <!-- TODO: why not defined at compile time? -->
+    <para>无论何时运行使用HSM的任何工具，都必须设置这些环境变量，包含
+    <command>pkcs11-keygen</command>, 
+    <command>pkcs11-list</command>, 
+    <command>pkcs11-destroy</command>, 
+    <command>dnssec-keyfromlabel</command>, 
+    <command>dnssec-signzone</command>, 
+    <command>dnssec-keygen</command>（这个在生成随机数时会用到HSM），和
+    <command>named</command>。</para>
+    <para>现在我们可以再HSM中创建和使用密钥。在这个例子中，我们将创建
+    一个2048位的密钥并赋予其一个标记“sample-ksk”：</para>
+    <screen>
+$ <userinput>pkcs11-keygen -b 2048 -l sample-ksk</userinput>
+</screen>
+    <para>要确认密钥已经存在：</para>
+    <screen>
+$ <userinput>pkcs11-list</userinput>
+Enter PIN:
+object[0]: handle 2147483658 class 3 label[8] 'sample-ksk' id[0]
+object[1]: handle 2147483657 class 2 label[8] 'sample-ksk' id[0]
+</screen>
+    <para>在使用这个密钥签名一个区之前，我们必须创建一对BIND 9密钥文件。
+    “dnssec-keyfromlabel”应用程序完成这件事。在这个例子中，我们将使用
+    HSM密钥“sample-ksk”作为“example.net”的密钥签名密钥：</para>
+    <screen>
+$ <userinput>dnssec-keyfromlabel -l sample-ksk -f KSK example.net</userinput>
+</screen>
+    <para>作为结果的K*.key和K*.private文件现在可以用于签名区。与包含公钥
+    和私钥的普通K*文件不同，这些文件只包含公钥数据，和一个存储在HSM中的
+    私钥的标识符。HSM使用私钥处理签名。</para>
+    <para>如果你想要在HSM中生成第二个密钥用作一个区签名密钥，遵循上面
+    同样的流程，使用一个不同的密钥标记，一个更小的密钥长度，并在
+    dnssec-keyfromlabel的参数中去掉“-f KSK”：</para>
+    <screen>
+$ <userinput>pkcs11-keygen -b 1024 -l sample-zsk</userinput>
+$ <userinput>dnssec-keyfromlabel -l sample-zsk example.net</userinput>
+</screen>
+    <para>作为选择，你也可能更喜欢使用dnssec-keygen来生成一个传统的
+    存放在硬盘上的密钥：</para>
+    <screen>
+$ <userinput>dnssec-keygen example.net</userinput>
+</screen>
+    <para>这比一个HSM密钥提供更弱的安全性，但是由于安全的原因，HSM可能更
+    慢或者使用不方便，保留HSM并将其用于更小频率的密钥签名操作可能更为有效。
+    如果你想，区签名密钥可以轮转更为频繁，以补偿密钥安全性的降低。</para>
+    <para>现在你可以对区签名了。（注意：如果不给
+    <command>dnssec-signzone</command>使用-S选项，就需要将两个
+    <filename>K*.key</filename>文件的内容添加到区的主文件中再签名。）</para>
+    <screen>
+$ <userinput>dnssec-signzone -S example.net</userinput>
+Enter PIN:
+Verifying the zone using the following algorithms:
+NSEC3RSASHA1.
+Zone signing complete:
+Algorithm: NSEC3RSASHA1: ZSKs: 1, KSKs: 1 active, 0 revoked, 0 stand-by
+example.net.signed
+</screen>
+  </sect2>
+  <sect2>
+    <title>在命令行指定引擎</title>
+    <para>可以再<command>named</command>和所有BIND的
+    <command>dnssec-*</command>工具中通过使用“-E &lt;engine&gt;”
+    命令行选项来指定OpenSSL引擎。如果BIND 9是使用--with-pkcs11选项
+    构建的，这个选项缺省为“pkcs11”。通常是不需要指定引擎的，除非
+    因为某种原因，你希望使用一个不同的OpenSSL引擎。</para>
+    <para>如果你希望关闭使用“pkcs11”引擎 &mdash; 因为调试目的，或者
+    因为HSM不可用 &mdash; 就将引擎设置为空串。例如：</para>
+    <screen>
+$ <userinput>dnssec-signzone -E '' -S example.net</userinput>
+</screen>
+    <para>这将导致<command>dnssec-signzone</command>运行在如同没有使用
+    --with-pkcs11选项编译时的情况。</para>
+  </sect2>
+  <sect2>
+    <title>以自动区重签的方式运行named</title>
+    <para>如果你想要<command>named</command>使用HSM密钥动态重签区，
+    和/或签名通过nsupdate插入的新记录，named必须能够访问HSM的PIN。可以
+    通过将PIN放在openssl.cnf文件来达到（在上面的例子中，
+    <filename>/opt/pkcs11/usr/ssl/openssl.cnf</filename>）。</para>
+    <para>openssl.cnf文件的位置可以再运行named之前通过设置OPENSSL_CONF
+    环境变量进行覆盖。</para>
+    <para>openssl.cnf例子：</para>
+    <programlisting>
+        openssl_conf = openssl_def
+        [ openssl_def ]
+        engines = engine_section
+        [ engine_section ]
+        pkcs11 = pkcs11_section
+        [ pkcs11_section ]
+        PIN = <replaceable>&lt;PLACE PIN HERE&gt;</replaceable>
+</programlisting>
+    <para>这也将允许dnssec-*工具无需PIN进入权限就能够访问HSM。（pkcs11-*
+    工具直接访问HSM，不经过OpenSSL，所以仍然需要一个PIN来使用它们。）</para>
+<!-- 
+If the PIN is not known, I believe the first time named needs the
+PIN to open a key, it'll ask you to type in the PIN, which will be
+a problem because it probably won't be running on a terminal
+-->
+    <warning>
+      <para>在这个方式中，将HSM的PIN放在一个文本文件中可能减少使用一个
+      HSM的安全优势。在以这种方式配置OpenSSL之前，确认这就是你想要的方式。
+      </para>
+    </warning>
+  </sect2>
+  <!-- TODO: what is alternative then for named dynamic re-signing? -->
+  <!-- TODO: what happens if PIN is not known? named will log about it? -->
+</sect1>

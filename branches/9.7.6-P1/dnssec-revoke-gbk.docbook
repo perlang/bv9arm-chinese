@@ -1,0 +1,159 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+               [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2009, 2011  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: dnssec-revoke.docbook,v 1.7.24.2 2011/10/20 23:46:04 tbox Exp $ -->
+<refentry id="man.dnssec-revoke">
+  <refentryinfo>
+    <date>June 1, 2009</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-revoke</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-revoke</application></refname>
+    <refpurpose>设置一个DNSSEC密钥中的REVOKED位</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2009</year>
+      <year>2011</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>dnssec-revoke</command>
+      <arg><option>-hr</option></arg>
+      <arg><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg><option>-E <replaceable class="parameter">engine</replaceable></option></arg>
+      <arg><option>-f</option></arg>
+      <arg><option>-R</option></arg>
+      <arg choice="req">keyfile</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para><command>dnssec-revoke</command>
+      读一个DNSSEC密钥文件，设置在RFC 5011中定义的密钥中的REVOKED位，
+      并创建一对新的密钥文件，其中包含现在已撤销的密钥。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+	<term>-h</term>
+        <listitem>
+	  <para>
+	    输出用法消息并退出。
+	  </para>
+        </listitem>
+      </varlistentry>
+  
+      <varlistentry>
+        <term>-K <replaceable class="parameter">directory</replaceable></term>
+        <listitem>
+          <para>
+            设置存放密钥文件的目录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-r</term>
+        <listitem>
+	  <para>
+            在写了新的密钥集合文集之后删去原来的密钥集合文集。
+	    files.
+	  </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v <replaceable class="parameter">level</replaceable></term>
+        <listitem>
+          <para>
+            设置调试级别。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-E <replaceable class="parameter">engine</replaceable></term>
+        <listitem>
+          <para>
+            使用给定的OpenSSL引擎。当使用PKCS#11支持编译时，它缺省为pkcs11；
+            空名字将其重置为没有引擎。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-f</term>
+        <listitem>
+          <para>
+            强制覆盖：导致<command>dnssec-revoke</command>输出新的
+            密钥对，即使一个与被撤销密钥的算法和密钥ID都匹配的文件
+            已经存在。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-R</term>
+        <listitem>
+          <para>
+            打印带有REVOKE位的密钥的密钥标签但不激活密钥。
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>,
+      <citetitle>RFC 5011</citetitle>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ - Copyright (C) 2010  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: dnssec.xml,v 1.2.2.3 2010-08-16 22:27:17 marka Exp $ -->
+
+<sect1 id="dnssec.dynamic.zones">
+  <title>DNSSEC，动态区，和自动化签名</title>
+  <para>作为BIND 9.7.0的一个特性，可以将一个动态区从不安全转变为
+  签名的区并备份。一个安全的区可以使用NSEC或NSEC3链。</para>
+  <sect2>
+    <title>从不安全转换到安全</title>
+  </sect2>
+  <para>有两种方法可以将一个区从不安全转换为安全：使用动态DNS更新，
+  或者<command>auto-dnssec</command>区选项。</para>
+  <para>对这两种方法，你都需要配置<command>named</command>，使其
+  能够看到<filename>K*</filename>文件，而后者包含签名区时会用到的
+  公钥和私钥部份。这些文件由<command>dnssec-keygen</command>生成。
+  你可以将密钥文件放到在<filename>named.conf</filename>中所指名的
+  密钥目录中：</para>
+  <programlisting>
+        zone example.net {
+                type master;
+                update-policy local;
+                file "dynamic/example.net/example.net";
+                key-directory "dynamic/example.net";
+        };
+</programlisting>
+  <para>如果生成了一个KSK和一个ZSK DNSKEY密钥，这个配置将使区中
+  所有的记录被ZSK签名，并使DNSKEY资源记录集被KSK签名。作为初始签名
+  过程的一部份，还会生成一个NSEC链。
+  </para>
+  <sect2>
+    <title>动态DNS更新方法</title>
+  </sect2>
+  <para>要通过动态更新插入密钥：</para>
+  <screen>
+        % nsupdate
+        &gt; ttl 3600
+        &gt; update add example.net DNSKEY 256 3 7 AwEAAZn17pUF0KpbPA2c7Gz76Vb18v0teKT3EyAGfBfL8eQ8al35zz3Y I1m/SAQBxIqMfLtIwqWPdgthsu36azGQAX8=
+        &gt; update add example.net DNSKEY 257 3 7 AwEAAd/7odU/64o2LGsifbLtQmtO8dFDtTAZXSX2+X3e/UNlq9IHq3Y0 XtC0Iuawl/qkaKVxXe2lo8Ct+dM6UehyCqk=
+        &gt; send
+</screen>
+  <para>虽然更新请求会几乎立即完成，但是只有<command>named</command>
+  有时间扫描整个区并生成NSEC和RRSIG记录之后，区的签名才会完成。
+  区顶点的NSEC记录会在最后添加，作为一个完整NSEC链的信号。</para>
+  <para>如果你希望使用NSEC3来取代NSEC作签名，你应该添加NSEC3PARAM
+  记录到初始更新请求中。如果你希望NSEC3链具有OPTOUT位，就在
+  NSEC3PARAM记录的标志字段中设置它。 </para>
+  <screen>
+        % nsupdate
+        &gt; ttl 3600
+        &gt; update add example.net DNSKEY 256 3 7 AwEAAZn17pUF0KpbPA2c7Gz76Vb18v0teKT3EyAGfBfL8eQ8al35zz3Y I1m/SAQBxIqMfLtIwqWPdgthsu36azGQAX8=
+        &gt; update add example.net DNSKEY 257 3 7 AwEAAd/7odU/64o2LGsifbLtQmtO8dFDtTAZXSX2+X3e/UNlq9IHq3Y0 XtC0Iuawl/qkaKVxXe2lo8Ct+dM6UehyCqk=
+        &gt; update add example.net NSEC3PARAM 1 1 100 1234567890
+        &gt; send
+</screen>
+  <para>再次强调，更新请求将会几乎立即完成；然而，所添加的记录
+  不会马上可见，直到<command>named</command>有集合建立/强调相关的
+  链。一个私有类型的记录将被创建，以记录操作状态（参见下面更详细的
+  描述），并在操作完成之后被删除。</para>
+  <para>当初始签名及NSEC/NSEC3链正在生成时，其它更新也可能发生。</para>
+  <sect2>
+    <title>完全自动化区签名</title>
+  </sect2>
+  <para>要打开自动签名，需要在<filename>named.conf</filename>的
+  区语句中增加<command>auto-dnssec</command>选项。
+  <command>auto-dnssec</command>有两个可能的参数：
+  <constant>allow</constant>或
+  <constant>maintain</constant>.</para>
+  <para>使用
+  <command>auto-dnssec allow</command>, 
+  <command>named</command>可以在密钥目录中查找与区匹配的密钥，
+  将其插入到区中，并使用它们来签名区。仅仅在其收到一个
+  <command>rndc sign &lt;zonename&gt;</command>或
+  <command>rndc loadkeys &lt;zonename&gt;</command>命令时才这样做。
+  </para>
+  <para>
+  <!-- TODO: this is repeated in the ARM -->
+  <command>auto-dnssec maintain</command>包含上述功能，而且还
+  可以根据密钥的时间元数据的时间表自动调整区的DNSKEY记录。
+  （更多信息参见<xref linkend="man.dnssec-keygen"/>和
+  <xref linkend="man.dnssec-settime"/>。）
+  如果区第一次装载时，密钥是由密钥目录所提供，它就会立刻被签名，
+  而不用等待<command>rndc sign</command>或
+  <command>rndc loadkeys</command>命令。（然而，这些命令
+  仍然可以用于计划外的密钥变更时。）</para>
+  <para>使用<command>auto-dnssec</command>选项要求区被配置成
+  允许动态更新，这是通过在区配置中增加一个
+  <command>allow-update</command>或
+  <command>update-policy</command>语句来实现的。如果没有这个，
+  配置就会失败。</para>
+  <sect2>
+    <title>私有类型记录</title>
+  </sect2>
+  <para>签名过程的状态由私有类型记录（带有一个缺省值65534）发信号通知。
+  当签名完成，这些记录将会在最后一个字节有一个非零值（这些记录都有一个
+  初始的非零值）。</para>
+  <para>私有类型记录的格式：如果第一个字节不为0，这个记录表明
+  区需要由与记录匹配的密钥来签名，或者与记录匹配的所有签名应当
+  被删掉。</para>
+  <para>
+    <literallayout>
+<!-- TODO: how to format this? -->
+  algorithm (octet 1)
+  key id in network order (octet 2 and 3)
+  removal flag (octet 4)
+  complete flag (octet 5)
+</literallayout>
+  </para>
+  <para>只有被标志为“complete”的记录才能通过动态更新被删除。删除
+  其它私有类型记录的企图将被默默地忽略掉。</para>
+  <para>如果第一个字节为零（这是一个保留的算法号，从来不会出现在一个
+  DNSKEY记录中），这个记录指示正在进行转换为NSEC3链的过程。其余的记录
+  包含一个NSEC3PARAM记录。标志字段基于标志位表明要执行哪种操作。</para>
+  <para>
+    <literallayout>
+<!-- TODO: how to format this? -->
+  0x01 OPTOUT
+  0x80 CREATE
+  0x40 REMOVE
+  0x20 NONSEC
+</literallayout>
+  </para>
+  <sect2>
+    <title>DNSKEY轮转</title>
+  </sect2>
+  <para>随着不安全到安全的转换，轮转DNSSEC密钥可以使用两种方法完成：
+  使用一个动态DNS更新，或者<command>auto-dnssec</command>区选项。</para>
+  <sect2>
+    <title>动态DNS更新方法</title>
+  </sect2>
+  <para>为通过动态更新执行密钥轮转，你需要为新密钥添加
+  <filename>K*</filename>文件，这样<command>named</command>就能够找到
+  它们。然后你可以通过动态更新添加新的DNSKEY资源记录集。
+  然后将引起<command>named</command>使用新的密钥对区进行签名。当签名完成，
+  将更新私有类型记录，使最后一个字节为非零。</para>
+  <para>如果这是一个KSK，你需要将新KSK通知上级域和所有的信任锚仓库。</para>
+  <para>然后，你应该在删除旧DNSKEY之前等待区中最大TTL的时间。如果更新
+  一个KSK，你还需要等待上级区中的DS资源记录集更新和其TTL失效。这就确保
+  当你删除旧DNSKEY时，所有的客户端能够验证至少一个签名。</para>
+  <para>可以通过UPDATE删除旧的DNSKEY。需要小心指定正确的密钥。
+  在更新完成后，<command>named</command>将会清理由旧密钥生成的所有签名。
+  </para>
+  <sect2>
+    <title>自动密钥轮转</title>
+  </sect2>
+  <para>当一个新密钥到达其激活日期（由<command>dnssec-keygen</command>
+  或<command>dnssec-settime</command>所设置的）时，如果
+  <command>auto-dnssec</command>区选项被设置为<constant>maintain</constant>，
+  <command>named</command>将会自动执行密钥轮转。如果密钥的算法之前没有用于
+  签名区，区将被尽可能快地被全部签名。但是，如果替代现在密钥的新密钥使用同样
+  的算法，则区将被增量重签，在其签名有效期过期后，旧密钥的签名被新密钥的签名
+  所替代缺省时，这个轮转在30天内完成，之后就可以安全地将旧密钥从DNSKEY资源记
+  录集中删掉。</para>
+  <sect2>
+    <title>通过UPDATE轮转NSEC3PARAM</title>
+  </sect2>
+  <para>通过动态更新增加新的NSEC3PARAM记录。当生成了新的NSEC3链之后，
+  NSEC3PARAM标志字段被置为零。在这时，你可以删除旧的NSEC3PARAM记录。
+  旧的链将会在更新请求完成之后被删除。</para>
+  <sect2>
+    <title>从NSEC转换到NSEC3</title>
+  </sect2>
+  <para>要做这个，你只需要添加一条NSEC3PARAM记录。在转换完成后，NSEC链
+  将被移除，NSEC3PARAM记录有一个0标志域。NSEC3链将在NSEC链被去掉之前
+  生成。</para>
+  <sect2>
+    <title>从NSEC3转换到NSEC</title>
+  </sect2>
+  <para>要做这件事，使用<command>nsupdate</command>删除所有带有一个零
+  标志字段的NSEC3PARAM记录。在NSEC3链被删除之前先生成NSEC链。</para>
+  <sect2>
+    <title>从安全转换为不安全</title>
+  </sect2>
+  <para>要使用动态DNS将一个签名的区转换为未签名的区，需要使用
+  <command>nsupdate</command>删除区顶点的所有DNSKEY记录。所有签名，
+  NSEC或NSEC3链，以及相关的NSEC3PARAM记录都会被自动地删除掉。这个
+  发生在更新请求完成之后。</para>
+  <para>这要求<filename>named.conf</filename>中的
+  <command>dnssec-secure-to-insecure</command>选项被设置为
+  <userinput>yes</userinput>。</para>
+  <para>此外，如果使用了<command>auto-dnssec maintain</command>区命令，
+  应该将其去掉或者将其值改为<command>allow</command>（或者重签名）。
+  </para>
+  <sect2>
+    <title>周期性的重签名</title>
+  </sect2>
+  <para>在任何支持动态更新的安全区中，named会周期性地对因为某些
+  更新动作而变为未签名的资源记录集进行重新签名。签名的生存期会被
+  调整，这样就会将重新签名的负载分散在一段时间而不是集中在一起。
+  </para>
+  <sect2>
+    <title>NSEC3 and OPTOUT</title>
+  </sect2>
+  <para>
+  <command>named</command>仅仅支持一个区的所有NSEC3记录都有同样的
+  OPTOUT状态才建立新的NSEC3链。
+  <command>named</command>支持UPDATES那些在链中的NSEC3记录有混合OPTOUT
+  状态的区。
+  <command>named</command>不支持变更一个单独NSEC3记录的OPTOUT状态，
+  如果需要变更一个单独NSEC3记录的OPTOUT状态，就需要变更整个链。</para>
+</sect1>

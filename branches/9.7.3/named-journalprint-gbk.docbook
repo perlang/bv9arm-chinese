@@ -1,0 +1,95 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2009  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: named-journalprint.docbook,v 1.2 2009-12-04 21:59:23 marka Exp $ -->
+<refentry id="man.named-journalprint">
+  <refentryinfo>
+    <date>Feb 18, 2009</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>named-journalprint</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>named-journalprint</application></refname>
+    <refpurpose>以人可读的格式打印区日志文件</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2009</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>named-journalprint</command>
+      <arg choice="req"><replaceable class="parameter">journal</replaceable></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+      <command>named-journalprint</command>
+      以人可读的格式打印一个区的日志文件的内容。
+    </para>
+    <para>
+      日志文件是在动态区有变化时（例如，通过<command>nsupdate</command>）
+      由<command>named</command>自动创建的。它们以二进制格式记录了每一个
+      资源记录的增加和删除，允许当服务器在宕机或崩溃之后的重启后将改变
+      重新应用到区中。缺省时，日志文件的名字由相应区文件的名字加上扩展名
+      <filename>.jnl</filename>组成。
+      zone file.
+    </para>
+    <para>
+      <command>named-journalprint</command>将一个给定日志文件转换为一个
+      人可读的文本格式。每行都以“add”或“del”开头，以指明记录是否被
+      增加或删除，并以主区文件格式连续放置资源记录。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para>
+      <citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>nsupdate</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

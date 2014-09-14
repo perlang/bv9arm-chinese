@@ -1,0 +1,157 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2004, 2005, 2007  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2000-2002  Internet Software Consortium.
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: named-checkconf.docbook,v 1.8.18.10 2007/08/28 07:19:55 tbox Exp $ -->
+<refentry id="man.named-checkconf">
+  <refentryinfo>
+    <date>June 14, 2000</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>named-checkconf</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <docinfo>
+    <copyright>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2007</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <year>2002</year>
+      <holder>Internet Software Consortium.</holder>
+    </copyright>
+  </docinfo>
+
+  <refnamediv>
+    <refname><application>named-checkconf</application></refname>
+    <refpurpose>named配置文件语法检查工具</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>named-checkconf</command>
+      <arg><option>-v</option></arg>
+      <arg><option>-j</option></arg>
+      <arg><option>-t <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg choice="req">filename</arg>
+      <arg><option>-z</option></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+	  <command>named-checkconf</command>检查一个named配置文件的
+	  语法，但是不检查语义。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-t <replaceable class="parameter">directory</replaceable></term>
+        <listitem>
+          <para>
+            改变根到<filename>directory</filename>，这样在配置文件中
+            包含的指令就象运行在类似的被改变了根的named中一样被处理。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v</term>
+        <listitem>
+          <para>
+            打印<command>named-checkconf</command>程序的版本并退出。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-z</term>
+        <listitem>
+          <para>
+	        执行<filename>named.conf</filename>中所有主区的测试装载。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-j</term>
+        <listitem>
+          <para>
+            在装载一个区文件时，如果存在日志文件，就读入。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>filename</term>
+        <listitem>
+          <para>
+            所要检查的配置文件的名字。如果未指定，缺省为
+			<filename>/etc/named.conf</filename>。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+
+  </refsect1>
+
+  <refsect1>
+    <title>返回值</title>
+    <para>
+	  <command>named-checkconf</command>返回一个退出状态，
+	  如果检测到错误为1，否则为0。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>named-checkzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

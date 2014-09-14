@@ -1,0 +1,432 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2004-2007  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2000-2003  Internet Software Consortium.
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: dnssec-signzone.docbook,v 1.27.130.2 2008/10/15 23:46:53 tbox Exp $ -->
+<refentry id="man.dnssec-signzone">
+  <refentryinfo>
+    <date>June 30, 2000</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-signzone</application></refentrytitle>
+   <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-signzone</application></refname>
+    <refpurpose>DNSSEC区签名工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2006</year>
+      <year>2007</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <year>2002</year>
+      <year>2003</year>
+      <holder>Internet Software Consortium.</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>dnssec-signzone</command>
+      <arg><option>-a</option></arg>
+      <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg><option>-d <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg><option>-e <replaceable class="parameter">end-time</replaceable></option></arg>
+      <arg><option>-f <replaceable class="parameter">output-file</replaceable></option></arg>
+      <arg><option>-g</option></arg>
+      <arg><option>-h</option></arg>
+      <arg><option>-k <replaceable class="parameter">key</replaceable></option></arg>
+      <arg><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
+      <arg><option>-i <replaceable class="parameter">interval</replaceable></option></arg>
+      <arg><option>-I <replaceable class="parameter">input-format</replaceable></option></arg>
+      <arg><option>-j <replaceable class="parameter">jitter</replaceable></option></arg>
+      <arg><option>-N <replaceable class="parameter">soa-serial-format</replaceable></option></arg>
+      <arg><option>-o <replaceable class="parameter">origin</replaceable></option></arg>
+      <arg><option>-O <replaceable class="parameter">output-format</replaceable></option></arg>
+      <arg><option>-p</option></arg>
+      <arg><option>-r <replaceable class="parameter">randomdev</replaceable></option></arg>
+      <arg><option>-s <replaceable class="parameter">start-time</replaceable></option></arg>
+      <arg><option>-t</option></arg>
+      <arg><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg><option>-z</option></arg>
+      <arg choice="req">zonefile</arg>
+      <arg rep="repeat">key</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+	  <command>dnssec-signzone</command>签名一个区。它生成NSEC和RRSIG记录并产生
+	  一个区的签名版本。来自这个签名区的授权的安全状态（即，子区是否安全）
+	  是由是否存在各个子区的<filename>keyset</filename>文件而决定的。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-a</term>
+        <listitem>
+          <para>
+            验证所有生成的签名。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">class</replaceable></term>
+        <listitem>
+          <para>
+            指定区的DNS类。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k <replaceable class="parameter">key</replaceable></term>
+        <listitem>
+          <para>
+            将指定的密钥当作密钥签名密钥并忽略所有密钥标志。这个选项可以指定多次。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-l <replaceable class="parameter">domain</replaceable></term>
+        <listitem>
+          <para>
+            在生成密钥（DNSKEY）和DS集合之外还生成一个DLV集合。域被添加到记录名之后。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-d <replaceable class="parameter">directory</replaceable></term>
+        <listitem>
+          <para>
+            在<option>directory</option>目录中查找<filename>keyset</filename>文件。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-g</term>
+        <listitem>
+          <para>
+            为来自密钥集合文件的子区生成DS记录。已经存在的DS将被删除。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable class="parameter">start-time</replaceable></term>
+        <listitem>
+          <para>
+            指定所生成的RRSIG记录生效的日期和时间。这个可以是一个绝对或
+			相对时间。一个绝对开始时间由一个YYYYMMDDHHMMSS格式的数所指明；
+			20000530144500表示2000年5月30日14:45:00（UTC）。一个相对开始
+			时间由+N所指明，N是从当前时间开始的秒数。如果没有指定
+			<option>start-time</option>，就使用当前时间减1小时（允许时钟
+			误差）。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-e <replaceable class="parameter">end-time</replaceable></term>
+        <listitem>
+          <para>
+            指定所生成的RRSIG记录过期的日期和时间。与
+			<option>start-time</option>一样，一个绝对时间由YYYYMMDDHHMMSS
+			格式所指明。一个相对于开始时间的时间由+N所指明，即自开始时间
+			之后N秒。一个相对于当前时间的时间由now+N所指明。如果没有指定
+			<option>end-time</option>，就使用开始时间30天后作为缺省值。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-f <replaceable class="parameter">output-file</replaceable></term>
+        <listitem>
+          <para>
+            包含签名区的输出文件的名字。缺省是在输入文件名后面添加
+			<filename>.signed</filename>。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-h</term>
+        <listitem>
+          <para>
+            打印<command>dnssec-signzone</command>的选项和参数的简短摘要。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-i <replaceable class="parameter">interval</replaceable></term>
+        <listitem>
+          <para>
+            当一个先前已签名的区被作为输入，记录可能被再次签名。
+            <option>interval</option>选项指定作为自当前时间开始的偏移量
+            （以秒计）的循环间隔。如果一个RRSIG记录在这个循环间隔后过期，
+            它会被保留。否则，它被考虑为马上过期，并被替代。
+          </para>
+          <para>
+            缺省的循环间隔是签名的结束时间和开始时间之差的四分之一，所以
+            如果既不指定<option>end-time</option>，也不指定
+            <option>start-time</option>，<command>dnssec-signzone</command>
+            生成的签名在30天内有效，并带有7.5天的循环间隔。所以，如果任何现存
+            的RRSIG记录将在7.5天以内过期，它们将会被替代。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-I <replaceable class="parameter">input-format</replaceable></term>
+        <listitem>
+          <para>
+            输入区文件的格式。可能的格式是<command>"text"</command>（缺省）
+            和<command>"raw"</command>。这个选项主要用于动态签名区，这样一个
+            包含动态更新的以非文本格式转储的区文件就可以被直接签名。使用这个
+            选项对非动态区没有意义。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-j <replaceable class="parameter">jitter</replaceable></term>
+        <listitem>
+          <para>
+            在使用一个固定的签名生存时间对一个区签名时，所有的RRSIG
+			记录都分配了几乎是同时的签名过期时间。如果区被增量签名，
+			例如，一个先前签过名的区作为输入传递给签名者，所有过期
+			的签名必须在大致相同的时间被重新生成。
+			<option>jitter</option>选项指定了一个抖动窗口，用来随机
+			化签名的过期时间，这样就将增量签名的重生成扩展到一个时
+			间段。
+          </para>
+          <para>
+            签名生存时间抖动通过分散缓存过期时间对验证者和服务器也
+            有某种程度的帮助，例如，如果所有的缓冲中都没有大量RRSIG
+            在同一时间过期，就比所有验证者需要在几乎相同的时刻来重新
+            获取记录有更少的拥塞。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-n <replaceable class="parameter">ncpus</replaceable></term>
+        <listitem>
+          <para>
+            指定要使用的线程个数。缺省时，为每个被检测到的CPU绑定一个线程。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-N <replaceable class="parameter">soa-serial-format</replaceable></term>
+        <listitem>
+          <para>
+            签名区的SOA序列号格式。可能的格式有<command>"keep"</command>
+           （缺省），<command>"increment"</command>和
+            <command>"unixtime"</command>。
+          </para>
+
+          <variablelist>
+	    <varlistentry>
+	      <term><command>"keep"</command></term>
+              <listitem>
+                <para>不改变SOA序列号。</para>
+	      </listitem>
+            </varlistentry>
+
+	    <varlistentry>
+	      <term><command>"increment"</command></term>
+              <listitem>
+                <para>使用RFC 1982算术增加SOA序列号。</para>
+	      </listitem>
+            </varlistentry>
+
+	    <varlistentry>
+	      <term><command>"unixtime"</command></term>
+              <listitem>
+                <para>将SOA序列号设置为UNIX纪元以来的秒数。</para>
+	      </listitem>
+            </varlistentry>
+	 </variablelist>
+
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-o <replaceable class="parameter">origin</replaceable></term>
+        <listitem>
+          <para>
+            区起点。如果未指定，就使用区名作为起点。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-O <replaceable class="parameter">output-format</replaceable></term>
+        <listitem>
+          <para>
+            包含签名区的输出文件的格式。可能的格式为<command>"text"</command>
+			（缺省）和<command>"raw"</command>。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p</term>
+        <listitem>
+          <para>
+            在签名区时使用伪随机数据。这样比使用真随机数据更快，但安全性
+            较低。这个选项在签名区较大或者在熵源有限的时候可能会有用。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-r <replaceable class="parameter">randomdev</replaceable></term>
+        <listitem>
+          <para>
+            指定随机性的源。如果操作系统不提供
+            <filename>/dev/random</filename>或等效的设备，缺省的随机性的源为
+            键盘输入。<filename>randomdev</filename>指定一个字符设备名或包含
+            随机数据的文件名，用来替代缺省值。特定值
+            <filename>keyboard</filename>指示使用键盘输入。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-t</term>
+        <listitem>
+          <para>
+            在完成时打印统计结果。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v <replaceable class="parameter">level</replaceable></term>
+        <listitem>
+          <para>
+            设置调试级别。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-z</term>
+        <listitem>
+          <para>
+            在决定要签名什么东西时，忽略密钥中的KSK标志。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>zonefile</term>
+        <listitem>
+          <para>
+            包含被签名区的文件。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>key</term>
+        <listitem>
+          <para>
+	        指定应该使用那个密钥来签名这个区。如果没有指定密钥，
+		会对区进行检查，在区顶点找DNSKEY记录。如果在当前目录
+		找到并与私钥匹配，这个就会用于签名。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>例子</title>
+    <para>
+      下列命令使用由<command>dnssec-keygen</command>所生成的DSA密钥
+      （Kexample.com.+003+17247）对<userinput>example.com</userinput>区
+      签名。区的密钥必须在主文件中（<filename>db.example.com</filename>）。
+      这个需要在当前目录查找<filename>keyset</filename>文件，这样DS记录可以
+      从中生成（<command>-g</command>）。
+    </para>
+<programlisting>% dnssec-signzone -g -o example.com db.example.com \
+Kexample.com.+003+17247
+db.example.com.signed
+%</programlisting>
+    <para>
+      在上述例子中，<command>dnssec-signzone</command>创建文件
+	  <filename>db.example.com.signed</filename>。这个文件被
+	  <filename>named.conf</filename>文件中的区语句所引用。
+    </para>
+    <para>
+      这个例子使用缺省参数重新对先前的签名区签名。假定私钥存放在当前目录。
+    </para>
+<programlisting>% cp db.example.com.signed db.example.com
+% dnssec-signzone -o example.com db.example.com
+db.example.com.signed
+%</programlisting>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>,
+      <citetitle>RFC 4033</citetitle>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

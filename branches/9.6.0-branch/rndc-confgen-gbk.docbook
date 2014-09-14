@@ -1,0 +1,259 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2004, 2005, 2007  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2001, 2003  Internet Software Consortium.
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id: rndc-confgen.docbook,v 1.6.18.7 2007/08/28 07:20:01 tbox Exp $ -->
+<refentry id="man.rndc-confgen">
+  <refentryinfo>
+    <date>Aug 27, 2001</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>rndc-confgen</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>rndc-confgen</application></refname>
+    <refpurpose>rndc密钥生成工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2007</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+    <copyright>
+      <year>2001</year>
+      <year>2003</year>
+      <holder>Internet Software Consortium.</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>rndc-confgen</command>
+      <arg><option>-a</option></arg>
+      <arg><option>-b <replaceable class="parameter">keysize</replaceable></option></arg>
+      <arg><option>-c <replaceable class="parameter">keyfile</replaceable></option></arg>
+      <arg><option>-h</option></arg>
+      <arg><option>-k <replaceable class="parameter">keyname</replaceable></option></arg>
+      <arg><option>-p <replaceable class="parameter">port</replaceable></option></arg>
+      <arg><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
+      <arg><option>-s <replaceable class="parameter">address</replaceable></option></arg>
+      <arg><option>-t <replaceable class="parameter">chrootdir</replaceable></option></arg>
+      <arg><option>-u <replaceable class="parameter">user</replaceable></option></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+	  <command>rndc-confgen</command>为<command>rndc</command>生
+	  成配置文件。它可以用作一个方便手段，用以手工书写
+	  <filename>rndc.conf</filename>文件及在
+	  <filename>named.conf</filename>中写相应的
+	  <command>controls</command>和<command>key</command>语句。作
+	  为选择，它可以带有<command>-a</command>选项运行来建立一个
+	  <filename>rndc.key</filename>文件，以避免对
+	  <filename>rndc.conf</filename>文件和一个
+	  <command>controls</command>语句的需求。
+    </para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-a</term>
+        <listitem>
+          <para>
+            做自动的<command>rndc</command>配置。这会在
+            <filename>/etc</filename>（或其它在编译
+            <acronym>BIND</acronym>时所指定的
+            <varname>sysconfdir</varname>）建立一个文件
+            <filename>rndc.key</filename>，可以被
+            <command>rndc</command>和<command>named</command>两个在
+            启动时读取。<filename>rndc.key</filename>文件定义了一
+            个缺省的命令通道和认证密钥，它允许
+            <command>rndc</command>与本机上的
+            <command>named</command>通信而不需要更多的配置。
+          </para>
+          <para>
+            运行<command>rndc-confgen -a</command>允许BIND 9和
+			<command>rndc</command>作为BIND 8和
+			<command>ndc</command>的简易替代，而不对现存的BIND 8的
+			<filename>named.conf</filename>做任何改变。
+          </para>
+          <para>
+            如果需要一个比<command>rndc-confgen -a</command>所生成
+			的更加复杂的配置，例如如果rndc需要远程使用，你应该不
+			使用<command>-a</command>选项运行
+			<command>rndc-confgen</command>的并按指示设置
+            <filename>rndc.conf</filename>和
+			<filename>named.conf</filename>。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-b <replaceable class="parameter">keysize</replaceable></term>
+        <listitem>
+          <para>
+            指定认证密钥的位数。必须在1到512位之间；缺省是128。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">keyfile</replaceable></term>
+        <listitem>
+          <para>
+            与<command>-a</command>选项一起使用指定一个
+			<filename>rndc.key</filename>的替代位置。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-h</term>
+        <listitem>
+          <para>
+            打印<command>rndc-confgen</command>的选项和参数的简短摘要。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k <replaceable class="parameter">keyname</replaceable></term>
+        <listitem>
+          <para>
+            指定rndc认证密钥的密钥名。这个必须是一个有效域名。缺省是
+			<constant>rndc-key</constant>。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable class="parameter">port</replaceable></term>
+        <listitem>
+          <para>
+            指定<command>named</command>监听<command>rndc</command>连接的
+			命令通道的端口。缺省是953。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-r <replaceable class="parameter">randomfile</replaceable></term>
+        <listitem>
+          <para>
+            指定用于生成授权的随机数据的源。如果操作系统不提供
+            <filename>/dev/random</filename>或等效的设备，缺省的随机性的源为
+            键盘输入。<filename>randomdev</filename>指定一个字符设备名或包含
+            随机数据的文件名，用来替代缺省值。特定值
+            <filename>keyboard</filename>指示使用键盘输入。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable class="parameter">address</replaceable></term>
+        <listitem>
+          <para>
+            指定<command>named</command>监听<command>rndc</command>连接的
+			命令通道的IP地址。缺省是环回地址127.0.0.1。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-t <replaceable class="parameter">chrootdir</replaceable></term>
+        <listitem>
+          <para>
+            与<command>-a</command>选项一起使用，指定<command>named</command>
+			运行改变根的目录。一个附加的<filename>rndc.key</filename>拷贝会
+			写到相对于这个目录的位置，这样改变了根的<command>named</command>
+			才能找到它。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-u <replaceable class="parameter">user</replaceable></term>
+        <listitem>
+          <para>
+            与<command>-a</command>选项一起使用，设置所生成的
+			<filename>rndc.key</filename>文件的拥有者。如果也指定了
+			<command>-t</command>，只有改变了根的目录下的文件才改变其
+			拥有者。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>例子</title>
+    <para>
+      允许不用手工配置而使用<command>rndc</command>，运行
+    </para>
+    <para><userinput>rndc-confgen -a</userinput>
+    </para>
+    <para>
+      要打印一个例子<filename>rndc.conf</filename>文件和相对应的用于手工插入
+	  <filename>named.conf</filename>的<command>controls</command>和
+	  <command>key</command>语句，运行
+    </para>
+    <para><userinput>rndc-confgen</userinput>
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>rndc</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>，
+      <citerefentry>
+        <refentrytitle>rndc.conf</refentrytitle><manvolnum>5</manvolnum>
+      </citerefentry>，
+      <citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>，
+      <citetitle>BIND 9管理员参考手册</citetitle>。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

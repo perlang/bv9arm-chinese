@@ -66,7 +66,7 @@
       </para>
 
       <para>
-        这个版本的手册对应于BIND的9.8版本。
+        这个版本的手册对应于BIND的9.9版本。
       </para>
 
     </sect1>
@@ -1263,7 +1263,7 @@ controls {
       </para>
 
       <para>
-        作为一个主服务器，<acronym>BIND</acronym> 9支持IXFR 协议，为区提供
+        当作为一个主服务器时，<acronym>BIND</acronym> 9支持IXFR 协议，为区提供
         必要的变化历史的信息。这些包括以动态更新维护的主区和通过IXFR获取数据的
         辅区。对于手工维护的主区，以及通过全区传送（AXFR）获取数据的辅区，
         IXFR仅在<command>ixfr-from-differences</command>选项被设置成
@@ -1271,9 +1271,8 @@ controls {
       </para>
 
       <para>
-        作为一个辅服务器，<acronym>BIND</acronym> 9将尝试使用IXFR，除非使用
-        <command>request-ixfr</command>选项或使用
-        <command>ixfr-from-differences</command>将其显式地关闭。
+        当作为一个辅服务器时，<acronym>BIND</acronym> 9将尝试使用IXFR，除非
+        其被显式关闭。
         更多关于关闭IXFR 的信息，参见<command>server</command>
         语句的<command>request-ixfr</command>子句的描述。
       </para>
@@ -2769,8 +2768,9 @@ and perl</programlisting>
               </entry>
               <entry colname="2">
                 <para>
-                  定义一个命名的主服务器列表，一般包含在存根服务器和辅服务器的
-                  区中的masters子句中。
+                  定义一个命名的主服务器列表，一般包含在存根区和辅区的
+                  <command>masters</command>或<command>also-notify</command>
+                  列表中。
                 </para>
               </entry>
             </row>
@@ -3566,10 +3566,15 @@ category notify { null; };
 		      在这之后，报告请求被发送到的目标地址。
                     </para>
                     <para>
-                      <computeroutput>client 127.0.0.1#62536: query: www.example.com IN AAAA +SE</computeroutput>
+                      <computeroutput>client 127.0.0.1#62536 (www.example.com): query: www.example.com IN AAAA +SE</computeroutput>
                     </para>
                     <para>
-                      <computeroutput>client ::1#62537: query: www.example.net IN AAAA -SE</computeroutput>
+                      <computeroutput>client ::1#62537 (www.example.net): query: www.example.net IN AAAA -SE</computeroutput>
+                    </para>
+                    <para>
+                       （这条日志消息的第一部份，显示了客户端地址/端口号和
+                       请求名，在随后所有与同样请求相关的日志消息中都被
+                       重复。）
                     </para>
                   </entry>
                 </row>
@@ -14191,12 +14196,15 @@ zone "example.com" {
       <title>手册页</title>
       <xi:include href="dig-utf8.docbook"/>
       <xi:include href="host-utf8.docbook"/>
+      <xi:include href="dnssec-checkds-utf8.docbook"/>
+      <xi:include href="dnssec-coverage-utf8.docbook"/>
       <xi:include href="dnssec-dsfromkey-utf8.docbook"/>
       <xi:include href="dnssec-keyfromlabel-utf8.docbook"/>
       <xi:include href="dnssec-keygen-utf8.docbook"/>
       <xi:include href="dnssec-revoke-utf8.docbook"/>
       <xi:include href="dnssec-settime-utf8.docbook"/>
       <xi:include href="dnssec-signzone-utf8.docbook"/>
+      <xi:include href="dnssec-verify-utf8.docbook"/>
       <xi:include href="named-checkconf-utf8.docbook"/>
       <xi:include href="named-checkzone-utf8.docbook"/>
       <xi:include href="named-utf8.docbook"/>

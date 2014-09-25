@@ -267,8 +267,8 @@
              冻结对一个动态更新区的更新。如果没有指定区，就冻结对
              所有区的更新。这就允许对一个动态更新方式正常更新的区
              进行手工编辑。它也会导致日志文件中的变化被同步到
-             主区文件，然后删除日志文件。在区被冻结时，所有的
-             动态更新尝试都会被拒绝。
+             主区文件。
+             在区被冻结时，所有的动态更新尝试都会被拒绝。
            </para>
          </listitem>
        </varlistentry>
@@ -281,6 +281,19 @@
              被冻结的区。它会导致服务器重新从磁盘载入区，并在载入
              完成后打开动态更新功能。在解冻一个区后。动态更新请求将
              不会被拒绝。
+             如果区被修改并且使用了<command>ixfr-from-differences</command>
+             选项，将修改日志文件以对应到区的变化。否则，如果区被修改，
+             将会删除所有现存的日志文件。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>sync <optional>-clean</optional> <optional><replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></optional></userinput></term>
+         <listitem>
+           <para>
+             将一个动态区中日志文件的变化部分同步到其区文件。如果指定了
+             “-clean”选项，会将日志文件删除。如果未指定区，将同步所有区。
            </para>
          </listitem>
        </varlistentry>
@@ -319,7 +332,11 @@
          <term><userinput>querylog</userinput></term>
          <listitem>
            <para>
-             触发请求日志。请求日志也可以显式设定，通过在
+             打开或关闭请求日志。（为向后兼容，可以不带参数使用这个命令，即
+             请求日志在开和关之间切换。
+           </para>
+           <para>
+             请求日志也可以显式打开，通过在
              <filename>named.conf</filename>的
              <command>logging</command>部份指定
              <command>queries</command> <command>category</command>
@@ -417,10 +434,22 @@
 	    <term><userinput>flushname</userinput> <replaceable>name</replaceable></term>
 	    <listitem>
 	      <para>
-		刷新指定名字在服务器上的缓存。
+		刷新来自服务器的DNS缓存以及，如果合适，以及来自服务器的名字
+                服务器地址库或异常服务器缓存的给定名字。
 	      </para>
 	    </listitem>
 	  </varlistentry>
+ 
+          <varlistentry>
+            <term><userinput>flushtree</userinput> <replaceable>name</replaceable> <optional><replaceable>view</replaceable></optional> </term>
+            <listitem>
+              <para>
+                刷新来自服务器的DNS缓存的给定名字，及其所有子域。注意这个动作
+                <emphasis>不会</emphasis>影响服务器的名字服务器地址库或异常
+                服务器缓存。
+              </para>
+            </listitem>
+          </varlistentry>
 
 	  <varlistentry>
 	    <term><userinput>status</userinput></term>

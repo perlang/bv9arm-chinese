@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- - Copyright (C) 2010, 2012  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2010, 2011  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -15,7 +15,7 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<!-- $Id$ -->
+<!-- $Id: dnssec.xml,v 1.7 2011/10/13 23:47:10 tbox Exp $ -->
 
 <sect1 id="dnssec.dynamic.zones">
   <title>DNSSEC，动态区，和自动化签名</title>
@@ -85,8 +85,7 @@
   <command>auto-dnssec allow</command>, 
   <command>named</command>可以在密钥目录中查找与区匹配的密钥，
   将其插入到区中，并使用它们来签名区。仅仅在其收到一个
-  <command>rndc sign &lt;zonename&gt;</command>或
-  <command>rndc loadkeys &lt;zonename&gt;</command>命令时才这样做。
+  <command>rndc sign &lt;zonename&gt;</command>时才这样做。
   </para>
   <para>
   <!-- TODO: this is repeated in the ARM -->
@@ -94,10 +93,26 @@
   可以根据密钥的时间元数据的时间表自动调整区的DNSKEY记录。
   （更多信息参见<xref linkend="man.dnssec-keygen"/>和
   <xref linkend="man.dnssec-settime"/>。）
-  如果区第一次装载时，密钥是由密钥目录所提供，它就会立刻被签名，
+  </para>
+  <para>
+  <command>named</command>将会周期性地搜索密钥目录查找与区匹配的密钥，如果密钥
+  的元数据显示区发生了任何变化，诸如增加，删除或者撤销一个密钥，这个动作都会被
+  执行。缺省时，每60分钟检查一次密钥目录；这个周期可以通过
+  <option>dnssec-loadkeys-interval</option>调整，最大到24小时。
+  <command>rndc loadkeys</command>强制<command>named</command>立即检查密钥是否
+  更新。
+  </para>
+  <para>
+  如果密钥被提供到密钥目录中，区第一次装载时，区就会立刻被签名，
   而不用等待<command>rndc sign</command>或
   <command>rndc loadkeys</command>命令。（然而，这些命令
   仍然可以用于计划外的密钥变更时。）</para>
+  <para>
+  如果你希望使用NSEC3来代替NSEC给区签名，需要在发布和激活密钥之前通过动态更新
+  提交一个NSEC3PARAM记录。如果你希望NSEC3链设置OPTOUT位，就在NSEC3PARAM记录的
+  标志字段中设置它。NSEC3PARAM记录将不会立即出现在区中，但它将被存储以供之后
+  参考。当区被签名并且NSEC3链完成之后，NSEC3PARAM将会出现在区中。
+  </para>
   <para>使用<command>auto-dnssec</command>选项要求区被配置成
   允许动态更新，这是通过在区配置中增加一个
   <command>allow-update</command>或

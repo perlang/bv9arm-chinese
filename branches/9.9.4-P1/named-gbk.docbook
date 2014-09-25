@@ -2,7 +2,7 @@
                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004-2009  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004-2009, 2011, 2013  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000, 2001, 2003  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -18,7 +18,7 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<!-- $Id: named.docbook,v 1.26 2009/10/05 17:30:49 fdupont Exp $ -->
+<!-- $Id: named.docbook,v 1.28 2011/11/09 23:46:23 tbox Exp $ -->
 <refentry id="man.named">
   <refentryinfo>
     <date>May 21, 2009</date>
@@ -43,6 +43,8 @@
       <year>2007</year>
       <year>2008</year>
       <year>2009</year>
+      <year>2011</year>
+      <year>2013</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
     <copyright>
@@ -69,6 +71,7 @@
       <arg><option>-s</option></arg>
       <arg><option>-S <replaceable class="parameter">#max-socks</replaceable></option></arg>
       <arg><option>-t <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg><option>-U <replaceable class="parameter">#listeners</replaceable></option></arg>
       <arg><option>-u <replaceable class="parameter">user</replaceable></option></arg>
       <arg><option>-v</option></arg>
       <arg><option>-V</option></arg>
@@ -259,6 +262,19 @@
             </para>
           </warning>
         </listitem>
+      </varlistentry>
+
+        <varlistentry>
+         <term>-U <replaceable class="parameter">#listeners</replaceable></term>
+         <listitem>
+           <para>
+             在每个地址上使用
+             <replaceable class="parameter">#listeners</replaceable>个工作线程
+             来监听UDP请求。如果未指定，<command>named</command>将使用检测
+             到的CPU数目。如果将<option>-n</option>设置为比CPU数目更大的值，
+             <option>-U</option>将会增加到同样的值，但不会超过它。
+           </para>
+         </listitem>
       </varlistentry>
 
       <varlistentry>

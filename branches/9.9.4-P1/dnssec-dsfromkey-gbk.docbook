@@ -2,7 +2,7 @@
                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
                [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2008-2010, 2012  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2008-2012  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -17,7 +17,7 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<!-- $Id: dnssec-dsfromkey.docbook,v 1.12 2010/12/23 23:47:08 tbox Exp $ -->
+<!-- $Id: dnssec-dsfromkey.docbook,v 1.17 2011/10/25 01:54:18 marka Exp $ -->
 <refentry id="man.dnssec-dsfromkey">
   <refentryinfo>
     <date>August 26, 2009</date>
@@ -39,6 +39,7 @@
       <year>2008</year>
       <year>2009</year>
       <year>2010</year>
+      <year>2011</year>
       <year>2012</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
@@ -52,6 +53,7 @@
       <arg><option>-2</option></arg>
       <arg><option>-a <replaceable class="parameter">alg</replaceable></option></arg>
       <arg><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
+      <arg><option>-T <replaceable class="parameter">TTL</replaceable></option></arg>
       <arg choice="req">keyfile</arg>
     </cmdsynopsis>
     <cmdsynopsis>
@@ -65,6 +67,7 @@
       <arg><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
       <arg><option>-s</option></arg>
       <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg><option>-T <replaceable class="parameter">TTL</replaceable></option></arg>
       <arg><option>-f <replaceable class="parameter">file</replaceable></option></arg>
       <arg><option>-A</option></arg>
       <arg><option>-v <replaceable class="parameter">level</replaceable></option></arg>
@@ -114,6 +117,15 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-T <replaceable class="parameter">TTL</replaceable></term>
+        <listitem>
+          <para>
+            指定DS记录的TTL。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-K <replaceable class="parameter">directory</replaceable></term>
         <listitem>
           <para>
@@ -130,6 +142,14 @@
             区文件模式：作为密钥文件名的替代，此参数是一个区主文件的
             域名，它可以从<option>file</option>中读入。如果区名与
             <option>file</option>相同，这个参数可以忽略。
+          </para>
+          <para>
+            如果<option>file</option>被设置为<literal>"-"</literal>，区数据
+            将从标准输入读入。这使使用<command>dig</command>命令的输出作为
+            输入成为可能，例如：
+          </para>
+          <para>
+            <userinput>dig dnskey example.com | dnssec-dsfromkey -f - example.com</userinput>
           </para>
         </listitem>
       </varlistentry>

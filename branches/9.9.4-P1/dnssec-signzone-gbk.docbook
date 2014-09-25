@@ -2,7 +2,7 @@
                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004-2009  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004-2009, 2011  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000-2003  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -18,7 +18,7 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<!-- $Id: dnssec-signzone.docbook,v 1.44 2009/12/03 23:18:16 each Exp $ -->
+<!-- $Id: dnssec-signzone.docbook,v 1.52 2011/12/22 07:32:40 each Exp $ -->
 <refentry id="man.dnssec-signzone">
   <refentryinfo>
     <date>June 05, 2009</date>
@@ -43,6 +43,7 @@
       <year>2007</year>
       <year>2008</year>
       <year>2009</year>
+      <year>2011</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
     <copyright>
@@ -60,6 +61,7 @@
       <arg><option>-a</option></arg>
       <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
       <arg><option>-d <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg><option>-D</option></arg>
       <arg><option>-E <replaceable class="parameter">engine</replaceable></option></arg>
       <arg><option>-e <replaceable class="parameter">end-time</replaceable></option></arg>
       <arg><option>-f <replaceable class="parameter">output-file</replaceable></option></arg>
@@ -67,6 +69,7 @@
       <arg><option>-h</option></arg>
       <arg><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
       <arg><option>-k <replaceable class="parameter">key</replaceable></option></arg>
+      <arg><option>-L <replaceable class="parameter">serial</replaceable></option></arg>
       <arg><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
       <arg><option>-i <replaceable class="parameter">interval</replaceable></option></arg>
       <arg><option>-I <replaceable class="parameter">input-format</replaceable></option></arg>
@@ -74,8 +77,9 @@
       <arg><option>-N <replaceable class="parameter">soa-serial-format</replaceable></option></arg>
       <arg><option>-o <replaceable class="parameter">origin</replaceable></option></arg>
       <arg><option>-O <replaceable class="parameter">output-format</replaceable></option></arg>
-      <arg><option>-p</option></arg>
       <arg><option>-P</option></arg>
+      <arg><option>-p</option></arg>
+      <arg><option>-R</option></arg>
       <arg><option>-r <replaceable class="parameter">randomdev</replaceable></option></arg>
       <arg><option>-S</option></arg>
       <arg><option>-s <replaceable class="parameter">start-time</replaceable></option></arg>
@@ -83,6 +87,7 @@
       <arg><option>-t</option></arg>
       <arg><option>-u</option></arg>
       <arg><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg><option>-X <replaceable class="parameter">extended end-time</replaceable></option></arg>
       <arg><option>-x</option></arg>
       <arg><option>-z</option></arg>
       <arg><option>-3 <replaceable class="parameter">salt</replaceable></option></arg>
@@ -143,6 +148,19 @@
           <para>
             在<option>directory</option>中查找<filename>dsset-</filename>或
             <filename>keyset-</filename>文件。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-D</term>
+        <listitem>
+          <para>
+          输出那些仅由<command>dnssec-signzone</command>自动管理的记录类型，
+          即RRSIG，NSEC，NSEC3和NSEC3PARAM记录。如果使用了智能签名
+          （<option>-S</option>），也包含DNSKEY记录。结果文件可以用
+          <command>$INCLUDE</command>包含进原始的区文件中。这个选项不能和
+          <option>-O raw</option>或序列号更新一起使用。
           </para>
         </listitem>
       </varlistentry>
@@ -227,11 +245,34 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-X <replaceable class="parameter">extended end-time</replaceable></term>
+        <listitem>
+          <para>
+            指定为DNSKEY资源记录集而生成的RRSIG记录的过期日期和时间。这是用于
+            DNSKEY签名的有效时间需要比其它记录签名的有效时间持续更长的情况；
+            例如，当KSK的私密部份被离线保存并且需要手动刷新KSK签名时。
+          </para>
+          <para>
+            与<option>start-time</option>一样，一个绝对时间由YYYYMMDDHHMMSS
+            格式所指明。一个相对于开始时间的时间由+N所指明，即自开始时间
+            之后N秒。一个相对于当前时间的时间由now+N所指明。如果没有指定
+            <option>extended end-time</option>，就使用
+            <option>end-time</option>的值作为缺省值。（相应地，
+            <option>end-time</option>的缺省值为开始时间的30天后。）
+            <option>extended end-time</option>必须比
+            <option>start-time</option>更晚。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-f <replaceable class="parameter">output-file</replaceable></term>
         <listitem>
           <para>
             包含签名区的输出文件的名字。缺省是在输入文件名后面添加
-		<filename>.signed</filename>。
+            <filename>.signed</filename>。如果<option>output-file</option>被
+            设置成<literal>"-"</literal>，签名区将被写到标准输出，以缺省的输出
+            格式“full”。
           </para>
         </listitem>
       </varlistentry>
@@ -298,6 +339,16 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-L <replaceable class="parameter">serial</replaceable></term>
+        <listitem>
+          <para>
+            当以‘raw’格式输出一个签名区时，在头部中设置“source serial”值
+            以指定序列号。（这个功能预期主要用于测试目的。）
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-n <replaceable class="parameter">ncpus</replaceable></term>
         <listitem>
           <para>
@@ -355,7 +406,13 @@
         <listitem>
           <para>
             包含签名区的输出文件的格式。可能的格式为<command>"text"</command>
-	    （缺省）和<command>"raw"</command>。
+	    （缺省）<command>"full"</command>，这是以文本输出的适合由外部脚本
+            处理的格式，和<command>"raw"</command>或
+            <command>"raw=N"</command>，
+            即以二进制格式存储区以便<command>named</command>快速加载。
+            <command>"raw=N"</command>指定raw区文件的格式版本：如果N为0，raw
+            区文件可以被任何版本的<command>named</command>读取；如果N为1，这个
+            文件则只能被9.9.0或更高版本读取。缺省为1。
           </para>
         </listitem>
       </varlistentry>
@@ -384,6 +441,23 @@
           </para>
         </listitem>
       </varlistentry>
+
+      <varlistentry>
+        <term>-R</term>
+        <listitem>
+          <para>
+          删除不再存在的密钥的签名。
+          </para>
+          <para>
+            通常情况，当一个以前已经签名的区被作为输入传递给签名者时，并且一个
+            DNSKEY记录被删除且被一个新的所替代时，来自旧密钥的并且仍在其有效期
+            内的签名将被保留。这会让区继续使用缓存中的旧DNSKEY资源记录集来作验
+            证。<option>-R</option>强制<command>dnssec-signzone</command>删除
+            所有孤儿签名。
+          </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
 
       <varlistentry>
         <term>-r <replaceable class="parameter">randomdev</replaceable></term>
@@ -462,12 +536,13 @@
         <term>-T <replaceable class="parameter">ttl</replaceable></term>
         <listitem>
           <para>
-            指定从密钥仓库导入到区中的新的DNSKEY记录所用的TTL。
-            如果未指定，缺省是区的SOA记录中的最小TTL值。当不使用
+            为从密钥仓库导入到区中的新DNSKEY记录指定一个TTL。
+            如果未指定，缺省是区的SOA记录中的TTL值。当不使用
             <option>-S</option>签名时这个选项被忽略，因为在那种情况下，
             不会从密钥仓库导入DNSKEY记录。同样，如果在区顶点存在任何
-            DNSKEY记录时，也会忽略这个选项，在这个情况中，将会设置
-            与其匹配的新记录的TTL值。
+            DNSKEY记录时，也会忽略这个选项，在这个情况中，新记录的TTL值将会被
+            设置成与其匹配，或者如果任何被导入的DNSKEY记录有一个缺省的TTL值时
+            也会被忽略。在导入密钥中的TTL值有冲突的情况下，使用时间最短的一个。
           </para>
         </listitem>
       </varlistentry>

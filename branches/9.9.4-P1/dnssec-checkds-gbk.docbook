@@ -32,7 +32,7 @@
 
   <refnamediv>
     <refname><application>dnssec-checkds</application></refname>
-    <refpurpose>A DNSSEC delegation consistency checking tool.</refpurpose>
+    <refpurpose>一个DNSSEC授权一致性检查工具</refpurpose>
   </refnamediv>
 
   <docinfo>
@@ -63,25 +63,23 @@
   </refsynopsisdiv>
 
   <refsect1>
-    <title>DESCRIPTION</title>
+    <title>描述</title>
     <para><command>dnssec-checkds</command>
-      verifies the correctness of Delegation Signer (DS) or DNSSEC
-      Lookaside Validation (DLV) resource records for keys in a specified
-      zone.
+      为指定区中的密钥验证授权签名者（DS）或者DNSSEC旁观验证（DLV）资源记录
+      的正确性。
     </para>
   </refsect1>
 
   <refsect1>
-    <title>OPTIONS</title>
+    <title>选项</title>
 
     <variablelist>
       <varlistentry>
         <term>-f <replaceable class="parameter">file</replaceable></term>
         <listitem>
           <para>
-            If a <option>file</option> is specified, then the zone is
-            read from that file to find the DNSKEY records.  If not,
-            then the DNSKEY records for the zone are looked up in the DNS.
+            如果指定了一个<option>file</option>，就从那个文件中读入区以查找
+            DNSKEY记录。如果没有，就在DNS中查找区的DNSKEY记录。
           </para>
         </listitem>
       </varlistentry>
@@ -90,10 +88,9 @@
         <term>-l <replaceable class="parameter">domain</replaceable></term>
         <listitem>
           <para>
-            Check for a DLV record in the specified lookaside domain, 
-            instead of checking for a DS record in the zone's parent.
-            For example, to check for DLV records for "example.com"
-            in ISC's DLV zone, use:
+            在指定的旁观域中核对一个DLV记录，而不是与本区的父区中一个DS记录
+            进行核对。
+            例如，要在ISC的DLV区中核对“example.com”的DLV记录，使用：
             <command>dnssec-checkds -l dlv.isc.org example.com</command>
           </para>
         </listitem>
@@ -103,8 +100,7 @@
         <term>-d <replaceable class="parameter">dig path</replaceable></term>
         <listitem>
           <para>
-            Specifies a path to a <command>dig</command> binary.  Used
-            for testing.
+            给一个<command>dig</command>程序指定一个路径。用于测试。
           </para>
         </listitem>
       </varlistentry>
@@ -113,8 +109,8 @@
         <term>-D <replaceable class="parameter">dsfromkey path</replaceable></term>
         <listitem>
           <para>
-            Specifies a path to a <command>dnssec-dsfromkey</command> binary.
-            Used for testing.
+            给一个<command>dnssec-dsfromkey</command>程序指定一个路径。
+            用于测试。
           </para>
         </listitem>
       </varlistentry>
@@ -122,7 +118,7 @@
   </refsect1>
 
   <refsect1>
-    <title>SEE ALSO</title>
+    <title>参见</title>
     <para><citerefentry>
         <refentrytitle>dnssec-dsfromkey</refentrytitle><manvolnum>8</manvolnum>
       </citerefentry>,

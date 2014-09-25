@@ -4071,7 +4071,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> notify-delay <replaceable>seconds</replaceable> ; </optional>
     <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
     <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> notify-to-soa (<replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> notify-to-soa <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> also-notify { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ;
                   <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
     <optional> max-ixfr-log-size <replaceable>number</replaceable>; </optional>
@@ -7627,19 +7627,19 @@ deny-answer-aliases { "example.net"; };
 
 	  <para>
 	    在RPZ记录中编码了四种策略触发器，QNAME，IP，NSIP和NSDNAME。
-	    QNAME records are applied to query names of requests and targets
-	    of CNAME records resolved to generate the response.
+            QNAME RPZ由请求中的query name（请求名）所触发，并且CNAME记录
+            所指向的目标被解析用以生成响应。
             一个QNAME RPZ记录的属主名是与RPZ相对的请求名。
 	  </para>
 
 	  <para>
 	    第二种类型的RPZ触发器是一个IP地址，出现在一个响应的ANSWER部分中的
             一个A和AAAA记录。
-	    IP策略记录的属主名是<userinput>rpz-ip</userinput>的子域名，它
+
+            IP地址触发器被编码到的记录中，其属主名是
+            <userinput>rpz-ip</userinput>的子域名，它
             相对于RPZ原点名字，并编码一个地址或地址块。
-           (IP address triggers are encoded in records that have owner names
-           that are subdomains of <userinput>rpz-ip</userinput> relativized
-           to the RPZ origin name and encode an IP address or address block.)
+
             IPv4触发器地址被编码为
 	    <userinput>prefixlength.B4.B3.B2.B1.rpz-ip</userinput>。
             前缀长度（译注：prefixlength，下同）必须在1和32之间。
@@ -7667,8 +7667,8 @@ deny-answer-aliases { "example.net"; };
             NSDNAME策略记录比对。NSIP触发器被编码成类似IP触发器，除了作为
             <userinput>rpz-nsip</userinput>的子域名之外。
             NSDNAME和NSIP触发器仅在名字至少带有<command>min-ns-dots</command>
-            点时才被检查。
-            <command>min-ns-dots</command>的缺省值是1
+            个点时才被检查。
+            对非顶级域，<command>min-ns-dots</command>的缺省值是1。
 	  </para>
 
 	  <para>

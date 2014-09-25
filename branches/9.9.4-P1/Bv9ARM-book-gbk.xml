@@ -3667,6 +3667,31 @@ category notify { null; };
                     </para>
                   </entry>
                 </row>
+                <row rowsep="0">
+                  <entry colname="1">
+                    <para><command>rate-limit</command></para>
+                  </entry>
+                <entry colname="2">
+                  <para>
+                      （仅当<acronym>BIND</acronym> 9在编译时的配置命令中
+                      使用了<userinput>--enable-rrl</userinput>才可用。）
+                    </para>
+                  <para>
+                    一个响应流的比率限制的启动、周期性及结束通知将以
+                    <command>info</command>级别被写入这个类别。
+                    这些消息包含响应域名的一个散列值和域名自身，没有足够的
+                    内存来记录结束通知的名字这种情况除外。
+                    结束通知通常延迟到比率限制停止一分钟之后。
+                    内存不足可能导致仓促发出结束通知，这种情况下以一个星号
+                    （*）开头。各种内部事件以调试级别1或更高级记录日志。
+                  </para>
+                  <para>
+                    对单个请求的比率限制记录在<command>query-errors</command>
+                    类别中。
+                  </para>
+                </entry>
+              </row>
+
               </tbody>
             </tgroup>
           </informaltable>
@@ -3939,8 +3964,9 @@ badresp:1,adberr:0,findfail:0,valfail:0]
       <sect2>
         <title><command>masters</command>语句定义和用法</title>
         <para>
-          <command>masters</command>列出被多个存根区和辅区使用的一组共同的主服
-          务器的列表。
+          <command>masters</command>列表让一组主服务器被用于多个存根区和辅区，
+          即在后者中使用<command>masters</command>或
+          <command>also-notify</command>列表。
         </para>
       </sect2>
 
@@ -3977,7 +4003,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> pid-file <replaceable>path_name</replaceable>; </optional>
     <optional> recursing-file <replaceable>path_name</replaceable>; </optional>
     <optional> statistics-file <replaceable>path_name</replaceable>; </optional>
-    <optional> zone-statistics <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
     <optional> auth-nxdomain <replaceable>yes_or_no</replaceable>; </optional>
     <optional> deallocate-on-exit <replaceable>yes_or_no</replaceable>; </optional>
     <optional> dialup <replaceable>dialup_option</replaceable>; </optional>
@@ -4031,7 +4057,9 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> allow-update { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> allow-update-forwarding { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> update-check-ksk <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> dnssec-update-mode ( <replaceable>maintain</replaceable> | <replaceable>no-resign</replaceable> ); </optional>
     <optional> dnssec-dnskey-kskonly <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> dnssec-loadkeys-interval <replaceable>number</replaceable>; </optional>
     <optional> dnssec-secure-to-insecure <replaceable>yes_or_no</replaceable> ;</optional>
     <optional> try-tcp-refresh <replaceable>yes_or_no</replaceable>; </optional>
     <optional> allow-v6-synthesis { <replaceable>address_match_list</replaceable> }; </optional>
@@ -4076,9 +4104,10 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> notify-delay <replaceable>seconds</replaceable> ; </optional>
     <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
     <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> notify-to-soa (<replaceable>yes_or_no</replaceable> ; </optional>
-    <optional> also-notify { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ;
-                  <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> notify-to-soa <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> also-notify { <replaceable>ip_addr</replaceable>
+                    <optional>port <replaceable>ip_port</replaceable></optional> <optional>key <replaceable>keyname</replaceable></optional> ;
+                    <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>key <replaceable>keyname</replaceable></optional> ; ... </optional> }; </optional>
     <optional> max-ixfr-log-size <replaceable>number</replaceable>; </optional>
     <optional> max-journal-size <replaceable>size_spec</replaceable>; </optional>
     <optional> coresize <replaceable>size_spec</replaceable> ; </optional>
@@ -4116,7 +4145,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> match-mapped-addresses <replaceable>yes_or_no</replaceable>; </optional>
     <optional> filter-aaaa-on-v4 ( <replaceable>yes_or_no</replaceable> | <replaceable>break-dnssec</replaceable> ); </optional>
     <optional> filter-aaaa { <replaceable>address_match_list</replaceable> }; </optional>
-    <optional> dns64 <replaceable>IPv6-prefix</replaceable> {
+    <optional> dns64 <replaceable>ipv6-prefix</replaceable> {
       <optional> clients { <replaceable>address_match_list</replaceable> }; </optional>
       <optional> mapped { <replaceable>address_match_list</replaceable> }; </optional>
         <optional> exclude { <replaceable>address_match_list</replaceable> }; </optional>
@@ -4129,6 +4158,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> preferred-glue ( <replaceable>A</replaceable> | <replaceable>AAAA</replaceable> | <replaceable>NONE</replaceable> ); </optional>
     <optional> edns-udp-size <replaceable>number</replaceable>; </optional>
     <optional> max-udp-size <replaceable>number</replaceable>; </optional>
+    <optional> max-rsa-exponent-size <replaceable>number</replaceable>; </optional>
     <optional> root-delegation-only <optional> exclude { <replaceable>namelist</replaceable> } </optional> ; </optional>
     <optional> querylog <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> disable-algorithms <replaceable>domain</replaceable> { <replaceable>algorithm</replaceable>;
@@ -4148,6 +4178,23 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> resolver-query-timeout <replaceable>number</replaceable> ; </optional>
     <optional> deny-answer-addresses { <replaceable>address_match_list</replaceable> } <optional> except-from { <replaceable>namelist</replaceable> } </optional>;</optional>
     <optional> deny-answer-aliases { <replaceable>namelist</replaceable> } <optional> except-from { <replaceable>namelist</replaceable> } </optional>;</optional>
+    <optional> rate-limit {
+      <optional> responses-per-second <replaceable>number</replaceable> ; </optional>
+      <optional> referrals-per-second <replaceable>number</replaceable> ; </optional>
+      <optional> nodata-per-second <replaceable>number</replaceable> ; </optional>
+      <optional> nxdomains-per-second <replaceable>number</replaceable> ; </optional>
+      <optional> errors-per-second <replaceable>number</replaceable> ; </optional>
+      <optional> all-per-second <replaceable>number</replaceable> ; </optional>
+      <optional> window <replaceable>number</replaceable> ; </optional>
+      <optional> log-only <replaceable>yes_or_no</replaceable> ; </optional>
+      <optional> qps-scale <replaceable>number</replaceable> ; </optional>
+      <optional> ipv4-prefix-length <replaceable>number</replaceable> ; </optional>
+      <optional> ipv6-prefix-length <replaceable>number</replaceable> ; </optional>
+      <optional> slip <replaceable>number</replaceable> ; </optional>
+      <optional> exempt-clients  { <replaceable>address_match_list</replaceable> } ; </optional>
+      <optional> max-table-size <replaceable>number</replaceable> ; </optional>
+      <optional> min-table-size <replaceable>number</replaceable> ; </optional>
+      } ; </optional>
     <optional> response-policy { <replaceable>zone_name</replaceable>
 	<optional> policy given | disabled | passthru | nxdomain | nodata | cname <replaceable>domain</replaceable> </optional>
 	<optional> recursive-only <replaceable>yes_or_no</replaceable> </optional> <optional> max-policy-ttl <replaceable>number</replaceable> </optional> ;
@@ -5347,8 +5394,8 @@ options {
               <listitem>
                 <para>
                   如果为<userinput>yes</userinput>并且服务器从其区文件装载一个
-                  新版本的主区或者通过非增量区传送方式接收一个新版本的
-                  辅文件时，它将会比较新版本与先前版本并计算一个差集。差别就
+                  新版本的主区或者通过区传送方式接收一个新版本的
+                  辅区文件时，它将会比较新版本与先前版本并计算一个差集。差别就
                   写入到区的日志文件中，这样变化就可以用增量区传送的方式向
                   下游的辅服务器传送。
                 </para>
@@ -5618,6 +5665,24 @@ options {
 		</para>
 	      </listitem>
 	    </varlistentry>
+
+            <varlistentry>
+              <term><command>dnssec-loadkeys-interval</command></term>
+              <listitem>
+                <para>
+                   当一个区配置有<command>auto-dnssec maintain;</command>时，
+                   将会周期性地检查其密钥库，以查看是否有新的密钥添加或者任何
+                   现存密钥的计时元数据被修改（参见
+                   <xref linkend="man.dnssec-keygen"/>和
+                   <xref linkend="man.dnssec-settime"/>）。
+                   <command>dnssec-loadkeys-interval</command>选项设置自动检查
+                   库的频率，以分钟计。缺省为<literal>60</literal>（1小时），
+                   最小为<literal>1</literal>（1分钟），最大为
+                   <literal>1440</literal>（24小时）；任何更大的值将被静默地
+                   减小。
+                </para>
+              </listitem>
+            </varlistentry>
 
             <varlistentry>
               <term><command>try-tcp-refresh</command></term>
@@ -8317,6 +8382,9 @@ view "external" {
     <optional> allow-query-on { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> allow-transfer { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> allow-update { <replaceable>address_match_list</replaceable> }; </optional>
+    <optional> update-check-ksk <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> dnssec-dnskey-kskonly <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> dnssec-loadkeys-interval <replaceable>number</replaceable>; </optional>
     <optional> update-policy <replaceable>local</replaceable> | { <replaceable>update_policy_rule</replaceable> <optional>...</optional> }; </optional>
     <optional> also-notify { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ;
                   <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
@@ -8335,6 +8403,7 @@ view "external" {
     <optional> ixfr-base <replaceable>string</replaceable> ; </optional>
     <optional> ixfr-from-differences <replaceable>yes_or_no</replaceable>; </optional>
     <optional> ixfr-tmp-file <replaceable>string</replaceable> ; </optional>
+    <optional> request-ixfr <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> maintain-ixfr-base <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> max-ixfr-log-size <replaceable>number</replaceable> ; </optional>
     <optional> max-transfer-idle-out <replaceable>number</replaceable> ; </optional>
@@ -8345,7 +8414,7 @@ view "external" {
     <optional> pubkey <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>string</replaceable> ; </optional>
     <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
     <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> zone-statistics <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
     <optional> sig-validity-interval <replaceable>number</replaceable> <optional><replaceable>number</replaceable></optional> ; </optional>
     <optional> sig-signing-nodes <replaceable>number</replaceable> ; </optional>
     <optional> sig-signing-signatures <replaceable>number</replaceable> ; </optional>
@@ -8357,7 +8426,9 @@ view "external" {
     <optional> max-retry-time <replaceable>number</replaceable> ; </optional>
     <optional> key-directory <replaceable>path_name</replaceable>; </optional>
     <optional> auto-dnssec <constant>allow</constant>|<constant>maintain</constant>|<constant>off</constant>; </optional>
+    <optional> inline-signing <replaceable>yes_or_no</replaceable>; </optional>
     <optional> zero-no-soa-ttl <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> serial-update-method <constant>increment</constant>|<constant>unixtime</constant>; </optional>
 };
 
 zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
@@ -8367,13 +8438,15 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     <optional> allow-query-on { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> allow-transfer { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> allow-update-forwarding { <replaceable>address_match_list</replaceable> }; </optional>
-    <optional> update-check-ksk <replaceable>yes_or_no</replaceable>; </optional>
     <optional> dnssec-update-mode ( <replaceable>maintain</replaceable> | <replaceable>no-resign</replaceable> ); </optional>
+    <optional> update-check-ksk <replaceable>yes_or_no</replaceable>; </optional>
     <optional> dnssec-dnskey-kskonly <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> dnssec-loadkeys-interval <replaceable>number</replaceable>; </optional>
     <optional> dnssec-secure-to-insecure <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> try-tcp-refresh <replaceable>yes_or_no</replaceable>; </optional>
-    <optional> also-notify { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ;
-                  <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> also-notify <optional>port <replaceable>ip_port</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
+                              <optional>port <replaceable>ip_port</replaceable></optional>
+                              <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> }; </optional>
     <optional> check-names (<constant>warn</constant>|<constant>fail</constant>|<constant>ignore</constant>) ; </optional>
     <optional> dialup <replaceable>dialup_option</replaceable> ; </optional>
     <optional> file <replaceable>string</replaceable> ; </optional>
@@ -8406,12 +8479,19 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     <optional> use-alt-transfer-source <replaceable>yes_or_no</replaceable>; </optional>
     <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
     <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> zone-statistics <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
+    <optional> sig-validity-interval <replaceable>number</replaceable> <optional><replaceable>number</replaceable></optional> ; </optional>
+    <optional> sig-signing-nodes <replaceable>number</replaceable> ; </optional>
+    <optional> sig-signing-signatures <replaceable>number</replaceable> ; </optional>
+    <optional> sig-signing-type <replaceable>number</replaceable> ; </optional>
     <optional> database <replaceable>string</replaceable> ; </optional>
     <optional> min-refresh-time <replaceable>number</replaceable> ; </optional>
     <optional> max-refresh-time <replaceable>number</replaceable> ; </optional>
     <optional> min-retry-time <replaceable>number</replaceable> ; </optional>
     <optional> max-retry-time <replaceable>number</replaceable> ; </optional>
+    <optional> key-directory <replaceable>path_name</replaceable>; </optional>
+    <optional> auto-dnssec <constant>allow</constant>|<constant>maintain</constant>|<constant>off</constant>; </optional>
+    <optional> inline-signing <replaceable>yes_or_no</replaceable>; </optional>
     <optional> multi-master <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> zero-no-soa-ttl <replaceable>yes_or_no</replaceable> ; </optional>
 };
@@ -8469,6 +8549,13 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     <optional> forward (<constant>only</constant>|<constant>first</constant>) ; </optional>
     <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
     <optional> delegation-only <replaceable>yes_or_no</replaceable> ; </optional>
+};
+
+zone <replaceable>"."</replaceable> <optional><replaceable>class</replaceable></optional> {
+    type redirect;
+    file <replaceable>string</replaceable> ;
+    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>) ; </optional>
+    <optional> allow-query { <replaceable>address_match_list</replaceable> }; </optional>
 };
 
 zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
@@ -8767,8 +8854,9 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
                     的区名字服务器（主服务器除外）和
                     <command>also-notify</command>所指定的任何IP地址。可以在每
                     个<command>also-notify</command>地址指定通知消息要送达的端
-                    口，缺省为53。<command>also-notify</command>对存根区没有意
-                    义。缺省是空表。
+                    口，缺省为53。也可以指定一个TSIG密钥，让
+                    <literal>NOTIFY</literal>被给定的密钥签名。
+                    <command>also-notify</command>对存根区没有意义。缺省是空表。
                   </para>
                 </listitem>
               </varlistentry>
@@ -8854,6 +8942,16 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
                   <para>
                     参见<xref linkend="boolean_options"/>中对
                     <command>update-check-ksk</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>dnssec-update-mode</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="options"/>中对
+                    <command>dnssec-update-mode</command>的描述。
                   </para>
                 </listitem>
               </varlistentry>
@@ -11871,6 +11969,32 @@ HOST-127.EXAMPLE. MX 0 .
 		      </para>
 		    </entry>
 		  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para><command>RateDropped</command></para>
+                    </entry>
+                    <entry colname="2">
+                      <para><command></command></para>
+                    </entry>
+                    <entry colname="3">
+                      <para>
+                        被比率限制丢弃的响应。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para><command>RateSlipped</command></para>
+                    </entry>
+                    <entry colname="2">
+                      <para><command></command></para>
+                    </entry>
+                    <entry colname="3">
+                      <para>
+                        被比率限制截断的响应。
+                      </para>
+                    </entry>
+                  </row>
 		</tbody>
               </tgroup>
             </informaltable>

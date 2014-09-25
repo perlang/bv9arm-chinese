@@ -2,7 +2,7 @@
                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004-2010, 2013  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004-2011, 2013  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000-2003  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -18,7 +18,7 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<!-- $Id: dig.docbook,v 1.47 2010/03/04 23:50:34 tbox Exp $ -->
+<!-- $Id: dig.docbook,v 1.51 2011/11/04 11:02:50 jreed Exp $ -->
 <refentry id="man.dig">
 
   <refentryinfo>
@@ -45,6 +45,7 @@
       <year>2008</year>
       <year>2009</year>
       <year>2010</year>
+      <year>2011</year>
       <year>2013</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
@@ -380,7 +381,8 @@
               设置[不设置]请求中的AD（可靠的数据）位。它要求服务器返回
 	      回答和权威部份的所有记录是否都已按照服务器的安全策略验证。AD=1
 	      指示所有记录都已被验证为安全并且回答不是来自于一个OPT-OUT范围。
-	      AD=0指示回答中的某些部份是不安全的或者没有验证的。
+	      AD=0指示回答中的某些部份是不安全的或者没有验证的。这个位缺省是
+              置位的。
             </para>
           </listitem>
         </varlistentry>
@@ -417,8 +419,8 @@
           <term><option>+[no]recurse</option></term>
           <listitem>
             <para>
-              翻转请求中的RD（期望递归）位设置。这个位缺省是设置的，意谓着
-              <command>dig</command>普通情况是发送递归的请求。在用到
+              翻转请求中的RD（期望递归）位设置。这个位缺省是置位的，意谓着
+              <command>dig</command>普通情况是发送递归的请求。在使用了
               <parameter>+nssearch</parameter>或者<parameter>+trace</parameter>
               选项时，递归是自动关闭的。
             </para>
@@ -440,9 +442,13 @@
           <listitem>
             <para>
               翻转对从根名字服务器到要查找名字的授权路径的跟踪状态。缺省是关闭
-              跟踪的。当打开跟踪时，<command>dig</command>循环发送请求来解析要
+              跟踪的。当打开跟踪时，<command>dig</command>迭代发送请求来解析要
               查找的名字。它会跟随自根服务器起所给出的参考信息，显示出来自每个
               解析用到的服务器的回答。
+            </para>
+            <para>
+              当设置了+trace时，也会设置<command>+dnssec</command>，来更好地
+              模仿来自某个名字服务器的缺省请求。
             </para>
           </listitem>
         </varlistentry>
@@ -482,6 +488,30 @@
           <listitem>
             <para>
               翻转在输出中显示注释行的状态。缺省是打印注释。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]rrcomments</option></term>
+          <listitem>
+            <para>
+              翻转在输出中显示每记录注释的状态（例如，便于人阅读的关于DNSKEY
+              记录的密钥信息）。缺省是不打印记录注释，除非多行模式被激活。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+split=W</option></term>
+          <listitem>
+            <para>
+              将资源记录中较长的hex-或base64-格式的字段分割为
+              <parameter>W</parameter>个字符的块（<parameter>W</parameter>
+              被离散到距其最近的4的倍数上）。
+              <parameter>+nosplit</parameter>或
+              <parameter>+split=0</parameter>导致字段完全不被分割。缺省为56个
+              字符，或者在多行模式时为44个字符。
             </para>
           </listitem>
         </varlistentry>
@@ -614,7 +644,8 @@
 	  <listitem>
 	    <para>
 	       指定请求所带的EDNS的版本。有效值为0到255。设置EDNS版本会导致发出
-	       一个EDNS请求。<option>+noedns</option>清除所记住的EDNS版本。
+	       一个EDNS请求。<option>+noedns</option>清除所记住的EDNS版本。缺省
+               时EDNS被设置为0。
 	    </para>
 	  </listitem>
 	</varlistentry>

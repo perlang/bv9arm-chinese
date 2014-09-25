@@ -4103,7 +4103,7 @@ category notify { null; };
     <optional> notify-delay <replaceable>seconds</replaceable> ; </optional>
     <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
     <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> notify-to-soa (<replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> notify-to-soa <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> also-notify { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
     <optional> max-ixfr-log-size <replaceable>number</replaceable>; </optional>
     <optional> max-journal-size <replaceable>size_spec</replaceable>; </optional>

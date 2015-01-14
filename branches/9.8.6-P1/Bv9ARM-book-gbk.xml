@@ -5501,9 +5501,8 @@ options {
 		<para>
 		  检查两种形式的发送者策略框架记录（以“v-spf1”开始的TXT记录
                   以及SPF）是否都存在或者都不存在。
-		  Warnings are
-		  emitted it they don't and be suppressed with
-		  <command>check-spf</command>.
+                  如果只存在一个将发送警告，也可用<command>check-spf</command>
+                  关掉警告。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -5546,7 +5545,7 @@ options {
 		<para>
 		  在执行完整性检查时，检查两种形式的发送者策略框架记录（以
                   “v-spf1”开始的TXT记录以及SPF）是否都存在或都不存在，如果
-                  匹配就发出一个警告消息。缺省是<command>warn</command>。
+                  只有一个就发出一个警告消息。缺省是<command>warn</command>。
 		</para>
 	      </listitem>
 	    </varlistentry>

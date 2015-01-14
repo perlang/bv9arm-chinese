@@ -101,6 +101,7 @@
       <arg><option>-r <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-s <replaceable class="parameter">style</replaceable></option></arg>
       <arg><option>-t <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg><option>-T <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-w <replaceable class="parameter">directory</replaceable></option></arg>
       <arg><option>-D</option></arg>
       <arg><option>-W <replaceable class="parameter">mode</replaceable></option></arg>

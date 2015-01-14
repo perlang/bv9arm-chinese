@@ -527,10 +527,6 @@
   <refsect1>
     <title>限制</title>
     <para>
-      <command>rndc</command>还不支持BIND 8的<command>ndc</command>工具中的所有
-      命令。
-    </para>
-    <para>
       当前没有在不使用配置文件的方式下提供共享密钥<option>key_id</option>的方式。
     </para>
     <para>

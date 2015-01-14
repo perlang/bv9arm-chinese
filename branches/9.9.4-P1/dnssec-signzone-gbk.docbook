@@ -457,7 +457,6 @@
           </para>
         </listitem>
       </varlistentry>
-      <varlistentry>
 
       <varlistentry>
         <term>-r <replaceable class="parameter">randomdev</replaceable></term>

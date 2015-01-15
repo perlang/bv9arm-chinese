@@ -547,6 +547,51 @@
                 在服务器运行时删除一个区。只有最初由
                 <command>rndc addzone</command>所增加的区才能用这种
                 方式删除。
+              </para>
+            </listitem>
+          </varlistentry>
+
+      <varlistentry>
+        <term><userinput>signing <optional>( -list | -clear <replaceable>keyid/algorithm</replaceable> | -clear <literal>all</literal> | -nsec3param ( <replaceable>parameters</replaceable> | <literal>none</literal> ) ) </optional> <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> </userinput></term>
+        <listitem>
+          <para>
+            列出，编辑或删除指定区的DNSSEC签名状态。正在进行的DNSSEC操作
+            （如签名或生成NSEC3链）的状态以DNS资源记录类型
+            <command>sig-signing-type</command>的形式存放在区中。
+            <command>rndc signing -list</command>转换这些记录成为人可读的
+            格式，指明哪个密钥是当前签名所用，哪个已完成对区的签名，哪个
+            NSEC3链被创建和删除。
+          </para>
+          <para>
+            <command>rndc signing -clear</command>可以删除单一的一个密钥
+            （以<command>rndc signing -list</command>用来显示密钥的同一格式
+            所指定的），或所有密钥。在这两种情况下，只有完成的密钥才能被
+            删除；任何记录指明，一个没有完成签名的密钥将会被保留。
+          </para>
+          <para>
+            <command>rndc signing -nsec3param</command>为一个区设置NSEC3参数。
+            这只是在与<command>inline-signing</command>区一起使用NSEC3时才有
+            的支持机制。参数以与NSEC3PARAM资源记录同样的格式指定：hash算法，
+            flags，iterations和salt，按上述顺序。
+          </para>
+          <para>
+            当前，hash算法唯一定义的值为<literal>1</literal>，表示SHA-1。
+            <option>flags</option>可以被设置为<literal>0</literal>或
+            <literal>1</literal>，取决与你是否希望设置NSEC3链中的opt-out位。
+            <option>iterations</option>定义额外次数的数字，它应用于生成NSEC3
+            hash的算法中。<option>salt</option>是一个表示成十六机制数的一串
+            数据，或者一个连字符（‘-’）表示不使用salt。
+          </para>
+          <para>
+            例如，要创建一个NSEC3链，使用SHA-1 hash算法，没有opt-out标志，
+            10次循环，以及一个值为“FFFF”的salt，使用：
+            <command>rndc signing -nsec3param 1 0 10 FFFF <replaceable>zone</replaceable></command>.
+            要设置opt-out标志，15次循环，没有salt，使用：
+            <command>rndc signing -nsec3param 1 1 15 - <replaceable>zone</replaceable></command>.
+          </para>
+          <para>
+            <command>rndc signing -nsec3param none</command>
+            删除一个现存的NSEC3链并使用NSEC替代它。
           </para>
         </listitem>
       </varlistentry>

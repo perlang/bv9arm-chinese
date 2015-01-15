@@ -7626,7 +7626,7 @@ deny-answer-aliases { "example.net"; };
 
 	  <para>
 	    在RPZ记录中编码了四种策略触发器，QNAME，IP，NSIP和NSDNAME。
-            QNAME RPZ由请求中的query name（请求名）所触发，并且CNAME记录
+            QNAME RPZ记录由请求中的query name（请求名）所触发，并且CNAME记录
             所指向的目标被解析用以生成响应。
             一个QNAME RPZ记录的属主名是与RPZ相对的请求名。
 	  </para>
@@ -7659,9 +7659,7 @@ deny-answer-aliases { "example.net"; };
 	    NSDNAME触发器用权威服务器的名字去匹配请求名，一个请求名的父域，
 	    一个请求名的CNAME或者一个CNAME的父域。它们被编码成相对于RPZ原点的
 	    <userinput>rpz-nsdomain</userinput>的子域名。
-	  </para>
 
-	  <para>
 	    NSIP触发器用A和AAAA资源记录集中的IP地址匹配域名，后者可以与
             NSDNAME策略记录比对。NSIP触发器被编码成类似IP触发器，除了作为
             <userinput>rpz-nsip</userinput>的子域名之外。
@@ -7703,23 +7701,23 @@ deny-answer-aliases { "example.net"; };
 	      <listitem><command>NXDOMAIN</command>响应由一个CNAME编码，其目标
                 是一个根域（.）。
 	      </listitem>
-	      <listitem>一个目标为通配顶级域的CNAME指定
+	      <listitem>一个目标为通配顶级域（*.）的CNAME指定
                 <command>NODATA</command>动作，它重写响应为NODATA或ANCOUNT=1。
 	      </listitem>
 	      <listitem><command>Local Data</command>动作被表示成一个用于回答
                 请求的普通DNS记录所组成的集合。请求不在集合中的记录类型将会得
                 到NODATA应答。
-                本地数据的一个特殊形式是一条目标为一个通配符，如*.example.com，
-                的CNAME。
+                本地数据的一个特殊形式是一条目标为一个通配符的CNAME，
+                例如*.example.com。
                 它通常被用作一个普通的CNAME，在星号（*）被请求名替换之后。
-                这个特殊形式的目的是在自留地（原文：walled garden）内的权威DNS
-                服务器上作请求日志。
+                这个特殊形式的目的是在“安全花园”（原文：walled garden，下同）
+                内的权威DNS服务器上用作请求日志。
 	      </listitem>
 	      <listitem>The <command>PASSTHRU</command>策略被一个目标为
                 <command>rpz-passthru.</command>的CNAME所指定。它导致响应不会
                 被重写，通常用于针对CIDR块的策略中的
                 “小洞（原文：poke holes）”。
-                （目标为其属主名可变部分的CNAME是一条废弃的PASSTHRU策率规范。）
+                （目标为其属主名可变部分的CNAME是一条废弃的PASSTHRU策略。）
 	      </listitem>
 	    </itemizedlist>
 	  </para>
@@ -7731,8 +7729,8 @@ deny-answer-aliases { "example.net"; };
             一个使用由另一个组织所提供的RPZ的组织可以使用这个机制来重定向域名
             到它自己控制的“安全花园”。
 	    <itemizedlist>
-	      <listitem><command>GIVEN</command>表示“不要覆盖”但是执行区中所
-              指定的动作。
+	      <listitem><command>GIVEN</command>表示“不要覆盖但是执行区中所
+              指定的动作”。
 	      </listitem>
 	      <listitem><command>DISABLED</command>导致策略记录不做任何事情，
                 仅仅记录其可能完成的动作。
@@ -12664,7 +12662,7 @@ zone "example.com" {
 </programlisting>
 
         <para>
-          这将允许外部对服务器进行递归查询，除非在之前递归被禁止。
+          这将允许外部的服务器对其进行递归查询，除非在之前递归被禁止。
         </para>
       </sect1>
       <sect1>

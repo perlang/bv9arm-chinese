@@ -244,7 +244,7 @@
 	  <para>
 	    指定输出文件的格式。
             对<command>named-checkzone</command>，这个不会有任何效果，除
-		非它转储区的内容。
+            非它转储区的内容。
 	  </para>
 	  <para>
 	    指定输出文件的格式。可能的格式为<command>"text"</command>

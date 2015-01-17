@@ -3964,9 +3964,9 @@ badresp:1,adberr:0,findfail:0,valfail:0]
       <sect2>
         <title><command>masters</command>语句定义和用法</title>
         <para>
-          <command>masters</command>列表让一组主服务器被用于多个存根区和辅区，
-          即在后者中使用<command>masters</command>或
-          <command>also-notify</command>列表。
+          <command>masters</command>列表让一组共同的主服务器易于被用于多个
+          存根区和辅区，通过放入后者的<command>masters</command>或
+          <command>also-notify</command>列表中。
         </para>
       </sect2>
 
@@ -4766,6 +4766,60 @@ options {
             </listitem>
 	  </varlistentry>
 
+	  <varlistentry>
+	    <term><command>dnssec-update-mode</command></term>
+	    <listitem>
+	        <para>
+                  如果在一个<literal>master</literal>类型的区中这个选项被
+                  设为其缺省值<literal>maintain</literal>，而这个区是DNSSEC
+                  签名的并被配置为允许动态更新（参见
+                  <xref linkend="dynamic_update_policies"/>），并且如果
+                  <command>named</command>能够访问区的私有签名密钥，
+                  <command>named</command>就会自动对所有新的或修改过的记录
+                  签名并通过重新生成RRSIG记录维护区的签名，无论其是否过期。
+		</para>
+		<para>
+                  如果这个选项被改为<literal>no-resign</literal>，
+                  <command>named</command>将只对所有新的或修改过的记录签名，
+                  但不安排对签名的维护。
+                </para>
+                <para>
+                  对这两个设置中的任何一种，<command>named</command>，如果签名
+                  密钥是未激活或者对<command>named</command>不可用，
+                  <command>named</command>都会拒绝对一个DNSSEC签名区的更新。
+                  （一个计划的第三个选项，<literal>external</literal>，将会
+                  关闭所有自动签名并允许将DNSSEC数据提交给一个通过动态更新的
+                  区；这个还未实现。）
+		</para>
+	    </listitem>
+	  </varlistentry>
+
+          <varlistentry>
+            <term><command>zone-statistics</command></term>
+            <listitem>
+              <para>
+                如果为<userinput>full</userinput>，服务器搜集所有区的统计数据
+                （除非在每个区的配置中被关掉，这可以通过在
+                <command>zone</command>语句中指定
+                <command>zone-statistics terse</command>或
+                <command>zone-statistics none</command>来实现）。
+                缺省是<userinput>terse</userinput>，提供对区的最小统计（包括
+                名字和当前序列号，但不含请求类型计数器）。
+              </para>
+              <para>
+                这些统计可以通过<command>statistics-channel</command>访问到，
+                或使用<command>rndc stats</command>来访问，
+                后者将把数据存放在<command>statistics-file</command>所指定的
+                文件中。参见<xref linkend="statsfile"/>。
+              </para>
+              <para>
+                为向后兼容早期的BIND 9版本，<command>zone-statistics</command>
+                选项也可接受<userinput>yes</userinput>或
+                <userinput>no</userinput>，分别与<userinput>full</userinput>
+                和<userinput>terse</userinput>有同样的效果。
+              </para>
+            </listitem>
+          </varlistentry>
         </variablelist>
 
         <sect3 id="boolean_options">
@@ -5204,21 +5258,6 @@ options {
                 <para>
                   <emphasis>这个选项被废弃了</emphasis>。
                   <acronym>BIND</acronym> 9总是从一个池中申请请求的ID。
-                </para>
-              </listitem>
-            </varlistentry>
-
-            <varlistentry>
-              <term><command>zone-statistics</command></term>
-              <listitem>
-                <para>
-                  如果为<userinput>yes</userinput>，服务器搜集所有区的统计数据
-                  （除非在每个区中被关掉，这可以通过在<command>zone</command>语
-                  句中指定<command>zone-statistics no</command>来实现）。
-                  缺省是<userinput>no</userinput>.
-                  这些统计可以使用<command>rndc stats</command>来访问，
-                  后者将把数据存放在<command>statistics-file</command>所指定的
-                  文件中。参见<xref linkend="statsfile"/>。
                 </para>
               </listitem>
             </varlistentry>
@@ -6214,6 +6253,10 @@ avoid-v6-udp-ports {};
                   隐藏服务器。作为可选项，可以在每个
 		  <command>also-notify</command>地址指定一个端口，用于将通知
 		  消息发到缺省的53之外的端口。
+                  每个地址也可指定一个可选的TSIG密钥，使通知信息也被签名；这在
+                  向多个视图发送通知时很有用。
+                  作为显式地址的替代，也可以使用一个或多个命名的
+                  <command>masters</command>列表。
 		  如果在<command>zone</command>语句中有一个
                   <command>also-notify</command>表，它将会覆盖
                   <command>options also-notify</command>语句。当一个
@@ -6599,8 +6642,8 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                 <para>
                   设置每个日志文件（参见<xref linkend="journal"/>）的最大大小。
                   当日志文件达到指定的大小时，其中一些最旧的事物会被自动删除。
-                  缺省是<literal>unlimited</literal>。
-		  这也可以基于每个区来设置。
+                  允许的最大值为2G字节。缺省是<literal>unlimited</literal>，也
+                  表示2G字节。这也可以基于每个区来设置。
                 </para>
               </listitem>
             </varlistentry>
@@ -6966,6 +7009,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
             如果出现了多个<command>rrset-order</command>语句，它们不会
             组合 &mdash; 只有最后一个起作用。
           </para>
+          <para>
+            缺省时，所有记录以随机顺序返回。
+          </para>
 
           <note>
             <simpara>
@@ -7094,6 +7140,13 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		<para>
 		  一旦有了一个标准类型，预料这个参数在将来的版本中会
 		  被去掉。
+		</para>
+		<para>
+		  一旦named通过<command>nsupdate</command>或
+                  <command>rndc signing -clear</command>使用匹配的密钥完成对
+                  区的签名，这些记录都可以从区中删掉。
+		  <command>rndc signing -clear</command>是从
+                  <command>inline-signing</command>区中删除这些记录的唯一方式。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -7903,6 +7956,222 @@ ns.domain.com.rpz-nsdname   CNAME   .
             由RPZ所重写的响应在<command>RPZRewrites</command>统计中被计数。
           </para>
         </sect3>
+
+	<sect3>
+	  <title>Response Rate Limiting</title>
+	  <para>
+            这个特征仅在<acronym>BIND</acronym> 9在“configure”命令行中使用
+            <userinput>--enable-rrl</userinput>选项编译时才可用。
+          </para>
+	  <para>
+	    Excessive almost identical UDP <emphasis>responses</emphasis>
+	    can be controlled by configuring a
+	    <command>rate-limit</command> clause in an
+	    <command>options</command> or <command>view</command> statement.
+	    This mechanism keeps authoritative BIND 9 from being used
+	    in amplifying reflection denial of service (DoS) attacks.
+	    Short truncated (TC=1) responses can be sent to provide
+	    rate-limited responses to legitimate clients within
+	    a range of forged, attacked IP addresses.
+	    合法的客户端对丢弃或截断响应的反应分别是使用UDP或TCP重试。
+	  </para>
+
+	  <para>
+	    这个机制目的是用于权威DNS服务器。它也可以用于递归服务器但会减慢
+            诸如SMTP服务器（邮件接收者）和HTTP客户端（web浏览器）这些反复请求
+            同一个域的应用。
+	    在可能情况下，关闭“公开”递归服务器是更好的选择。
+	  </para>
+
+	  <para>
+	    Response rate limiting uses a "credit" or "token bucket" scheme.
+	    Each combination of identical response and client
+	    has a conceptual account that earns a specified number
+	    of credits every second.
+	    A prospective response debits its account by one.
+	    Responses are dropped or truncated
+	    while the account is negative.
+            Responses are tracked within a rolling window of time
+            which defaults to 15 seconds, but can be configured with
+            the <command>window</command> option to any value from
+            1 to 3600 seconds (1 hour).
+	    The account cannot become more positive than
+	    the per-second limit
+	    or more negative than <command>window</command>
+	    times the per-second limit.
+            When the specified number of credits for a class of
+            responses is set to 0, those responses are not rate limited.
+	  </para>
+
+	  <para>
+	    The notions of "identical response" and "DNS client"
+	    for rate limiting are not simplistic.
+            所有到一个地址块的响应被统计为如同到一个单一地址。
+	    The prefix lengths of addresses blocks are
+	    specified with <command>ipv4-prefix-length</command> (default 24)
+	    and <command>ipv6-prefix-length</command> (default 56).
+	  </para>
+
+	  <para>
+	    All non-empty responses for a valid domain name (qname)
+	    and record type (qtype) are identical and have a limit specified
+	    with <command>responses-per-second</command>
+	    (default 0 or no limit).
+	    All empty (NODATA) responses for a valid domain,
+	    regardless of query type, are identical.
+	    Responses in the NODATA class are limited by
+	    <command>nodata-per-second</command>
+	    (default <command>responses-per-second</command>).
+	    Requests for any and all undefined subdomains of a given
+            valid domain result in NXDOMAIN errors, and are identical
+            regardless of query type.
+	    They are limited by <command>nxdomain-per-second</command>
+	    (default <command>responses-per-second</command>).
+	    This controls some attacks using random names, but
+	    can be relaxed or turned off (set to 0)
+	    on servers that expect many legitimate
+	    NXDOMAIN responses, such as from anti-spam blacklists.
+	    Referrals or delegations to the server of a given
+	    domain are identical and are limited by
+	    <command>referrals-per-second</command>
+	    (default <command>responses-per-second</command>).
+	  </para>
+
+	  <para>
+	    Responses generated from local wildcards are counted and limited
+	    as if they were for the parent domain name.
+	    This controls flooding using random.wild.example.com.
+	  </para>
+
+	  <para>
+            All requests that result in DNS errors other
+	    than NXDOMAIN, such as SERVFAIL and FORMERR, are identical
+            regardless of requested name (qname) or record type (qtype).
+	    This controls attacks using invalid requests or distant,
+	    broken authoritative servers.
+	    缺省时，对错误的限制与<command>responses-per-second</command>值
+            一致，但它也可以被独立地使用<command>errors-per-second</command>
+            设置。
+	  </para>
+
+	  <para>
+            许多利用DNS的攻击涉及伪造源地址的UDP请求。
+            比率限制阻止利用BIND 9由于对伪造源地址请求的响应而对一个网络进行
+            泛洪攻击，但是可以让一个第三方阻塞对合法请求响应。
+            有一个机制可以回复一些来自一个其地址被伪造而用于泛洪攻击的客户端的
+            合法请求。
+            设置<command>slip</command>为2（其缺省值）将使每隔一个UDP请求在回复
+            时带有一个小截断（TC=1）响应。
+            “slipped”响应的大小较小且缩小了频率，就缺乏放大效应，使其对反射
+            DoS攻击没有吸引力。
+            <command>slip</command>必须介于0到10之间。
+            值为0表示不“slip”：因比率限制而不发出被截断的响应，所有响应都不丢弃。
+            值为1使每个响应都slip；
+            值为2到10之间使每N个响应slip一次。
+            一些错误响应包括REFUSE和SERVFAIL不能被替代成截断的响应，
+            and are instead leaked 以<command>slip</command>比率。
+	  </para>
+
+	  <para>
+            （注意：从一个权威服务器丢弃响应可能减小一个第三方成功伪造响应到
+            一个递归解析器的难度。针对伪造响应的最安全方法，对权威服务器的
+            操作者而言是使用DNSSEC签名自己的区，对递归服务器的操作者而言是验证
+            响应。当这不是一个可选项时，对更关心响应完整性而不是缓解泛洪攻击的
+            操作者，可以考虑设置<command>slip</command>为1，将使所有比率限制
+            响应都被截断而不是被丢弃。这就减小了针对反射攻击的比率限制的效果。)
+	  </para>
+
+	  <para>
+            当大致的每秒请求率超过了<command>qps-scale</command>值，
+            <command>responses-per-second</command>，
+	    <command>errors-per-second</command>，
+	    <command>nxdomains-per-second</command>和
+	    <command>all-per-second</command>的值就减小一个比率，即当前比率比
+            <command>qps-scale</command>。
+            这个特性可以在攻击时增强抵抗能力。
+            例如，设置
+            <command>qps-scale 250; responses-per-second 20;</command>并且一个
+            包含TCP的所有DNS客户端的所有请求的总请求率为1000次请求/秒，这时的
+            '有效响应/秒'限制变为(250/1000)*20或5。
+	    通过TCP发送的响应不会被限制，但是会被计数，以计算每秒请求率。
+	  </para>
+
+	  <para>
+	    Communities of DNS clients can be given their own parameters or no
+	    rate limiting by putting
+	    <command>rate-limit</command> statements in <command>view</command>
+	    statements instead of the global <command>option</command>
+	    statement.
+	    A <command>rate-limit</command> statement in a view replaces,
+	    rather than supplementing, a <command>rate-limit</command>
+	    statement among the main options.
+	    DNS clients within a view can be exempted from rate limits
+	    with the <command>exempt-clients</command> clause.
+	  </para>
+
+	  <para>
+	    UDP responses of all kinds can be limited with the
+	    <command>all-per-second</command> phrase.
+	    This rate limiting is unlike the rate limiting provided by
+	    <command>responses-per-second</command>,
+	    <command>errors-per-second</command>, and
+	    <command>nxdomains-per-second</command> on a DNS server
+	    which are often invisible to the victim of a DNS reflection attack.
+	    Unless the forged requests of the attack are the same as the
+	    legitimate requests of the victim, the victim's requests are
+	    not affected.
+	    Responses affected by an <command>all-per-second</command> limit
+	    are always dropped; the <command>slip</command> value has no
+	    effect.
+	    An <command>all-per-second</command> limit should be
+	    at least 4 times as large as the other limits,
+	    because single DNS clients often send bursts of legitimate
+	    requests.
+	    For example, the receipt of a single mail message can prompt
+	    requests from an SMTP server for NS, PTR, A, and AAAA records
+	    as the incoming SMTP/TCP/IP connection is considered.
+	    The SMTP server can need additional NS, A, AAAA, MX, TXT, and SPF
+	    records as it considers the STMP <command>Mail From</command>
+	    command.
+	    Web browsers often repeatedly resolve the same names that
+	    are repeated in HTML &lt;IMG&gt; tags in a page.
+	    <command>All-per-second</command> is similar to the
+	    rate limiting offered by firewalls but often inferior.
+	    Attacks that justify ignoring the
+	    contents of DNS responses are likely to be attacks on the
+	    DNS server itself.
+	    They usually should be discarded before the DNS server
+	    spends resources making TCP connections or parsing DNS requests,
+	    but that rate limiting must be done before the
+	    DNS server sees the requests.
+	  </para>
+
+	  <para>
+	    用于跟踪请求和比率限制响应的表的最大大小，通过
+            <command>max-table-size</command>设置。
+            表中每个条目介于40到80字节之间。
+            表中需要的条目数大致是每秒收到的请求数。
+	    缺省是20,000。
+	    To reduce the cold start of growing the table,
+	    <command>min-table-size</command> (default 500)
+	    can set the minimum table size.
+	    打开<command>rate-limit</command>类日志以监控表的增长并获取关于
+            选择表大小初始值和最大值的信息。
+	  </para>
+
+	  <para>
+	    使用<command>log-only yes</command>测试比率限制参数而不会实际丢掉
+            任何请求。
+	  </para>
+
+	  <para>
+	    Responses dropped by rate limits are included in the
+	    <command>RateDropped</command> and <command>QryDropped</command>
+	    statistics.
+	    Responses that truncated by rate limits are included in
+	    <command>RateSlipped</command> and <command>RespTruncated</command>.
+	  </para>
+	</sect3>
       </sect2>
 
       <sect2 id="server_statement_grammar">
@@ -7969,7 +8238,8 @@ ns.domain.com.rpz-nsdname   CNAME   .
             <command>request-ixfr</command>子句决定本地服务器，作为一个辅服务器
             时，将向给定的远程服务器，即主服务器，请求增量区传送。如果未设置，
             就使用视图或者全局选项块中的<command>request-ixfr</command>选项值作
-            为缺省值。
+            为缺省值。它也可在区块中设置，如果在那里设置，它会对那个区覆盖全局
+            和视图中的设置。
           </para>
 
           <para>
@@ -8729,6 +8999,51 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
                   <row rowsep="0">
                     <entry colname="1">
                       <para>
+                        <varname>redirect</varname>
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        重定向区用于在普通解析将导致返回一个NXDOMAIN时，而
+                        给请求提供一个回答。
+			每个视图只支持一个重定向区。可以使用
+                        <command>allow-query</command>限制哪些客户端可以看见
+                        这些回复。
+                      </para>
+                      <para>
+			如果客户端请求DNSSEC记录（DO=1）并且NXDOMAIN响应被
+                        签名，就不会发生任何替换。
+                      </para>
+                      <para>
+                        要重定向所有的NXDOMAIN响应到100.100.100.2和
+                        2001:ffff:ffff::100.100.100.2，需要配置一个名为“.”的
+                        典型(type)重定向区，其区文件中包含指向期望地址的通配符记录：
+                        <literal>"*. IN A 100.100.100.2"</literal>
+                        和
+                        <literal>"*. IN AAAA 2001:ffff:ffff::100.100.100.2"</literal>.
+                      </para>
+                      <para>
+                        要重定向所有西班牙名字（在.ES下面），需要使用类似的
+                        名字，但要用“*.ES.”替代“*.”。要重定向所有商业西班牙
+                        名字（在.COM.ES下面），需要使用通配符条目“*.COM.ES.”。
+                      </para>
+                      <para>
+                        注意重定向区支持所有可能的类型；它不限于A和AAAA记录。
+                      </para>
+                      <para>
+                        由于重定向区不会直接被名字引用，它们不保存在普通主区
+                        和辅区的区查找表中。因此，当前不可能使用
+                        <command>rndc reload
+                                <replaceable>zonename</replaceable></command>
+                        来重载一个重定向区。然而，当使用
+                        <command>rndc reload</command>而不指定一个区名时，
+                        重定向区将会随着其它区被重载。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
                         <varname>delegation-only</varname>
                       </para>
                     </entry>
@@ -8855,7 +9170,7 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
                     <command>also-notify</command>所指定的任何IP地址。可以在每
                     个<command>also-notify</command>地址指定通知消息要送达的端
                     口，缺省为53。也可以指定一个TSIG密钥，让
-                    <literal>NOTIFY</literal>被给定的密钥签名。
+                    <literal>NOTIFY</literal>被给出的密钥签名。
                     <command>also-notify</command>对存根区没有意义。缺省是空表。
                   </para>
                 </listitem>
@@ -9407,19 +9722,47 @@ example.com. NS ns2.example.net.
                     将来发生的的密钥维护事件，但是它不立即签名整个区。
                     注意：一旦一个区的密钥被首次装载后，将定期搜索仓库以查找
                     变化，无论是否使用了<command>rndc loadkeys</command>。
-                    重新检查的间隔被硬编码为一小时。
-                  </para>
-                  <para>
-                    <command>auto-dnssec create;</command>包含以上命令，
-                    还能够在需要时允许<command>named</command>在密钥仓库中
-                    创建新的密钥。
-                    （注意：这个选项还没有实现；本语法是为将来使用而保留。）
+                    重新检查的间隔被<command>dnssec-loadkeys-interval</command>
+                    所定义。）
                   </para>
                   <para>
                     缺省设置是<command>auto-dnssec off</command>。
                   </para>
                 </listitem>
               </varlistentry>
+
+              <varlistentry>
+                <term><command>serial-update-method</command></term>
+                <listitem>
+                  <para>
+                    被配置为动态DNS的区可以使用这个选项设置用于更新SOA记录中区
+                    序列号的更新方法。
+                  </para>
+                  <para>
+                    使用缺省的设置
+                    <command>serial-update-method increment;</command>，
+                    SOA序列号将会在每次区被更新时加一。
+                  </para>
+                  <para>
+                    当设置为
+                    <command>serial-update-method unixtime;</command>时，
+                    SOA序列号将被设置为UNIX纪元以来的秒数，除非序列号已经大于
+                    或等于那个值，这时它只是简单的加一。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>inline-signing</command></term>
+		<listitem>
+		  <para>
+                    如果为<literal>yes</literal>，将允许对一个区进行
+		    "bump in the wire"签名，这时，一个未签名区通过区传送传入或
+                    从磁盘加载，将会生成区的签名版本，可能带有一个不同的
+                    序列号。此特性缺省是关闭的。
+		  </para>
+		</listitem>
+	      </varlistentry>
 
               <varlistentry>
                 <term><command>multi-master</command></term>

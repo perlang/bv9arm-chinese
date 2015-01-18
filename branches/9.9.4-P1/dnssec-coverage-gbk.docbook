@@ -30,7 +30,7 @@
 
   <refnamediv>
     <refname><application>dnssec-coverage</application></refname>
-    <refpurpose>checks future DNSKEY coverage for a zone</refpurpose>
+    <refpurpose>检查一个区DNSKEY将来的覆盖范围</refpurpose>
   </refnamediv>
 
   <docinfo>
@@ -56,29 +56,22 @@
   <refsect1>
     <title>DESCRIPTION</title>
     <para><command>dnssec-coverage</command>
-      verifies that the DNSSEC keys for a given zone or a set of zones
-      have timing metadata set properly to ensure no future lapses in DNSSEC
-      coverage.
+      验证一个给定的区或一个区集合的DNSSEC密钥是正确设置了定时元数据以确保
+      将来没有DNSSEC覆盖的间隔。
     </para>
     <para>
-      If <option>zone</option> is specified, then keys found in
-      the key repository matching that zone are scanned, and an ordered
-      list is generated of the events scheduled for that key (i.e.,
-      publication, activation, inactivation, deletion).  The list of
-      events is walked in order of occurrence.  Warnings are generated
-      if any event is scheduled which could cause the zone to enter a
-      state in which validation failures might occur: for example, if
-      the number of published or active keys for a given algorithm drops
-      to zero, or if a key is deleted from the zone too soon after a new
-      key is rolled, and cached data signed by the prior key has not had
-      time to expire from resolver caches.
+      如果指定了<option>zone</option>，在密钥仓库中与这个区匹配的密钥都会被
+      扫描，并为那个密钥生成一个事件日程的顺序列表（如，发布，激活，失效，
+      删除）。事件列表以发生顺序遍历。 
+      如果任何事件在进行时，可能导致区进入一个可能发生验证失败的状态时，会
+      生成一个警告。例如，如果一个对给定算法，其发布或激活的密钥数下降到零，
+      或者如果一个密钥在一个新密钥轮转后从其区中被太快地删除，由前一个密钥
+      签名的缓存数据还没时间从解析器的缓存中过期。 
     </para>
     <para>
-      If <option>zone</option> is not specified, then all keys in the
-      key repository will be scanned, and all zones for which there are
-      keys will be analyzed.  (Note: This method of reporting is only
-      accurate if all the zones that have keys in a given repository
-      share the same TTL parameters.)
+      如果未指定<option>zone</option>，在密钥仓库中的所有密钥都会被扫描，
+      所有带密钥的区都会被分析。（注意：这个报告方法只在所有带有给定仓库中
+      密钥的区共享同样的TTL参数时才是精确的。）
     </para>
   </refsect1>
 
@@ -90,11 +83,9 @@
         <term>-f <replaceable class="parameter">file</replaceable></term>
         <listitem>
           <para>
-            If a <option>file</option> is specified, then the zone is
-            read from that file; the largest TTL and the DNSKEY TTL are
-            determined directly from the zone data, and the
-            <option>-m</option> and <option>-d</option> options do
-            not need to be specified on the command line.
+            如果指定了一个<option>file</option>，区就从那个文件读取；最大
+            TTL和DNSKEY TTL就直接从区数据决定，就不需要在命令行指定
+            <option>-m</option>和<option>-d</option>选项。
           </para>
         </listitem>
       </varlistentry>
@@ -103,8 +94,7 @@
         <term>-K <replaceable class="parameter">directory</replaceable></term>
         <listitem>
           <para>
-            Sets the directory in which keys can be found.  Defaults to the
-            current working directory.
+            设置能够找到密钥的目录。缺省为当前工作目录。
           </para>
         </listitem>
       </varlistentry>
@@ -113,24 +103,23 @@
         <term>-m <replaceable class="parameter">maximum TTL</replaceable></term>
         <listitem>
           <para>
+            设置一个或多个区的最大TTL值，在决定是否有一个验证失败的可能性时
             Sets the value to be used as the maximum TTL for the zone or
             zones being analyzed when determining whether there is a
-            possibility of validation failure.  When a zone-signing key is
-            deactivated, there must be enough time for the record in the
-            zone with the longest TTL to have expired from resolver caches
-            before that key can be purged from the DNSKEY RRset.  If that
-            condition does not apply, a warning will be generated.
+            possibility of validation failure.  
+            当一个区签名密钥失效时，在密钥被剔除出DNSKEY资源记录集之前，必须
+            有足够的时间，让区中最大TTL的记录在解析器的缓存中过期。
+            如果这个条件不满足，将会产生一个警告。
           </para>
           <para>
-            The length of the TTL can be set in seconds, or in larger units
-            of time by adding a suffix: 'mi' for minutes, 'h' for hours,
-            'd' for days, 'w' for weeks, 'mo' for months, 'y' for years.
+            TTL单位可以设置为秒，或通过增加一个后缀设为更大的时间单位：
+            ‘mi’表示分钟，‘h’表示小时，‘d’表示天，’w‘表示周，
+            ’mo‘表示月，’y‘表示年。
           </para>
           <para>
-            This option is mandatory unless the <option>-f</option> has
-            been used to specify a zone file.  (If <option>-f</option> has
-            been specified, this option may still be used; it will overrde
-            the value found in the file.)
+            这个选项是必须的，除非使用<option>-f</option>指定了一个区文件。
+            （如果指定了<option>-f</option>，仍然可以使用这个选项；它将覆盖
+            在文件中发现的值。）
           </para>
         </listitem>
       </varlistentry>
@@ -139,27 +128,25 @@
         <term>-d <replaceable class="parameter">DNSKEY TTL</replaceable></term>
         <listitem>
           <para>
+            
             Sets the value to be used as the DNSKEY TTL for the zone or
             zones being analyzed when determining whether there is a
-            possibility of validation failure.  When a key is rolled (that
-            is, replaced with a new key), there must be enough time
-            for the old DNSKEY RRset to have expired from resolver caches
-            before the new key is activated and begins generating
-            signatures.  If that condition does not apply, a warning
-            will be generated.
+            possibility of validation failure.
+            当一个密钥被轮转时（即被一个新密钥替代），在新密钥被激活并开始
+            生成签名之前，必须有足够的时间让旧的DNSKEY资源记录集在解析器
+            缓存中过期。
+            如果这个条件不满足，将会产生一个警告。
           </para>
           <para>
-            The length of the TTL can be set in seconds, or in larger units
-            of time by adding a suffix: 'mi' for minutes, 'h' for hours,
-            'd' for days, 'w' for weeks, 'mo' for months, 'y' for years.
+            TTL单位可以设置为秒，或通过增加一个后缀设为更大的时间单位：
+            ‘mi’表示分钟，‘h’表示小时，‘d’表示天，’w‘表示周，
+            ’mo‘表示月，’y‘表示年。
           </para>
           <para>
-            This option is mandatory unless the <option>-f</option> has
-            been used to specify a zone file, or a default key TTL was
-            set with the <option>-L</option> to
-            <command>dnssec-keygen</command>.  (If either of those is true,
-            this option may still be used; it will overrde the value found
-            in the zone or key file.)
+            这个选项是必须的，除非使用<option>-f</option>指定了一个区文件，
+            或者使用<option>-L</option>给<command>dnssec-keygen</command>
+            设置了一个缺省的密钥TTL。（如果使用了上述两者之一，仍然可以使用
+            这个选项；它将覆盖在区或密钥文件中发现的值。）
           </para>
         </listitem>
       </varlistentry>
@@ -170,17 +157,16 @@
           <para>
             Sets the value to be used as the resign interval for the zone
             or zones being analyzed when determining whether there is a
-            possibility of validation failure.  This value defaults to
-            22.5 days, which is also the default in
-            <command>named</command>.  However, if it has been changed
-            by the <option>sig-validity-interval</option> option in
-            <filename>named.conf</filename>, then it should also be
-            changed here.
+            possibility of validation failure.
+            这个值缺省为22.5天，也是<command>named</command>中的缺省值。
+            然而，如果在<filename>named.conf</filename>使用
+            <option>sig-validity-interval</option>选项修改了，它应该在这里被
+            修改。
           </para>
           <para>
-            The length of the interval can be set in seconds, or in larger
-            units of time by adding a suffix: 'mi' for minutes, 'h' for hours,
-            'd' for days, 'w' for weeks, 'mo' for months, 'y' for years.
+            TTL单位可以设置为秒，或通过增加一个后缀设为更大的时间单位：
+            ‘mi’表示分钟，‘h’表示小时，‘d’表示天，’w‘表示周，
+            ’mo‘表示月，’y‘表示年。
           </para>
         </listitem>
       </varlistentry>
@@ -189,8 +175,8 @@
         <term>-c <replaceable class="parameter">compilezone path</replaceable></term>
         <listitem>
           <para>
-            Specifies a path to a <command>named-compilezone</command> binary.
-            Used for testing.
+            指定一个<command>named-compilezone</command>二进制文件的路径。
+            用于测试。
           </para>
         </listitem>
       </varlistentry>
@@ -198,7 +184,7 @@
   </refsect1>
 
   <refsect1>
-    <title>SEE ALSO</title>
+    <title>参见</title>
     <para>
       <citerefentry>
         <refentrytitle>dnssec-checkds</refentrytitle><manvolnum>8</manvolnum>
@@ -216,7 +202,7 @@
   </refsect1>
 
   <refsect1>
-    <title>AUTHOR</title>
+    <title>作者</title>
     <para><corpauthor>Internet Systems Consortium</corpauthor>
     </para>
   </refsect1>

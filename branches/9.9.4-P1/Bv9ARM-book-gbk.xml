@@ -7218,9 +7218,14 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	      <listitem>
 	        <para>
 	          指定区文件的格式（参见<xref linkend="zonefile_format"/>）。缺
-	          省值是<constant>text</constant>，即标准的文本表示。
+	          省值是<constant>text</constant>，即标准的文本表示，除非对辅区，
+                  对后者缺省值为<constant>raw</constant>。
 	          <constant>text</constant>之外的文件格式一般是用
-	          <command>named-compilezone</command>工具生成。需要注意的是，
+	          <command>named-compilezone</command>工具生成，或由
+                  <command>named</command>导出。
+	        </para>
+	        <para>
+                  需要注意的是，
 	          如果一个非<constant>text</constant>格式的区文件被装载，
 	          <command>named</command>将省略某些只对<constant>text</constant>
 	          格式文件才做的检查。特别的，<command>check-names</command>检
@@ -7279,6 +7284,17 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   所有区所发出的NOTIFY消息的整体速率是由
                   <command>serial-query-rate</command>来控制。
                 </para>
+              </listitem>
+            </varlistentry>
+	  </variablelist>
+
+          <varlistentry>
+            <term><command>max-rsa-exponent-size</command></term>
+              <listitem>
+                <para>
+		  在验证时接受的最大RSA指数的位数。有效值是从35到4096位。
+                  缺省值零（0）也可以接受，并且等效于4096.
+		</para>
               </listitem>
             </varlistentry>
 	  </variablelist>
@@ -7958,21 +7974,18 @@ ns.domain.com.rpz-nsdname   CNAME   .
         </sect3>
 
 	<sect3>
-	  <title>Response Rate Limiting</title>
+	  <title>响应比率限制</title>
 	  <para>
             这个特征仅在<acronym>BIND</acronym> 9在“configure”命令行中使用
             <userinput>--enable-rrl</userinput>选项编译时才可用。
           </para>
 	  <para>
-	    Excessive almost identical UDP <emphasis>responses</emphasis>
-	    can be controlled by configuring a
-	    <command>rate-limit</command> clause in an
-	    <command>options</command> or <command>view</command> statement.
-	    This mechanism keeps authoritative BIND 9 from being used
-	    in amplifying reflection denial of service (DoS) attacks.
-	    Short truncated (TC=1) responses can be sent to provide
-	    rate-limited responses to legitimate clients within
-	    a range of forged, attacked IP addresses.
+            过多的几乎同样的UDP<emphasis>responses</emphasis>可以通过在一个
+            <command>options</command>或<command>view</command>语句中
+            配置<command>rate-limit</command>子句来控制。
+            这个机制使权威的BIND 9免于被用于放大反射拒绝服务（DoS）攻击。
+            可以通过发送短截断（TC=1）响应来提供按比率限制的响应给位于一个
+            伪造的、受攻击的IP地址范围中的合法客户端。
 	    合法的客户端对丢弃或截断响应的反应分别是使用UDP或TCP重试。
 	  </para>
 
@@ -7984,41 +7997,32 @@ ns.domain.com.rpz-nsdname   CNAME   .
 	  </para>
 
 	  <para>
-	    Response rate limiting uses a "credit" or "token bucket" scheme.
-	    Each combination of identical response and client
-	    has a conceptual account that earns a specified number
-	    of credits every second.
-	    A prospective response debits its account by one.
-	    Responses are dropped or truncated
-	    while the account is negative.
-            Responses are tracked within a rolling window of time
-            which defaults to 15 seconds, but can be configured with
-            the <command>window</command> option to any value from
-            1 to 3600 seconds (1 hour).
-	    The account cannot become more positive than
-	    the per-second limit
-	    or more negative than <command>window</command>
-	    times the per-second limit.
-            When the specified number of credits for a class of
-            responses is set to 0, those responses are not rate limited.
+	    响应比率限制使用一个“信用（credit）”或“代价桶（token bucket）”
+            方案。每个同一响应和客户端的组合有一个概念上的帐号，会每秒挣得
+            一个特定数目的信用值。
+	    一个预期的的响应将会从其帐号上减一。
+            当帐号是负值时，响应将被丢弃或者被截断。
+            响应在一个缺省值为15秒的时间轮转窗口中被跟踪，窗口大小可以使用
+            <command>window</command>选项配置为从1到3600秒（1小时）之间的
+            任意值。
+            帐号不能大于每秒限制值或者小于<command>window</command>乘以每秒
+            限制值。
+            当一类响应的指定信用值被设为0，这些响应没有比率限制。
 	  </para>
 
 	  <para>
-	    The notions of "identical response" and "DNS client"
-	    for rate limiting are not simplistic.
+            对比率限制中的“同一响应（identical response）”和“DNS客户端”
+            的概念是不能简单化理解的。
             所有到一个地址块的响应被统计为如同到一个单一地址。
-	    The prefix lengths of addresses blocks are
-	    specified with <command>ipv4-prefix-length</command> (default 24)
-	    and <command>ipv6-prefix-length</command> (default 56).
+	    地址块的前缀长度由<command>ipv4-prefix-length</command>
+            （缺省24）和<command>ipv6-prefix-length</command>（缺省56）指定。
 	  </para>
 
 	  <para>
-	    All non-empty responses for a valid domain name (qname)
-	    and record type (qtype) are identical and have a limit specified
-	    with <command>responses-per-second</command>
-	    (default 0 or no limit).
-	    All empty (NODATA) responses for a valid domain,
-	    regardless of query type, are identical.
+	    所有针对一个有效域名（qname）和记录类型（qtype）的非空响应都是
+            相同的，有一个由<command>responses-per-second</command>指定的
+            限制(缺省为0或没有限制)。
+            所有针对一个有效域名，不管其请求类型的空（NODATA）响应也是相同的。
 	    Responses in the NODATA class are limited by
 	    <command>nodata-per-second</command>
 	    (default <command>responses-per-second</command>).
@@ -8387,6 +8391,29 @@ ns.domain.com.rpz-nsdname   CNAME   .
 	  <command>named</command>将不会打开任何通信通道。
         </para>
 
+        <para>
+          如果配置了统计通道并监听在127.0.0.1的8888端口，就可以以XML格式在
+          <ulink url="http://127.0.0.1:8888/">http://127.0.0.1:8888/</ulink>或
+          <ulink url="http://127.0.0.1:8888/xml">http://127.0.0.1:8888/xml</ulink>
+          访问统计。
+          引入一个CSS文件可以将XML统计转换格式为一个样式表兼容的浏览器可读
+          的表。当<acronym>BIND</acronym> 9使用--enable-newstats配置
+          （configure）时，将使用一种新的XML模式（版本3），后者增加额外的
+          区统计并使用一个扁平树进行更有效率的语法分析。
+          新引入的样式表使用Google Charts API，当使用一个javascript兼容的
+          浏览器时，会将数据表现为图表或图形。
+        </para>
+
+        <para>
+          依赖某一特定XML模式的应用可以请求
+          <ulink url="http://127.0.0.1:8888/xml/v2"
+                  >http://127.0.0.1:8888/xml/v2</ulink>获得版本2的
+          统计XML模式或者
+          <ulink url="http://127.0.0.1:8888/xml/v3"
+                  >http://127.0.0.1:8888/xml/v3</ulink>获得版本3的。
+          如果服务器支持所请求的模式，就会有响应；如果不支持，就会返回
+          一个“page not found”错误。
+        </para>
       </sect2>
 
         <sect2 id="trusted-keys">

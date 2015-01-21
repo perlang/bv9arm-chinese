@@ -7286,7 +7286,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                 </para>
               </listitem>
             </varlistentry>
-	  </variablelist>
 
           <varlistentry>
             <term><command>max-rsa-exponent-size</command></term>
@@ -7852,7 +7851,7 @@ deny-answer-aliases { "example.net"; };
                 本地数据的一个特殊形式是一条目标为一个通配符，如*.example.com，
                 的CNAME。
                 它通常被用作一个普通的CNAME，在星号（*）被请求名替换之后。
-                这个特殊形式的目的是在自留地（原文：walled garden）内的权威DNS
+                这个特殊形式的目的是在围墙花园（原文：walled garden）内的权威DNS
                 服务器上作请求日志。
 	      </listitem>
 	      <listitem>The <command>PASSTHRU</command>策略被一个目标为
@@ -7869,7 +7868,7 @@ deny-answer-aliases { "example.net"; };
             <command>response-policy</command>选项中的
             <command>policy</command>字句所覆盖。
             一个使用由另一个组织所提供的RPZ的组织可以使用这个机制来重定向域名
-            到它自己控制的“安全花园”。
+            到它自己的围墙花园。
 	    <itemizedlist>
 	      <listitem><command>GIVEN</command>表示“不要覆盖”但是执行区中所
               指定的动作。
@@ -8023,36 +8022,28 @@ ns.domain.com.rpz-nsdname   CNAME   .
             相同的，有一个由<command>responses-per-second</command>指定的
             限制(缺省为0或没有限制)。
             所有针对一个有效域名，不管其请求类型的空（NODATA）响应也是相同的。
-	    Responses in the NODATA class are limited by
-	    <command>nodata-per-second</command>
-	    (default <command>responses-per-second</command>).
-	    Requests for any and all undefined subdomains of a given
-            valid domain result in NXDOMAIN errors, and are identical
-            regardless of query type.
-	    They are limited by <command>nxdomain-per-second</command>
-	    (default <command>responses-per-second</command>).
-	    This controls some attacks using random names, but
-	    can be relaxed or turned off (set to 0)
-	    on servers that expect many legitimate
-	    NXDOMAIN responses, such as from anti-spam blacklists.
-	    Referrals or delegations to the server of a given
-	    domain are identical and are limited by
-	    <command>referrals-per-second</command>
-	    (default <command>responses-per-second</command>).
+            NODATA这一类响应被<command>nodata-per-second</command>所限制
+	    （缺省是<command>responses-per-second</command>）。
+	    对一个给定的有效域名的任何及所有未定义的子域的请求而产生的
+            NXDOMAIN错误，不考虑请求类型，都是同一的。
+	    它们由<command>nxdomain-per-second</command>限制
+	    （缺省是<command>responses-per-second</command>）。
+            这控制某些使用随机域名的攻击，但能够在期望许多合法NXDOMAIN响应
+            的服务器上被放松或关闭（设置为0），例如来自反垃圾黑名单。
+            指向或授权到一个给定域名的服务器都是同一的并可以被
+            <command>referrals-per-second</command>所限制
+            （缺省是<command>responses-per-second</command>）。
 	  </para>
 
 	  <para>
-	    Responses generated from local wildcards are counted and limited
-	    as if they were for the parent domain name.
-	    This controls flooding using random.wild.example.com.
+	    由本地通配符产生的响应被计数并限制，如同对于其父域名一样。
+            这个用于控制random.wild.example.com（译注：随机通配符域名）的泛洪。
 	  </para>
 
 	  <para>
-            All requests that result in DNS errors other
-	    than NXDOMAIN, such as SERVFAIL and FORMERR, are identical
-            regardless of requested name (qname) or record type (qtype).
-	    This controls attacks using invalid requests or distant,
-	    broken authoritative servers.
+            所有导致DNS错误，例如SERVFAIL和FORMERR，而不是NXDOMAIN的请求都是
+            相同的，而不考虑请求名（qname）或记录类型（qtype）。这控制使用
+            无效请求或使用陌生、缺陷权威服务器的攻击。
 	    缺省时，对错误的限制与<command>responses-per-second</command>值
             一致，但它也可以被独立地使用<command>errors-per-second</command>
             设置。
@@ -8101,53 +8092,41 @@ ns.domain.com.rpz-nsdname   CNAME   .
 	  </para>
 
 	  <para>
-	    Communities of DNS clients can be given their own parameters or no
-	    rate limiting by putting
-	    <command>rate-limit</command> statements in <command>view</command>
-	    statements instead of the global <command>option</command>
-	    statement.
-	    A <command>rate-limit</command> statement in a view replaces,
-	    rather than supplementing, a <command>rate-limit</command>
-	    statement among the main options.
-	    DNS clients within a view can be exempted from rate limits
-	    with the <command>exempt-clients</command> clause.
+	    DNS客户端社区可以给出其自身的参数，或完全没有比率限制，即将
+            <command>rate-limit</command>语句放入<command>view</command>语句中
+            而不是<command>option</command>中。
+	    一个视图中的<command>rate-limit</command>语句是替代而不是增补了
+            主配置中的<command>rate-limit</command>语句。
+	    在一个视图中的DNS客户端可以通过<command>exempt-clients</command>
+            子句免出比率限制。
 	  </para>
 
 	  <para>
-	    UDP responses of all kinds can be limited with the
-	    <command>all-per-second</command> phrase.
-	    This rate limiting is unlike the rate limiting provided by
-	    <command>responses-per-second</command>,
-	    <command>errors-per-second</command>, and
-	    <command>nxdomains-per-second</command> on a DNS server
-	    which are often invisible to the victim of a DNS reflection attack.
-	    Unless the forged requests of the attack are the same as the
-	    legitimate requests of the victim, the victim's requests are
-	    not affected.
-	    Responses affected by an <command>all-per-second</command> limit
-	    are always dropped; the <command>slip</command> value has no
-	    effect.
-	    An <command>all-per-second</command> limit should be
-	    at least 4 times as large as the other limits,
-	    because single DNS clients often send bursts of legitimate
-	    requests.
-	    For example, the receipt of a single mail message can prompt
-	    requests from an SMTP server for NS, PTR, A, and AAAA records
-	    as the incoming SMTP/TCP/IP connection is considered.
-	    The SMTP server can need additional NS, A, AAAA, MX, TXT, and SPF
-	    records as it considers the STMP <command>Mail From</command>
-	    command.
-	    Web browsers often repeatedly resolve the same names that
-	    are repeated in HTML &lt;IMG&gt; tags in a page.
-	    <command>All-per-second</command> is similar to the
-	    rate limiting offered by firewalls but often inferior.
+	    所有类型的UDP响应可以由<command>all-per-second</command>短句限制。
+	    这个比率限制不同于在一个DNS服务器上由
+            <command>responses-per-second</command>，
+            <command>errors-per-second</command>和
+            <command>nxdomains-per-second</command>所提供的比率限制，后者
+            通常都是DNS反射攻击的受害者所看不到的。
+	    除非攻击者伪造的请求与受害者的合法请求完全一致，受害者的请求是不受
+            影响的。
+	    受一个<command>all-per-second</command>限制影响的响应总是被丢弃；
+            <command>slip</command>值没有任何效果。
+	    一个<command>all-per-second</command>限制至少是其它限制的4倍大，
+            因为单一的DNS客户端通常爆发出合法的请求。
+	    例如，在考虑到进入的SMTP/TCP/IP连接时，单个邮件消息的接收者可能
+            产生来自一个SMTP服务器的对NS，PTR，A和AAAA记录的请求。
+	    这个SMTP服务器在它考虑SMTP的<command>Mail From</command>命令时，
+            可能需要额外的NS，A，AAAA，MX，TXT和SPF记录。
+	    Web浏览器通常重复地解析在一页的HTML &lt;IMG&gt;标签中重复出现的
+            同样名字。
+	    <command>All-per-second</command>类似于防火墙所提供的比率限制，
+            但通常不如后者。
 	    Attacks that justify ignoring the
 	    contents of DNS responses are likely to be attacks on the
 	    DNS server itself.
-	    They usually should be discarded before the DNS server
-	    spends resources making TCP connections or parsing DNS requests,
-	    but that rate limiting must be done before the
-	    DNS server sees the requests.
+	    它们通常应该在DNS服务器花费资源建立TCP连接或分析DNS请求之前被
+            丢弃，但是比率限制必须在DNS服务器见到请求之前完成。
 	  </para>
 
 	  <para>
@@ -8156,9 +8135,8 @@ ns.domain.com.rpz-nsdname   CNAME   .
             表中每个条目介于40到80字节之间。
             表中需要的条目数大致是每秒收到的请求数。
 	    缺省是20,000。
-	    To reduce the cold start of growing the table,
-	    <command>min-table-size</command> (default 500)
-	    can set the minimum table size.
+	    为减小冷启动时的表增长，<command>min-table-size</command>
+            （缺省是500）可以设置最小的表大小。
 	    打开<command>rate-limit</command>类日志以监控表的增长并获取关于
             选择表大小初始值和最大值的信息。
 	  </para>
@@ -8169,11 +8147,10 @@ ns.domain.com.rpz-nsdname   CNAME   .
 	  </para>
 
 	  <para>
-	    Responses dropped by rate limits are included in the
-	    <command>RateDropped</command> and <command>QryDropped</command>
-	    statistics.
-	    Responses that truncated by rate limits are included in
-	    <command>RateSlipped</command> and <command>RespTruncated</command>.
+	    被比率限制所丢弃的响应被包含在<command>RateDropped</command>和
+            <command>QryDropped</command>统计中。
+	    被比率限制所截断的响应被包含在<command>RateSlipped</command>和
+            <command>RespTruncated</command>统计中。
 	  </para>
 	</sect3>
       </sect2>

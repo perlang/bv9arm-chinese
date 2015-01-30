@@ -2441,8 +2441,8 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
                 </para>
 		<para>
                   整数可以取值的范围为0 &lt;= value &lt;= 18446744073709551615，
-                  然而某些参数在这个范围中使用更受限的区间。在大多数情况下，
-                  设置一个值为0不意谓着字面上的零；它表示“不限”或
+                  虽然某些参数在这个范围中使用更受限的区间。在大多数情况下，
+                  设置一个值为0不意谓着字面上的零；它表示“未定义”或
                   “尽可能的大”，具体是什么取决于上下文。参见特殊参数的解释
                   以获取<varname>size_spec</varname>在如何解释其用法的详细信息。
                 </para>
@@ -3626,7 +3626,7 @@ category notify { null; };
                   <entry colname="2">
                     <para>
                       只授权。记录被强制成NXDOMAIN的请求，它是一个只授权区或一
-                      个hint或stub区定义中的<command>delegation-only</command>
+                      个提示或存根区定义中有<command>delegation-only</command>
                       的结果。
                     </para>
                   </entry>
@@ -5590,11 +5590,10 @@ options {
 		  <command>yes</command>。
 		</para>
 		<para>
-		  检查两种形式的发送者策略框架记录（以“v-spf1”开始的TXT记录
+		  检查两种形式的发送者策略框架记录（以“v=spf1”开始的TXT记录
                   以及SPF）是否都存在或者都不存在。
-		  Warnings are
-		  emitted it they don't and be suppressed with
-		  <command>check-spf</command>.
+                  如果结果为否定（即只存在一种），将发出警告，也可通过
+                  <command>check-spf</command>拟制警告。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -5636,7 +5635,7 @@ options {
 	      <listitem>
 		<para>
 		  在执行完整性检查时，检查两种形式的发送者策略框架记录（以
-                  “v-spf1”开始的TXT记录以及SPF）是否都存在或都不存在，如果
+                  “v=spf1”开始的TXT记录以及SPF）是否都存在或都不存在，如果
                   匹配就发出一个警告消息。缺省是<command>warn</command>。
 		</para>
 	      </listitem>

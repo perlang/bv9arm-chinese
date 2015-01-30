@@ -1014,7 +1014,13 @@ zone "eng.example.com" {
                   的名字。<command>key</command>语句有两个子句：
                   <command>algorithm</command>和<command>secret</command>。
                   配置分析器将接受任何字符串作为算法参数，当前只有字符串
-                  “<userinput>hmac-md5</userinput>”有意义。这个密钥是一个
+                  “<userinput>hmac-md5</userinput>”，
+                  “<userinput>hmac-sha1</userinput>”，
+                  “<userinput>hmac-sha224</userinput>”，
+                  “<userinput>hmac-sha256</userinput>”，
+                  “<userinput>hmac-sha384</userinput>”
+                  和“<userinput>hmac-sha512</userinput>”
+                  有意义。这个密钥是一个
                   由RFC 3548所指定的base-64编码的字符串。
                 </para>
 
@@ -1035,7 +1041,7 @@ zone "eng.example.com" {
 
 <programlisting>
 key rndc_key {
-     algorithm "hmac-md5";
+     algorithm "hmac-sha256";
      secret
        "c3Ryb25nIGVub3VnaCBmb3IgYSBtYW4gYnV0IG1hZGUgZm9yIGEgd29tYW4K";
 };
@@ -2037,6 +2043,8 @@ options {
 
     <xi:include href="pkcs11-utf8.xml"/>
 
+    <xi:include href="dlz-utf8.xml"/>
+
     <sect1>
       <title><acronym>BIND</acronym> 9对IPv6的支持</title>
 
@@ -2164,7 +2172,6 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 	<filename>named.conf</filename>中使用<command>lwres</command>语句而
 	被配置成充当一个轻量级解析器后台进程。
       </para>
-
     </sect1>
   </chapter>
 
@@ -2323,6 +2330,19 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
                 </para>
               </entry>
             </row>
+	    <row rowsep="0">
+	      <entry colname="1">
+		<para>
+		  <varname>ip_dscp</varname>
+		</para>
+	      </entry>
+	      <entry colname="2">
+		<para>
+		  一个介于0到63之间的<varname>number</varname>，用于给去往
+                  支持差分服务代码点（DSCP）的操作系统的流量选择一个DSCP值。
+		</para>
+	      </entry>
+	    </row>
             <row rowsep="0">
               <entry colname="1">
                 <para>
@@ -2462,11 +2482,8 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
                   其比例分别为乘1024，1024*1024和1024*1024*1024。
                 </para>
                 <para>
-                  <varname>unlimited</varname>通常表示“尽可能的大”，虽然在
-                  某些上下文中，（包括<option>max-cache-size</option>），它可能
-                  意谓着32位无符号整数的最大值（0xffffffff）；这个区别在处理大数
-                  时非常重要。<varname>unlimited</varname>通常是设置一个大数时的
-                  最佳方式。
+                  <varname>unlimited</varname>通常表示“尽可能的大”，
+                  并且通常是设置一个大数时的最佳方式。
                 </para>
                 <para>
                   <varname>default</varname>使用服务器启动时的有效限制。
@@ -3687,10 +3704,6 @@ category notify { null; };
                   </entry>
                 <entry colname="2">
                   <para>
-                      （仅当<acronym>BIND</acronym> 9在编译时的配置命令中
-                      使用了<userinput>--enable-rrl</userinput>才可用。）
-                    </para>
-                  <para>
                     一个响应流的比率限制的启动、周期性及结束通知将以
                     <command>info</command>级别被写入这个类别。
                     这些消息包含响应域名的一个散列值和域名自身，没有足够的
@@ -3923,8 +3936,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
         </para>
 
 <programlisting><command>lwres</command> {
-    <optional> listen-on { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ;
-                     <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> listen-on { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ;
+    <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
     <optional> view <replaceable>view_name</replaceable>; </optional>
     <optional> search { <replaceable>domain_name</replaceable> ; <optional> <replaceable>domain_name</replaceable> ; ... </optional> }; </optional>
     <optional> ndots <replaceable>number</replaceable>; </optional>
@@ -3969,7 +3982,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
         <title><command>masters</command>语句语法</title>
 
 <programlisting>
-<command>masters</command> <replaceable>name</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> { ( <replaceable>masters_list</replaceable> |
+<command>masters</command> <replaceable>name</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters_list</replaceable> | 
       <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> };
 </programlisting>
 
@@ -3998,6 +4011,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> hostname <replaceable>hostname_string</replaceable>; </optional>
     <optional> server-id <replaceable>server_id_string</replaceable>; </optional>
     <optional> directory <replaceable>path_name</replaceable>; </optional>
+    <optional> geoip-directory <replaceable>path_name</replaceable>; </optional>
     <optional> key-directory <replaceable>path_name</replaceable>; </optional>
     <optional> managed-keys-directory <replaceable>path_name</replaceable>; </optional>
     <optional> named-xfer <replaceable>path_name</replaceable>; </optional>
@@ -4016,6 +4030,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> memstatistics-file <replaceable>path_name</replaceable>; </optional>
     <optional> pid-file <replaceable>path_name</replaceable>; </optional>
     <optional> recursing-file <replaceable>path_name</replaceable>; </optional>
+    <optional> request-sit <replaceable>yes_or_no</replaceable>; </optional>
     <optional> statistics-file <replaceable>path_name</replaceable>; </optional>
     <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
     <optional> auth-nxdomain <replaceable>yes_or_no</replaceable>; </optional>
@@ -4044,10 +4059,10 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> dnssec-must-be-secure <replaceable>domain yes_or_no</replaceable>; </optional>
     <optional> dnssec-accept-expired <replaceable>yes_or_no</replaceable>; </optional>
     <optional> forward ( <replaceable>only</replaceable> | <replaceable>first</replaceable> ); </optional>
-    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
-    <optional> dual-stack-servers <optional>port <replaceable>ip_port</replaceable></optional> {
-        ( <replaceable>domain_name</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> |
-          <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ) ; 
+    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> dual-stack-servers <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> {
+	( <replaceable>domain_name</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> |
+	  <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional>) ; 
         ... }; </optional>
     <optional> check-names ( <replaceable>master</replaceable> | <replaceable>slave</replaceable> | <replaceable>response</replaceable> )
           ( <replaceable>warn</replaceable> | <replaceable>fail</replaceable> | <replaceable>ignore</replaceable> ); </optional>
@@ -4083,16 +4098,21 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> avoid-v4-udp-ports { <replaceable>port_list</replaceable> }; </optional>
     <optional> use-v6-udp-ports { <replaceable>port_list</replaceable> }; </optional>
     <optional> avoid-v6-udp-ports { <replaceable>port_list</replaceable> }; </optional>
-    <optional> listen-on <optional> port <replaceable>ip_port</replaceable> </optional> { <replaceable>address_match_list</replaceable> }; </optional>
-    <optional> listen-on-v6 <optional> port <replaceable>ip_port</replaceable> </optional> { <replaceable>address_match_list</replaceable> }; </optional>
+    <optional> listen-on <optional> port <replaceable>ip_port</replaceable> </optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { <replaceable>address_match_list</replaceable> }; </optional>
+    <optional> listen-on-v6 <optional> port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional>
+{ <replaceable>address_match_list</replaceable> }; </optional>
     <optional> query-source ( ( <replaceable>ip4_addr</replaceable> | <replaceable>*</replaceable> )
-        <optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional> |
-        <optional> address ( <replaceable>ip4_addr</replaceable> | <replaceable>*</replaceable> ) </optional>
-        <optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional> ) ; </optional>
+	<optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional>
+	<optional> dscp <replaceable>ip_dscp</replaceable></optional> |
+	<optional> address ( <replaceable>ip4_addr</replaceable> | <replaceable>*</replaceable> ) </optional>
+	<optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional> )
+	<optional> dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> query-source-v6 ( ( <replaceable>ip6_addr</replaceable> | <replaceable>*</replaceable> )
-        <optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional> | 
-        <optional> address ( <replaceable>ip6_addr</replaceable> | <replaceable>*</replaceable> ) </optional> 
-        <optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional> ) ; </optional>
+	<optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional>
+	<optional> dscp <replaceable>ip_dscp</replaceable></optional> |
+	<optional> address ( <replaceable>ip6_addr</replaceable> | <replaceable>*</replaceable> ) </optional> 
+	<optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional> )
+	<optional> dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> use-queryport-pool <replaceable>yes_or_no</replaceable>; </optional>
     <optional> queryport-pool-ports <replaceable>number</replaceable>; </optional>
     <optional> queryport-pool-updateinterval <replaceable>number</replaceable>; </optional>
@@ -4110,19 +4130,18 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> transfers-in  <replaceable>number</replaceable>; </optional>
     <optional> transfers-out <replaceable>number</replaceable>; </optional>
     <optional> transfers-per-ns <replaceable>number</replaceable>; </optional>
-    <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> alt-transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> alt-transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>)
-                             <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+    <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> alt-transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> alt-transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> use-alt-transfer-source <replaceable>yes_or_no</replaceable>; </optional>
     <optional> notify-delay <replaceable>seconds</replaceable> ; </optional>
-    <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+    <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> notify-to-soa <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> also-notify { <replaceable>ip_addr</replaceable>
-                    <optional>port <replaceable>ip_port</replaceable></optional> <optional>key <replaceable>keyname</replaceable></optional> ;
-                    <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>key <replaceable>keyname</replaceable></optional> ; ... </optional> }; </optional>
+		    <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> <optional>key <replaceable>keyname</replaceable></optional> ;
+		    <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> <optional>key <replaceable>keyname</replaceable></optional> ; ... </optional> }; </optional>
     <optional> max-ixfr-log-size <replaceable>number</replaceable>; </optional>
     <optional> max-journal-size <replaceable>size_spec</replaceable>; </optional>
     <optional> coresize <replaceable>size_spec</replaceable> ; </optional>
@@ -4139,6 +4158,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> lame-ttl <replaceable>number</replaceable>; </optional>
     <optional> max-ncache-ttl <replaceable>number</replaceable>; </optional>
     <optional> max-cache-ttl <replaceable>number</replaceable>; </optional>
+    <optional> max-zone-ttl <replaceable>number</replaceable> ; </optional>
     <optional> sig-validity-interval <replaceable>number</replaceable> <optional><replaceable>number</replaceable></optional> ; </optional>
     <optional> sig-signing-nodes <replaceable>number</replaceable> ; </optional>
     <optional> sig-signing-signatures <replaceable>number</replaceable> ; </optional>
@@ -4153,12 +4173,14 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> min-retry-time <replaceable>number</replaceable> ; </optional>
     <optional> max-retry-time <replaceable>number</replaceable> ; </optional>
     <optional> port <replaceable>ip_port</replaceable>; </optional>
+    <optional> dscp <replaceable>ip_dscp</replaceable></optional> ;
     <optional> additional-from-auth <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> additional-from-cache <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> random-device <replaceable>path_name</replaceable> ; </optional>
     <optional> max-cache-size <replaceable>size_spec</replaceable> ; </optional>
     <optional> match-mapped-addresses <replaceable>yes_or_no</replaceable>; </optional>
     <optional> filter-aaaa-on-v4 ( <replaceable>yes_or_no</replaceable> | <replaceable>break-dnssec</replaceable> ); </optional>
+    <optional> filter-aaaa-on-v6 ( <replaceable>yes_or_no</replaceable> | <replaceable>break-dnssec</replaceable> ); </optional>
     <optional> filter-aaaa { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> dns64 <replaceable>ipv6-prefix</replaceable> {
       <optional> clients { <replaceable>address_match_list</replaceable> }; </optional>
@@ -4178,6 +4200,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> querylog <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> disable-algorithms <replaceable>domain</replaceable> { <replaceable>algorithm</replaceable>;
                                 <optional> <replaceable>algorithm</replaceable>; </optional> }; </optional>
+    <optional> disable-ds-digests <replaceable>domain</replaceable> { <replaceable>digest_type</replaceable>;
+				<optional> <replaceable>digest_type</replaceable>; </optional> }; </optional>
     <optional> acache-enable <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> acache-cleaning-interval <replaceable>number</replaceable>; </optional>
     <optional> max-acache-size <replaceable>size_spec</replaceable> ; </optional>
@@ -4185,7 +4209,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> max-clients-per-query <replaceable>number</replaceable> ; </optional>
     <optional> max-recursion-depth <replaceable>number</replaceable> ; </optional>
     <optional> max-recursion-queries <replaceable>number</replaceable> ; </optional>
-    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>) ; </optional>
+    <optional> masterfile-format
+	    (<constant>text</constant>|<constant>raw</constant>|<constant>map</constant>) ; </optional>
     <optional> empty-server <replaceable>name</replaceable> ; </optional>
     <optional> empty-contact <replaceable>name</replaceable> ; </optional>
     <optional> empty-zones-enable <replaceable>yes_or_no</replaceable> ; </optional>
@@ -4195,6 +4220,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> resolver-query-timeout <replaceable>number</replaceable> ; </optional>
     <optional> deny-answer-addresses { <replaceable>address_match_list</replaceable> } <optional> except-from { <replaceable>namelist</replaceable> } </optional>;</optional>
     <optional> deny-answer-aliases { <replaceable>namelist</replaceable> } <optional> except-from { <replaceable>namelist</replaceable> } </optional>;</optional>
+    <optional> prefetch <replaceable>number</replaceable> <optional><replaceable>number</replaceable></optional> ; </optional>
+
     <optional> rate-limit {
       <optional> responses-per-second <replaceable>number</replaceable> ; </optional>
       <optional> referrals-per-second <replaceable>number</replaceable> ; </optional>
@@ -4212,11 +4239,17 @@ badresp:1,adberr:0,findfail:0,valfail:0]
       <optional> max-table-size <replaceable>number</replaceable> ; </optional>
       <optional> min-table-size <replaceable>number</replaceable> ; </optional>
       } ; </optional>
-    <optional> response-policy { <replaceable>zone_name</replaceable>
-	<optional> policy given | disabled | passthru | nxdomain | nodata | cname <replaceable>domain</replaceable> </optional>
-	<optional> recursive-only <replaceable>yes_or_no</replaceable> </optional> <optional> max-policy-ttl <replaceable>number</replaceable> </optional> ;
-    } <optional> recursive-only <replaceable>yes_or_no</replaceable> </optional> <optional> max-policy-ttl <replaceable>number</replaceable> </optional>
-	<optional> break-dnssec <replaceable>yes_or_no</replaceable> </optional> <optional> min-ns-dots <replaceable>number</replaceable> </optional> ; </optional>
+    <optional> response-policy {
+	zone <replaceable>zone_name</replaceable> ;
+	<optional> policy <replaceable>given | disabled | passthru | drop | nxdomain | nodata | cname</replaceable> <replaceable>domain</replaceable> ; </optional>
+	<optional> recursive-only <replaceable>yes_or_no</replaceable> ; </optional>
+	<optional> max-policy-ttl <replaceable>number</replaceable> ; </optional> ;
+	<optional> recursive-only <replaceable>yes_or_no</replaceable> ; </optional>
+	<optional> max-policy-ttl <replaceable>number</replaceable> ; </optional>
+	<optional> break-dnssec <replaceable>yes_or_no</replaceable> ; </optional>
+	<optional> min-ns-dots <replaceable>number</replaceable> ; </optional>
+	<optional> qname-wait-recurse <replaceable>yes_or_no</replaceable> ; </optional>
+    } ; </optional>
 };
 </programlisting>
 
@@ -4329,6 +4362,19 @@ badresp:1,adberr:0,findfail:0,valfail:0]
               </para>
             </listitem>
           </varlistentry>
+
+	  <varlistentry>
+	    <term><command>geoip-directory</command></term>
+	    <listitem>
+	      <para>
+		为GeoIP初始化指定包含GeoIP<filename>.dat</filename>
+                数据库文件的目录。缺省时，这个选项未设置，GeoIP支持会使用
+                libGeoIP的内建目录。
+                （关于<command>geoip</command> ACL更详细的内容，参见
+                <xref linkend="acl"/>。）
+	      </para>
+	    </listitem>
+	  </varlistentry>
 
           <varlistentry>
             <term><command>key-directory</command></term>
@@ -4843,6 +4889,21 @@ options {
           <title>布尔选项</title>
 
           <variablelist>
+
+	    <varlistentry>
+	      <term><command>automatic-interface-scan</command></term>
+	      <listitem>
+		<para>
+		  如果为<userinput>yes</userinput>且操作系统支持，在接口地址
+                  被添加或删除时自动扫描网络接口。缺省是
+		  <userinput>yes</userinput>。
+		</para>
+		<para>
+		  当前要支持<command>automatic-interface-scan</command>，
+                  操作系统需要支持路由套接字（routing sockets）。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>allow-new-zones</command></term>
@@ -5422,7 +5483,7 @@ options {
                 </para>
                 <para>
                   如果为<userinput>break-dnssec</userinput>，即使打开了
-                  dnssec也会删除AAAA记录。
+                  DNSSEC也会删除AAAA记录。
                   如同名字所暗示的，这会地址不校验响应，因为DNSSEC协议
                   被设计成能检测删除。
                 </para>
@@ -6114,7 +6175,8 @@ listen-on port 1234 { !1.2.3.4; 1.2/16; };
 
           <para>
             <command>listen-on-v6</command>选项指定服务器用来监听IPv6发来的
-	    请求所用的接口和端口。
+	    请求所用的接口和端口。如果未指定，服务器将监听在所有IPv6接口的
+            53端口。
           </para>
 
           <para>
@@ -6155,12 +6217,6 @@ listen-on-v6 port 1234 { !2001:db8::/32; any; };
 <programlisting>listen-on-v6 { none; };
 </programlisting>
 
-          <para>
-            如果未指定<command>listen-on-v6</command>选项，服务器将不监听
-	    在任何IPv6地址上，除非在<command>named</command>启动时指定了
-	    <command>-6</command>。如果指定了<command>-6</command>，
-	    <command>named</command>缺省将会监听在所有IPv6接口的53端口上。
-          </para>
         </sect3>
 
         <sect3 id="query_address">
@@ -6763,13 +6819,12 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   用于服务器缓存的最大内存量，以字节为单位。当缓存中的数据量达
                   到这个限制时，服务器将使用一个基于LRU的策略使记录提前作废
 		  以免超过限制。
-                  当指定其值为0时，表示仅在记录的TTL过期时才将其从缓存中清除。
-                  另一个特殊的关键字<userinput>unlimited</userinput>表示32位
-                  无符号整数的最大值（0xffffffff），在支持超过32位内存空间的
-                  机器上，可能有与0不同的效果。
+                  关键字<userinput>unlimited</userinput>，或值0，将使缓存大小
+                  没有限制；
+                  记录将在TTL过期时才将其从缓存中清除。
                   任何小于2MB的正数都被忽略并重置为2MB。
                   在一个带多个视图的服务器上，这个限制分别应用到各个视图的缓
-                  存上。缺省为0。
+                  存上。缺省为<userinput>unlimited</userinput>。
                 </para>
               </listitem>
             </varlistentry>
@@ -7297,6 +7352,10 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	          查不会应用到<constant>raw</constant>格式。这就意谓着
 	          <constant>raw</constant>格式的区文件必须以
 	          <command>named</command>配置文件中所指定的同样检查级别来生成。
+                  而且，<constant>map</constant>格式的文件通过内存映射直接装
+                  入内存，只有最低限度的检查。
+	        </para>
+	        <para>
 	          本语句为所有区设置<command>masterfile-format</command>，但是
 	          可以通过在配置文件中的<command>zone</command>或
 	          <command>view</command>块中包含
@@ -8024,26 +8083,38 @@ deny-answer-aliases { "example.net"; };
 
 ; QNAME policy records.  There are no periods (.) after the owner names.
 nxdomain.domain.com     CNAME   .               ; NXDOMAIN policy
+*.nxdomain.domain.com   CNAME   .               ; NXDOMAIN policy
 nodata.domain.com       CNAME   *.              ; NODATA policy
+*.nodata.domain.com     CNAME   *.              ; NODATA policy
 bad.domain.com          A       10.0.0.1        ; redirect to a walled garden
                         AAAA    2001:2::1
+bzone.domain.com        CNAME   garden.example.com.
 
 ; do not rewrite (PASSTHRU) OK.DOMAIN.COM
 ok.domain.com           CNAME   rpz-passthru.
-
-bzone.domain.com        CNAME   garden.example.com.
 
 ; redirect x.bzone.domain.com to x.bzone.domain.com.garden.example.com
 *.bzone.domain.com      CNAME   *.garden.example.com.
 
 
-; IP policy records that rewrite all answers for 127/8 except 127.0.0.1
+; IP policy records that rewrite all responses containing A records in 127/8
+;       except 127.0.0.1
 8.0.0.0.127.rpz-ip      CNAME   .
 32.1.0.0.127.rpz-ip     CNAME   rpz-passthru.
 
 ; NSDNAME and NSIP policy records
 ns.domain.com.rpz-nsdname   CNAME   .
 48.zz.2.2001.rpz-nsip       CNAME   .
+
+; blacklist and whitelist some DNS clients
+112.zz.2001.rpz-client-ip    CNAME   rpz-drop.
+8.0.0.0.127.rpz-client-ip    CNAME   rpz-drop.
+
+; force some DNS clients and responses in the example.com zone to TCP
+16.0.0.1.10.rpz-client-ip   CNAME   rpz-tcp-only.
+example.com                 CNAME   rpz-tcp-only.
+*.example.com               CNAME   rpz-tcp-only.
+
 </programlisting>
           <para>
             RPZ会影响服务器性能。每个已配置的响应策略区都会使一个请求被回答前
@@ -8063,10 +8134,6 @@ ns.domain.com.rpz-nsdname   CNAME   .
 
 	<sect3>
 	  <title>响应比率限制</title>
-	  <para>
-            这个特征仅在<acronym>BIND</acronym> 9在“configure”命令行中使用
-            <userinput>--enable-rrl</userinput>选项编译时才可用。
-          </para>
 	  <para>
             过多的几乎同样的UDP<emphasis>responses</emphasis>可以通过在一个
             <command>options</command>或<command>view</command>语句中
@@ -8252,20 +8319,22 @@ ns.domain.com.rpz-nsdname   CNAME   .
     <optional> provide-ixfr <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> request-ixfr <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> request-nsid <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> request-sit <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> edns <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> edns-udp-size <replaceable>number</replaceable> ; </optional>
+    <optional> nosit-udp-size <replaceable>number</replaceable> ; </optional>
     <optional> max-udp-size <replaceable>number</replaceable> ; </optional>
     <optional> transfers <replaceable>number</replaceable> ; </optional>
     <optional> transfer-format <replaceable>( one-answer | many-answers )</replaceable> ; ]</optional>
     <optional> keys <replaceable>{ string ; <optional> string ; <optional>...</optional></optional> }</replaceable> ; </optional>
-    <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+    <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> query-source <optional> address ( <replaceable>ip_addr</replaceable> | <replaceable>*</replaceable> ) </optional>
-                  <optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional>; </optional>
+		  <optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> query-source-v6 <optional> address ( <replaceable>ip_addr</replaceable> | <replaceable>*</replaceable> ) </optional>
-                     <optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional>; </optional>
+		     <optional> port ( <replaceable>ip_port</replaceable> | <replaceable>*</replaceable> ) </optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> use-queryport-pool <replaceable>yes_or_no</replaceable>; </optional>
     <optional> queryport-pool-ports <replaceable>number</replaceable>; </optional>
     <optional> queryport-pool-updateinterval <replaceable>number</replaceable>; </optional>
@@ -8330,7 +8399,8 @@ ns.domain.com.rpz-nsdname   CNAME   .
           <para>
             <command>edns-udp-size</command>选项设置EDNS UDP的大小，这个值在
             <command>named</command>向远程服务器发出请求时广播出去。有效值是
-	    从512到4096字节（在这个范围之外的值将被静默地调整）。这个选项是
+	    从512到4096字节（在这个范围之外的值将被静默地调整到范围内最接近的
+            值）。这个选项是
 	    用于你想要广播一个与你全局广播值不同的值到这个服务器时，例如，
 	    当远程站点有一个防火墙阻止较大的响应时。
           </para>
@@ -8340,6 +8410,12 @@ ns.domain.com.rpz-nsdname   CNAME   .
 	    的EDNS UDP消息的最大大小。有效值是从512到4096字节（在这个范围之外的
 	    值将被静默地调整）。这个选项是用于当你知道有防火墙阻止来自
 	    <command>named</command>的大回复包时。
+	  </para>
+
+	  <para>
+	    <command>nosit-udp-size</command>选项设置发送给没有有效源身份特征
+            请求方的UDP响应的最大大小。<command>max-udp-size</command>选项
+            可以更进一步地限制响应的大小。
 	  </para>
 
           <para>
@@ -8429,7 +8505,7 @@ ns.domain.com.rpz-nsdname   CNAME   .
         <para>
 	  这个语句是打算在将来能够灵活地支持多个通信协议，但是当前只
 	  支持HTTP访问。
-	  它要求带有libxml2编译BIND 9；
+	  它要求带有libxml2和/或json-c（也被称为libjson0）编译BIND 9；
 	  即使在编译时没有提供库，
 	  <command>statistics-channels</command>语句也被接受，但是任何
 	  HTTP访问都会失败并返回一个错误。
@@ -8755,8 +8831,8 @@ view "external" {
     <optional> dnssec-dnskey-kskonly <replaceable>yes_or_no</replaceable>; </optional>
     <optional> dnssec-loadkeys-interval <replaceable>number</replaceable>; </optional>
     <optional> update-policy <replaceable>local</replaceable> | { <replaceable>update_policy_rule</replaceable> <optional>...</optional> }; </optional>
-    <optional> also-notify { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ;
-                  <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> also-notify { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ;
+		  <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
     <optional> check-names (<constant>warn</constant>|<constant>fail</constant>|<constant>ignore</constant>) ; </optional>
     <optional> check-mx (<constant>warn</constant>|<constant>fail</constant>|<constant>ignore</constant>) ; </optional>
     <optional> check-wildcard <replaceable>yes_or_no</replaceable>; </optional>
@@ -8764,11 +8840,11 @@ view "external" {
     <optional> check-integrity <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> dialup <replaceable>dialup_option</replaceable> ; </optional>
     <optional> file <replaceable>string</replaceable> ; </optional>
-    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>) ; </optional>
+    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>|<constant>map</constant>) ; </optional>
     <optional> journal <replaceable>string</replaceable> ; </optional>
     <optional> max-journal-size <replaceable>size_spec</replaceable>; </optional>
     <optional> forward (<constant>only</constant>|<constant>first</constant>) ; </optional>
-    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
     <optional> ixfr-base <replaceable>string</replaceable> ; </optional>
     <optional> ixfr-from-differences <replaceable>yes_or_no</replaceable>; </optional>
     <optional> ixfr-tmp-file <replaceable>string</replaceable> ; </optional>
@@ -8781,8 +8857,8 @@ view "external" {
     <optional> notify-delay <replaceable>seconds</replaceable> ; </optional>
     <optional> notify-to-soa <replaceable>yes_or_no</replaceable>; </optional>
     <optional> pubkey <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>string</replaceable> ; </optional>
-    <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+    <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
     <optional> sig-validity-interval <replaceable>number</replaceable> <optional><replaceable>number</replaceable></optional> ; </optional>
     <optional> sig-signing-nodes <replaceable>number</replaceable> ; </optional>
@@ -8798,6 +8874,7 @@ view "external" {
     <optional> inline-signing <replaceable>yes_or_no</replaceable>; </optional>
     <optional> zero-no-soa-ttl <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> serial-update-method <constant>increment</constant>|<constant>unixtime</constant>; </optional>
+    <optional> max-zone-ttl <replaceable>number</replaceable> ; </optional>
 };
 
 zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
@@ -8813,23 +8890,25 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     <optional> dnssec-loadkeys-interval <replaceable>number</replaceable>; </optional>
     <optional> dnssec-secure-to-insecure <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> try-tcp-refresh <replaceable>yes_or_no</replaceable>; </optional>
-    <optional> also-notify <optional>port <replaceable>ip_port</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
+    <optional> also-notify <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
                               <optional>port <replaceable>ip_port</replaceable></optional>
+			      <optional>dscp <replaceable>ip_dscp</replaceable></optional>
                               <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> }; </optional>
     <optional> check-names (<constant>warn</constant>|<constant>fail</constant>|<constant>ignore</constant>) ; </optional>
     <optional> dialup <replaceable>dialup_option</replaceable> ; </optional>
     <optional> file <replaceable>string</replaceable> ; </optional>
-    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>) ; </optional>
+    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>|<constant>map</constant>) ; </optional>
     <optional> journal <replaceable>string</replaceable> ; </optional>
     <optional> max-journal-size <replaceable>size_spec</replaceable>; </optional>
     <optional> forward (<constant>only</constant>|<constant>first</constant>) ; </optional>
-    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
     <optional> ixfr-base <replaceable>string</replaceable> ; </optional>
     <optional> ixfr-from-differences <replaceable>yes_or_no</replaceable>; </optional>
     <optional> ixfr-tmp-file <replaceable>string</replaceable> ; </optional>
     <optional> maintain-ixfr-base <replaceable>yes_or_no</replaceable> ; </optional>
-    <optional> masters <optional>port <replaceable>ip_port</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
-                              <optional>port <replaceable>ip_port</replaceable></optional>
+    <optional> masters <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
+			      <optional>port <replaceable>ip_port</replaceable></optional>
+			      <optional>dscp <replaceable>ip_dscp</replaceable></optional>
                               <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> }; </optional>
     <optional> max-ixfr-log-size <replaceable>number</replaceable> ; </optional>
     <optional> max-transfer-idle-in <replaceable>number</replaceable> ; </optional>

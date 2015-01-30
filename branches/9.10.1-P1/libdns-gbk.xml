@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ - Copyright (C) 2010, 2014  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<sect1 id="bind9.library">
+  <title>BIND 9 DNS Library Support</title>
+  <para>本版本的BIND 9“导出”其内部库，使后者可以更容易地被第三方应用
+  所利用（我们在本文档中将其称为“导出”库）。除了BIND 9当前用到的所有
+  主要的DNS相关的API，导出库还提供下列特性：</para>
+  <itemizedlist>
+    <listitem>
+      <para>新创建的“DNS客户端”模块。这是一个更高层的API，它为名字
+      解析，与特定服务器之间的单次DNS事物，和动态更新提供了一个接口。
+      关于名字解析，它支持诸如DNSSEC验证和缓存这样的高级特性。这个
+      模块支持同步和异步模式。</para>
+    </listitem>
+    <listitem>
+      <para>新的“IRS”（Information Retrieval System，信息检索系统）库。
+      它为分析传统的resolv.conf文件和这个包中其余应用所用到的，更高级的，
+      DNS专用配置文件提供一个接口（参见下面对dns.conf文件的描述）。</para>
+    </listitem>
+    <listitem>
+      <para>作为IRS库的一部份，提供了新实现的标准地址-名字映射函数，
+      getaddrinfo()和getnameinfo()。它们使用支持DNSSEC验证解析器后端，
+      并能够使用其他BIND 9库的高级特性，如缓存。getaddrinfo()函数并发
+      解析A和AAAA资源记录（当未指定地址族时）。</para>
+    </listitem>
+    <listitem>
+      <para>一个试验性框架，用于支持与BIND 9内部事件任务系统不一样的
+      事件库。</para>
+    </listitem>
+  </itemizedlist>
+  <sect2>
+    <title>Prerequisite</title>
+  <para>构建导出库要求用GNU make（BIND 9的其它部分仍然可以使用其它类型的
+  make来构建）。在本文档的剩余部份，“make”表示GNU make。注意在某些平台
+  上，你可能需要发起一个不同于“make”的命令名（例如“gmake”）来表示其
+  是GNU make。</para>
+  </sect2>
+  <sect2>
+    <title>编译</title>
+  <screen>
+$ <userinput>./configure --enable-exportlib <replaceable>[other flags]</replaceable></userinput>
+$ <userinput>make</userinput>
+</screen>
+  <para>
+  这将会在通常的BIND 9程序之外，在lib/export目录下建立一套独立的库。
+  例如，<filename>lib/export/dns/libdns.a</filename>是BIND 9 DNS库的
+  导出版本的库文件。使用库的例子应用程序也将在lib/export/samples目录
+  下构建（见下）。</para>
+  </sect2>
+  <sect2>
+    <title>安装</title>
+  <screen>
+$ <userinput>cd lib/export</userinput>
+$ <userinput>make install</userinput>
+</screen>
+  <para>
+  这将把库的目标文件安装到--with-export-libdir配置选项所指定的目录
+  下（缺省：EPREFIX/lib/bind9），把头文件安装到--with-export-includedir
+  配置选项所指定的目录下（缺省：EPREFIX/include/bind9）。
+  通常需要根用户特权。
+  在顶级目录下用“<command>make install</command>”也会做同样的事情。
+  </para>
+  <para>
+  要了解如何在安装之后构建你自己的应用，参见
+  <filename>lib/export/samples/Makefile-postinstall.in</filename>。</para>
+  </sect2>
+  <sect2>
+    <title>已知的缺陷/限制</title>
+  <itemizedlist>
+    <listitem>
+<!-- TODO: what about AIX? -->
+      <para>当前，导出库不支持win32。（普通的BIND 9应用可以照旧构建）。
+      </para>
+    </listitem>
+    <listitem>
+      <para>（当前）导出库不支持“固定的”资源记录集顺序。如果你想在某些
+      应用，如<command>named</command>，使用“固定的”资源记录集顺序而同时
+      仍然向在没有固定的顺序支持的情况下构建导出库，就分别构建他们：
+      <screen>
+$ <userinput>./configure --enable-fixed-rrset <replaceable>[other flags, but not --enable-exportlib]</replaceable></userinput>
+$ <userinput>make</userinput>
+$ <userinput>./configure --enable-exportlib <replaceable>[other flags, but not --enable-fixed-rrset]</replaceable></userinput>
+$ <userinput>cd lib/export</userinput>
+$ <userinput>make</userinput>
+</screen>
+    </para>
+    </listitem>
+    <listitem>
+      <para>当前，客户端模块和IRS库不支持使用DLV的DNSSEC验证（下层模块
+      可以处理后者，但是没有可调的借口来打开这个特性）。</para>
+    </listitem>
+    <listitem>
+      <para>导出库的验证存根解析器不支持RFC 5011。实际上，是否应该支持
+      并不明确：信任锚应该是一项系统范围的配置，它应该由一名系统管理员
+      来管理，同时，存根解析器是由普通用户运行的普通应用所使用。</para>
+    </listitem>
+    <listitem>
+      <para>不是所有通常的<filename>/etc/resolv.conf</filename>选项都
+      在IRS库中有支持。在当前版本中，能够使用的选项仅有“debug”和
+      “ndots”。</para>
+    </listitem>
+  </itemizedlist>
+  </sect2>
+  <sect2>
+    <title>dns.conf文件</title>
+  <para>IRS库支持一个与DNS库相关的“高级”配置文件，其配置参数会超越
+  <filename>resolv.conf</filename>的功能。
+  特别地，它还打算提供DNSSEC相关的配置参数。缺省时，这个配置文件的路径
+  为<filename>/etc/dns.conf</filename>。
+  这个模块极具试验性，其配置语法和库接口在将来的版本中可能会有变化。
+  当前，只支持<command>trusted-keys</command>语句，其语法与
+  <filename>named.conf</filename>中的同名语句一样。（更详细的内容，
+  参见<xref linkend="trusted-keys" />。）</para>
+  </sect2>
+  <sect2>
+    <title>例子应用</title>
+  <para>这里提供了一些使用这个API的例子应用程序供参考。下面是对这些应用的
+  一个简要描述。
+  </para>
+  <sect3>
+    <title>sample: 一个简单的存根解析器应用</title>
+  <para>
+  它向一个指定的递归服务器发送一个指定名字（作为选项，也可指定资源记录类型）
+  的请求，并将结果打印为一个资源记录的列表。如果通过命令行选项的集合给出了
+  一个信任锚，它也可以用作一个验证存根解析器。</para>
+  <para>
+  Usage: sample [options] server_address hostname
+  </para>
+  <para>
+  选项和参数：
+  </para>
+  <variablelist>
+  <varlistentry>
+  <term>
+  -t RRtype
+  </term>
+  <listitem><para>
+        指定请求的资源记录类型。缺省是A。
+  </para></listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+  [-a algorithm] [-e] -k keyname -K keystring
+  </term>
+  <listitem><para>
+        在命令行指定一个DNS密钥，用于验证响应。例如，指定下面example.com
+        的DNSKEY：
+<literallayout>
+                example.com. 3600 IN DNSKEY 257 3 5 xxx
+</literallayout>
+        以下指定选项：
+<screen>
+<userinput>
+          -e -k example.com -K "xxx"
+</userinput>
+</screen>
+        -e表示这个密钥是一个区的“密钥签名密钥”（也被称为“安全入口点”）。
+        当省略-a时，缺省使用rsasha1。
+  </para></listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+  -s domain:alt_server_address
+  </term>
+  <listitem><para>
+         为特定“域”指定一个单独的递归服务器地址。例如：
+         -s example.com:2001:db8::1234
+  </para></listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>server_address</term>
+  <listitem><para>
+        请求发向的递归服务器的一个IP（v4/v6）地址。
+  </para></listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>hostname</term>
+  <listitem><para>
+        请求的域名
+  </para></listitem>
+  </varlistentry>
+  </variablelist>
+  </sect3>
+  <sect3>
+    <title>sample-async: 一个例子存根解析器，异步工作</title>
+  <para>
+  与“sample”相似，但是以一个独立文件方式接受（请求）域名清单并
+  异步解析这些名字。</para>
+  <para>
+    Usage: sample-async [-s server_address] [-t RR_type] input_file</para>
+  <para>
+  选项和参数：
+  </para>
+  <variablelist>
+  <varlistentry>
+   <term>
+   -s server_address
+   </term>
+  <listitem>
+   请求发向的递归服务器的一个IPv4地址。（在这个实现中不支持IPv6地址）
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+   -t RR_type
+  </term>
+  <listitem>
+  指定请求的资源记录类型。缺省是A。
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+   input_file
+  </term>
+  <listitem>
+  要解析域名的清单。每行由一个域名组成。例如：
+  <literallayout>
+  www.example.com
+  mx.example.net
+  ns.xxx.example
+</literallayout>
+  </listitem>
+    </varlistentry>
+    </variablelist>
+  </sect3>
+  <sect3>
+    <title>sample-request: 一个简单的DNS事物客户端</title>
+  <para>
+  它向一个特定的服务器发送一个请求，并输出经过最小处理的响应。它不充当
+  一个“存根解析器”：一旦它从服务器获得任何响应，就停止处理进程，无论
+  响应是否一个引用或者别名（CNAME或DNAME），本该需要以更多的请求来获得
+  最终的答案。换句话说，这个应用扮演了一个非常简化的<command>dig</command>。
+  </para>
+  <para>
+  Usage: sample-request [-t RRtype] server_address hostname
+  </para>
+  <para>
+    选项和参数：
+  </para>
+  <variablelist>
+  <varlistentry>
+   <term>
+   -t RRtype
+  </term>
+  <listitem>
+  <para>
+  指定请求的资源记录类型。缺省是A。
+  </para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+  server_address
+  </term>
+  <listitem>
+  <para>
+   请求发向的递归服务器的一个IP（v4/v6）地址。
+  </para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+  hostname
+  </term>
+  <listitem>
+  <para>
+  请求的域名
+  </para>
+  </listitem>
+  </varlistentry>
+  </variablelist>
+  </sect3>
+  <sect3>
+    <title>sample-gai: getaddrinfo()和getnameinfo()测试代码</title>
+  <para>
+  这是一个用于检查getaddrinfo()和getnameinfo()行为的测试程序。它使用
+  一个主机名作为测试，以给定的主机名调用getaddrinfo()，并用getaddrinfo()
+  所返回的结果IP地址调用getnameinfo()。如果dns.conf文件存在并且定义了
+  一个信任锚，下层解析器充当一个验证解析器，并且在DNSSEC验证失败时，
+  getaddrinfo()/getnameinfo()会失败并返回一个EAI_INSECUREDATA错误。
+  </para>
+  <para>
+  Usage: sample-gai hostname
+  </para>
+  </sect3>
+  <sect3>
+    <title>sample-update: 一个简单的动态更新客户端程序</title>
+  <para>
+  它接受一个更新命令作为一个命令行参数，发送一个更新请求消息给权威
+  服务器，并输出从服务器回来的响应。换句话说，这就是一个简化版的
+  <command>nsupdate</command>。
+  </para>
+  <para>
+   Usage: sample-update [options] (add|delete) "update data"
+  </para>
+  <para>
+  选项和参数：
+  </para>
+  <variablelist>
+  <varlistentry>
+   <term>
+  -a auth_server
+   </term>
+   <listitem><para>
+        作为包含所更新名字的区的权威服务器的一个IP地址。这通常应该是
+        接受动态更新的主权威服务器。它也可以是一个被配置为向主服务器
+        转发更新请求的辅服务器。
+   </para></listitem>
+   </varlistentry>
+   <varlistentry>
+   <term>
+  -k keyfile
+   </term>
+   <listitem><para>
+        一个TSIG密钥文件，用于保证更新事务的安全。密钥文件格式与nsupdate
+        实用程序所用的一致。
+   </para></listitem>
+   </varlistentry>
+   <varlistentry>
+   <term>
+  -p prerequisite
+   </term>
+   <listitem><para>
+        一个更新的先决条件（只能指定一个先决条件）。这个先决条件的格式
+        与nsupdate实用程序所能接受的一致。
+   </para></listitem>
+   </varlistentry>
+   <varlistentry>
+   <term>
+  -r recursive_server
+   </term>
+   <listitem><para>
+        这个应用将会用到的一个递归服务器的一个IP地址。必须使用一个
+        递归服务器来获取权威服务器的地址，再向后者发送更新请求。
+   </para></listitem>
+   </varlistentry>
+   <varlistentry>
+   <term>
+  -z zonename
+   </term>
+   <listitem><para>
+        The domain name of the zone that contains
+   </para></listitem>
+   </varlistentry>
+   <varlistentry>
+   <term>
+  (add|delete)
+   </term>
+   <listitem><para>
+        指定更新操作的类型。必须是“add”或者“delete”之一。
+   </para></listitem>
+   </varlistentry>
+   <varlistentry>
+   <term>
+  "update data"
+   </term>
+   <listitem><para>
+        指定要改更新的数据。典型的数据例子看起来像“name TTL RRtype RDATA”。
+  </para></listitem>
+  </varlistentry>
+  </variablelist>
+
+   <note>实际上，必须指定-a或者-r。其它是可选的；下层的库例程试图为更新标识
+   合适的服务器和区名。</note>
+
+   <para>
+   例如：假设dynamic.example.com区的主权威服务器有一个IPv6地址
+   2001:db8::1234，
+   </para>
+   <screen>
+$ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key add "foo.dynamic.example.com 30 IN A 192.168.2.1"</userinput></screen>
+   <para>
+     使用给定的密钥为foo.dynamic.example.com增加一条A记录。
+   </para>
+   <screen>
+$ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dynamic.example.com 30 IN A"</userinput></screen>
+   <para>
+     使用给定的密钥删除foo.dynamic.example.com的所有A记录。
+   </para>
+   <screen>   
+$ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dynamic.example.com"</userinput></screen>
+   <para>
+     使用给定的密钥删除foo.dynamic.example.com的所有记录。
+   </para>
+  </sect3>
+  <sect3>
+    <title>nsprobe: domain/name server checker in terms of RFC 4074</title>
+  <para>
+  它检查一个域名集合，按照RFC 4074的描述查看域名的名字服务器的行为是否正确。
+  它被包含在一系列例子程序的集合中，这些程序展示了如何将导出库用于DNS相关的
+  应用中。
+  </para>
+  <para>
+ Usage: nsprobe [-d] [-v [-v...]] [-c cache_address] [input_file]
+  </para>
+  <para>
+   Options
+  </para>
+
+  <variablelist>
+  <varlistentry>
+  <term>
+  -d
+  </term>
+  <listitem><para>
+        在“debug”模式运行。使用这个选项，nsprobe将会转储其所收到的
+        每个资源记录。
+  </para></listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+  -v
+  </term>
+  <listitem><para>
+        增加其它普通日志消息的可见性。这个可以被多次指定。
+  </para></listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+  -c cache_address
+  </term>
+  <listitem><para>
+        指定一个递归（缓存）名字服务器的一个IP地址。nsprobe使用这个服务器
+        来获取每个域名的NS资源记录集和名字服务器的A和/或AAAA资源记录集。
+        缺省值是127.0.0.1。
+  </para></listitem>
+  </varlistentry>
+  <varlistentry>
+  <term>
+  input_file
+  </term>
+  <listitem><para>
+        一个包含了需要被探测的域（区）名清单的文件的文件名。输入文件的
+        每行指定了一个域名，如“example.com”。通常这个域名必须是某些
+        DNS区的顶点名（而不是普通的“主机名”如“www.example.com”）。
+        nsprobe首先识别给定域名的NS资源记录集，并向这些服务器发送A和
+        AAAA请求，请求区下某些“广泛使用的”名字；特别地，在区名前增加
+        “www”和“ftp”。
+  </para></listitem>
+  </varlistentry>
+  </variablelist>
+  </sect3>
+  </sect2>
+  <sect2>
+    <title>库参考</title>
+  <para>截至目前撰写的文稿，这个库还没有正式的“手册”，除了本文档，
+  头文件（其中一些提供了非常详细的解释），和例子应用程序。</para>
+  </sect2>
+</sect1>
+<!-- $Id: libdns.xml,v 1.3 2010/02/03 23:49:07 tbox Exp $ -->

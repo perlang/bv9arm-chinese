@@ -1,0 +1,143 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+               [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2012-2014  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<refentry id="man.dnssec-checkds">
+  <refentryinfo>
+    <date>January 02, 2013</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-checkds</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-checkds</application></refname>
+    <refpurpose>一个DNSSEC授权一致性检查工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2012</year>
+      <year>2013</year>
+      <year>2014</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>dnssec-checkds</command>
+      <arg><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
+      <arg><option>-f <replaceable class="parameter">file</replaceable></option></arg>
+      <arg><option>-d <replaceable class="parameter">dig path</replaceable></option></arg>
+      <arg><option>-D <replaceable class="parameter">dsfromkey path</replaceable></option></arg>
+      <arg choice="req">zone</arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>dnssec-dsfromkey</command>
+      <arg><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
+      <arg><option>-f <replaceable class="parameter">file</replaceable></option></arg>
+      <arg><option>-d <replaceable class="parameter">dig path</replaceable></option></arg>
+      <arg><option>-D <replaceable class="parameter">dsfromkey path</replaceable></option></arg>
+      <arg choice="req">zone</arg>
+   </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para><command>dnssec-checkds</command>
+      为指定区中的密钥验证授权签名者（DS）或者DNSSEC旁观验证（DLV）资源记录
+      的正确性。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-f <replaceable class="parameter">file</replaceable></term>
+        <listitem>
+          <para>
+            如果指定了一个<option>file</option>，就从那个文件中读入区以查找
+            DNSKEY记录。如果没有，就在DNS中查找区的DNSKEY记录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-l <replaceable class="parameter">domain</replaceable></term>
+        <listitem>
+          <para>
+            在指定的旁观域中核对一个DLV记录，而不是与本区的父区中一个DS记录
+            进行核对。
+            例如，要在ISC的DLV区中核对“example.com”的DLV记录，使用：
+            <command>dnssec-checkds -l dlv.isc.org example.com</command>
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-d <replaceable class="parameter">dig path</replaceable></term>
+        <listitem>
+          <para>
+            给一个<command>dig</command>程序指定一个路径。用于测试。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-D <replaceable class="parameter">dsfromkey path</replaceable></term>
+        <listitem>
+          <para>
+            给一个<command>dnssec-dsfromkey</command>程序指定一个路径。
+            用于测试。
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>dnssec-dsfromkey</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

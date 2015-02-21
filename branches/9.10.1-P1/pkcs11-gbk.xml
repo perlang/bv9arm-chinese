@@ -17,19 +17,37 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<!-- $Id: pkcs11.xml,v 1.7 2012/01/16 22:50:12 each Exp $ -->
-
 <sect1 id="pkcs11">
-  <title>PKCS #11 (Cryptoki) support</title>
-  <para>PKCS #11 (公钥加密标准 #11)为控制硬件安全模块（HSM）和其它
-  密码支持设备定义了一个平台独立的API。</para>
-  <para>BIND 9可以支持两种HSM：Sun SCA 6000密码加速板，在Solaris x86
-  下通过测试，以及AEP Keyper网络密钥存储设备，在Debian Linux，
-  Solaris x86和Windows Server 2003。</para>
+  <title>PKCS#11 (Cryptoki)支持</title>
+  <para>
+   PKCS#11 (公钥加密标准 #11)为控制硬件安全模块（HSM）和其它
+   密码支持设备定义了一个平台独立的API。
+  </para>
+  <para>
+    BIND 9可以支持三种HSM：AEP Keyper，在Debian Linux，Solaris x86和
+    Windows Server 2003上测试通过；Thales nShield，在Debian Linux上测试通过；
+    以及Sun SCA 6000密码加速板，在Solaris x86上测试通过。
+    另外，BIND可以与SoftHSM，一种基于软件的由OpenDNSSEC项目产出的HSM模拟器
+    一块工作。
+  </para>
+  <para>
+    PKCS#11利用了一个“提供者库（provider library）”：一个动态加载库，它提供
+    一个低级PKCS#11接口来驱动HSM硬件。PKCS#11提供者库来自HSM厂商，它针对于
+    由其控制的特定HSM有效。
+  </para>
+  <para>
+    BIND 9中存在两种可用的对PKCS#11支持的机制：基于OpenSSL的PKCS#11和
+    原生PKCS#11。在使用第一种机制时，BIND使用一个OpenSSL的修改版本，后者加载
+    提供者库并间接操作HSM；任何HSM不支持的加密操作都替代成由OpenSSL执行。
+    第二种机制让BIND完全绕过OpenSSL；BIND自己加载提供者库，并使用PKCS#11 API
+    直接驱动HSM。
+  </para>
   <sect2>
     <title>Prerequisites</title>
-    <para>关于HSM的安装，初始化，测试和故障解决方面的信息，参见
-    HSM厂商的文档。</para>
+    <para>
+      关于HSM的安装，初始化，测试和故障解决方面的信息，参见由HSM厂商
+      提供的文档。
+    </para>
     <para>BIND 9使用OpenSSL进行加解密，但是当前的OpenSSL不完全支持
     PKCS #11。然而，在OpenSolaris项目中有一个可用于OpenSSL的
     PKCS #11引擎。ISC修改了它，使其能够与BIND 9配合工作，并提供了
@@ -38,19 +56,25 @@
     共享库，它为HSM硬件提供了一个低级PKCS #11接口。它是由OpenSSL
     在运行时动态装载的。PKCS #11提供者来自HSM厂商，并且对应于
     被其控制的特定HSM。</para>
-    <para>打过补丁的OpenSSL提供了两种PKCS #11新“美味”，其中一种
-    必须在配置时选择。正确的选择依赖于HSM硬件：</para>
+    <para>
+      打过补丁的OpenSSL提供了两种PKCS#11新“美味”，其中一种
+      必须在配置时选择。正确的选择依赖于HSM硬件：
+    </para>
     <itemizedlist>
       <listitem>
-        <para>'crypto-accelerator'用于具有硬件加密加速的HSM，如
-        SCA 6000板。这使得OpenSSL在HSM中运行所有支持的加密操作。</para>
+        <para>
+          'crypto-accelerator'用于具有硬件加密加速的HSM，如
+           SCA 6000板。这使得OpenSSL在HSM中运行所有支持的加密操作。
+        </para>
       </listitem>
       <listitem>
-        <para>'sign-only'用于设计功能主要时作为密钥存储设备，即缺乏
-        硬件加速的HSM。这类设备是高安全的，但是不需要在加密时比系统
-        CPU更快 &mdash; 通常，他们会更慢。因此，最高效的方法是仅将其
-        用于要求访问安全私钥的加密功能，而其它所有计算密集性操作都使用
-        系统CPU。AEP Keyper是这类设备的一个例子。</para>
+        <para>
+          'sign-only'用于那些设计功能主要是作为密钥存储设备，而缺乏
+          硬件加速的HSM。这类设备是高安全的，但是不需要在加密时比系统
+          CPU更快 &mdash; 通常，他们会更慢。因此，最高效的方法是仅将其
+          用于要求访问安全私钥的加密功能，而其它所有计算密集性操作都使用
+          系统CPU。AEP Keyper是这类设备的一个例子。
+        </para>
       </listitem>
     </itemizedlist>
     <para>修改的OpenSSL代码包含在BIND 9发行版中，以针对最新OpenSSL版本的带上下

@@ -28,7 +28,7 @@
   </refmeta>
   <refnamediv>
     <refname><application>named-rrchecker</application></refname>
-    <refpurpose>A syntax checker for individual DNS resource records</refpurpose>
+    <refpurpose>一个针对单个DNS资源记录的语法检查器</refpurpose>
   </refnamediv>
 
   <docinfo>
@@ -53,36 +53,32 @@
   </refsynopsisdiv>
 
   <refsect1>
-    <title>DESCRIPTION</title>
+    <title>描述</title>
     <para><command>named-rrchecker</command>
-     read a individual DNS resource record from standard input and checks if it
-     is syntactically correct.
+     从标准输入读取单个DNS资源记录并检查其在语句构成上是否正确。
     </para>
     <para>
-      The <option>-h</option> prints out the help menu.
+      <option>-h</option>打印输出标准菜单。
     </para>
     <para>
-      The <option>-o <replaceable class="parameter">origin</replaceable></option>
-      option specifies a origin to be used when interpreting the record.
+      <option>-o <replaceable class="parameter">origin</replaceable></option>
+      选项指定一个用于解释记录时的原点。
     </para>
     <para>
-      The <option>-p</option> prints out the resulting record in canonical
-      form.  If there is no canonical form defined then the record will be
-      printed in unknown record format.
+      <option>-p</option>以正规形式打印输出结果记录。如果不存在正规形式的
+      定义，就以未知记录格式打印记录。
     </para>
     <para>
-      The <option>-u</option> prints out the resulting record in unknown record
-      form.
+      <option>-u</option>以未知记录形式打印输出结果记录。
     </para>
     <para>
-      The <option>-C</option>, <option>-T</option> and <option>-P</option>
-      print out the known class, standard type and private type mnemonics
-      respectively.
+      <option>-C</option>，<option>-T</option>和<option>-P</option>分别打印
+      输出已知的类，标准类型和私有类型助记符。
     </para>
   </refsect1>
 
   <refsect1>
-    <title>SEE ALSO</title>
+    <title>参见</title>
     <para>
       <citetitle>RFC 1034</citetitle>,
       <citetitle>RFC 1035</citetitle>,

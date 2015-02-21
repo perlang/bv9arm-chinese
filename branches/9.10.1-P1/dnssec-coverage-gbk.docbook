@@ -19,7 +19,7 @@
 
 <refentry id="man.dnssec-coverage">
   <refentryinfo>
-    <date>March 21, 2013</date>
+    <date>January 11, 2014</date>
   </refentryinfo>
 
   <refmeta>
@@ -55,7 +55,7 @@
   </refsynopsisdiv>
 
   <refsect1>
-    <title>DESCRIPTION</title>
+    <title>描述</title>
     <para><command>dnssec-coverage</command>
       验证一个给定的区或一个区集合的DNSSEC密钥是正确设置了定时元数据以确保
       将来没有DNSSEC覆盖的间隔。

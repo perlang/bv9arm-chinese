@@ -2,7 +2,7 @@
                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004, 2005, 2007, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004, 2005, 2007, 2013, 2014  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000, 2001  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -20,7 +20,7 @@
 
 <refentry id="man.rndc.conf">
   <refentryinfo>
-    <date>June 18, 2007</date>
+    <date>March 14, 2013</date>
   </refentryinfo>
 
   <refmeta>
@@ -39,6 +39,7 @@
       <year>2004</year>
       <year>2005</year>
       <year>2007</year>
+      <year>2013</year>
       <year>2014</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
@@ -112,18 +113,19 @@
     </para>
     <para>
       <option>key</option>语句以一个标识密钥名字的字符串开始。这个
-	  语句有两个子句。<option>algorithm</option>定义
-	  <command>rndc</command>用到的加密算法；当前仅支持HMAC-MD5。
-	  它后跟一个secret子句，后者包含base-64编码的算法的加密密钥。
-	  这个base-64字符串使用双引号引起来。
+      语句有两个子句。<option>algorithm</option>定义
+      <command>rndc</command>用到的认证算法；当前仅支持HMAC-MD5（为了兼容），
+      HMAC-SHA1，HMAC-SHA224，HMAC-SHA256（缺省），HMAC-SHA384和HMAC-SHA512。
+      它后跟一个secret子句，后者包含base-64编码的算法的认证密钥。
+      这个base-64字符串使用双引号引起来。
     </para>
     <para>
       有两个通常的方式来生成密钥的base-64字符串。BIND 9程序
-	  <command>rndc-confgen</command>可以用来生成一个随机密钥，或者
-	  <command>mmencode</command>程序，也叫做
-	  <command>mimencode</command>，可以用来生成一个已知输入的base-64
-	  字符串。<command>mmencode</command>不随BIND 9提供，但是它在许多
-	  系统上是可用的。关于每个命令行的样例，参见例子部份。
+      <command>rndc-confgen</command>可以用来生成一个随机密钥，或者
+      <command>mmencode</command>程序，也叫做
+      <command>mimencode</command>，可以用来生成一个已知输入的base-64
+      字符串。<command>mmencode</command>不随BIND 9提供，但是它在许多
+      系统上是可用的。关于每个命令行的样例，参见例子部份。
     </para>
   </refsect1>
 
@@ -152,14 +154,14 @@
     </para>
     <para><programlisting>
       key samplekey {
-        algorithm       hmac-md5;
+        algorithm       hmac-sha256;
         secret          "6FMfj43Osz4lyb24OIe2iGEz9lf1llJO+lz";
       };
 </programlisting>
     </para>
     <para><programlisting>
       key testkey {
-        algorithm	hmac-md5;
+        algorithm	hmac-sha256;
         secret		"R3HI8P6BKw9ZwXwN3VZKuQ==";
       };
     </programlisting>
@@ -167,16 +169,16 @@
 
     <para>
       在上面的例子中，<command>rndc</command>缺省将使用
-	  localhost(127.0.0.1)作为服务器，和名为samplekey的密钥。到服务器
-	  localhost的命令将使用密钥samplekey，后者也必须使用同样的名字和
-	  密钥定义在服务器的配置文件中。key语句指明samplekey使用HAMC-MD5
-	  算法，它的secret子句包含这个HMAC-MD5密钥的base-64编码，并被包括
-	  在双引号中。
+      localhost(127.0.0.1)作为服务器，和名为samplekey的密钥。到服务器
+      localhost的命令将使用密钥samplekey，后者也必须使用同样的名字和
+      密钥定义在服务器的配置文件中。key语句指明samplekey使用HAMC-SHA256
+      算法，它的secret子句包含这个HMAC-SHA256密钥的base-64编码，并被包括
+      在双引号中。
     </para>
     <para>
       如果使用<command>rndc -s testserver</command>，
-	  <command>rndc</command>将会连接到服务器localhost的5353端口，并
-	  使用密钥testkey。
+      <command>rndc</command>将会连接到服务器localhost的5353端口，并
+      使用密钥testkey。
     </para>
     <para>
       使用<command>rndc-confgen</command>生成一个随机密钥：
@@ -185,9 +187,9 @@
     </para>
     <para>
       一个完整的<filename>rndc.conf</filename>文件，包含随机生成
-	  的密钥，将会被写到标准输出。还会打印出为
-	  <filename>named.conf</filename>提供的被注释掉的
-	  <option>key</option> 和<option>controls</option>语句。
+      的密钥，将会被写到标准输出。还会打印出为
+      <filename>named.conf</filename>提供的被注释掉的
+      <option>key</option> 和<option>controls</option>语句。
     </para>
     <para>
       使用<command>mmencode</command>生成一个base-64密钥：
@@ -200,9 +202,9 @@
     <title>名字服务器配置</title>
     <para>
       名字服务器必须被配置成接受rndc连接和识别
-	  <filename>rndc.conf</filename>文件中所指定的密钥，这通过在
-	  <filename>named.conf</filename>中的controls语句来实现。详细情况参见
-	  BIND 9管理员参考手册中的<option>controls</option>语句部份。
+      <filename>rndc.conf</filename>文件中所指定的密钥，这通过在
+      <filename>named.conf</filename>中的controls语句来实现。详细情况参见
+      BIND 9管理员参考手册中的<option>controls</option>语句部份。
     </para>
   </refsect1>
 

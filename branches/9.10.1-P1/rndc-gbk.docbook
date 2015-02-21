@@ -20,7 +20,7 @@
 
 <refentry id="man.rndc">
   <refentryinfo>
-    <date>December 04, 2013</date>
+    <date>August 15, 2014</date>
   </refentryinfo>
 
   <refmeta>
@@ -58,6 +58,7 @@
       <arg><option>-k <replaceable class="parameter">key-file</replaceable></option></arg>
       <arg><option>-s <replaceable class="parameter">server</replaceable></option></arg>
       <arg><option>-p <replaceable class="parameter">port</replaceable></option></arg>
+      <arg><option>-q</option></arg>
       <arg><option>-V</option></arg>
       <arg><option>-y <replaceable class="parameter">key_id</replaceable></option></arg>
       <arg choice="req">command</arg>
@@ -74,9 +75,11 @@
     <para>
       <command>rndc</command>通过一个TCP连接与名字服务器通信，发送经过数字签名
       认证的命令。在当前版本的<command>rndc</command>和<command>named</command>
-      中，唯一支持的认证算法是HMAC-MD5，在连接的两端使用共享密钥。它为命令请求
-      和名字服务器的响应提供TSIG类型的认证。所有经由通道发送的命令都必须被一个
-      服务器所知道的key_id签名。
+      中，只支持的认证算法是HMAC-MD5（为了兼容），HMAC-SHA1，HMAC-SHA224，
+      HMAC-SHA256（缺省），HMAC-SHA384和HMAC-SHA512。
+      他们在连接的两端使用共享密钥。
+      它为命令请求和名字服务器的响应提供TSIG类型的认证。所有经由通道发送的命令
+      都必须被一个服务器所知道的key_id签名。
     </para>
     <para>
       <command>rndc</command>读一个配置文件来决定如何联系名字服务器并决定使用哪
@@ -141,6 +144,15 @@
             发送命令到TCP端口
             <replaceable class="parameter">port</replaceable>，
             以取代BIND 9的缺省控制通道端口，953。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-q</term>
+        <listitem>
+          <para>
+            安静模式：从服务器返回的消息文本将不被打印，除非存在错误。
           </para>
         </listitem>
       </varlistentry>
@@ -293,6 +305,17 @@
        </varlistentry>
 
        <varlistentry>
+         <term><userinput>scan</userinput></term>
+         <listitem>
+           <para>
+             扫描可用网络接口列表以查看变化，不执行完全的
+             <command>reconfig</command>，也不等待
+             <command>interface-interval</command>计时器。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
          <term><userinput>sync <optional>-clean</optional> <optional><replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></optional></userinput></term>
          <listitem>
            <para>
@@ -319,6 +342,18 @@
              即使其已经被修改过。这在有大量区的时候可以比完全的
              <command>reload</command>更快，因为它避免了去检查
              区文件的修改时间。
+           </para>
+         </listitem>
+       </varlistentry>
+
+       <varlistentry>
+         <term><userinput>stats</userinput></term>
+         <listitem>
+           <para>
+             显示给定区的当前状态，包含主文件名以及它加载时包含的所有文件，
+             最近加载的时间，当前序列号，节点数目，区是否支持动态更新，区
+             是否作了DNSSEC签名，它是否使用动态DNSSEC密钥管理或inline签名，
+             以及区的预期刷新或过期时间。
            </para>
          </listitem>
        </varlistentry>
@@ -448,9 +483,8 @@
             <term><userinput>flushtree</userinput> <replaceable>name</replaceable> <optional><replaceable>view</replaceable></optional> </term>
             <listitem>
               <para>
-                刷新来自服务器的DNS缓存的给定名字，及其所有子域。注意这个动作
-                <emphasis>不会</emphasis>影响服务器的名字服务器地址库或异常
-                服务器缓存。
+                刷新来自服务器的DNS缓存，地址库或异常服务器缓存中的给定名字，
+                及其所有子域。
               </para>
             </listitem>
           </varlistentry>
@@ -545,12 +579,19 @@
 	  </varlistentry>
 
 	  <varlistentry>
-	    <term><userinput>delzone <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> </userinput></term>
+            <term><userinput>delzone <optional>-clean</optional> <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> </userinput></term>
             <listitem>
               <para>
                 在服务器运行时删除一个区。只有最初由
                 <command>rndc addzone</command>所增加的区才能用这种
                 方式删除。
+              </para>
+              <para>
+                如果指定了<option>-clean</option>，区的主文件（和日志文件，
+                如果有的话）将会随着区一块被删除。没有
+                <option>-clean</option>选项时，区文件必须手动清除。（如果
+                区是"slave"或"stub"类型时，<command>rndc delzone</command>
+                命令的输出将报告需要清理的文件。）
               </para>
             </listitem>
           </varlistentry>
@@ -584,7 +625,9 @@
             <literal>1</literal>，取决与你是否希望设置NSEC3链中的opt-out位。
             <option>iterations</option>定义额外次数的数字，它应用于生成NSEC3
             hash的算法中。<option>salt</option>是一个表示成十六机制数的一串
-            数据，或者一个连字符（‘-’）表示不使用salt。
+            数据，一个连字符（‘-’）表示不使用salt，或者关键字
+            <literal>auto</literal>，它使<command>named</command>生成一个
+            随机64位salt。
           </para>
           <para>
             例如，要创建一个NSEC3链，使用SHA-1 hash算法，没有opt-out标志，

@@ -20,7 +20,7 @@
 
 <refentry id="man.named">
   <refentryinfo>
-    <date>February 20, 2014</date>
+    <date>February 19, 2014</date>
   </refentryinfo>
 
   <refmeta>
@@ -62,6 +62,7 @@
       <arg><option>-6</option></arg>
       <arg><option>-c <replaceable class="parameter">config-file</replaceable></option></arg>
       <arg><option>-d <replaceable class="parameter">debug-level</replaceable></option></arg>
+      <arg><option>-D <replaceable class="parameter">string</replaceable></option></arg>
       <arg><option>-E <replaceable class="parameter">engine-name</replaceable></option></arg>
       <arg><option>-f</option></arg>
       <arg><option>-g</option></arg>
@@ -142,14 +143,28 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-D <replaceable class="parameter">string</replaceable></term>
+        <listitem>
+          <para>
+	    指定一个用于在一个进程列表中标识一个<command>named</command>
+            实例的字符串。<replaceable class="parameter">string</replaceable>
+            的内容是未检查过的。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-E <replaceable class="parameter">engine-name</replaceable></term>
         <listitem>
           <para>
-            为其所支持的加密操作使用一个加密硬件（OpenSSL引擎），
-            例如用来自一个安全密钥储存点的私钥重新签名。当使用PKCS#11
-            支持编译并且
-            <replaceable class="parameter">engine-name</replaceable>
-            缺省为pkcs11时，空名字将其重置为没有引擎。
+            如果适用，指定要使用的加密硬件。
+          </para>
+          <para>
+            当BIND使用带OpenSSL PKCS#11支持构建时，这个缺省值是字符串
+            "pkcs11"，它标识一个可以驱动一个加密加速器或硬件服务模块的
+            OpenSSL引擎，当BIND使用带原生PKCS#11加密
+            （--enable-native-pkcs11）构建时，它缺省是由"--with-pkcs11"
+            指定的PKCS#11提供者库的路径。
           </para>
         </listitem>
       </varlistentry>
@@ -231,6 +246,8 @@
 	  <para>
 	    允许<command>named</command>使用最大数量直到
             <replaceable class="parameter">#max-socks</replaceable>的套接字。
+            在使用缺省配置选项构建的系统上缺省值为4096，在使用
+            "configure --with-tuning=large"构建的系统上缺省值为21000。
 	  </para>
           <warning>
             <para>

@@ -2,7 +2,7 @@
                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004, 2005, 2007, 2009, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004, 2005, 2007, 2009, 2013, 2014  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2001, 2003  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -20,7 +20,7 @@
 
 <refentry id="man.rndc-confgen">
   <refentryinfo>
-    <date>June 15, 2009</date>
+    <date>March 14, 2013</date>
   </refentryinfo>
 
   <refmeta>
@@ -40,6 +40,7 @@
       <year>2005</year>
       <year>2007</year>
       <year>2009</year>
+      <year>2013</year>
       <year>2014</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
@@ -54,6 +55,7 @@
     <cmdsynopsis>
       <command>rndc-confgen</command>
       <arg><option>-a</option></arg>
+      <arg><option>-A <replaceable class="parameter">algorithm</replaceable></option></arg>
       <arg><option>-b <replaceable class="parameter">keysize</replaceable></option></arg>
       <arg><option>-c <replaceable class="parameter">keyfile</replaceable></option></arg>
       <arg><option>-h</option></arg>
@@ -119,10 +121,21 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-A <replaceable class="parameter">algorithm</replaceable></term>
+        <listitem>
+          <para>
+            指定用于TSIG密钥的算法。可用的选择有：
+            hmac-md5，hmac-sha1，hmac-sha224，hmac-sha256,
+            hmac-sha384和hmac-sha512。缺省是hmac-md5。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-b <replaceable class="parameter">keysize</replaceable></term>
         <listitem>
           <para>
-            指定认证密钥的位数。必须在1到512位之间；缺省是128。
+            指定认证密钥的位数。必须在1到512位之间；缺省是散列的大小。
           </para>
         </listitem>
       </varlistentry>

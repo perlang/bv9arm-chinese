@@ -72,6 +72,8 @@
       <arg><option>-r <replaceable class="parameter">udpretries</replaceable></option></arg>
       <arg><option>-R <replaceable class="parameter">randomdev</replaceable></option></arg>
       <arg><option>-v</option></arg>
+      <arg><option>-T</option></arg>
+      <arg><option>-P</option></arg>
       <arg><option>-V</option></arg>
       <arg>filename</arg>
     </cmdsynopsis>
@@ -209,6 +211,21 @@
       随机数据的文件名，用来替代缺省值。特定值
       <filename>keyboard</filename>指示使用键盘输入。
       这个选项可以指定多次。
+    </para>
+    <para>
+      其它类型可以使用"TYPEXXXXX"键入，这里"XXXXX"是不以零开始的类型的
+      十进制值。如果有资源数据（rdata），它将被分析成使用UNKNOWN资源数据格式，
+      （&lt;backslash&gt; &lt;hash&gt; &lt;space&gt; &lt;length&gt;
+      &lt;space&gt; &lt;hexstring&gt;）。
+    </para>
+    <para>
+      The <option>-T</option> and <option>-P</option> options print out
+      lists of non-meta types for which the type-specific presentation
+      formats are known.  <option>-T</option> prints out the list of
+      IANA-assigned types.  <option>-P</option> prints out the list of
+      private types specific to <command>named</command>.  These options
+      may be combined.  <command>nsupdate</command> will exit after the
+      lists are printed.
     </para>
     <para>
       -V选项使<command>nsupdate</command>打印版本号并退出。

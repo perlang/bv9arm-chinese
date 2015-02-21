@@ -165,11 +165,11 @@
 	<term>-z <replaceable class="parameter">zone</replaceable></term>
 	<listitem>
 	  <para>
-	    区模式：例子<command>named.conf</command>文本展示了如何
-	    为所指定的<replaceable class="parameter">zone</replaceable>
-	    设置一个更新策略，使用“zonesub”名字类型，允许更新
-	    <replaceable class="parameter">zone</replaceable>内所有
-	    子域。
+	    区模式：例子<command>named.conf</command>文本展示了如何使用
+            "zonesub"名字类型为所指定的
+            <replaceable class="parameter">zone</replaceable>
+	    设置一个更新策略，允许更新
+	    <replaceable class="parameter">zone</replaceable>内所有子域。
 	    这个选项不能与<option>-s</option>选项同时使用。
 	  </para>
 	</listitem>

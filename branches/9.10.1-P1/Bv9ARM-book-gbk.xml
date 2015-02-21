@@ -2961,6 +2961,53 @@ and perl</programlisting>
           </tgroup>
         </informaltable>
 
+	<para>
+	  当<acronym>BIND</acronym> 9是带GeoIP支持构建时，ACL也可用于
+          地理访问限制。通过指定一个如下形式的ACL元素可以达成：
+	  <command>geoip <optional>db <replaceable>database</replaceable></optional> <replaceable>field</replaceable> <replaceable>value</replaceable></command>
+	</para>
+	<para>
+	  <replaceable>field</replaceable>指示在一个匹配时搜索哪个字段。可用的
+          字段为"country"，"region"，"city"，"continent"，"postal"（邮政编码），
+	  "metro"（城区代码），"area"（地区编码），"tz"（时区），"isp"，"org"，
+          "asnum"，"domain"和"netspeed"。
+	</para>
+	<para>
+	  <replaceable>value</replaceable>是要在数据库中搜索的值。一个包含空格
+          或其它特殊字符的字符串必须使用引号。如果是一个"asnum"搜索，需要使用
+          "ASNNNN"开始的字符串，否则必须使用完整描述
+          （例如，"ASNNNN 某某公司名"）。如果是一个"country"搜索并且字符串是
+          两个字符长度，它必须是一个标准的ISO-3166-1双字符国家代码，如果是
+          三个字符长度，它必须是一个ISO-3166-1三字符国家代码；否则就应该是国家
+          的全称。类似地，如果是一个"region"搜索并且字符串是两个字符长度，它
+          必须是一个标准的双字符州或省的缩写；否则它就是州或省的全称。
+	</para>
+	<para>
+	  <replaceable>database</replaceable>字段指示匹配时要搜索哪个GeoIP
+          数据库。大多数情况这不是必须的，因为大多数搜索字段只能在单个数据库
+          中找到。然而，对一个国家的搜索可以由"city"，"region"或"country"数据库
+          回答，对区域的搜索（例如，州或省）可以由"city"或"region"数据库回答。
+          对这些搜索类型，指定一个<replaceable>database</replaceable>将强制
+          请求由那个数据库而不是别的数据库回答。如果未指定
+          <replaceable>database</replaceable>，这些请求将会按照顺序由"city"
+          数据库回答，如果安装了这个数据库，或者由"region"数据库回答，如果
+          安装了这个数据库，或者由"country"数据库回答。
+	</para>
+	<para>
+          一些GeoIP ACL的例子：
+	</para>
+	<programlisting>geoip country US;
+geoip country JAP;
+geoip db country country Canada;
+geoip db region region WA;
+geoip city "San Francisco";
+geoip region Oklahoma;
+geoip postal 95062;
+geoip tz "America/Los_Angeles";
+geoip org "Internet Systems Consortium";
+</programlisting>
+
+
       </sect2>
       <sect2>
         <title><command>controls</command>语句语法</title>
@@ -4691,7 +4738,31 @@ options {
             <listitem>
               <para>
                 关掉在指定名下的指定DNSSEC算法。允许使用多个
-                <command>disable-algorithms</command>语句。只有最特殊的会生效。
+                <command>disable-algorithms</command>语句。
+		只有最与<command>disable-algorithms</command>匹配的子句将被用于
+                决定使用哪个算法。
+	      </para>
+	      <para>
+		如果所有支持的算法都被关闭，由
+                <command>disable-algorithms</command>所覆盖的区将被视为
+                不安全的。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><command>disable-ds-digests</command></term>
+	    <listitem>
+	      <para>
+		在指定的名字及之下的名字关闭指定的DS/DLV摘要类型。
+                允许使用多个<command>disable-ds-digests</command>语句。
+		只有最与<command>disable-ds-digests</command>匹配的子句将被用于
+                决定使用哪个摘要类型。
+	      </para>
+	      <para>
+		如果所有支持的摘要类型都被关闭，由
+                <command>disable-ds-digests</command>所覆盖的区将被视为
+                不安全的。
               </para>
             </listitem>
           </varlistentry>
@@ -4857,6 +4928,29 @@ options {
 	    </listitem>
 	  </varlistentry>
 
+	  <varlistentry>
+	    <term><command>max-zone-ttl</command></term>
+	    <listitem>
+	      <para>
+		指定一个最大可能的TTL值。在使用一个
+                <option>masterfile-format</option>为
+                <constant>text</constant>或者<constant>raw</constant>装载一个
+                区文件时，任何带有超过<option>max-zone-ttl</option>的TTL值的
+                记录都将导致区被拒绝。
+	      </para>
+	      <para>
+		这在DNSSEC签名区中很有用，因为在轮转到一个新DNSKEY时，旧密钥
+                需要保持可用，直到RRSIG记录从缓存中过期。
+                <option>max-zone-ttl</option>选项保证区中的最大TTL不会比所
+                设置的值更大。
+	      </para>
+	      <para>
+		（注意：因为<constant>map</constant>格式的文件直接装载到
+                内存中，这个选项不适应它。）
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
           <varlistentry>
             <term><command>zone-statistics</command></term>
             <listitem>
@@ -4878,8 +4972,11 @@ options {
               <para>
                 为向后兼容早期的BIND 9版本，<command>zone-statistics</command>
                 选项也可接受<userinput>yes</userinput>或
-                <userinput>no</userinput>，分别与<userinput>full</userinput>
-                和<userinput>terse</userinput>有同样的效果。
+                <userinput>no</userinput>；<userinput>yes</userinput>与
+                <userinput>full</userinput>有同样的含义。
+                对于<acronym>BIND</acronym> 9.10，<userinput>no</userinput>与
+                <userinput>none</userinput>有同样的含义；之前的版本，它与
+                <userinput>terse</userinput>相同。
               </para>
             </listitem>
           </varlistentry>
@@ -5315,6 +5412,41 @@ options {
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>request-sit</command></term>
+	      <listitem>
+		<para>
+		  如果为<userinput>yes</userinput>，请求中会设置一个SIT
+                  （Source Identity Token，源特征符号）EDNS选项。如果解析器
+                  之前与服务器通信过，之前返回的SIT会被发送。这个用于让服务器
+                  判断这个解析器之前是否来访问过。
+                  A resolver sending the correct SIT is
+		  assumed not to be an off-path attacker sending a
+		  spoofed-source query; the query is therefore
+		  unlikely to be part of a reflection/amplification
+		  attack, so resolvers sending a correct SIT option
+		  are not subject to response rate limiting (RRL).
+
+		  Resolvers which do not send a correct SIT option
+		  may be limited to receiving smaller responses via
+		  the <command>nosit-udp-size</command> option.
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>sit-secret</command></term>
+	      <listitem>
+		<para>
+                  如果设置，这是一个用于在一个任意播集群内生成和验证
+                  源特征符号EDNS选项的共享秘钥。如果未设置，系统将在
+                  启动时生成一个随机秘钥。共享密钥被编码成一个十六进制
+                  字符串，对AES128为128位，对SHA1为160位，对SHA256为
+                  256位。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>rfc2308-type1</command></term>
               <listitem>
@@ -5505,6 +5637,17 @@ options {
                 </para>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>filter-aaaa-on-v6</command></term>
+	      <listitem>
+		<para>
+		  与<command>filter-aaaa-on-v4</command>相同，除了它过滤来自
+                  IPv6的客户端而不是IPv4的客户端的AAAA响应。要过滤所有响应，
+                  将两个选项都设置为<userinput>yes</userinput>。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>ixfr-from-differences</command></term>
@@ -7301,16 +7444,38 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <term><command>edns-udp-size</command></term>
               <listitem>
                 <para>
-		  设置所广播的EDNS UDP缓冲的字节数，以控制接收包的大小。有效值
-		  为从512到4096（超出这个范围的值将被静默地调整）。缺省值
-		  是4096。设置<command>edns-udp-size</command>为
+                  设置初始广告的以字节计的EDNS UDP缓存的大小，用以控制从
+                  权威服务器接收的作为递归响应的包的大小。
+                  有效值为从512到4096（超出这个范围的值将被静默地调整为范围内
+                  最接近的值）。缺省值是4096。
+                </para>
+                <para>
+                  设置<command>edns-udp-size</command>为
 		  非缺省值的通常的原因是为了让UDP回答穿过坏的防火墙，这样的防火
-		  墙阻止碎包和（或）阻止大于512字节的UDP包通过。
+		  墙阻止碎包和（或）阻止大于512字节的UDP DNS包通过。
                 </para>
 		<para>
-		  <command>named</command>将会回退到使用512字节，如果其用
-		  初始值得到一串超时时。不提供512字节是为了鼓励站点（管理员）
-		  解决其防火墙的问题。太小的EDNS UDP包将会导致过度使用TCP。
+		  当<command>named</command>首次请求一个远程服务器时，它会广告
+                  一个512字节的UDP缓冲区，这样在首次试探中有最大的成功机会。
+		</para>
+		<para>
+                  如果这个初始响应超时，<command>named</command>会以普通DNS
+                  重试 ，如果重试成功，它就会得出这个服务器不支持EDNS的结论。
+                  在使用EDNS时足够的失败和使用普通DNS时足够的成功之后，
+                  <command>named</command>在将来同这台服务器通信时缺省使用普通
+                  DNS。（<command>named</command>将会周期性地发送EDNS请求来查看
+                  情况是否有改善。）
+		</para>
+		<para>
+                  另外，如果初始的广告带512字节缓存的EDNS的请求成功后，
+                  <command>named</command>将逐步在后继的请求中广告一个更大的
+                  缓存，直到响应超时或者达到<command>edns-udp-size</command>。
+		</para>
+		<para>
+                  <command>named</command>使用的缺省缓存大小为512，1232，1432和
+                  4096，但不超过<command>edns-udp-size</command>。
+                  （选择值1232和1432是为了让一个IPv4/IPv6封装的UDP消息能够不被
+                  分片地在最小MTU的以太网和IPv6网络中发送。）
 		</para>
               </listitem>
             </varlistentry>
@@ -7320,8 +7485,15 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <listitem>
                 <para>
 		  设置<command>named</command>所发送的EDNS UDP消息的最大字节数。
-		  有效值为从512到4096（超出这个范围的值将被静默地调整）。缺省值
-		  是4096。设置<command>max-udp-size</command>
+		  有效值为从512到4096（超出这个范围的值将被静默地调整为范围内
+                  最接近的值）。缺省值是4096。
+                </para>
+                <para>
+                  这个值应用在一个服务器发出的响应；要设置请求中广告的缓存大小，
+                  参见<command>edns-udp-size</command>。
+                </para>
+                <para>
+                  设置<command>max-udp-size</command>
 		  为非缺省值的通常的原因是为了让UDP回答穿过坏的防火墙，这样的防
 		  火墙阻止碎包和（或）阻止大于512字节的UDP包通过。
                   这是独立于所广播的接收缓存
@@ -7446,6 +7618,32 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
             </varlistentry>
 	  </variablelist>
 
+	    <varlistentry>
+	      <term><command>prefetch</command></term>
+	      <listitem>
+		<para>
+		  当收到一个有缓存且即将过期的请求，<command>named</command>
+                  可以立即从权威服务器刷新数据，确保缓存总有答复可用。
+		</para>
+		<para>
+		  <option>prefetch</option>指定"trigger" TTL值，在这个值将
+                  进行当前请求的预取：当一个低TTL值的缓存记录在查询过程中
+                  遇到，它将被刷新。有效的触发TTL值是1到10秒。超过10秒的值
+                  将被静默地减到10。
+                  设置一个触发TTL为零（0）将关闭预取功能。
+                  缺省的触发TTL是<literal>2</literal>。
+		</para>
+		<para>
+		  一个可选的第二参数指定"eligibility" TTL：对于一个适宜预取
+                  的记录可接受的最小<emphasis>original</emphasis> TTL值。
+                  适宜TTL必须至少比触发TTL大六秒：如果不是这样，
+                  <command>named</command>将静默地向大调整。
+                  缺省的适宜TTL是<literal>9</literal>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+	  </variablelist>
+
         </sect3>
 
         <sect3 id="builtin">
@@ -7461,7 +7659,8 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
             这个视图，但是有一些是局部被覆盖的：<command>notify</command>，
             <command>recursion</command>和
             <command>allow-new-zones</command>总是被设置为
-            <userinput>no</userinput>。
+            <userinput>no</userinput>，并且<command>rate-limit</command>被设置
+            为允许三个响应每秒。
           </para>
           <para>
             如果你需要关掉这些区，使用下面的选项，或者通过定义一个
@@ -7906,66 +8105,112 @@ deny-answer-aliases { "example.net"; };
 	  <para>
             响应策略区在视图中的<command>response-policy</command>选项中
             命名，或者当视图中没有response-policy选项时在全局选项中命名。
-	    RPZ是普通的DNS区，包含资源记录集，在允许时可以进行普通的查询。
+	    响应策略区是普通的DNS区，包含资源记录集，
+            在允许时可以进行普通的查询。
             通常最好使用某些规则限制那些请求，如：
 	    <command>allow-query { localhost; };</command>。
 	  </para>
 
 	  <para>
-	    在RPZ记录中编码了四种策略触发器，QNAME，IP，NSIP和NSDNAME。
-            QNAME RPZ由请求中的query name（请求名）所触发，并且CNAME记录
-            所指向的目标被解析用以生成响应。
-            一个QNAME RPZ记录的属主名是与RPZ相对的请求名。
+            <command>response-policy</command>选项可以支持多个策略区。
+            为最大化性能，使用一个基数树来快速识别包含与当前查询匹配的触发器
+            的响应策略区。这强制一个<command>response-policy</command>选项中
+            策略区的数量上限为32；超过那个数就是一个配置错误。
 	  </para>
 
 	  <para>
-	    第二种类型的RPZ触发器是一个IP地址，出现在一个响应的ANSWER部分中的
-            一个A和AAAA记录。
+	    在RPZ记录中可以编码五种策略触发器。
+	    <variablelist>
+	      <varlistentry>
+		<term><command>RPZ-CLIENT-IP</command></term>
+		<listitem>
+		  <para>
+                    IP记录由DNS客户端的IP地址触发。
+                    客户端IP地址触发器被编码到的记录中，其属主名是
+                    <userinput>rpz-client-ip</userinput>的子域名，它相对于
+                    策略区原点名字，并编码一个地址或地址块。
+                    IPv4地址被表示为
+	            <userinput>prefixlength.B4.B3.B2.B1.rpz-ip</userinput>。
+                    IPv4前缀长度必须在1和32之间。
+	            所有四个字节，B4，B3，B2和B1，都必须出现。
+	            B4是IPv4地址中的最低字节的十进制数值，如同在IN-ADDR.ARPA
+                    中一样。
+		  </para>
+		  <para>
+	            IPv6被编码成类似于标准的IPv6文本表示格式，
+	            <userinput>prefixlength.W8.W7.W6.W5.W4.W3.W2.W1.rpz-ip</userinput>。
+	            W8，...，W1中的每个都是一个一到四位的十六进制数，表示IPv6
+                    地址中的16位，如同IPv6地址的标准文本表示法，但是是如同
+                    IN-ADDR.ARPA中的反向表示的。
+	            所有的8个双字节都必须出现，除非一个连续值为零的双字节集合，
+                    后者被替换为<userinput>.zz.</userinput>，类似于标准IPv6文本
+                    编码中的双冒号（::）。
+	            IPv6前缀长度必须在64和128之间。
+		  </para>
+		</listitem>
+	      </varlistentry>
 
-            IP地址触发器被编码到的记录中，其属主名是
-            <userinput>rpz-ip</userinput>的子域名，它
-            相对于RPZ原点名字，并编码一个地址或地址块。
+	      <varlistentry>
+		<term><command>QNAME</command></term>
+		<listitem>
+		  <para>
+                    QNAME策略记录由请求中的请求名所触发，并且CNAME记录所指向的
+                    目标被解析用以生成响应。
+                    一个QNAME策略记录的属主名是与策略区相对的请求名。
+		  </para>
+		</listitem>
+	      </varlistentry>
 
-            IPv4触发器地址被编码为
-	    <userinput>prefixlength.B4.B3.B2.B1.rpz-ip</userinput>。
-            前缀长度（译注：prefixlength，下同）必须在1和32之间。
-	    所有四个字节，B4，B3，B2和B1，都必须出现。
-	    B4是IPv4地址中的最低字节的十进制数值，如同在IN-ADDR.ARPA一样。
-	    IPv6被编码成类似于标准的IPv6文本表示格式，
-	    <userinput>prefixlength.W8.W7.W6.W5.W4.W3.W2.W1.rpz-ip</userinput>。
-	    W8，...，W1中的每个都是一个一到四位的十六进制数，表示IPv6地址中的
-            16位，如同IPv6地址的标准文本表示法，但是是如同IN-ADDR.ARPA中的
-            反向表示的。
-	    所有的8个双字节都必须出现，除非连续的值为零的双字节，后者被替换为
-            <userinput>.zz.</userinput>，类似于标准IPv6文本编码中的双冒号
-            （::）。
-	    前缀长度必须在1和128之间。
+	      <varlistentry>
+		<term><command>RPZ-IP</command></term>
+		<listitem>
+		  <para>
+                    IP触发器是一个响应中ANSWER部份中的一个A或AAAA记录中的
+                    IP地址。
+                    它们被编码成类似客户端IP触发器，除了作为
+                    <command>rpz-ip</command>的子域名之外。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>RPZ-NSDNAME</command></term>
+		<listitem>
+		  <para>
+	            NSDNAME触发器用权威服务器的名字去匹配请求名，一个请求名的
+                    父域，一个请求名的CNAME或者一个CNAME的父域。它们被编码成
+                    相对于RPZ原点的<userinput>rpz-nsdname</userinput>的子域名。
+	            NSIP触发器用A和AAAA资源记录集中的IP地址匹配域名，后者可以与
+                    NSDNAME策略记录比对。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>RPZ-NSIP</command></term>
+		<listitem>
+		  <para>
+                    NSIP触发器被编码成类似IP触发器，除了作为
+                    <userinput>rpz-nsip</userinput>的子域名之外。
+                    NSDNAME和NSIP触发器仅在名字至少带有
+                    <command>min-ns-dots</command>个点时才被检查。
+                    对非顶级域，<command>min-ns-dots</command>的缺省值是1。
+		  </para>
+		</listitem>
+	      </varlistentry>
 	  </para>
 
 	  <para>
-	    NSDNAME触发器用权威服务器的名字去匹配请求名，一个请求名的父域，
-	    一个请求名的CNAME或者一个CNAME的父域。它们被编码成相对于RPZ原点的
-	    <userinput>rpz-nsdomain</userinput>的子域名。
-	  </para>
-
-	  <para>
-	    NSIP触发器用A和AAAA资源记录集中的IP地址匹配域名，后者可以与
-            NSDNAME策略记录比对。NSIP触发器被编码成类似IP触发器，除了作为
-            <userinput>rpz-nsip</userinput>的子域名之外。
-            NSDNAME和NSIP触发器仅在名字至少带有<command>min-ns-dots</command>
-            个点时才被检查。
-            对非顶级域，<command>min-ns-dots</command>的缺省值是1。
-	  </para>
-
-	  <para>
-	    查询响应将与所有RPZ进行比对，所以两条或多条策略记录可以被一条响应
-            所触发。由于DNS响应可以根据至多一条策略记录被重写，必须选择一条策
-            略编码一个动作（除<command>DISABLED</command>策略之外）。
-	    根据下列顺序选择编码它们的触发器和策略：
+	    查询响应将与所有响应策略区进行比对，所以两条或多条策略记录可以被
+            一条响应所触发。由于DNS响应根据至多一条策略记录被重写，必须选择一条
+            策略编码一个动作（除<command>DISABLED</command>策略之外）。
+	    以下列顺序为重写选择编码它们的触发器或记录：
 	    <itemizedlist>
-	      <listitem>选择区中最先在响应策略选项中出现的触发器记录。
+	      <listitem>选择区中最先在<command>response-policy</command>选项中
+                出现的触发器记录。
 	      </listitem>
-	      <listitem>在单个区中，按QNAME，IP，NSDNAME，NSIP的顺序使用触发器。
+	      <listitem>在单个区中，按CLIENT-IP，QNAME，IP，NSDNAME，NSIP的顺序
+                使用触发器。
 	      </listitem>
 	      <listitem>在NSDNAME触发器中，优先使用匹配DNSSEC顺序下最小名字的
                 触发器。
@@ -8182,8 +8427,8 @@ example.com                 CNAME   rpz-tcp-only.
 	    （缺省是<command>responses-per-second</command>）。
 	    对一个给定的有效域名的任何及所有未定义的子域的请求而产生的
             NXDOMAIN错误，不考虑请求类型，都是同一的。
-	    它们由<command>nxdomain-per-second</command>限制
-	    （缺省是<command>responses-per-second</command>）。
+	    它们由<command>nxdomains-per-second</command>限制
+	    （缺省基于<command>responses-per-second</command>）。
             这控制某些使用随机域名的攻击，但能够在期望许多合法NXDOMAIN响应
             的服务器上被放松或关闭（设置为0），例如来自反垃圾黑名单。
             指向或授权到一个给定域名的服务器都是同一的并可以被
@@ -8482,6 +8727,20 @@ example.com                 CNAME   rpz-tcp-only.
             的<command>request-nsid</command>设置。
 	  </para>
         </sect2>
+
+	  <para>
+	    <command>request-sit</command>子句决定本地服务器在发送到其它服务器
+            的请求中是否要添加一个SIT EDNS选项。这覆盖视图或全局选项中的
+            <command>request-sit</command>设置。named
+	    The <command>request-sit</command> clause determines
+	    whether the local server will add a SIT EDNS option
+	    to requests sent to the server.  This overrides
+	    <command>request-sit</command> set at the view or
+	    option level.  Named may determine that SIT is not
+	    supported by the remote server and not add a SIT
+	    EDNS option to requests.
+	  </para>
+	</sect2>
 
       <sect2 id="statschannels">
         <title><command>statistics-channels</command>语句语法</title>
@@ -14842,9 +15101,11 @@ zone "example.com" {
       <title>手册页</title>
       <xi:include href="dig-utf8.docbook"/>
       <xi:include href="host-utf8.docbook"/>
+      <xi:include href="delv-utf8.docbook"/>
       <xi:include href="dnssec-checkds-utf8.docbook"/>
       <xi:include href="dnssec-coverage-utf8.docbook"/>
       <xi:include href="dnssec-dsfromkey-utf8.docbook"/>
+      <xi:include href="dnssec-importkey-utf8.docbook"/>
       <xi:include href="dnssec-keyfromlabel-utf8.docbook"/>
       <xi:include href="dnssec-keygen-utf8.docbook"/>
       <xi:include href="dnssec-revoke-utf8.docbook"/>
@@ -14855,6 +15116,7 @@ zone "example.com" {
       <xi:include href="named-checkzone-utf8.docbook"/>
       <xi:include href="named-utf8.docbook"/>
       <xi:include href="named-journalprint-utf8.docbook"/>
+      <xi:include href="named-rrchecker-utf8.docbook"/>
       <!-- named.conf.docbook and others? -->
       <xi:include href="nsupdate-utf8.docbook"/>
       <xi:include href="rndc-utf8.docbook"/>

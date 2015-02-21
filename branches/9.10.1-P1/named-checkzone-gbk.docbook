@@ -2,7 +2,7 @@
                "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
 	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004-2007, 2009-2011, 2013, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004-2007, 2009-2014  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000-2002  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -20,7 +20,7 @@
 
 <refentry id="man.named-checkzone">
   <refentryinfo>
-    <date>April 29, 2013</date>
+    <date>February 19, 2014</date>
   </refentryinfo>
 
   <refmeta>
@@ -38,6 +38,7 @@
       <year>2009</year>
       <year>2010</year>
       <year>2011</year>
+      <year>2012</year>
       <year>2013</year>
       <year>2014</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
@@ -67,11 +68,13 @@
       <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
       <arg><option>-f <replaceable class="parameter">format</replaceable></option></arg>
       <arg><option>-F <replaceable class="parameter">format</replaceable></option></arg>
+      <arg><option>-J <replaceable class="parameter">filename</replaceable></option></arg>
       <arg><option>-i <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-k <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-m <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-M <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-n <replaceable class="parameter">mode</replaceable></option></arg>
+      <arg><option>-l <replaceable class="parameter">ttl</replaceable></option></arg>
       <arg><option>-L <replaceable class="parameter">serial</replaceable></option></arg>
       <arg><option>-o <replaceable class="parameter">filename</replaceable></option></arg>
       <arg><option>-r <replaceable class="parameter">mode</replaceable></option></arg>
@@ -96,10 +99,12 @@
       <arg><option>-C <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-f <replaceable class="parameter">format</replaceable></option></arg>
       <arg><option>-F <replaceable class="parameter">format</replaceable></option></arg>
+      <arg><option>-J <replaceable class="parameter">filename</replaceable></option></arg>
       <arg><option>-i <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-k <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-m <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-n <replaceable class="parameter">mode</replaceable></option></arg>
+      <arg><option>-l <replaceable class="parameter">ttl</replaceable></option></arg>
       <arg><option>-L <replaceable class="parameter">serial</replaceable></option></arg>
       <arg><option>-r <replaceable class="parameter">mode</replaceable></option></arg>
       <arg><option>-s <replaceable class="parameter">style</replaceable></option></arg>
@@ -175,6 +180,17 @@
         <listitem>
           <para>
             在装载区文件时读日志，如果后者存在。
+            日志文件名是由区文件名后加上字符串<filename>.jnl</filename>。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-J <replaceable class="parameter">filename</replaceable></term>
+        <listitem>
+          <para>
+            在装载区文件时，从给定的文件读日志，如果后者存在。（隐含-j）。
+            日志文件名是由区文件名后加上字符串<filename>.jnl</filename>。
           </para>
         </listitem>
       </varlistentry>
@@ -232,8 +248,8 @@
 	<term>-f <replaceable class="parameter">format</replaceable></term>
 	<listitem>
 	  <para>
-	    指定区文件格式。可能的格式为<command>"text"</command> （缺省）
-		和<command>"raw"</command>。
+	    指定区文件格式。可能的格式为<command>"text"</command> （缺省），
+            <command>"raw"</command>和<command>"map"</command>。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -247,10 +263,11 @@
             非它转储区的内容。
 	  </para>
 	  <para>
-	    指定输出文件的格式。可能的格式为<command>"text"</command>
-            （缺省）和<command>"raw"</command>或<command>"raw=N"</command>，
+	    可能的格式为<command>"text"</command>（缺省），这是区的标准文本
+            表示形式，和<command>"map"</command>，<command>"raw"</command>及
+            <command>"raw=N"</command>，
             将会以二进制格式存放区以使<command>named</command>快速装载它。
-            <command>"raw=N"</command>指定原始区文件的格式版本：如果N是0，
+            <command>"raw=N"</command>指定raw区文件的格式版本：如果N是0，
             原始文件可以被任何版本的<command>named</command>读取；如果N是1，
             则文件只能被9.9.0或更高版本读取。缺省为1。
 	  </para>
@@ -272,10 +289,22 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-l <replaceable class="parameter">ttl</replaceable></term>
+        <listitem>
+          <para>
+            为输入文件设定一个允许的最大TTL。
+            任何一个TTL大于这个值的记录都会导致区被拒绝。这类似于在
+            <filename>named.conf</filename>中使用
+            <command>max-zone-ttl</command>选项。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-L <replaceable class="parameter">serial</replaceable></term>
         <listitem>
           <para>
-            当将一个区编译成‘raw’格式时，将头部中的“source serial”值
+            当将一个区编译成"raw"或"map"格式时，将头部中的"source serial"值
             设置为指定的序列号。（预料这个功能主要被用于测试目的。）
           </para>
         </listitem>

@@ -21,7 +21,7 @@
 <refentry id="man.dig">
 
   <refentryinfo>
-    <date>February 12, 2014</date>
+    <date>February 19, 2014</date>
   </refentryinfo>
 
   <refmeta>
@@ -416,6 +416,19 @@
           </listitem>
         </varlistentry>
 
+	<varlistentry>
+	  <term><option>+[no]crypto</option></term>
+	  <listitem>
+	    <para>
+	      翻转对DNSSEC记录中加密字段的显示。这些字段在诊断大多数
+              DNSSEC验证失败时不是必须的，去掉它们使得查看普通失败更
+              容易。缺省是显示这些字段。当被省略时，它们被字符串
+              "[omitted]"替代，或者在DNSKEY情况，显示密钥标识号作为
+              替代，例如"[ key id = value ]"。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
         <varlistentry>
           <term><option>+[no]defname</option></term>
           <listitem>
@@ -454,6 +467,15 @@
 	       指定请求所带的EDNS的版本。有效值为0到255。设置EDNS版本会导致发出
 	       一个EDNS请求。<option>+noedns</option>清除所记住的EDNS版本。缺省
                时EDNS被设置为0。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]expire</option></term>
+	  <listitem>
+	    <para>
+	      发送一个EDNS过期选项。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -641,6 +663,18 @@
           </listitem>
         </varlistentry>
 
+	<varlistentry>
+	  <term><option>+[no]sit<optional>=####</optional></option></term>
+	  <listitem>
+	    <para>
+              发送一个源特征符号（Source Identity Token）EDNS选项，带有
+              可选值。从一个先前的响应重放一个SIT将允许服务器识别一个先前
+              的客户端。缺省值是<option>+nosit</option>。当前使用试验值
+              65001作为选项码。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
         <varlistentry>
           <term><option>+split=W</option></term>
           <listitem>
@@ -664,6 +698,15 @@
             </para>
           </listitem>
         </varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]subnet=addr/prefix</option></term>
+	  <listitem>
+	    <para>
+              发送一个EDNS客户端子网选项，带有指定的IP地址或网络前缀。
+	    </para>
+	  </listitem>
+	</varlistentry>
 
         <varlistentry>
           <term><option>+[no]tcp</option></term>

@@ -115,19 +115,12 @@
  example.nil.  1800    IN      A       10.53.0.1
     </screen>
     <para>
-      样板驱动能够提取请求客户端的信息，并基于这个信息修改它的响应。
-      The sample driver is capable of retrieving information about the
-      querying client, and altering its response on the basis of this
-      information.
-      To demonstrate this feature, the example driver
-      responds to queries for "source-addr.<option>zonename</option>>/TXT"
-      with the source address of the query.  
-      Note, however, that this
-      record will *not* be included in AXFR or ANY responses.  
-      Normally,
-      this feature would be used to alter responses in some other fashion,
-      e.g., by providing different address records for a particular name
-      depending on the network from which the query arrived.
+      样板驱动能够提取关于请求客户端的信息，并基于这个信息修改它的响应。
+      为演示这个特性，例子驱动用请求的源地址响应对
+      "source-addr.<option>zonename</option>>/TXT"的请求。
+      注意，这个记录将 *不会* 被包含到AXFR或ANY响应中。
+      通常，这个特性用于以一些其它的方式修改响应。
+      例如，根据请求来自的不同网络而对同一个特定名字提供不同的地址记录。
     </para>
     <para>
       DLZ模块API的文档可以在<filename>contrib/dlz/example/README</filename>中

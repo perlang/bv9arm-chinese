@@ -19,7 +19,7 @@
 
 <refentry id="man.ddns-confgen">
   <refentryinfo>
-    <date>September 18, 2009</date>
+    <date>March 6, 2014</date>
   </refentryinfo>
 
   <refmeta>
@@ -43,44 +43,55 @@
 
   <refsynopsisdiv>
     <cmdsynopsis>
+      <command>tsig-keygen</command>
+      <arg><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
+      <arg><option>-h</option></arg>
+      <arg><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
+      <arg choice="opt">name</arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
       <command>ddns-confgen</command>
       <arg><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
       <arg><option>-h</option></arg>
       <arg><option>-k <replaceable class="parameter">keyname</replaceable></option></arg>
+      <arg><option>-q</option></arg>
       <arg><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
       <group>
         <arg choice="plain">-s <replaceable class="parameter">name</replaceable></arg>
         <arg choice="plain">-z <replaceable class="parameter">zone</replaceable></arg>
       </group>
-      <arg><option>-q</option></arg>
-      <arg choice="opt">name</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
   <refsect1>
     <title>描述</title>
-    <para><command>ddns-confgen</command>
-      为<command>nsupdate</command>和<command>named</command>
-      生成一个密钥。它通过生成一个密钥并为使用它提供
-      <command>nsupdate</command>和
-      <command>named.conf</command>语法，还包含一个
-      <command>update-policy</command>语句的例子，
-      而简化了动态区的配置。
+    <para>
+      <command>tsig-keygen</command>和<command>ddns-confgen</command>
+      是一个应用程序的调用方法，它为使用TSIG签名生成密钥。例如，作为
+      结果的密钥可以被用于加固对一个区的动态DNS更新或者用于
+      <command>rndc</command>命令通道。
     </para>
 
     <para>
-      如果在命令行中指定了一个域名，它将被用于所生成密钥的名字中，
-      以及用于<command>named.conf</command>样例语法中。
-      例如，<command>ddns-confgen example.com</command>将会生成一个
-      被称为“ddns-key.example.com”的密钥，和<command>named.conf</command>
-      样例命令，后者可以被用于“example.com”的区定义。
+      当作为<command>tsig-keygen</command>运行时，可以在命令行指定一个
+      域名，它将被用作所生成密钥的名字。如果未指定名字，缺省为
+      <constant>tsig-key</constant>。
+    </para>
+
+    <para>
+      当作为<command>ddns-confgen</command>运行时，所生成的密钥伴随有
+      设置动态DNS时用于<command>nsupdate</command>和
+      <command>named</command>的配置文件和指令，包括一个
+      <command>update-policy</command>语句的例子。（这个用法类似于用
+      <command>rndc-confgen</command>命令设置命令通道的安全。）
     </para>
 
     <para>
       注意<command>named</command>自己可以配置一个本地DDNS密钥，
-      并用于<command>nsupdate -l</command>。
+      并用于<command>nsupdate -l</command>：
+      它在区被配置为<command>update-policy local;</command>时才这样做。
       <command>ddns-confgen</command>只在更复杂的配置才需要：
-      例如，如果<command>nsupdate</command>来自一个远程系统。
+      例如，如果<command>nsupdate</command>用于来自一个远程系统。
     </para>
   </refsect1>
 
@@ -95,6 +106,7 @@
             指定用于TSIG密钥的算法。可用的选择为：hmac-md5，hmac-sha1，
             hmac-sha224，hmac-sha256，hmac-sha384和hmac-sha512。缺省为
             hmac-sha256。
+            选项是大小写无关的，前缀"hmac-"可以被忽略。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -103,7 +115,7 @@
 	<term>-h</term>
 	<listitem>
 	  <para>
-            打印<command>ddns-confgen</command>的选项和参数的简短摘要。
+            打印选项和参数的一个简短摘要。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -126,7 +138,9 @@
 	<term>-q</term>
 	<listitem>
 	  <para>
-	    安静模式：只打印密钥，没有解释的文本或用法举例。
+	    （只对<command>ddns-confgen</command>。）安静模式：只打印密钥，
+            没有解释的文本或用法举例；
+            这对<command>tsig-keygen</command>基本相同。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -148,7 +162,9 @@
 	<term>-s <replaceable class="parameter">name</replaceable></term>
 	<listitem>
 	  <para>
-            单个主机模式：例子<command>named.conf</command>文本显示了
+	    （只对<command>ddns-confgen</command>。）
+            给一个允许动态更新的单一主机名生成配置例子。
+            例子<command>named.conf</command>文本显示了
             如何使用“name”名字类型为指定的
             <replaceable class="parameter">name</replaceable>设置一个
             更新策略。
@@ -165,11 +181,13 @@
 	<term>-z <replaceable class="parameter">zone</replaceable></term>
 	<listitem>
 	  <para>
-	    区模式：例子<command>named.conf</command>文本展示了如何
-	    为所指定的<replaceable class="parameter">zone</replaceable>
-	    设置一个更新策略，使用“zonesub”名字类型，允许更新
-	    <replaceable class="parameter">zone</replaceable>内所有
-	    子域。
+	    （只对<command>ddns-confgen</command>。）
+            给一个允许动态更新的区生成配置例子。
+            例子<command>named.conf</command>文本展示了如何使用
+            "zonesub"名字类型为所指定的
+            <replaceable class="parameter">zone</replaceable>
+	    设置一个更新策略，允许更新
+	    <replaceable class="parameter">zone</replaceable>内所有子域。
 	    这个选项不能与<option>-s</option>选项同时使用。
 	  </para>
 	</listitem>

@@ -133,16 +133,13 @@
               （注意，那个初始查询<emphasis>不</emphasis>被DNSSEC验证。
 	    </para>
 	    <para>
-	      If no <parameter>server</parameter> argument is
-	      provided, <command>delv</command> consults
-	      <filename>/etc/resolv.conf</filename>; if an
-	      address is found there, it queries the name server at
-	      that address. If either of the <option>-4</option> or
-	      <option>-6</option> options are in use, then
-	      only addresses for the corresponding transport
-	      will be tried.  If no usable addresses are found,
-	      <command>delv</command> will send queries to
-	      the localhost addresses (127.0.0.1 for IPv4,
+	      如果没有提供<parameter>server</parameter>参数，
+              <command>delv</command>会查找
+              <filename>/etc/resolv.conf</filename>；如果在其中发现一个地址，
+              它会请求那个地址上的名字服务器。如果使用了<option>-4</option>
+              或<option>-6</option>选项，则只有相关传输协议的地址才会被试探。
+              如果没有发现可用的地址，<command>delv</command>将向本地地址（对
+              IPv4为127.0.0.1，对IPv6为::1）发送请求。
 	      ::1 for IPv6).
 	    </para>
 	  </listitem>
@@ -182,17 +179,15 @@
 	<term>-a <replaceable class="parameter">anchor-file</replaceable></term>
 	<listitem>
 	  <para>
-	    Specifies a file from which to read DNSSEC trust anchors.
-	    The default is <filename>/etc/bind.keys</filename>, which
-	    is included with <acronym>BIND</acronym> 9 and contains
-	    trust anchors for the root zone (".") and for the ISC
-	    DNSSEC lookaside validation zone ("dlv.isc.org").
+            指定从中读取DNSSEC信任锚点的文件。缺省为
+            <filename>/etc/bind.keys</filename>，它被包含在
+            <acronym>BIND</acronym> 9中，并含有根区（"."）和ISC DNSSEC后备验证区
+            （"dlv.isc.org"）的信任锚点。
 	  </para>
 	  <para>
-	    Keys that do not match the root or DLV trust-anchor
-	    names are ignored; these key names can be overridden
-	    using the <option>+dlv=NAME</option> or
-	    <option>+root=NAME</option> options.
+	    与根或DLV信任锚点名字不匹配的密钥会被忽略；这些密钥名字可以使用
+            <option>+dlv=NAME</option>或者<option>+root=NAME</option>选项
+            覆盖。
 	  </para>
 	  <para>
 	    Note: When reading the trust anchor file,
@@ -215,11 +210,9 @@
 	<term>-b  <replaceable class="parameter">address</replaceable></term>
 	<listitem>
 	  <para>
-	    Sets the source IP address of the query to
-	    <parameter>address</parameter>.  This must be a valid address
-	    on one of the host's network interfaces or "0.0.0.0" or "::".
-	    An optional source port may be specified by appending
-	    "#&lt;port&gt;"
+	    设置请求的源IP地址为<parameter>address</parameter>。这必须是一个
+            主机网络接口上的有效地址，或者"0.0.0.0"，或者"::"。
+            可以通过附加"#&lt;port&gt;"指定一个可选的源端口。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -228,9 +221,8 @@
 	<term>-c <replaceable class="parameter">class</replaceable></term>
 	<listitem>
 	  <para>
-	    Sets the query class for the requested data. Currently,
-	    only class "IN" is supported in <command>delv</command>
-	    and any other value is ignored.
+	    为请求数据设置请求类。当前，在<command>delv</command>中只支持
+            类"IN"，任何其它值将被忽略。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -239,14 +231,12 @@
 	<term>-d <replaceable class="parameter">level</replaceable></term>
 	<listitem>
 	  <para>
-	    Set the systemwide debug level to <option>level</option>.
-	    The allowed range is from 0 to 99.
-	    The default is 0 (no debugging).
-	    Debugging traces from <command>delv</command> become
-	    more verbose as the debug level increases.
-	    See the <option>+mtrace</option>, <option>+rtrace</option>,
-	    and <option>+vtrace</option> options below for additional
-	    debugging details.
+	    设置系统范围的调试级别为<option>level</option>。
+            允许的范围为0到99.
+            缺省是0（关闭调试）。
+            调试级别越高，从<command>delv</command>调试跟踪得到的信息越多。
+	    参见下列<option>+mtrace</option>，<option>+rtrace</option>和
+	    <option>+vtrace</option>选项以获得关于调试的详细信息。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -255,7 +245,7 @@
 	<term>-h</term>
 	<listitem>
 	  <para>
-	    Display the <command>delv</command> help usage output and exit.
+	    显示<command>delv</command>使用帮助并退出。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -264,13 +254,11 @@
 	<term>-i</term>
 	<listitem>
 	  <para>
-	    Insecure mode. This disables internal DNSSEC validation.
-	    (Note, however, this does not set the CD bit on upstream
-	    queries. If the server being queried is performing DNSSEC
-	    validation, then it will not return invalid data; this
-	    can cause <command>delv</command> to time out. When it
-	    is necessary to examine invalid data to debug a DNSSEC
-	    problem, use <command>dig +cd</command>.)
+	    非安全模式。这个关闭内部DNSSEC验证。（注意，这不会在向上游
+            查询时设置CD位。如果被查询的服务器正在执行DNSSEC验证，它将
+            会返回无效数据；这导致<command>delv</command>超时。当必须
+            检查无效数据以调试一个DNSSEC问题时，使用
+            <command>dig +cd</command>。）
 	  </para>
 	</listitem>
       </varlistentry>
@@ -279,7 +267,7 @@
 	<term>-m</term>
 	<listitem>
 	  <para>
-	    Enables memory usage debugging.
+	    打开内存使用调试。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -288,10 +276,9 @@
 	<term>-p <replaceable class="parameter">port#</replaceable></term>
 	<listitem>
 	  <para>
-	    Specifies a destination port to use for queries instead of
-	    the standard DNS port number 53.  This option would be used
-	    with a name server that has been configured to listen
-	    for queries on a non-standard port number.
+	    指定一个用于请求的目的端口，而不是使用标准的DNS端口号53.这个
+            选项用于同一个被配置为在一个非标准端口号监听请求的名字服务器
+            通信时。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -300,12 +287,10 @@
 	<term>-q <replaceable class="parameter">name</replaceable></term>
 	<listitem>
 	  <para>
-	    Sets the query name to <parameter>name</parameter>.
-	    While the query name can be specified without using the
-	    <option>-q</option>, it is sometimes necessary to disambiguate
-	    names from types or classes (for example, when looking up the
-	    name "ns", which could be misinterpreted as the type NS,
-	    or "ch", which could be misinterpreted as class CH).
+	    设置请求名为<parameter>name</parameter>。虽然指定请求名可以不需要
+            使用<option>-q</option>，但是某些时候必须使用这个选项来将请求名与
+            类型和类区别开来（例如，在查找名字"ns"时，可能被错误解释为类型NS，
+            或者查找"ch"，可能被错误解释为类CH）。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -314,17 +299,15 @@
 	<term>-t <replaceable class="parameter">type</replaceable></term>
 	<listitem>
 	  <para>
-	    Sets the query type to <parameter>type</parameter>, which
-	    can be any valid query type supported in BIND 9 except
-	    for zone transfer types AXFR and IXFR. As with
-	    <option>-q</option>, this is useful to distinguish
+	    设置请求类型为<parameter>type</parameter>，它可以是除区传送类型
+            AXFR和IXFR之外BIND 9所支持的任何有效类型。
+	    As with <option>-q</option>, this is useful to distinguish
 	    query name type or class when they are ambiguous.
-	    it is sometimes necessary to disambiguate names from types.
+	    在某些时候必须将名字从类型中区别出来。
 	  </para>
 	  <para>
-	    The default query type is "A", unless the <option>-x</option>
-	    option is supplied to indicate a reverse lookup, in which case
-	    it is "PTR".
+            缺省请求类型是"A"，除非提供了<option>-x</option>指定一个反向
+            查找，这种情况类型是"PTR"。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -333,7 +316,7 @@
 	<term>-v</term>
 	<listitem>
 	  <para>
-	    Print the <command>delv</command> version and exit.
+            打印<command>delv</command>版本并退出。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -359,7 +342,7 @@
 	<term>-4</term>
 	<listitem>
 	  <para>
-	    Forces <command>delv</command> to only use IPv4.
+	    强制<command>delv</command>使用IPv4。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -368,7 +351,7 @@
 	<term>-6</term>
 	<listitem>
 	  <para>
-	    Forces <command>delv</command> to only use IPv6.
+	    强制<command>delv</command>使用IPv6。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -377,11 +360,11 @@
   </refsect1>
 
   <refsect1>
-    <title>QUERY OPTIONS</title>
+    <title>请求选项</title>
 
     <para><command>delv</command>
-      provides a number of query options which affect the way results are
-      displayed, and in some cases the way lookups are performed.
+      提供一些请求选项，它们影响结果的显式方式，在某些情况它们也影响请求执行
+      的方式。
     </para>
 
     <para>
@@ -414,8 +397,7 @@
 	  <term><option>+[no]class</option></term>
 	  <listitem>
 	    <para>
-	      Controls whether to display the CLASS when printing
-	      a record. The default is to display the CLASS.
+	      控制在打印一个记录时是否显示类。缺省是显示类。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -424,8 +406,7 @@
 	  <term><option>+[no]ttl</option></term>
 	  <listitem>
 	    <para>
-	      Controls whether to display the TTL when printing
-	      a record. The default is to display the TTL.
+	      控制在打印一个记录时是否显示TTL。缺省是显示TTL。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -490,8 +471,7 @@
 	  <term><option>+[no]short</option></term>
 	  <listitem>
 	    <para>
-	      Provide a terse answer.  The default is to print the answer in a
-	      verbose form.
+              提供一个简洁的回答。缺省是以冗长形式输出回答。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -509,9 +489,9 @@
 	  <term><option>+[no]rrcomments</option></term>
 	  <listitem>
 	    <para>
-	      Toggle the display of per-record comments in the output (for
-	      example, human-readable key information about DNSKEY records).
-	      The default is to print per-record comments.
+	      翻转对输出中每个记录注释的显示状态（例如，关于DNSKEY的人可读
+              的密钥信息）。
+              缺省是打印每个记录的注释。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -535,8 +515,7 @@
 	  <term><option>+[no]trust</option></term>
 	  <listitem>
 	    <para>
-	      Controls whether to display the trust level when printing
-	      a record. The default is to display the trust level.
+	      控制在打印一个记录时是否显示信任级别。缺省是显示信任级别。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -618,13 +597,10 @@
 	  <term><option>+[no]dlv[=DLV]</option></term>
 	  <listitem>
 	    <para>
-	      Indicates whether to perform DNSSEC lookaside validation,
-	      and if so, specifies the name of the DLV trust anchor.
-	      The default is to perform lookaside validation using
-	      a trust anchor of "dlv.isc.org", for which there is a
-	      built-in key.  If specifying a different name, then
-	      <option>-a</option> must be used to specify a file
-	      containing the DLV key.
+	      指示是否执行DNSSEC后备验证，如果执行，就指定DLV信任锚点的名字。
+              缺省是使用信任锚点"dlv.isc.org"执行后备验证，对这个锚点存在一个
+              内置密钥。如果指定一个不同的名字，就必须使用<option>-a</option>
+              指定一个包含DLV密钥的文件。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -634,13 +610,13 @@
   </refsect1>
 
   <refsect1>
-    <title>FILES</title>
+    <title>文件</title>
     <para><filename>/etc/bind.keys</filename></para>
     <para><filename>/etc/resolv.conf</filename></para>
   </refsect1>
 
   <refsect1>
-    <title>SEE ALSO</title>
+    <title>参见</title>
     <para><citerefentry>
 	<refentrytitle>dig</refentrytitle><manvolnum>1</manvolnum>
       </citerefentry>,

@@ -255,11 +255,13 @@ UTF8FILE = dig host
 .docbook.8:
 	${XSLTPROC} -o $@ ${top_srcdir}/doc/xsl/isc-manpage.xsl $<
 
-docbooks=dig-utf8.docbook host-utf8.docbook dnssec-checkds-utf8.docbook \
+docbooks=dig-utf8.docbook host-utf8.docbook delv-utf8.docbook \
+	dnssec-checkds-utf8.docbook \
 	dnssec-coverage-utf8.docbook dnssec-keygen-utf8.docbook \
 	dnssec-revoke-utf8.docbook dnssec-settime-utf8.docbook \
 	dnssec-signzone-utf8.docbook named-checkconf-utf8.docbook \
 	dnssec-verify-utf8.docbook \
+	dnssec-importkey-utf8.docbook \
 	named-checkzone-utf8.docbook named-utf8.docbook \
 	rndc-utf8.docbook rndc.conf-utf8.docbook rndc-confgen-utf8.docbook \
 	dnssec-dsfromkey-utf8.docbook \
@@ -267,12 +269,14 @@ docbooks=dig-utf8.docbook host-utf8.docbook dnssec-checkds-utf8.docbook \
 	nsupdate-utf8.docbook \
 	ddns-confgen-utf8.docbook \
 	named-journalprint-utf8.docbook \
+	named-rrchecker-utf8.docbook \
 	arpaname-utf8.docbook \
 	genrandom-utf8.docbook \
 	isc-hmac-fixup-utf8.docbook \
 	nsec3hash-utf8.docbook \
 	releaseinfo-utf8.xml \
-	pkgversion-utf8.xml
+	pkgversion-utf8.xml \
+	dlz-utf8.xml
 
 VERSION=9.9.6-P1
 
@@ -295,10 +299,12 @@ clean::
 	rm -f Bv9ARM-gbk.out.bak
 	rm -f pkcs11-utf8.xml
 	rm -f dnssec-utf8.xml
+	rm -f dlz-utf8.xml
 	rm -f managed-keys-utf8.xml
 	rm -f libdns-utf8.xml
 	rm -f releaseinfo-utf8.xml
 	rm -f pkgversion-utf8.xml
+	rm -f dlz-utf8.xml
 
 docclean manclean maintainer-clean:: clean
 	rm -f *.html ${PDFOBJS}
@@ -327,10 +333,13 @@ libdns-utf8.xml: libdns-gbk.xml
 	iconv -f gbk -t utf-8 $^ > $@
 
 dig-utf8.docbook: dig-gbk.docbook
-	iconv -f gbk -t utf-8 dig-gbk.docbook > dig-utf8.docbook
+	iconv -f gbk -t utf-8 $^ > $@
 
 host-utf8.docbook: host-gbk.docbook
-	iconv -f gbk -t utf-8 host-gbk.docbook > host-utf8.docbook
+	iconv -f gbk -t utf-8 $^ > $@
+
+delv-utf8.docbook: delv-gbk.docbook
+	iconv -f gbk -t utf-8 $^ > $@
 
 dnssec-checkds-utf8.docbook: dnssec-checkds-gbk.docbook
 	iconv -f gbk -t utf-8 dnssec-checkds-gbk.docbook > dnssec-checkds-utf8.docbook
@@ -359,6 +368,9 @@ dnssec-signzone-utf8.docbook: dnssec-signzone-gbk.docbook
 dnssec-verify-utf8.docbook: dnssec-verify-gbk.docbook
 	iconv -f gbk -t utf-8 dnssec-verify-gbk.docbook > dnssec-verify-utf8.docbook
 
+dnssec-importkey-utf8.docbook: dnssec-importkey-gbk.docbook
+	iconv -f gbk -t utf-8 $^ > $@
+
 named-checkconf-utf8.docbook: named-checkconf-gbk.docbook
 	iconv -f gbk -t utf-8 named-checkconf-gbk.docbook > named-checkconf-utf8.docbook
 
@@ -369,7 +381,9 @@ named-utf8.docbook: named-gbk.docbook
 	iconv -f gbk -t utf-8 named-gbk.docbook > named-utf8.docbook
 
 named-journalprint-utf8.docbook: named-journalprint-gbk.docbook
-	#iconv -f gbk -t utf-8 named-journalprint-gbk.docbook > named-journalprint-utf8.docbook
+	iconv -f gbk -t utf-8 $^ > $@
+
+named-rrchecker-utf8.docbook: named-rrchecker-gbk.docbook
 	iconv -f gbk -t utf-8 $^ > $@
 
 nsupdate-utf8.docbook: nsupdate-gbk.docbook
@@ -404,6 +418,10 @@ releaseinfo-utf8.xml: releaseinfo-gbk.xml
 
 pkgversion-utf8.xml: pkgversion-gbk.xml
 	iconv -f gbk -t utf-8 $^ > $@
+
+dlz-utf8.xml: dlz-gbk.xml
+	iconv -f gbk -t utf-8 $^ > $@
+
 
 Bv9ARM-gbk.html: Bv9ARM-book-utf8.xml releaseinfo.xml \
 	${docbooks} dnssec-utf8.xml managed-keys-utf8.xml pkcs11-utf8.xml

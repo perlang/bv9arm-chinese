@@ -247,10 +247,10 @@
             非它转储区的内容。
 	  </para>
 	  <para>
-	    指定输出文件的格式。可能的格式为<command>"text"</command>
+	    可能的格式为<command>"text"</command>
             （缺省）和<command>"raw"</command>或<command>"raw=N"</command>，
             将会以二进制格式存放区以使<command>named</command>快速装载它。
-            <command>"raw=N"</command>指定原始区文件的格式版本：如果N是0，
+            <command>"raw=N"</command>指定raw区文件的格式版本：如果N是0，
             原始文件可以被任何版本的<command>named</command>读取；如果N是1，
             则文件只能被9.9.0或更高版本读取。缺省为1。
 	  </para>

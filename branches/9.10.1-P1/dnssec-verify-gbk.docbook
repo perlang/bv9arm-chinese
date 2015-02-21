@@ -19,7 +19,7 @@
 
 <refentry id="man.dnssec-verify">
   <refentryinfo>
-    <date>June 26, 2012</date>
+    <date>January 15, 2014</date>
   </refentryinfo>
 
   <refmeta>
@@ -30,7 +30,7 @@
 
   <refnamediv>
     <refname><application>dnssec-verify</application></refname>
-    <refpurpose>DNSSEC zone verification tool</refpurpose>
+    <refpurpose>DNSSEC区验证工具</refpurpose>
   </refnamediv>
 
   <docinfo>
@@ -57,7 +57,7 @@
   </refsynopsisdiv>
 
   <refsect1>
-    <title>DESCRIPTION</title>
+    <title>描述</title>
     <para><command>dnssec-verify</command>
       验证一个区是被区中每个DNSKEY资源记录集中的算法完整地签名，并且
       NSEC/NSEC3链是完整的。
@@ -73,6 +73,22 @@
         <listitem>
           <para>
             指定区的DNS类。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-E <replaceable class="parameter">engine</replaceable></term>
+        <listitem>
+          <para>
+            如果适用，指定要使用的加密硬件。
+          </para>
+          <para>
+            当BIND使用带OpenSSL PKCS#11支持构建时，这个缺省值是字符串
+            "pkcs11"，它标识一个可以驱动一个加密加速器或硬件服务模块的
+            OpenSSL引擎，当BIND使用带原生PKCS#11加密
+            （--enable-native-pkcs11）构建时，它缺省是由"--with-pkcs11"
+            指定的PKCS#11提供者库的路径。
           </para>
         </listitem>
       </varlistentry>

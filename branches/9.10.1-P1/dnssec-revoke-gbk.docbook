@@ -19,7 +19,7 @@
 
 <refentry id="man.dnssec-revoke">
   <refentryinfo>
-    <date>October 20, 2011</date>
+    <date>January 15, 2014</date>
   </refentryinfo>
 
   <refmeta>
@@ -118,8 +118,14 @@
         <term>-E <replaceable class="parameter">engine</replaceable></term>
         <listitem>
           <para>
-            使用给定的OpenSSL引擎。当使用PKCS#11支持编译时，它缺省为pkcs11；
-            空名字将其重置为没有引擎。
+            如果适用，指定要使用的加密硬件。
+          </para>
+          <para>
+            当BIND使用带OpenSSL PKCS#11支持构建时，这个缺省值是字符串
+            "pkcs11"，它标识一个可以驱动一个加密加速器或硬件服务模块的
+            OpenSSL引擎，当BIND使用带原生PKCS#11加密
+            （--enable-native-pkcs11）构建时，它缺省是由"--with-pkcs11"
+            指定的PKCS#11提供者库的路径。
           </para>
         </listitem>
       </varlistentry>

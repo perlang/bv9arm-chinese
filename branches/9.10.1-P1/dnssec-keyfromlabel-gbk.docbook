@@ -132,8 +132,13 @@
         <term>-E <replaceable class="parameter">engine</replaceable></term>
         <listitem>
           <para>
-            指定加密硬件的名字（OpenSSL引擎）。
-            当使用PKCS#11支持编译时，它缺省为“pkcs11”。
+            指定要使用的加密硬件。
+          </para>
+          <para>
+            当BIND使用OpenSSL PKCS#11支持构建时，这个缺省为字符串"pkcs11"，
+            它标识一个可以驱动加密加速器或硬件服务模块的OpenSSL引擎。当BIND
+            使用原生PKCS#11加密（--enable-native-pkcs11）构建时，它缺省是由
+            "--with-pkcs11"所指定的PKCS#11提供者库的路径。
           </para>
         </listitem>
       </varlistentry>
@@ -142,8 +147,27 @@
         <term>-l <replaceable class="parameter">label</replaceable></term>
         <listitem>
           <para>
-	    指定加密硬件中密钥对的标记。这个标记必须在一个可选的OpenSSL
-            引擎名之前，以一个冒号分隔，如“pkcs11:keylabel”。
+	    指定加密硬件中密钥对的标记。
+          </para>
+          <para>
+            当<acronym>BIND</acronym> 9使用基于OpenSSL的PKCS#11支持构建时，
+            这个标记是一个任意的字符串，它标识一个特定的密钥。它可能由一个
+            可选的OpenSSL引擎名开始，后跟一个冒号，如同
+            "pkcs11:<replaceable>keylabel</replaceable>"。
+          </para>
+          <para>
+            当<acronym>BIND</acronym> 9使用原生PKCS#11支持构建时，这个标记
+            是一个PKCS#11 URI字符串，其格式为
+            "pkcs11:<option>keyword</option>=<replaceable>value</replaceable><optional>;<option>keyword</option>=<replaceable>value</replaceable>;...</optional>"
+            关键字包括"token"，它标识HSM；"object"，它标识密钥；
+            和"pin-source"，它标识一个文件，从中可以获得HSM的PIN码。
+            这个标记将存放在磁盘上的"private"文件中。
+          </para>
+          <para>
+            如果这个标记包含一个<option>pin-source</option>字段，使用生成密钥
+            文件的工具将能够使用HSM签名和其它操作，而不需要一个操作人员手工
+            输入一个PIN。注意：使得HSM的PIN可以以这样的方式访问可能减小使用
+            HSM的安全优势；在使用这个特性之前确认这就是你想要做的。
           </para>
         </listitem>
       </varlistentry>
@@ -440,8 +464,9 @@
       <citerefentry>
         <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
       </citerefentry>,
-      <citetitle>BIND 9管理员参考手册</citetitle>,
-      <citetitle>RFC 4034</citetitle>.
+      <citetitle>BIND 9管理员参考手册</citetitle>，
+      <citetitle>RFC 4034</citetitle>，
+      <citetitle>PKCS#11 URI方案 (draft-pechanec-pkcs11uri-13)</citetitle>。
     </para>
   </refsect1>
 

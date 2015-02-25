@@ -45,11 +45,14 @@
     <cmdsynopsis>
       <command>dnssec-coverage</command>
       <arg><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg><option>-l <replaceable class="parameter">length</replaceable></option></arg>
       <arg><option>-f <replaceable class="parameter">file</replaceable></option></arg>
       <arg><option>-d <replaceable class="parameter">DNSKEY TTL</replaceable></option></arg>
       <arg><option>-m <replaceable class="parameter">max TTL</replaceable></option></arg>
       <arg><option>-r <replaceable class="parameter">interval</replaceable></option></arg>
       <arg><option>-c <replaceable class="parameter">compilezone path</replaceable></option></arg>
+      <arg><option>-k</option></arg>
+      <arg><option>-z</option></arg>
       <arg choice="opt">zone</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -81,6 +84,15 @@
 
     <variablelist>
       <varlistentry>
+        <term>-K <replaceable class="parameter">directory</replaceable></term>
+        <listitem>
+          <para>
+            设置能够找到密钥的目录。缺省为当前工作目录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-f <replaceable class="parameter">file</replaceable></term>
         <listitem>
           <para>
@@ -92,10 +104,17 @@
       </varlistentry>
 
       <varlistentry>
-        <term>-K <replaceable class="parameter">directory</replaceable></term>
+        <term>-l <replaceable class="parameter">duration</replaceable></term>
         <listitem>
           <para>
-            设置能够找到密钥的目录。缺省为当前工作目录。
+            检查DNSSEC覆盖的时间长度。计划在超过<option>duration</option>的
+            将来的密钥事件将被忽略，并假设为正确的。
+          </para>
+          <para>
+            <option>duration</option>的值可以按秒设置，或通过增加一个后缀设为
+            更大的时间单位：
+            'mi'表示分钟，'h'表示小时，'d'表示天，'w'表示周，
+            'mo'表示月，'y'表示年。
           </para>
         </listitem>
       </varlistentry>
@@ -104,18 +123,16 @@
         <term>-m <replaceable class="parameter">maximum TTL</replaceable></term>
         <listitem>
           <para>
-            设置一个或多个区的最大TTL值，在决定是否有一个验证失败的可能性时
-            Sets the value to be used as the maximum TTL for the zone or
-            zones being analyzed when determining whether there is a
-            possibility of validation failure.  
+            在决定是否存在一个验证失败的可能性时，为一个或多个被分析的区设置
+            最大TTL值。
             当一个区签名密钥失效时，在密钥被剔除出DNSKEY资源记录集之前，必须
             有足够的时间，让区中最大TTL的记录在解析器的缓存中过期。
             如果这个条件不满足，将会产生一个警告。
           </para>
           <para>
-            TTL单位可以设置为秒，或通过增加一个后缀设为更大的时间单位：
-            ‘mi’表示分钟，‘h’表示小时，‘d’表示天，’w‘表示周，
-            ’mo‘表示月，’y‘表示年。
+            TTL长度可以按秒设置，或通过增加一个后缀设为更大的时间单位：
+            'mi'表示分钟，'h'表示小时，'d'表示天，'w'表示周，
+            'mo'表示月，'y'表示年。
           </para>
           <para>
             这个选项是必须的，除非使用<option>-f</option>指定了一个区文件。
@@ -129,19 +146,17 @@
         <term>-d <replaceable class="parameter">DNSKEY TTL</replaceable></term>
         <listitem>
           <para>
-            
-            Sets the value to be used as the DNSKEY TTL for the zone or
-            zones being analyzed when determining whether there is a
-            possibility of validation failure.
+            在决定是否存在一个验证失败的可能性时，为一个或多个被分析的区设置
+            用作DNSKEY TTL的值。
             当一个密钥被轮转时（即被一个新密钥替代），在新密钥被激活并开始
             生成签名之前，必须有足够的时间让旧的DNSKEY资源记录集在解析器
             缓存中过期。
             如果这个条件不满足，将会产生一个警告。
           </para>
           <para>
-            TTL单位可以设置为秒，或通过增加一个后缀设为更大的时间单位：
-            ‘mi’表示分钟，‘h’表示小时，‘d’表示天，’w‘表示周，
-            ’mo‘表示月，’y‘表示年。
+            TTL长度可以按秒设置，或通过增加一个后缀设为更大的时间单位：
+            'mi'表示分钟，'h'表示小时，'d'表示天，'w'表示周，
+            'mo'表示月，'y'表示年。
           </para>
           <para>
             这个选项是必须的，除非使用<option>-f</option>指定了一个区文件，
@@ -156,18 +171,35 @@
         <term>-r <replaceable class="parameter">resign interval</replaceable></term>
         <listitem>
           <para>
-            Sets the value to be used as the resign interval for the zone
-            or zones being analyzed when determining whether there is a
-            possibility of validation failure.
+            在决定是否存在一个验证失败的可能性时，为一个或多个被分析的区设置
+            用作放弃间隔（resign interval）的值。
             这个值缺省为22.5天，也是<command>named</command>中的缺省值。
             然而，如果在<filename>named.conf</filename>使用
             <option>sig-validity-interval</option>选项修改了，它应该在这里被
             修改。
           </para>
           <para>
-            TTL单位可以设置为秒，或通过增加一个后缀设为更大的时间单位：
-            ‘mi’表示分钟，‘h’表示小时，‘d’表示天，’w‘表示周，
-            ’mo‘表示月，’y‘表示年。
+            TTL长度可以按秒设置，或通过增加一个后缀设为更大的时间单位：
+            'mi'表示分钟，'h'表示小时，'d'表示天，'w'表示周，
+            'mo'表示月，'y'表示年。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k</term>
+        <listitem>
+          <para>
+	    只检查KSK覆盖；忽略ZSK事件。不能与<option>-z</option>一起使用。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-z</term>
+        <listitem>
+          <para>
+	    只检查ZSK覆盖；忽略KSK事件。不能与<option>-k</option>一起使用。
           </para>
         </listitem>
       </varlistentry>

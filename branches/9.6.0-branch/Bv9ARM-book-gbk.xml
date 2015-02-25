@@ -9521,7 +9521,7 @@ $GENERATE 1-127 $ CNAME $.0</programlisting>
             <command>named-compilezone</command>命令将其转换为二进制格式。
 	  </para>
     	  <para>
-            虽然<constant>raw</constant>格式使用网络字节顺序避免了体系独立的数
+            虽然<constant>raw</constant>格式使用网络字节顺序避免了体系依赖的数
             据对齐，所以它是尽可能可移植的，但是它还是最好用于同样的单个系统的
             内部。为了导出一个<constant>raw</constant>格式或者给文件做一个可移
             植的备份，推荐将文件转换为标准的文本表示。

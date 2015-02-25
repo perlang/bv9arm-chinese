@@ -219,13 +219,11 @@
       &lt;space&gt; &lt;hexstring&gt;）。
     </para>
     <para>
-      The <option>-T</option> and <option>-P</option> options print out
-      lists of non-meta types for which the type-specific presentation
-      formats are known.  <option>-T</option> prints out the list of
-      IANA-assigned types.  <option>-P</option> prints out the list of
-      private types specific to <command>named</command>.  These options
-      may be combined.  <command>nsupdate</command> will exit after the
-      lists are printed.
+      <option>-T</option>和<option>-P</option>选项打印输出非元类型的列表，
+      对这些类型来说，其类型专用的表示格式是已知的。
+      <option>-T</option>打印输出由IANA分配类型的列表。<option>-P</option>打印
+      输出指定给<command>named</command>的私有类型的列表。这些选项可以组合。
+      <command>nsupdate</command>将在打印列表后退出。
     </para>
     <para>
       -V选项使<command>nsupdate</command>打印版本号并退出。

@@ -226,6 +226,24 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-M <replaceable class="parameter">maxttl</replaceable></term>
+        <listitem>
+          <para>
+            为签名区设置最大TTL。
+            输入区中任何超过<replaceable>maxttl</replaceable>的TTL在输出中将被
+            减小到<replaceable>maxttl</replaceable>。
+            这为签名区中最大可能的TTL提供了确定性，这对知道何时轮转密钥是非常
+            有用的，因为这是被解析器取走的签名能够在解析器缓存中保存的最长可能的
+            时间，
+            使用这个选项签名的区应该配置成在<filename>named.conf</filename>中
+            使用一个一致的<option>max-zone-ttl</option>。
+            （注意：这个选项与<option>-D</option>不兼容，因为它修改了输出区中的
+            非DNSSEC数据。）
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-s <replaceable class="parameter">start-time</replaceable></term>
         <listitem>
           <para>
@@ -327,10 +345,11 @@
         <term>-I <replaceable class="parameter">input-format</replaceable></term>
         <listitem>
           <para>
-            输入区文件的格式。可能的格式是<command>"text"</command>（缺省）
-            和<command>"raw"</command>。这个选项主要用于动态签名区，这样一个
-            包含动态更新的以非文本格式转储的区文件就可以被直接签名。使用这个
-            选项对非动态区没有意义。
+            输入区文件的格式。可能的格式是<command>"text"</command>（缺省），
+            <command>"raw"</command>和<command>"map"</command>。
+            这个选项主要用于动态签名区，这样一个包含动态更新的以非文本格式转储
+            的区文件就可以被直接签名。
+            使用这个选项对非动态区没有意义。
           </para>
         </listitem>
       </varlistentry>
@@ -360,7 +379,7 @@
         <term>-L <replaceable class="parameter">serial</replaceable></term>
         <listitem>
           <para>
-            当以‘raw’格式输出一个签名区时，在头部中设置“source serial”值
+            当以'raw'或'map'格式输出一个签名区时，在头部中设置"source serial"值
             以指定序列号。（这个功能预期主要用于测试目的。）
           </para>
         </listitem>
@@ -424,10 +443,10 @@
         <listitem>
           <para>
             包含签名区的输出文件的格式。可能的格式为<command>"text"</command>
-	    （缺省）<command>"full"</command>，这是以文本输出的适合由外部脚本
-            处理的格式，和<command>"raw"</command>或
-            <command>"raw=N"</command>，
-            即以二进制格式存储区以便<command>named</command>快速加载。
+	    （缺省），它是区的标准文本格式；<command>"full"</command>，它是以
+            文本输出的适合由外部脚本处理的格式，和<command>"map"</command>，
+            <command>"raw"</command>和<command>"raw=N"</command>，它是以二进制
+            格式存储区以便<command>named</command>快速加载。
             <command>"raw=N"</command>指定raw区文件的格式版本：如果N为0，raw
             区文件可以被任何版本的<command>named</command>读取；如果N为1，这个
             文件则只能被9.9.0或更高版本读取。缺省为1。

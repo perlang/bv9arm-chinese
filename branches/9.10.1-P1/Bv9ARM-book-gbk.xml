@@ -7616,7 +7616,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		</para>
               </listitem>
             </varlistentry>
-	  </variablelist>
 
 	    <varlistentry>
 	      <term><command>prefetch</command></term>
@@ -8198,6 +8197,7 @@ deny-answer-aliases { "example.net"; };
 		  </para>
 		</listitem>
 	      </varlistentry>
+	    </variablelist>
 	  </para>
 
 	  <para>
@@ -8224,85 +8224,185 @@ deny-answer-aliases { "example.net"; };
 	  </para>
 
 	  <para>
-	    当一个响应的处理被重新开始解析DNAME或CNAME记录并且没有
-            策略记录被触发，所有的RPZ被重新针对DNAME或者CNAME名字和地址查找。
+	    当一个响应的处理被重新开始解析DNAME或CNAME记录并且没有策略记录被
+            触发，所有的响应策略区被重新针对DNAME或者CNAME名字和地址查找。
 	  </para>
 
 	  <para>
 	    RPZ记录集是除了DNAME或DNSSEC之外的任何类型的DNS记录，它编码了
             针对请求的动作或响应。
-	    <itemizedlist>
-	      <listitem><command>NXDOMAIN</command>响应由一个CNAME编码，其目标
-                是一个根域（.）。
-	      </listitem>
-	      <listitem>一个目标为通配顶级域的CNAME指定
-                <command>NODATA</command>动作，它重写响应为NODATA或ANCOUNT=1。
-	      </listitem>
-	      <listitem><command>Local Data</command>动作被表示成一个用于回答
-                请求的普通DNS记录所组成的集合。请求不在集合中的记录类型将会得
-                到NODATA应答。
-                本地数据的一个特殊形式是一条目标为一个通配符，如*.example.com，
-                的CNAME。
-                它通常被用作一个普通的CNAME，在星号（*）被请求名替换之后。
-                这个特殊形式的目的是在围墙花园（原文：walled garden）内的权威DNS
-                服务器上作请求日志。
-	      </listitem>
-	      <listitem>The <command>PASSTHRU</command>策略被一个目标为
-                <command>rpz-passthru.</command>的CNAME所指定。它导致响应不会
-                被重写，通常用于针对CIDR块的策略中的
-                “小洞（原文：poke holes）”。
-                （目标为其属主名可变部分的CNAME是一条废弃的PASSTHRU策率规范。）
-	      </listitem>
-	    </itemizedlist>
+            任何策略可以于任何触发器一起使用。例如，
+            <command>TCP-only</command>策略通常与
+            <command>client-IP</command>触发器一起使用，但它也可以与任意
+            其它类型的触发器一起使用，并强制一个区中对属主名的响应使用TCP。
+	    <variablelist>
+	      <varlistentry>
+		<term><command>PASSTHRU</command></term>
+		<listitem>
+		  <para>
+                    白名单策略由一个目标为<command>rpz-passthru</command>的
+                    CNAME所指定。
+		    它使响应不被重写，通常用于在CIDR块的策略中"挖出小洞"。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>DROP</command></term>
+		<listitem>
+		  <para>
+                    黑名单策略由一个目标为<command>rpz-drop</command>的
+                    CNAME所指定。
+                    它使响应被丢弃。不发送任何响应给DNS客户端。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>TCP-Only</command></term>
+		<listitem>
+		  <para>
+                    "slip"策略由一个目标为<command>rpz-tcp-only</command>的
+                    CNAME所指定。
+                    它修改UDP响应为短小的、被截断的DNS响应，要求DNS客户端使用
+                    TCP重试。
+                    它用于缓解分布式DNS反射攻击。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>NXDOMAIN</command></term>
+		<listitem>
+		  <para>
+                    未定义域名响应由一个目标为根域（.）的CNAME编码。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>NODATA</command></term>
+		<listitem>
+		  <para>
+		    资源记录的空集由目标为通配顶级域（*.）的CNAME指定。
+                    它重写响应为NODATA或ANCOUNT=1。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>Local Data</command></term>
+		<listitem>
+		  <para>
+                    一个普通DNS记录所组成的集合可以用于回答请求。
+                    请求不在集合中的记录类型将会得到NODATA应答。
+		  </para>
+
+		  <para>
+                    本地数据的一个特殊形式是一条目标为一个通配符，如
+                    *.example.com，的CNAME。
+                    它通常被用作一个普通的CNAME，在星号（*）被请求名替换之后。
+                    这个特殊形式的目的是在围墙花园（原文：walled garden）内的
+                    权威DNS服务器上作请求日志。
+		  </para>
+		</listitem>
+	      </varlistentry>
+	    </variablelist>
 	  </para>
 
-	  <para>
-	    在一个RPZ中的动作可以被
-            <command>response-policy</command>选项中的
-            <command>policy</command>字句所覆盖。
             一个使用由另一个组织所提供的RPZ的组织可以使用这个机制来重定向域名
             到它自己的围墙花园。
-	    <itemizedlist>
-	      <listitem><command>GIVEN</command>表示“不要覆盖”但是执行区中所
-              指定的动作。
-	      </listitem>
-	      <listitem><command>DISABLED</command>导致策略记录不做任何事情，
-                仅仅记录其可能完成的动作。
-                而对DNS请求的应答将根据任何被触发且未被关闭的策略记录来构造。
-                关闭的策略区应放在最前面，因为
-                如果一个更高优先级的触发器在前面时，它们通常都不会被记录。
-	      </listitem>
-	      <listitem><command>PASSTHRU</command>导致所有的策略记录表现为好像
-                它们为目标指向它们自己的属主名的可变部份的CNAME记录。它们保护
-                响应不被修改。
-	      </listitem>
-	      <listitem><command>NXDOMAIN</command>导致所有RPZ记录指定
-                NXDOMAIN策略。
-	      </listitem>
-	      <listitem><command>NODATA</command>使用NODATA策略覆盖。
-	      </listitem>
-	      <listitem><command>CNAME domain</command>导致所有RPZ策略记录表现
-                为好像它们是“cname domain”记录。
-	      </listitem>
-	    </itemizedlist>
+	  <para>
+            在一个策略区中所有由全部单个记录指定的动作可以被
+            <command>response-policy</command>选项中的
+            <command>policy</command>字句所覆盖。
+            一个使用由另一个组织所提供的策略区的组织可以使用这个机制来重定向
+            域名到它自己的围墙花园。
+	    <variablelist>
+	      <varlistentry>
+		<term><command>GIVEN</command></term>
+		<listitem>
+		  <para>站位符策略表示"不覆盖但是执行区中所指定的动作。"
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>DISABLED</command></term>
+		<listitem>
+		  <para>
+	            测试覆盖策略导致策略区记录不做任何事情，但是记录如果策略区
+                    未被关闭时可能做的事情。
+                    对DNS请求的应答将根据任何被触发的未被关闭的策略记录被重写
+                    （或不被重写）。
+                    关闭的策略区应放在最前面，因为如果一个更高优先级的触发器
+                    在前面时，它们通常都不会被记录。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		<term><command>PASSTHRU</command></term>,
+		<term><command>DROP</command></term>,
+		<term><command>TCP-Only</command></term>,
+		<term><command>NXDOMAIN</command></term>
+		和
+		<term><command>NODATA</command></term>
+		<listitem>
+		  <para>
+		    使用对应的每记录策略覆盖。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
+	      <varlistentry>
+		  <term><command>CNAME domain</command></term>
+		  <listitem>
+		    <para>
+	              导致所有RPZ策略记录表现为好像它们是"cname domain"记录。
+		    </para>
+		  </listitem>
+		</varlistentry>
+	    </variablelist>
 	  </para>
 
 	  <para>
-	    缺省时，在一个RPZ中编码的动作仅应用到要求递归（RD=1）的请求。
+	    缺省时，在一个响应策略区中编码的动作仅应用到要求递归（RD=1）的请求。
             这个缺省可以在一个视图中使用一条
-            <command>recursive-only no</command>子句为一个RPZ或全部RPZ而被
-            改变。这个特性在下面的情况很有用，在一个RFC 1918云的内部和外部有
-            同样的区文件，并使用RPZ来删除外部可见的名字服务器或视图上可能包含
-            的RFC 1918值。
+            <command>recursive-only no</command>子句为一个策略区或全部
+            响应策略区而被改变。
+            这个特性在下面的情况很有用，在一个RFC 1918云的内部和外部有同样的
+            区文件，并使用RPZ来删除外部可见的名字服务器或视图上可能包含的
+            RFC 1918值。
 	  </para>
 
 	  <para>
 	    同样缺省的是，RPZ动作仅应用于那些要么不要求DNSSEC元数据（DO=0），
             要么在原始区中没有请求名的DNSSEC记录的DNS请求中。
             这个缺省可以在一个视图中使用<command>break-dnssec yes</command>
-            子句而对所有RPZ被改变。
+            子句而对所有响应策略区被改变。
             在这种情况下，RPZ动作被应用而不考虑DNSSEC。子句选项的名字反映了
             被RPZ动作所重写的结果不能被验证的事实。
+	  </para>
+
+	  <para>
+	    对一个QNAME或Client-IP触发器，不需要DNS记录。
+            名字或者IP地址自身就已足够，所以原则上请求名不需要被递归解析。
+            但是，不解析请求名可能泄漏使用了策略区重写和名字被列入一个策略区
+            的事实给所列名字的服务器的操作者。
+            为阻止这个信息泄漏，缺省一个请求所需的任何递归查询都在任何策略
+            触发器被考虑之前完成。因为列出的域名通常有较慢的权威服务器，这个
+            缺省行为可能花费大量时间。
+	    当递归查询不能改变一个非错响应时，
+            <command>qname-wait-recurse no</command>选项覆盖缺省行为。
+            这个选项不影响列在其它包含IP，NSIP和NSDNAME触发器的区之后的策略区中
+            的QNAME或client-IP触发器，因为那些（触发器）可能依赖在递归解析中会被
+            发现的A，AAAA和NS记录。
+            它也不影响DNSSEC请求（DO=1），除非使用了
+            <command>break-dnssec yes</command>，因为响应会依赖解析中是否发现了
+            RRSIG记录。
+            使用这个选项可能导致诸如出现SERVFAIL的错误响应被重写，由于没有
+            递归查询被完成，以发现权威服务器中的问题。
 	  </para>
 
 	  <para>
@@ -8726,19 +8826,12 @@ example.com                 CNAME   rpz-tcp-only.
             服务器时是否需要添加一个NSID EDNS选项。这个覆盖在视图级和option级
             的<command>request-nsid</command>设置。
 	  </para>
-        </sect2>
 
 	  <para>
 	    <command>request-sit</command>子句决定本地服务器在发送到其它服务器
             的请求中是否要添加一个SIT EDNS选项。这覆盖视图或全局选项中的
-            <command>request-sit</command>设置。named
-	    The <command>request-sit</command> clause determines
-	    whether the local server will add a SIT EDNS option
-	    to requests sent to the server.  This overrides
-	    <command>request-sit</command> set at the view or
-	    option level.  Named may determine that SIT is not
-	    supported by the remote server and not add a SIT
-	    EDNS option to requests.
+            <command>request-sit</command>设置。named可能决定SIT不被远程服务器
+            支持并且不在请求中添加一个SIT EDNS选项。
 	  </para>
 	</sect2>
 
@@ -8799,16 +8892,14 @@ example.com                 CNAME   rpz-tcp-only.
         </para>
 
         <para>
+          统计以不同格式和视图提供，依赖于访问它们所使用的URI。例如，
           如果配置了统计通道并监听在127.0.0.1的8888端口，就可以以XML格式在
           <ulink url="http://127.0.0.1:8888/">http://127.0.0.1:8888/</ulink>或
           <ulink url="http://127.0.0.1:8888/xml">http://127.0.0.1:8888/xml</ulink>
           访问统计。
-          引入一个CSS文件可以将XML统计转换格式为一个样式表兼容的浏览器可读
-          的表。当<acronym>BIND</acronym> 9使用--enable-newstats配置
-          （configure）时，将使用一种新的XML模式（版本3），后者增加额外的
-          区统计并使用一个扁平树进行更有效率的语法分析。
-          新引入的样式表使用Google Charts API，当使用一个javascript兼容的
-          浏览器时，会将数据表现为图表或图形。
+          引入一个CSS文件，在使用一个样式表兼容的浏览器查看时，可以将XML统计
+          转换格式为表格，在使用一个支持javascript的浏览器查看时，可以使用
+          Google Charts API将其转换格式为图表和图形。
         </para>
 
         <para>
@@ -8821,6 +8912,53 @@ example.com                 CNAME   rpz-tcp-only.
           如果服务器支持所请求的模式，就会有响应；如果不支持，就会返回
           一个“page not found”错误。
         </para>
+
+	<para>
+          统计的单独子项可以在下列位置查看
+	  <ulink url="http://127.0.0.1:8888/xml/v3/status"
+		  >http://127.0.0.1:8888/xml/v3/status</ulink>
+	  （服务器运行时间和上次修改配置时间），
+	  <ulink url="http://127.0.0.1:8888/xml/v3/server"
+		  >http://127.0.0.1:8888/xml/v3/server</ulink>
+	  （服务器和解析器统计），
+	  <ulink url="http://127.0.0.1:8888/xml/v3/zones"
+		  >http://127.0.0.1:8888/xml/v3/zones</ulink>
+	  （区统计），
+	  <ulink url="http://127.0.0.1:8888/xml/v3/net"
+		  >http://127.0.0.1:8888/xml/v3/net</ulink>
+	  （网络状态和套接字统计），
+	  <ulink url="http://127.0.0.1:8888/xml/v3/mem"
+		  >http://127.0.0.1:8888/xml/v3/mem</ulink>
+	  （内存管理统计），
+	  <ulink url="http://127.0.0.1:8888/xml/v3/tasks"
+		  >http://127.0.0.1:8888/xml/v3/tasks</ulink>
+	  （任务管理统计）。
+	</para>
+
+	<para>
+	  也可以JSON格式读取完整的统计集合
+	  <ulink url="http://127.0.0.1:8888/json"
+		  >http://127.0.0.1:8888/json</ulink>,
+	  在下列位置查看单独子项
+	  <ulink url="http://127.0.0.1:8888/json/v1/status"
+		  >http://127.0.0.1:8888/json/v1/status</ulink>
+	  （服务器运行时间和上次修改配置时间），
+	  <ulink url="http://127.0.0.1:8888/json/v1/server"
+		  >http://127.0.0.1:8888/json/v1/server</ulink>
+	  （服务器和解析器统计），
+	  <ulink url="http://127.0.0.1:8888/json/v1/zones"
+		  >http://127.0.0.1:8888/json/v1/zones</ulink>
+	  （区统计），
+	  <ulink url="http://127.0.0.1:8888/json/v1/net"
+		  >http://127.0.0.1:8888/json/v1/net</ulink>
+	  （网络状态和套接字统计），
+	  <ulink url="http://127.0.0.1:8888/json/v1/mem"
+		  >http://127.0.0.1:8888/json/v1/mem</ulink>
+	  （内存管理统计），
+	  <ulink url="http://127.0.0.1:8888/json/v1/tasks"
+		  >http://127.0.0.1:8888/json/v1/tasks</ulink>
+	  （任务管理统计）。
+	</para>
       </sect2>
 
         <sect2 id="trusted-keys">
@@ -9178,14 +9316,15 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     <optional> notify-delay <replaceable>seconds</replaceable> ; </optional>
     <optional> notify-to-soa <replaceable>yes_or_no</replaceable>; </optional>
     <optional> pubkey <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>string</replaceable> ; </optional>
-    <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> alt-transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+    <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> alt-transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> alt-transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>)
-                             <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+			     <optional>port <replaceable>ip_port</replaceable></optional>
+			     <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> use-alt-transfer-source <replaceable>yes_or_no</replaceable>; </optional>
-    <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+    <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
     <optional> sig-validity-interval <replaceable>number</replaceable> <optional><replaceable>number</replaceable></optional> ; </optional>
     <optional> sig-signing-nodes <replaceable>number</replaceable> ; </optional>
@@ -9218,21 +9357,22 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     <optional> dialup <replaceable>dialup_option</replaceable> ; </optional>
     <optional> delegation-only <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> file <replaceable>string</replaceable> ; </optional>
-    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>) ; </optional>
+    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>|<constant>map</constant>) ; </optional>
     <optional> forward (<constant>only</constant>|<constant>first</constant>) ; </optional>
-    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
-    <optional> masters <optional>port <replaceable>ip_port</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
+    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> masters <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
                               <optional>port <replaceable>ip_port</replaceable></optional>
+			      <optional>dscp <replaceable>ip_dscp</replaceable></optional>
                               <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> }; </optional>
     <optional> max-transfer-idle-in <replaceable>number</replaceable> ; </optional>
     <optional> max-transfer-time-in <replaceable>number</replaceable> ; </optional>
     <optional> pubkey <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>string</replaceable> ; </optional>
-    <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+    <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>)
-                         <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
-    <optional> alt-transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+			 <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
+    <optional> alt-transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> alt-transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>)
-                            <optional>port <replaceable>ip_port</replaceable></optional> ; </optional>
+			    <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> use-alt-transfer-source <replaceable>yes_or_no</replaceable>; </optional>
     <optional> zone-statistics <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> database <replaceable>string</replaceable> ; </optional>
@@ -9254,19 +9394,24 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
 zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
     type forward;
     <optional> forward (<constant>only</constant>|<constant>first</constant>) ; </optional>
-    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
     <optional> delegation-only <replaceable>yes_or_no</replaceable> ; </optional>
 };
 
 zone <replaceable>"."</replaceable> <optional><replaceable>class</replaceable></optional> {
     type redirect;
     file <replaceable>string</replaceable> ;
-    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>) ; </optional>
+    <optional> masterfile-format (<constant>text</constant>|<constant>raw</constant>|<constant>map</constant>) ; </optional>
     <optional> allow-query { <replaceable>address_match_list</replaceable> }; </optional>
+    <optional> max-zone-ttl <replaceable>number</replaceable> ; </optional>
 };
 
 zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
     type delegation-only;
+};
+
+zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
+    <optional> in-view <replaceable>string</replaceable> ; </optional>
 };
 
 </programlisting>
@@ -9521,8 +9666,8 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
               它的区数据可以使用<literal>CHAOS</literal>类指定。
             </para>
           </sect3>
-          <sect3>
 
+          <sect3>
             <title>区选项</title>
 
             <variablelist>
@@ -10221,6 +10366,16 @@ example.com. NS ns2.example.net.
 		</listitem>
 	      </varlistentry>
 
+	      <varlistentry>
+		<term><command>max-zone-ttl</command></term>
+		<listitem>
+		  <para>
+                    参见<xref linkend="options"/>中对
+		    <command>max-zone-ttl</command>的描述。
+		  </para>
+		</listitem>
+	      </varlistentry>
+
               <varlistentry>
                 <term><command>dnssec-secure-to-insecure</command></term>
                 <listitem>
@@ -10585,6 +10740,49 @@ example.com. NS ns2.example.net.
 	      每个现存记录类型对规则进行检查。
             </para>
           </sect3>
+
+	  <sect3>
+	    <title>多视图</title>
+	    <para>
+              当使用了多个视图，一个区可能被在超过一个视图中引用。通常，这些
+              视图会对同样的名字包含不同的区，即运行不同的客户端对同样请求收到
+              不同的回复。然而，在许多时候，期望多个视图包含同样的区。
+              <command>in-view</command>区选项提供一个有效的方法来做这事：它
+              允许一个视图引用在之前一个已配置视图中定义的一个区。例如：
+	    </para>
+	    <programlisting>
+view internal {
+    match-clients { 10/8; };
+
+    zone example.com {
+	type master;
+	file "example-external.db";
+    };
+};
+
+view external {
+    match-clients { any; };
+
+    zone example.com {
+	in-view internal;
+    };
+};
+	    </programlisting>
+	    <para>
+	      一个<command>in-view</command>选项不能引用到在配置文件后面定义的
+              视图。
+	    </para>
+	    <para>
+              一个使用了<command>in-view</command>选项的<command>zone</command>
+              语句不能使用除<command>forward</command>和
+              <command>forwarders</command>之外的任何其它选项。
+              （这些选项控制包含视图的行为，而不是改变区对象自身。）
+	    </para>
+	    <para>
+	      一个<command>in-view</command>区不能用作一个响应策略区。
+	    </para>
+	  </sect3>
+
         </sect2>
       </sect1>
       <sect1>
@@ -12004,14 +12202,24 @@ HOST-127.EXAMPLE. MX 0 .
 	  <title>附加文件格式</title>
 	  <para>
 	    除了标准的文件格式，BIND 9支持读或者列出其它格式区文件的能力。
-	    <constant>raw</constant>格式是当前可用的一种附加格式。它是一个二进
-	    制格式，直接表示BIND 9的内部数据结构，因此显著地改善加载时间。
 	  </para>
 	  <para>
-	    对主服务器，一个<constant>raw</constant>格式的区可以通过
-	    <command>named-compilezone</command>命令从一个文本区文件生成。对辅
-	    服务器或者动态区，它是在<command>named</command>完成区传送之后转储
-	    区或者应用上次的更新时自动生成的（如果使用
+            <constant>raw</constant>格式是区数据的一个二进制表示，类似于在
+            区传送中使用的方式。由于它不要求对文本进行语法分析，装载时间显著
+            缩短。
+	  </para>
+	  <para>
+	    一个更快的替代方法是<constant>map</constant>格式，它是一个
+            <acronym>BIND</acronym> 9内存区数据库的镜像；它适合使用
+            <command>mmap()</command>函数直接装载到内存中；区几乎可以
+            立即开始对请求提供服务。
+	  </para>
+	  <para>
+	    对一个主服务器，一个<constant>raw</constant>或
+            <constant>map</constant>格式的区可以通过
+	    <command>named-compilezone</command>命令从一个文本区文件生成。对
+            辅服务器或者动态区，它是在<command>named</command>完成区传送之后
+            转储区或者应用上次的更新时自动生成的（如果使用
 	    <command>masterfile-format</command>选项指定了这种格式）。
 	  </para>
 	  <para>
@@ -12021,7 +12229,10 @@ HOST-127.EXAMPLE. MX 0 .
             <command>named-compilezone</command>命令将其转换为二进制格式。
 	  </para>
     	  <para>
-            虽然<constant>raw</constant>格式使用网络字节顺序避免了体系独立的数
+            注意<command>map</command>格式是及其体系相关的。一个
+            <constant>map</constant>文件<emphasis>不能</emphasis>用于一个不同
+            指针大小的系统，通常应该只用于同一系统。
+            虽然<constant>raw</constant>格式使用网络字节顺序避免了体系依赖的数
             据对齐，所以它是尽可能可移植的，但是它还是最好用于同样的单个系统的
             内部。为了导出一个<constant>raw</constant>格式或者给文件做一个可移
             植的备份，推荐将文件转换为标准的文本表示。
@@ -12128,6 +12339,7 @@ HOST-127.EXAMPLE. MX 0 .
 		    和不存在的名字的数目。
 		    如果为某个资源记录类型打印了惊叹号（!），它表示
 		    特定类型的资源记录是不存在的（也即“NXRRSET”）。
+                    如果出现一个散列符号（#），资源记录集被标记为垃圾回收。
 		    每个视图各自维护。
                   </para>
                 </entry>

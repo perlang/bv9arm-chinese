@@ -118,7 +118,7 @@
             设置本密钥在被转换进一个DNSKEY资源记录中时的缺省TTL值。如果这个
             密钥这个密钥被导入进一个区，这就被用作密钥的TTL，除非区中已经有
             一个DNSKEY资源记录集，在后者的情况下，已经存在的TTL将会优先。将
-            缺省的TTL设置位<literal>0</literal>或者<literal>none</literal>
+            缺省的TTL设置为<literal>0</literal>或者<literal>none</literal>
             来删除它。
           </para>
         </listitem>

@@ -114,7 +114,7 @@
   </refsect1>
 
   <refsect1>
-    <title>SIMPLE USAGE</title>
+    <title>简单用法</title>
 
     <para>
       一个典型的<command>delv</command>调用看起来像：
@@ -172,7 +172,7 @@
   </refsect1>
 
   <refsect1>
-    <title>OPTIONS</title>
+    <title>选项</title>
     <variablelist>
 
       <varlistentry>
@@ -190,18 +190,16 @@
             覆盖。
 	  </para>
 	  <para>
-	    Note: When reading the trust anchor file,
-	    <command>delv</command> treats <option>managed-keys</option>
-	    statements and <option>trusted-keys</option> statements
-	    identically.  That is, for a managed key, it is the
-	    <emphasis>initial</emphasis> key that is trusted; RFC 5011
-	    key management is not supported. <command>delv</command>
-	    will not consult the managed-keys database maintained by
-	    <command>named</command>. This means that if either of the
-	    keys in <filename>/etc/bind.keys</filename> is revoked
-	    and rolled over, it will be necessary to update
-	    <filename>/etc/bind.keys</filename> to use DNSSEC
-	    validation in <command>delv</command>.
+            注意：在读取信任锚点文件时，<command>delv</command>同等对待
+            <option>managed-keys</option>语句和
+            <option>trusted-keys</option>语句。
+            即，对于一个被管理的密钥，它就是被信任的初始密钥；RFC 5011密钥管理
+            不被支持。
+	    <command>delv</command>将不咨询由<command>named</command>维护的
+            被管理密钥数据库。
+            这意谓如果<filename>/etc/bind.keys</filename>有一个密钥被撤销并
+            轮转，就必须更新<filename>/etc/bind.keys</filename>以便在
+            <command>delv</command>中使用DNSSEC验证。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -325,15 +323,15 @@
 	<term>-x <replaceable class="parameter">addr</replaceable></term>
 	<listitem>
 	  <para>
-	    Performs a reverse lookup, mapping an addresses to
-	    a name.  <parameter>addr</parameter> is an IPv4 address in
-	    dotted-decimal notation, or a colon-delimited IPv6 address.
-	    When <option>-x</option> is used, there is no need to provide
-	    the <parameter>name</parameter> or <parameter>type</parameter>
-	    arguments.  <command>delv</command> automatically performs a
-	    lookup for a name like <literal>11.12.13.10.in-addr.arpa</literal>
-	    and sets the query type to PTR.  IPv6 addresses are looked up
-	    using nibble format under the IP6.ARPA domain.
+            执行一个反向查找，映射一个地址到一个名字。
+            <parameter>addr</parameter>是一个点分十进制表示的IPv4地址，或者
+            一个冒号分隔的IPv6地址。
+            当使用了<option>-x</option>，不需要提供<parameter>name</parameter>
+            或<parameter>type</parameter>参数。
+            <command>delv</command>自动执行对一个类似
+            <literal>11.12.13.10.in-addr.arpa</literal>的名字的查找，并设置
+            请求类型为PTR。
+            IPv6地址是以半字节格式在IP6.ARPA域下查找。
 	  </para>
 	</listitem>
       </varlistentry>
@@ -368,27 +366,24 @@
     </para>
 
     <para>
-      Each query option is identified by a keyword preceded by a plus sign
-      (<literal>+</literal>).  Some keywords set or reset an
-      option.  These may be preceded by the string
-      <literal>no</literal> to negate the meaning of that keyword.
-      Other keywords assign values to options like the timeout interval.
-      They have the form <option>+keyword=value</option>.
-      The query options are:
+      每个请求由一个加号（<literal>+</literal>）引导的关键字所标识。
+      一些关键字设置或清除一个选项。
+      这些可以由前导的<literal>no</literal>字符串反转关键字的含义。
+      其它关键字给选项赋值，如超时间隔。
+      它们具有<option>+keyword=value</option>的形式。
+      请求选项为：
 
       <variablelist>
 	<varlistentry>
 	  <term><option>+[no]cdflag</option></term>
 	  <listitem>
 	    <para>
-	      Controls whether to set the CD (checking disabled) bit in
-	      queries sent by <command>delv</command>. This may be useful
-	      when troubleshooting DNSSEC problems from behind a validating
-	      resolver. A validating resolver will block invalid responses,
-	      making it difficult to retrieve them for analysis. Setting
-	      the CD flag on queries will cause the resolver to return
-	      invalid responses, which <command>delv</command> can then
-	      validate internally and report the errors in detail.
+	      控制是否在由<command>delv</command>发出的请求中设置CD
+              （checking disabled，关闭验证）位。
+              这个可以用于从一个验证解析器后端进行DNSSEC问题排查。
+              一个验证解析器将阻塞无效响应，就使获取它们进行分析变得很困难。
+              在请求中设置CD标志将使解析器返回无效响应，
+              <command>delv</command>可以在内部验证并详细报告错误。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -415,19 +410,14 @@
 	  <term><option>+[no]rtrace</option></term>
 	  <listitem>
 	    <para>
-	      Toggle resolver fetch logging. This reports the
-	      name and type of each query sent by <command>delv</command>
-	      in the process of carrying out the resolution and validation
-	      process: this includes including the original query and
-	      all subsequent queries to follow CNAMEs and to establish a
-	      chain of trust for DNSSEC validation.
+	      翻转解析器取动作的日志。这报告了在执行解析和验证过程中每个
+              由<command>delv</command>发送的请求的名字和类型：这包含了
+              原始请求和跟随CNAME记录和为DNSSEC验证建立信任链的随后请求。
 	    </para>
 	    <para>
-	      This is equivalent to setting the debug level to 1 in
-	      the "resolver" logging category. Setting the systemwide
-	      debug level to 1 using the <option>-d</option> option will
-	      product the same output (but will affect other logging
-	      categories as well).
+	      这和在"resolver"日志类别中设置调试级别为1是等效的。
+              使用<option>-d</option>选项在系统范围设置调试级别为1会得到
+              同样的输出（但是也会影响其它日志类别）。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -436,16 +426,13 @@
 	  <term><option>+[no]mtrace</option></term>
 	  <listitem>
 	    <para>
-	      Toggle message logging. This produces a detailed dump of
-	      the responses received by <command>delv</command> in the
-	      process of carrying out the resolution and validation process.
+              翻转消息日志。这产生<command>delv</command>在执行解析和
+              验证过程中收到的响应的详细导出结果。
 	    </para>
 	    <para>
-	      This is equivalent to setting the debug level to 10
-	      for the the "packets" module of the "resolver" logging
-	      category. Setting the systemwide debug level to 10 using
-	      the <option>-d</option> option will produce the same output
-	      (but will affect other logging categories as well).
+	      这和在"resolver"日志类别的"packets"模块中设置调试级别为10是等效的。
+              使用<option>-d</option>选项在系统范围设置调试级别为10会得到
+              同样的输出（但是也会影响其它日志类别）。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -458,11 +445,9 @@
               有效签名、未签名或者无效的。
 	    </para>
 	    <para>
-	      This is equivalent to setting the debug level to 3
-	      for the the "validator" module of the "dnssec" logging
-	      category. Setting the systemwide debug level to 3 using
-	      the <option>-d</option> option will produce the same output
-	      (but will affect other logging categories as well).
+	      这和在"dnssec"日志类别的"validator"模块中设置调试级别为3是等效的。
+              使用<option>-d</option>选项在系统范围设置调试级别为3会得到
+              同样的输出（但是也会影响其它日志类别）。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -500,13 +485,12 @@
 	  <term><option>+[no]crypto</option></term>
 	  <listitem>
 	    <para>
-	      Toggle the display of cryptographic fields in DNSSEC records.
-	      The contents of these field are unnecessary to debug most DNSSEC
-	      validation failures and removing them makes it easier to see
-	      the common failures.  The default is to display the fields.
-	      When omitted they are replaced by the string "[omitted]" or
-	      in the DNSKEY case the key id is displayed as the replacement,
-	      e.g. "[ key id = value ]".
+	      翻转DNSSEC记录中加密字段的显示。
+              这些字段的内容对于调试大多数DNSSEC验证失败不是必须的，并且去掉
+              它们会使查看通常的失败更容易。
+              缺省是显示这些字段。
+              如果省略，它们被字符串"[omitted]"所替代，或者在DNSKEY的情况下，
+              作为替代，显示密钥的id，例如"[ key id = value ]"。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -524,14 +508,12 @@
 	  <term><option>+[no]split[=W]</option></term>
 	  <listitem>
 	    <para>
-	      Split long hex- or base64-formatted fields in resource
-	      records into chunks of <parameter>W</parameter> characters
-	      (where <parameter>W</parameter> is rounded up to the nearest
-	      multiple of 4).
-	      <parameter>+nosplit</parameter> or
-	      <parameter>+split=0</parameter> causes fields not to be
-	      split at all.  The default is 56 characters, or 44 characters
-	      when multiline mode is active.
+              分割资源记录中的长的hex-或base64-格式的字段为
+              <parameter>W</parameter>个字符大小的块。
+              （这里<parameter>W</parameter>是最接近的4的倍数）。
+	      <parameter>+nosplit</parameter>或
+	      <parameter>+split=0</parameter>使字段完全不被分割。
+              缺省是56个字符，或者在打开多行模式时为44个字符。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -540,10 +522,10 @@
 	  <term><option>+[no]all</option></term>
 	  <listitem>
 	    <para>
-	      Set or clear the display options
+	      设置或清除显示选项
 	      <option>+[no]comments</option>, 
-	      <option>+[no]rrcomments</option>, and
-	      <option>+[no]trust</option> as a group.
+	      <option>+[no]rrcomments</option>和
+	      <option>+[no]trust</option>作为一个组。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -552,10 +534,10 @@
 	  <term><option>+[no]multiline</option></term>
 	  <listitem>
 	    <para>
-	      Print long records (such as RRSIG, DNSKEY, and SOA records)
-	      in a verbose multi-line format with human-readable comments.
-	      The default is to print each record on a single line, to
-	      facilitate machine parsing of the <command>delv</command>
+              以冗长多行格式并附带人可读的注释打印长记录（诸如RRSIG，DNSKEY
+              和SOA记录）
+              缺省是将每条记录打印在一行上，以便<command>delv</command>的
+              输出更容易被机器分析。
 	      output.
 	    </para>
 	  </listitem>
@@ -565,15 +547,12 @@
 	  <term><option>+[no]dnssec</option></term>
 	  <listitem>
 	    <para>
-	      Indicates whether to display RRSIG records in the
-	      <command>delv</command> output.  The default is to
-	      do so.  Note that (unlike in <command>dig</command>)
-	      this does <emphasis>not</emphasis> control whether to
-	      request DNSSEC records or whether to validate them.
-	      DNSSEC records are always requested, and validation
-	      will always occur unless suppressed by the use of
-	      <option>-i</option> or <option>+noroot</option> and
-	      <option>+nodlv</option>.
+	      指示是否在<command>delv</command>的输出中显示RRSIG记录。
+              缺省是显示。
+              注意（与<command>dig</command>不同）这<emphasis>不</emphasis>
+              控制是否请求DNSSEC记录或者是否验证它们。
+              总是请求DNSSEC记录，并总是进行验证，除非使用<option>-i</option>
+              或<option>+noroot</option>和<option>+nodlv</option>禁止。
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -582,13 +561,11 @@
 	  <term><option>+[no]root[=ROOT]</option></term>
 	  <listitem>
 	    <para>
-	      Indicates whether to perform conventional (non-lookaside)
-	      DNSSEC validation, and if so, specifies the
-	      name of a trust anchor.  The default is to validate using
-	      a trust anchor of "." (the root zone), for which there is
-	      a built-in key.  If specifying a different trust anchor,
-	      then <option>-a</option> must be used to specify a file
-	      containing the key.
+              指示是否执行传统的（非后备）DNSSEC验证，如果是，指定信任锚点
+              的名字。
+              缺省是使用一个"."（根区）的信任锚点，对此有一个内置密钥。
+              如果指定一个不同的信任锚点，必须使用<option>-a</option>
+              指定一个包含这个密钥的文件。
 	    </para>
 	  </listitem>
 	</varlistentry>

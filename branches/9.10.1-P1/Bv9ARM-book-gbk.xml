@@ -5420,16 +5420,12 @@ options {
                   （Source Identity Token，源特征符号）EDNS选项。如果解析器
                   之前与服务器通信过，之前返回的SIT会被发送。这个用于让服务器
                   判断这个解析器之前是否来访问过。
-                  A resolver sending the correct SIT is
-		  assumed not to be an off-path attacker sending a
-		  spoofed-source query; the query is therefore
-		  unlikely to be part of a reflection/amplification
-		  attack, so resolvers sending a correct SIT option
-		  are not subject to response rate limiting (RRL).
-
-		  Resolvers which do not send a correct SIT option
-		  may be limited to receiving smaller responses via
-		  the <command>nosit-udp-size</command> option.
+                  一个发送正确SIT的解析器会被假设不是发送一个伪造源地址请求的
+                  off-path攻击者；这个请求就不太可能被当成一个反射/放大攻击，
+                  因此发送一个正确SIT选项的解析器就不会遭遇到
+                  响应率限制（RRL）。
+                  不发送一个正确SIT选项的解析器可能被通过
+                  <command>nosit-udp-size</command>选项限制成接收更小的响应。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -7444,7 +7440,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <term><command>edns-udp-size</command></term>
               <listitem>
                 <para>
-                  设置初始广告的以字节计的EDNS UDP缓存的大小，用以控制从
+                  设置被广告的以字节计的EDNS UDP缓存的初始大小，用以控制从
                   权威服务器接收的作为递归响应的包的大小。
                   有效值为从512到4096（超出这个范围的值将被静默地调整为范围内
                   最接近的值）。缺省值是4096。
@@ -7588,7 +7584,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		<para>
 		  设置提供递归请求服务时可以发出的迭代查询的最大数目。
                   如果需要发出更多的请求，递归请求会被终止并返回
-                  SERVFAIL。缺省是50.
+                  SERVFAIL。缺省是50。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -12230,12 +12226,15 @@ HOST-127.EXAMPLE. MX 0 .
 	  </para>
     	  <para>
             注意<command>map</command>格式是及其体系相关的。一个
-            <constant>map</constant>文件<emphasis>不能</emphasis>用于一个不同
-            指针大小的系统，通常应该只用于同一系统。
-            虽然<constant>raw</constant>格式使用网络字节顺序避免了体系依赖的数
+            <constant>map</constant>文件<emphasis>不能</emphasis>用于一个与
+            生成数据的系统具有不同指针大小、字节序或数据对齐的系统，通常应该
+            只用于同样单个系统内部。
+            由于<constant>raw</constant>格式使用网络字节顺序避免了体系依赖的数
             据对齐，所以它是尽可能可移植的，但是它还是最好用于同样的单个系统的
-            内部。为了导出一个<constant>raw</constant>格式或者给文件做一个可移
-            植的备份，推荐将文件转换为标准的文本表示。
+            内部。
+            为导出一个<constant>raw</constant>或者<constant>map</constant>格式
+            的区文件，或者给这样的文件做一个可移植的备份，推荐将其转换为
+            <constant>text</constant>格式。
 	  </para>
 	</sect2>
       </sect1>
@@ -12949,19 +12948,6 @@ HOST-127.EXAMPLE. MX 0 .
 		      </para>
 		    </entry>
 		  </row>
-		  <row rowsep="0">
-		    <entry colname="1">
-		      <para><command>RPZRewrites</command></para>
-		    </entry>
-		    <entry colname="2">
-		      <para><command></command></para>
-		    </entry>
-		    <entry colname="3">
-		      <para>
-			响应策略区重写。
-		      </para>
-		    </entry>
-		  </row>
                   <row rowsep="0">
                     <entry colname="1">
                       <para><command>RateDropped</command></para>
@@ -12988,6 +12974,19 @@ HOST-127.EXAMPLE. MX 0 .
                       </para>
                     </entry>
                   </row>
+		  <row rowsep="0">
+		    <entry colname="1">
+		      <para><command>RPZRewrites</command></para>
+		    </entry>
+		    <entry colname="2">
+		      <para><command></command></para>
+		    </entry>
+		    <entry colname="3">
+		      <para>
+			响应策略区重写。
+		      </para>
+		    </entry>
+		  </row>
 		</tbody>
               </tgroup>
             </informaltable>

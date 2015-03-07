@@ -315,7 +315,7 @@ example.net.signed
   </sect2>
   <sect2>
     <title>在命令行指定引擎</title>
-    <para>可以再<command>named</command>和所有BIND的
+    <para>可以在<command>named</command>和所有BIND的
     <command>dnssec-*</command>工具中通过使用“-E &lt;engine&gt;”
     命令行选项来指定OpenSSL引擎。如果BIND 9是使用--with-pkcs11选项
     构建的，这个选项缺省为“pkcs11”。通常是不需要指定引擎的，除非

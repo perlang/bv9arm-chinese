@@ -44,7 +44,7 @@
     </listitem>
   </itemizedlist>
   <sect2>
-    <title>Prerequisite</title>
+    <title>先决条件</title>
   <para>构建导出库要求用GNU make（BIND 9的其它部分仍然可以使用其它类型的
   make来构建）。在本文档的剩余部份，“make”表示GNU make。注意在某些平台
   上，你可能需要发起一个不同于“make”的命令名（例如“gmake”）来表示其

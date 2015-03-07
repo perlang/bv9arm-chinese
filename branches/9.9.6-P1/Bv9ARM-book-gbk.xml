@@ -7357,7 +7357,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		<para>
 		  设置提供递归请求服务时可以发出的迭代查询的最大数目。
                   如果需要发出更多的请求，递归请求会被终止并返回
-                  SERVFAIL。缺省是50.
+                  SERVFAIL。缺省是50。
 		</para>
 	      </listitem>
 	    </varlistentry>

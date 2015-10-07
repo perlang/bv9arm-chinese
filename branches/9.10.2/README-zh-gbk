@@ -1,8 +1,8 @@
 
 当前构建环境：
-Fedora release 17 (Beefy Miracle)
-  3.4.3-1.fc17.i686
-texlive2011-20110705.iso
+Fedora release 22 (Twenty Two)
+  4.1.7-200.fc22.x86_64
+texlive2015-20150523.iso
 db2latex-xsl-0.8pre1.tar.gz
 
 建立环境的步骤
@@ -14,9 +14,9 @@ db2latex-xsl-0.8pre1.tar.gz
 2. 按照bind-9.x.x/docutil/目录下的三个*bug文件修改
 /usr/local/share/db2latex 下的三个文件。
 
-3. 安装texlive-2011（略）到/usr/local/texlive
+3. 安装texlive-2015（略）到/usr/local/texlive
 如安装好的pdflatex路径为：
-/usr/local/texlive/2011/bin/i386-linux/pdflatex
+/usr/local/texlive/2015/bin/x86_64-linux/pdflatex
 
 4. 安装gbk2uni工具
 svn checkout http://ctex-kit.googlecode.com/svn/trunk/ ctex-kit-read-only

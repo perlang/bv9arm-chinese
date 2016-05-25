@@ -1,0 +1,574 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2004, 2005, 2007-2012, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2000-2003  Internet Software Consortium.
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<refentry id="man.dnssec-keygen">
+  <refentryinfo>
+    <date>February 06, 2014</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-keygen</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-keygen</application></refname>
+    <refpurpose>DNSSEC密钥生成工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2007</year>
+      <year>2008</year>
+      <year>2009</year>
+      <year>2010</year>
+      <year>2011</year>
+      <year>2012</year>
+      <year>2014</year>
+      <year>2015</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <year>2002</year>
+      <year>2003</year>
+      <holder>Internet Software Consortium.</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>dnssec-keygen</command>
+      <arg><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
+      <arg><option>-b <replaceable class="parameter">keysize</replaceable></option></arg>
+      <arg><option>-n <replaceable class="parameter">nametype</replaceable></option></arg>
+      <arg><option>-3</option></arg>
+      <arg><option>-A <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg><option>-C</option></arg>
+      <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg><option>-D <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg><option>-E <replaceable class="parameter">engine</replaceable></option></arg>
+      <arg><option>-f <replaceable class="parameter">flag</replaceable></option></arg>
+      <arg><option>-G</option></arg>
+      <arg><option>-g <replaceable class="parameter">generator</replaceable></option></arg>
+      <arg><option>-h</option></arg>
+      <arg><option>-I <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg><option>-i <replaceable class="parameter">interval</replaceable></option></arg>
+      <arg><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg><option>-L <replaceable class="parameter">ttl</replaceable></option></arg>
+      <arg><option>-k</option></arg>
+      <arg><option>-P <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg><option>-p <replaceable class="parameter">protocol</replaceable></option></arg>
+      <arg><option>-q</option></arg>
+      <arg><option>-R <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg><option>-r <replaceable class="parameter">randomdev</replaceable></option></arg>
+      <arg><option>-S <replaceable class="parameter">key</replaceable></option></arg>
+      <arg><option>-s <replaceable class="parameter">strength</replaceable></option></arg>
+      <arg><option>-t <replaceable class="parameter">type</replaceable></option></arg>
+      <arg><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg><option>-V</option></arg>
+      <arg><option>-z</option></arg>
+      <arg choice="req">name</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para>
+      <command>dnssec-keygen</command>为DNSSEC（安全DNS）生成密钥，
+      在RFC 2535和RFC 4034中定义。它也可以为使用在RFC 2845中所定义的
+      TSIG（事务签名）或在RFC 2930中所定义的TKEY（事务密钥）生成密钥。
+    </para>
+    <para>
+      密钥的<option>name</option>在命令行指定。对于DNSSEC密钥，这必须
+      与为其生成密钥的区的名字相匹配。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-a <replaceable class="parameter">algorithm</replaceable></term>
+        <listitem>
+          <para>
+            选择加密算法。对DNSSEC密钥，<option>algorithm</option>的值
+            必须为RSAMD5，RSASHA1，DSA，NSEC3RSASHA1，NSEC3DSA，RSASHA256
+            ，RSASHA512，ECCGOST，ECDSAP256SHA256或ECDSAP384SHA384之一。对
+            TSIG/TKEY，其值必须为DH（Diffie Hellman），HMAC-MD5，HMAC-SHA1，
+            HMAC-SHA224，HMAC-SHA256，HMAC-SHA384或HMAC-SHA512之一。
+            这些值是大小写不敏感的。
+          </para>
+          <para>
+            如果未指定算法，缺省使用RSASHA1，除非指定了<option>-3</option>
+            选项，这时将使用NSEC3RSASHA1。（如果使用了<option>-3</option>
+            并指定了一个算法，将检查这个算法对NSEC3的兼容性。）
+          </para>
+          <para>
+	    注1：对DNSSEC来说，RSASHA1是必须实现的算法，而DSA是推荐的。
+	    对TSIG来说，HMAC-MD5是必须的。
+          </para>
+          <para>
+            注2：DH，HMAC-MD5以及从HMAC-SHA1到HMAC-SHA512自动设置-T KEY选项。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-b <replaceable class="parameter">keysize</replaceable></term>
+        <listitem>
+          <para>
+            指定密钥的位数。密钥大小的选择依赖于所使用的算法。
+	    RSA密钥必须在512和2048位之间。Diffie Hellman密钥必须在
+	    128和4096位之间。DSA密钥必须在512和1024位之间并且是64的整数倍。
+	    HMAC密钥必须在1和512位之间。椭圆曲线算法不需要这个参数。
+          </para>
+          <para>
+            如果使用缺省算法，不需要指定密钥的大小。对区签名密钥（ZSK），
+            缺省密钥大小是1024位，而对密钥签名密钥（KSK，由
+            <option>-f KSK</option>所生成），缺省是2048位。
+            然而，如果使用<option>-a</option>显式指定了一个算法，
+            就没有缺省的密钥大小了，就必须使用<option>-b</option>。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-n <replaceable class="parameter">nametype</replaceable></term>
+        <listitem>
+          <para>
+            指定密钥的拥有者类型。<option>nametype</option>的值要么是ZONE
+	    （对DNSSEC的区密钥（KEY/DNSKEY）），HOST或ENTITY（对一个与主机
+	    （KEY）相关的密钥），USER（对一个与用户（KEY）相关的密钥）或
+	    OTHER（DNSKEY）。这些值是大小写不敏感的。缺省是ZONE，用于DNSKEY
+	    生成。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-3</term>
+        <listitem>
+          <para>
+	    使用NSEC3兼容算法生成一个DNSSEC密钥。
+	    如果使用了这个选项并且没有在命令行显式设定算法，缺省将
+	    使用NSEC3RSASHA1。注意RSASHA256，RSASHA512，ECCGOST，
+            ECDSAP256SHA256和ECDSAP384SHA384算法是NSEC3兼容的。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-C</term>
+        <listitem>
+          <para>
+	    兼容模式：生成一个旧风格的密钥，不带任何元数据。缺省时，
+	    <command>dnssec-keygen</command>将在存放于私钥的元数据中
+	    包含密钥的创建日期，其它日期也可能在那儿设置（发布日期，
+	    激活日期等等）。包含这些数据的密钥可能与旧版本的BIND
+	    不兼容；<option>-C</option>防止了这些情况。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">class</replaceable></term>
+        <listitem>
+          <para>
+	    指示包含密钥的DNS记录应该具有指定的类。如果未指定，使用类IN。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-E <replaceable class="parameter">engine</replaceable></term>
+        <listitem>
+          <para>
+            如果适用，指定要使用的加密硬件。
+          </para>
+          <para>
+            当BIND使用带OpenSSL PKCS#11支持构建时，这个缺省值是字符串
+            "pkcs11"，它标识一个可以驱动一个加密加速器或硬件服务模块的
+            OpenSSL引擎，当BIND使用带原生PKCS#11加密
+            （--enable-native-pkcs11）构建时，它缺省是由"--with-pkcs11"
+            指定的PKCS#11提供者库的路径。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-f <replaceable class="parameter">flag</replaceable></term>
+        <listitem>
+          <para>
+	    在KEY/DNSKEY记录的标志字段中设置特定的标志。只能被识别的标志
+	    是KSK（密钥签名密钥）和REVOKE。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-G</term>
+        <listitem>
+          <para>
+            生成一个密钥，但是不发布它，也不使用它签名。这个选项与
+            -P和-A不兼容。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-g <replaceable class="parameter">generator</replaceable></term>
+        <listitem>
+          <para>
+	    如果生成一个Diffie Hellman密钥，使用这个生成器。允许值为2到
+	    5。如果未指定生成器，如果可能使用来自RFC 2539的著名素数；否
+	    则缺省为2。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-h</term>
+        <listitem>
+          <para>
+	    打印<command>dnssec-keygen</command>的选项和参数的简短摘要。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-K <replaceable class="parameter">directory</replaceable></term>
+        <listitem>
+          <para>
+            设置写密钥文件的目录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k</term>
+        <listitem>
+          <para>
+            废除的-T KEY。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-L <replaceable class="parameter">ttl</replaceable></term>
+        <listitem>
+          <para>
+            设置本密钥在被转换进一个DNSKEY资源记录中时的缺省TTL值。如果这个
+            密钥被导入进一个区，这就被用作密钥的TTL，除非区中已经有一个
+            DNSKEY资源记录集，在后者的情况下，已经存在的TTL将会优先。
+            如果未设置这个值并且不存在DNSKEY资源记录集，TTL缺省将是SOA TTL。
+            将缺省的TTL设置为<literal>0</literal>或者<literal>none</literal>
+            就和不设置它有同样的效果。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable class="parameter">protocol</replaceable></term>
+        <listitem>
+          <para>
+	    为生成密钥设置协议值。协议是一个0到255之间的数。缺省是3
+	    （DNSSEC）。这个参数的其它可能值在RFC 2535及其后继中列出。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-q</term>
+        <listitem>
+          <para>
+            安静模式：关闭不必要的输出，也包含进度指示。在没有这个
+            选项时，当交互式运行<command>dnssec-keygen</command>来
+            生成一个RSA或DSA密钥对时，它会打印一串符号到
+            <filename>stderr</filename>，以指示生成密钥的进度。
+            一个‘.‘表示发现一个随机数，它被传递给一个初始化过滤
+            测试；’+‘表示一个随机数被传递给一个单轮
+            Miller-Rabin primality测试；一个空格表示随机数被传递给
+            所有的测试并且是一个合格的密钥。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-r <replaceable class="parameter">randomdev</replaceable></term>
+        <listitem>
+          <para>
+            指定随机性的源。如果操作系统不提供
+            <filename>/dev/random</filename>或等效的设备，缺省的随机性的源为
+            键盘输入。<filename>randomdev</filename>指定一个字符设备名或包含
+            随机数据的文件名，用来替代缺省值。特定值
+            <filename>keyboard</filename>指示使用键盘输入。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-S <replaceable class="parameter">key</replaceable></term>
+        <listitem>
+          <para>
+            创建一个新密钥，它是一个当前存在密钥的明确的后继。这个密钥的
+            名字，算法，大小，和类型都被设置为与现存密钥向匹配。新密钥的
+            激活日期设置为现存密钥的失效日期。其发布日期被设置为激活日期
+            减去发布前间隔，后者缺省是30天。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable class="parameter">strength</replaceable></term>
+        <listitem>
+          <para>
+            指定密钥的强度值。这个强度是0到15之间的一个数，当前在
+	    DNSSEC中没有定义其意图。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-T <replaceable class="parameter">rrtype</replaceable></term>
+        <listitem>
+          <para>
+            为密钥指定所使用的资源记录类型。
+            <option>rrtype</option>必须是DNSKEY或KEY。在使用一个
+            DNSSEC算法时，缺省是DNSKEY，但是与SIG(0)一起使用时，它可以被
+            覆盖为KEY。
+          <para>
+          </para>
+            使用任何TSIG算法（HMAC-*或DH）强制这个选项为KEY。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-t <replaceable class="parameter">type</replaceable></term>
+        <listitem>
+          <para>
+	    指定密钥的使用。<option>type</option>必须是AUTOCONF，
+	    NOAUTHCONF，NOAUTH或NOCONF之一。缺省是AUTHCONF。AUTH为认证
+	    数据的能力，而CONF为加密数据的能力。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v <replaceable class="parameter">level</replaceable></term>
+        <listitem>
+          <para>
+	    设置调试级别。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-V</term>
+        <listitem>
+	  <para>
+	    打印版本信息。
+	  </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>定时选项</title>
+
+    <para>
+      日期可以被表示成YYYYMMDD或YYYYMMDDHHMMSS格式。
+      如果参数以'+'或'-'开始，它将会被解释成自当前时间始的偏移量。
+      为方便起见，如果这个偏移量带有这些后缀之一，'y'，'mo'，'w'，
+      'd'，'h'或'mi'，这个偏移量就分别被以年（定义为365个24小时的天，
+      忽略闰年），月（定义为30个24小时的天），周，天，小时或分钟计算。
+      没有后缀时，偏移量以秒计算。要显式阻止设置一个日期，使用'none'或'never'。
+    </para>
+
+    <variablelist>
+      <varlistentry>
+        <term>-P <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置一个密钥被发布到区的日期。在此日期之后，密钥将会被包含到
+            区中，但不会用于对其签名。如果未设置，并且没有使用-G选项，
+            缺省是“now”。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-A <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置密钥被激活的日期。在此日期之后，密钥将会被包含到区中并用于
+            对其签名。如果未设置，并且没有使用-G选项，缺省是“now”。如果
+            设置，并且未设置-P，公开日期将被设置为激活日期减去提前公开的
+            间隔。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-R <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置密钥被撤销的日期。在此日期之后，密钥将被标志为被撤销。
+            它将会被包含到区中并用于对其签名。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-I <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置密钥被撤销的日期。在此日期之后，密钥仍然被包含在区中，
+            但它不再被用于签名。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-D <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置密钥被删除的日期。在此日期之后，密钥将不再被包含在区中。
+            （然而，它可能仍然保留在密钥仓库中。）
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-i <replaceable class="parameter">interval</replaceable></term>
+        <listitem>
+          <para>
+            为一个密钥设置发布前间隔。如果设置，则发布日期与激活日期之间必须
+            至少间隔这么多的日期。如果指定了激活日期而没有指定发布日期，则发
+            布日期缺省为激活日期之前这么多时间；相反地，如果指定了发布日期但
+            没有指定激活日期，则激活日期将被设置为在发布日期之后这么多时间。
+          </para>
+          <para>
+            正在被创建的密钥是另一个密钥的明确后继，则缺省的发布前间隔是30天；
+            否则就是零。
+          </para>
+          <para>
+            与日期偏移量相伴，如果参数后面有后缀‘y’，‘mo’，‘w’，‘d’，
+            ‘h’，或‘mi’中的一个，则间隔的单位分别为年，月，周，天，小时，
+            分钟。没有后缀的情况，间隔的单位为秒。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsect1>
+
+
+  <refsect1>
+    <title>生成的密钥</title>
+    <para>
+      当<command>dnssec-keygen</command>完全成功时，它打印一个
+      <filename>Knnnn.+aaa+iiiii</filename>格式的字符串到标准输出。这是
+      其生成的密钥的标识字符串。
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para><filename>nnnn</filename>是密钥名。
+        </para>
+      </listitem>
+      <listitem>
+        <para><filename>aaa</filename>是算法的数字表示。
+        </para>
+      </listitem>
+      <listitem>
+        <para><filename>iiiii</filename>是密钥标识符（或足迹）。
+        </para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      <command>dnssec-keygen</command>创建两个文件，其名字类似这个打印
+      的字符串。<filename>Knnnn.+aaa+iiiii.key</filename>包含公钥，
+      而<filename>Knnnn.+aaa+iiiii.private</filename>包含私钥。
+    </para>
+    <para>
+      <filename>.key</filename>文件包含一个DNS KEY记录，可以
+      （直接或使用一个$INCLUDE语句）插入到一个区文件中。
+    </para>
+    <para>
+      <filename>.private</filename>文件包含算法相关字段。由于明显
+      的安全原因，这个文件不能具有任何人可读的权限。
+    </para>
+    <para>
+      <filename>.key</filename>和<filename>.private</filename>文件都
+	  是由对称加密算法，如HMAC-MD5，生成，即使公钥和私钥是等价的。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>例子</title>
+    <para>
+      要为域<userinput>example.com</userinput>生成一个768位的DSA密钥，
+	  需要执行下列命令：
+    </para>
+    <para><userinput>dnssec-keygen -a DSA -b 768 -n ZONE example.com</userinput>
+    </para>
+    <para>
+      命令将会打印下列格式的字符串：
+    </para>
+    <para><userinput>Kexample.com.+003+26160</userinput>
+    </para>
+    <para>
+      在这个例子中，<command>dnssec-keygen</command>建立文件
+	  <filename>Kexample.com.+003+26160.key</filename>和
+	  <filename>Kexample.com.+003+26160.private</filename>。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para><citerefentry>
+        <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>,
+      <citetitle>RFC 2539</citetitle>,
+      <citetitle>RFC 2845</citetitle>,
+      <citetitle>RFC 4034</citetitle>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

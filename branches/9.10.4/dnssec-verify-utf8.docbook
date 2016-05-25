@@ -1,0 +1,201 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2012, 2014  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<refentry id="man.dnssec-verify">
+  <refentryinfo>
+    <date>January 15, 2014</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-verify</application></refentrytitle>
+   <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-verify</application></refname>
+    <refpurpose>DNSSEC区验证工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2012</year>
+      <year>2014</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>dnssec-verify</command>
+      <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg><option>-E <replaceable class="parameter">engine</replaceable></option></arg>
+      <arg><option>-I <replaceable class="parameter">input-format</replaceable></option></arg>
+      <arg><option>-o <replaceable class="parameter">origin</replaceable></option></arg>
+      <arg><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg><option>-V</option></arg>
+      <arg><option>-x</option></arg>
+      <arg><option>-z</option></arg>
+      <arg choice="req">zonefile</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para><command>dnssec-verify</command>
+      验证一个区是被区中每个DNSKEY资源记录集中的算法完整地签名，并且
+      NSEC/NSEC3链是完整的。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>选项</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>-c <replaceable class="parameter">class</replaceable></term>
+        <listitem>
+          <para>
+            指定区的DNS类。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-E <replaceable class="parameter">engine</replaceable></term>
+        <listitem>
+          <para>
+            如果适用，指定要使用的加密硬件。
+          </para>
+          <para>
+            当BIND使用带OpenSSL PKCS#11支持构建时，这个缺省值是字符串
+            "pkcs11"，它标识一个可以驱动一个加密加速器或硬件服务模块的
+            OpenSSL引擎，当BIND使用带原生PKCS#11加密
+            （--enable-native-pkcs11）构建时，它缺省是由"--with-pkcs11"
+            指定的PKCS#11提供者库的路径。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-I <replaceable class="parameter">input-format</replaceable></term>
+        <listitem>
+          <para>
+            输入区文件的格式。
+            可能的格式为<command>"text"</command>（缺省）和
+            <command>"raw"</command>。
+            这个选项的主要目的是用于动态签名区，使导出的区文件以一个
+            非文本的格式，其中所包含的更新可以被独立地验证。
+            使用这个选项对非动态区没有更多的意义。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-o <replaceable class="parameter">origin</replaceable></term>
+        <listitem>
+          <para>
+            区原点。如果未设置，区文件的名字被当成原点。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v <replaceable class="parameter">level</replaceable></term>
+        <listitem>
+          <para>
+            设置调试级别。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-V</term>
+        <listitem>
+          <para>
+            打印版本信息。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-x</term>
+        <listitem>
+          <para>
+            只验证使用密钥签名密钥签名的DNSKEY资源记录集。没有这个标志时，
+            假定DNSKEY资源记录集被所有活动的密钥签名。当设置了这个标志时，
+            如果DNSKEY资源记录集未被区签名密钥签名也不成为一个错误。这对应
+            着<command>dnssec-signzone</command>中的<option>-x</option>选项。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-z</term>
+	<listitem>
+	  <para>
+            在决定区是否被正确签名时，忽略密钥中的KSK标志。没有这个标志时，
+            假设存在一个为撤销，自签名的DNSKEY，它带有对应于每种算法的KSK
+            标志集，并且DNSKEY资源记录集之外的其它资源记录集都被一个没有
+            KSK标志集的另一个DNSKEY所签名。
+	  </para>
+	  <para>
+            设置了这个标志时，我们只要求对每种算法，都存在至少一个非活动的，
+            自签名的DNSKEY，不管其KSK标志状态，并且其它资源记录集被一个
+            对应同样算法的非活动密钥签名，这个算法包含自签名密钥；同一密钥
+            可以用于两个目的。这对应着<command>dnssec-signzone</command>中
+            的<option>-z</option>选项。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>zonefile</term>
+        <listitem>
+          <para>
+            包含被签名区的文件。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para>
+      <citerefentry>
+        <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9 Administrator Reference Manual</citetitle>,
+      <citetitle>RFC 4033</citetitle>.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

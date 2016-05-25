@@ -1,0 +1,95 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) 2013, 2014  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<refentry id="man.named-rrchecker">
+  <refentryinfo>
+    <date>November 12, 2013</date>
+  </refentryinfo>
+  <refmeta>
+    <refentrytitle><application>named-rrchecker</application></refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+  <refnamediv>
+    <refname><application>named-rrchecker</application></refname>
+    <refpurpose>一个针对单个DNS资源记录的语法检查器</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2013</year>
+      <year>2014</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>named-rrchecker</command>
+      <arg><option>-h</option></arg>
+      <arg><option>-o <replaceable class="parameter">origin</replaceable></option></arg>
+      <arg><option>-p</option></arg>
+      <arg><option>-u</option></arg>
+      <arg><option>-C</option></arg>
+      <arg><option>-T</option></arg>
+      <arg><option>-P</option></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>描述</title>
+    <para><command>named-rrchecker</command>
+     从标准输入读取单个DNS资源记录并检查其在语句构成上是否正确。
+    </para>
+    <para>
+      <option>-h</option>打印输出标准菜单。
+    </para>
+    <para>
+      <option>-o <replaceable class="parameter">origin</replaceable></option>
+      选项指定一个用于解释记录时的原点。
+    </para>
+    <para>
+      <option>-p</option>以正规形式打印输出结果记录。如果不存在正规形式的
+      定义，就以未知记录格式打印记录。
+    </para>
+    <para>
+      <option>-u</option>以未知记录形式打印输出结果记录。
+    </para>
+    <para>
+      <option>-C</option>，<option>-T</option>和<option>-P</option>分别打印
+      输出已知的类，标准类型和私有类型助记符。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参见</title>
+    <para>
+      <citetitle>RFC 1034</citetitle>,
+      <citetitle>RFC 1035</citetitle>,
+      <citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

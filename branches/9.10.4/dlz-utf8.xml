@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ - Copyright (C) 2012-2014  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- $Id$ -->
+
+<sect1 id="dlz-info">
+  <title>DLZ (Dynamically Loadable Zones，动态加载区)</title>
+  <para>
+    DLZ (Dynamically Loadable Zones，动态加载区)是一项BIND 9扩展，它允许直接从
+    一个外部数据库中提取区数据。它对格式或模式没有要求。已经存在对应几种不同的
+    数据库后端包括PostgreSQL，MySQL和LDAP的DLZ驱动，也可以写其它驱动。
+  </para>
+  <para>
+    早期，DLZ驱动是静态链接到named二进制代码的，并通过编译时的配置选项打开（
+    例如，<userinput>"configure --with-dlz-ldap"</userinput>）。现在，驱动在
+    BIND 9源码包中提供，在<filename>contrib/dlz/drivers</filename>中，仍然以
+    同样方式链接。
+    way.
+  </para>
+  <para>
+    在BIND 9.8或更高版本，可以通过DLZ "dlopen"驱动，它充当了一个通用中间层封装
+    了一个实现DLZ API的共享对象，在运行时动态链接某些DLZ模块。"dlopen"驱动缺省
+    链接到named，在使用这些动态可链接的驱动时就不再需要配置选项了，但是使用
+    <filename>contrib/dlz/drivers</filename>下面的旧驱动时仍然需要。
+  </para>
+
+  <para>
+    当DLZ模块给named提供数据时，它使用文本格式。响应由named转换为DNS线上格式。
+    这个转换没有任何内部缓存，给DLZ模块的查询性能带来了重大限制。因此，不推荐
+    在大访问量服务器上使用DLZ。然而，它可以被用于一个隐藏主配置中，让辅服务器
+    通过AXFR获取区更新。（注意，由于DLZ没有对DNS notify的内置支持；辅服务器
+    不会收到数据库中区变化的通知信息。）
+  </para>
+
+  <sect2>
+    <title>配置DLZ</title>
+    <para>
+      通过<filename>named.conf</filename>中一个<command>dlz</command>语句
+      配置一个DLZ数据库：
+    </para>
+    <screen>
+    dlz example {
+        database "dlopen driver.so <option>args</option>";
+        search yes;
+    };
+    </screen>
+    <para>
+      这指定了一个在回复请求时要搜索的DLZ模块；这个模块在
+      <filename>driver.so</filename>中实现，并通过dlopen DLZ驱动在运行时装载。
+      可以指定多个<command>dlz</command>语句；在回复一个请求时，所有
+      <option>search</option>被设置为<literal>yes</literal>的DLZ模块都将被
+      查询，以发现它们是否包含对请求名的答复；最好的可用答复将被返回给客户端。
+    </para>
+    <para>
+      上述例子中的<option>search</option>选项可以省略，因为
+      <literal>yes</literal>是缺省值。
+    </para>
+    <para>
+      如果<option>search</option>被设置为<literal>no</literal>，在收到一个请求
+      时，就<emphasis>不会</emphasis>在这个DLZ模块中查找最佳匹配。作为替代，在
+      这个DLZ中的区必须在一个zone语句中独立指定。这允许你使用标准的区选项语义
+      配置一个区，同时却指定一个不同的数据库后端来存储区数据。例如，使用一个
+      DLZ模块作重定向规则的后端存储来实现NXDOMAIN重定向：
+    </para>
+    <screen>
+    dlz other {
+        database "dlopen driver.so <option>args</option>";
+        search no;
+    };
+
+    zone "." {
+        type redirect;
+        dlz other;
+    };
+    </screen>
+  </sect2>
+  <sect2>
+    <title>样板DLZ驱动</title>
+    <para>
+      为指导实现DLZ模块，目录<filename>contrib/dlz/example</filename>包含了
+      一个基本的动态可链接DLZ模块--即一个可以由"dlopen" DLZ驱动在运行时加载
+      的模块。
+      这个例子建立了一个区，其名字作为<command>dlz</command>中的一个参数被
+      传递给模块：
+    </para>
+    <screen>
+    dlz other {
+        database "dlopen driver.so example.nil";
+    };
+    </screen>
+    <para>
+      在上面的例子中，模块被配置为建立一个区"example.nil"，它可以回复查询和
+      AXFR请求，并接受DDNS更新。在运行时，在任何更新的前面，区中包含其顶点
+      一条SOA记录，一条NS记录及一条A记录：
+    </para>
+    <screen>
+ example.nil.  3600    IN      SOA     example.nil. hostmaster.example.nil. (
+                                               123 900 600 86400 3600
+                                       )
+ example.nil.  3600    IN      NS      example.nil.
+ example.nil.  1800    IN      A       10.53.0.1
+    </screen>
+    <para>
+      样板驱动能够提取关于请求客户端的信息，并基于这个信息修改它的响应。
+      为演示这个特性，例子驱动用请求的源地址响应对
+      "source-addr.<option>zonename</option>>/TXT"的请求。
+      注意，这个记录将 *不会* 被包含到AXFR或ANY响应中。
+      通常，这个特性用于以一些其它的方式修改响应。
+      例如，根据请求来自的不同网络而对同一个特定名字提供不同的地址记录。
+    </para>
+    <para>
+      DLZ模块API的文档可以在<filename>contrib/dlz/example/README</filename>中
+      找到。这个目录也包含头文件<filename>dlz_minimal.h</filename>，后者定义
+      了这个API并应被包含在任何动态可链接DLZ模块中。
+    </para>
+  </sect2>
+</sect1>

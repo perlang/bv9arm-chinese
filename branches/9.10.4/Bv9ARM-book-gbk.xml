@@ -1,8 +1,5 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-              "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004-2015  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004-2016  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000-2003  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -18,10 +15,11 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<book xmlns:xi="http://www.w3.org/2001/XInclude">
-  <title>BIND 9管理员参考手册</title>
+<!-- Converted by db4-upgrade version 1.0 -->
+<book xmlns="http://docbook.org/ns/docbook" version="5.0">
+  <info>
+    <title>BIND 9管理员参考手册</title>
 
-  <bookinfo>
     <copyright>
       <year>2004</year>
       <year>2005</year>
@@ -44,11 +42,11 @@
       <year>2003</year>
       <holder>Internet Software Consortium.</holder>
     </copyright>
-    <xi:include href="releaseinfo-utf8.xml"/>
-  </bookinfo>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="releaseinfo.xml"/>
+  </info>
 
-  <chapter id="Bv9ARM-gbk.ch01">
-    <title>介绍</title>
+  <chapter xml:id="Bv9ARM.ch01"><info><title>介绍</title></info>
+
     <para>
       互联网域名系统（<acronym>DNS</acronym>）由以下几个部份组成：
       在互联网中以层次体系方式指定实体名字的语法，用于在名字之间
@@ -56,8 +54,7 @@
       <acronym>DNS</acronym>数据是维护在一组分布式层次数据库中。
     </para>
 
-    <sect1>
-      <title>文档范围</title>
+    <section xml:id="doc_scope"><info><title>文档范围</title></info>
 
       <para>
         伯克利互联网名字域（Berkeley Internet Name Domain，
@@ -66,10 +63,11 @@
         （Internet Systems Consortium，<acronym>ISC</acronym>）
         的<acronym>BIND</acronym>版本9软件包的基本信息。
       </para>
-      <xi:include href="pkgversion-utf8.xml"/>
-    </sect1>
-    <sect1>
-      <title>本文档的组织</title>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="pkgversion.xml"/>
+    </section>
+
+    <section xml:id="organization"><info><title>本文档的组织</title></info>
+
       <para>
         在本文档中， <emphasis>第一章</emphasis>介绍<acronym>DNS</acronym>
         和<acronym>BIND</acronym>的基本概念。 <emphasis>第二章</emphasis>
@@ -86,9 +84,8 @@
         <emphasis>参考书目</emphasis>以及与<acronym>BIND</acronym>和域名系统
         相关的历史信息。
       </para>
-    </sect1>
-    <sect1>
-      <title>本文档中的惯例</title>
+    </section>
+    <section xml:id="conventions"><info><title>本文档中的惯例</title></info>
 
       <para>
         在本文档中，我们使用以下的排版惯例：
@@ -210,7 +207,7 @@
           </tgroup>
         </informaltable>
       </para>
-    </sect1>
+    </section>
     <sect1>
       <title>域名系统（<acronym>DNS</acronym>）</title>
       <para>

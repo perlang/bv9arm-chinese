@@ -1,8 +1,7 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-	       "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-	       [<!ENTITY mdash "&#8212;">]>
+<!DOCTYPE book [
+<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -17,10 +16,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.delv">
-
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.delv">
+  <info>
+    <date>2014-04-23</date>
+  </info>
   <refentryinfo>
-    <date>April 23, 2014</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -37,51 +40,52 @@
   <docinfo>
     <copyright>
       <year>2014</year>
+      <year>2015</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>delv</command>
-      <arg choice="opt">@server</arg>
-      <arg><option>-4</option></arg>
-      <arg><option>-6</option></arg>
-      <arg><option>-a <replaceable class="parameter">anchor-file</replaceable></option></arg>
-      <arg><option>-b <replaceable class="parameter">address</replaceable></option></arg>
-      <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
-      <arg><option>-d <replaceable class="parameter">level</replaceable></option></arg>
-      <arg><option>-i</option></arg>
-      <arg><option>-m</option></arg>
-      <arg><option>-p <replaceable class="parameter">port#</replaceable></option></arg>
-      <arg><option>-q <replaceable class="parameter">name</replaceable></option></arg>
-      <arg><option>-t <replaceable class="parameter">type</replaceable></option></arg>
-      <arg><option>-x <replaceable class="parameter">addr</replaceable></option></arg>
-      <arg choice="opt">name</arg>
-      <arg choice="opt">type</arg>
-      <arg choice="opt">class</arg>
+      <arg choice="opt" rep="norepeat">@server</arg>
+      <arg choice="opt" rep="norepeat"><option>-4</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-6</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-a <replaceable class="parameter">anchor-file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-b <replaceable class="parameter">address</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-d <replaceable class="parameter">level</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-i</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-m</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-p <replaceable class="parameter">port#</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-q <replaceable class="parameter">name</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-t <replaceable class="parameter">type</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-x <replaceable class="parameter">addr</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat">name</arg>
+      <arg choice="opt" rep="norepeat">type</arg>
+      <arg choice="opt" rep="norepeat">class</arg>
       <arg choice="opt" rep="repeat">queryopt</arg>
     </cmdsynopsis>
 
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>delv</command>
-      <arg><option>-h</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
     </cmdsynopsis>
 
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>delv</command>
-      <arg><option>-v</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v</option></arg>
     </cmdsynopsis>
 
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>delv</command>
       <arg choice="opt" rep="repeat">queryopt</arg>
       <arg choice="opt" rep="repeat">query</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
+
     <para><command>delv</command>
       (Domain Entity Lookup &amp; Validation，域名实体查找和验证)是一个发送
       DNS请求并验证结果的工具，它使用与<command>named</command>同样的内部解析器
@@ -111,10 +115,9 @@
       当没有给出命令行参数或选项时，<command>delv</command>将执行对"."（根区）
       的NS查询。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>简单用法</title>
+  <refsection><info><title>简单用法</title></info>
 
     <para>
       一个典型的<command>delv</command>调用看起来像：
@@ -169,10 +172,9 @@
       </variablelist>
     </para>
 
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>选项</title>
+  <refsection><info><title>选项</title></info>
     <variablelist>
 
       <varlistentry>
@@ -355,10 +357,9 @@
       </varlistentry>
 
     </variablelist>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>请求选项</title>
+  <refsection><info><title>请求选项</title></info>
 
     <para><command>delv</command>
       提供一些请求选项，它们影响结果的显式方式，在某些情况它们也影响请求执行
@@ -584,16 +585,14 @@
       </variablelist>
 
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>文件</title>
+  <refsection><info><title>文件</title></info>
     <para><filename>/etc/bind.keys</filename></para>
     <para><filename>/etc/resolv.conf</filename></para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
     <para><citerefentry>
 	<refentrytitle>dig</refentrytitle><manvolnum>1</manvolnum>
       </citerefentry>,
@@ -606,9 +605,6 @@
       <citetitle>RFC5074</citetitle>,
       <citetitle>RFC5155</citetitle>.
     </para>
-  </refsect1>
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+  </refsection>
+
+</refentry>

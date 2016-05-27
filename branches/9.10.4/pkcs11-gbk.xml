@@ -1,8 +1,7 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-               [<!ENTITY mdash "&#8212;">]>
+<!DOCTYPE book [
+<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2010, 2012-2015  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2010, 2012-2016  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -17,8 +16,9 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<sect1 id="pkcs11">
-  <title>PKCS#11 (Cryptoki)支持</title>
+<!-- Converted by db4-upgrade version 1.0 -->
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="pkcs11"><info><title>PKCS#11 (Cryptoki)支持</title></info>
+
   <para>
    PKCS#11 (公钥加密标准 #11)为控制硬件安全模块（HSM）和其它
    密码支持设备定义了一个平台独立的API。
@@ -42,15 +42,15 @@
     第二种机制让BIND完全绕过OpenSSL；BIND自己加载提供者库，并使用PKCS#11 API
     直接驱动HSM。
   </para>
-  <sect2>
-    <title>先决条件</title>
+  <section><info><title>先决条件</title></info>
+
     <para>
       关于HSM的安装，初始化，测试和故障解决方面的信息，参见由HSM厂商
       提供的文档。
     </para>
-  </sect2>
-  <sect2>
-    <title>原生PKCS#11</title>
+  </section>
+  <section><info><title>原生PKCS#11</title></info>
+
     <para>
       原生PKCS#11模式仅能与一个能够执行<emphasis>每个</emphasis>BIND 9可能
       需要的加密操作的HSM一块工作。
@@ -79,17 +79,16 @@ $ <userinput>./configure --enable-native-pkcs11 \
       <command>dnssec-*</command>工具中使用<option>-E</option>，或者在
       <command>pkcs11-*</command>工具中使用<option>-m</option>来覆盖。）
     </para>
-    <sect3>
-      <title>构建SoftHSMv2</title>
+    <section><info><title>构建SoftHSMv2</title></info>
       <para>
         SoftHSMv2，最新开发版SoftHSM，可在
-	<ulink url="https://github.com/opendnssec/SoftHSMv2">
+        <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://github.com/opendnssec/SoftHSMv2">
 	  https://github.com/opendnssec/SoftHSMv2
-	</ulink>得到。
+	</link>得到。
         它是由OpenDNSSEC项目所开发的软件库
-	（<ulink url="http://www.opendnssec.org">
+	（<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.opendnssec.org">
 	  http://www.opendnssec.org
-	</ulink>），
+	</link>），
         它提供了一个虚拟HSM的PKCS#11接口，以一个在本地文件系统上的SQLite3
         数据库的形式实现。
         它提供的安全性较一个真正的HSM较少，但是它允许你在没有可用的HSM时试验
@@ -111,10 +110,9 @@ $ <userinput> make </userinput>
 $ <userinput> make install </userinput>
 $ <userinput> /opt/pkcs11/usr/bin/softhsm-util --init-token 0 --slot 0 --label softhsmv2 </userinput>
       </screen>
-    </sect3>
-  </sect2>
-  <sect2>
-    <title>基于OpenSSL的PKCS#11</title>
+    </section>
+  </section>
+  <section><info><title>基于OpenSSL的PKCS#11</title></info>
     <para>
       基于OpenSSL的PKCS#11模式使用了一个OpenSSL库的修改版本；当前官方
       版本的OpenSSL不能完全支持PKCS#11。

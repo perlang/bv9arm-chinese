@@ -27,6 +27,10 @@ db2latex-xsl-0.8pre1.tar.gz
 4. 安装gbk2uni工具  
 svn checkout http://ctex-kit.googlecode.com/svn/trunk/ ctex-kit-read-only  
 cd ctex-kit-read-only/gbk2uni  
+or
+git clone https://github.com/CTeX-org/ctex-kit.git
+cd ctex-kit/gbk2uni
+
 make  
 su   # 获取root权限  
 install -c -m 755 gbk2uni /usr/local/bin/  

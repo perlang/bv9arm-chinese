@@ -122,7 +122,7 @@
       例如，合适的<type>key</type>和<type>server</type>语句会被添加到
       <filename>/etc/named.conf</filename>，这样名字服务器可以将合适
       的密钥和算法关联到将会使用TSIG认证的客户端应用所在的IP地址上。
-      SIG(0)使用概要加密算法。要使用一个SIG(0)密钥，公钥必须存放在
+      SIG(0)使用公钥加密算法。要使用一个SIG(0)密钥，公钥必须存放在
       名字服务器所服务的区的一个KEY记录中。
       <command>nsupdate</command>不会读
       <filename>/etc/named.conf</filename>。

@@ -1,6 +1,3 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-               [<!ENTITY mdash "&#8212;">]>
 <!--
  - Copyright (C) 2009-2011, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
  -
@@ -17,9 +14,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.dnssec-settime">
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnssec-settime">
+  <info>
+    <date>2014-02-06</date>
+  </info>
   <refentryinfo>
-    <date>February 06, 2014</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -45,26 +47,26 @@
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>dnssec-settime</command>
-      <arg><option>-f</option></arg>
-      <arg><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
-      <arg><option>-L <replaceable class="parameter">ttl</replaceable></option></arg>
-      <arg><option>-P <replaceable class="parameter">date/offset</replaceable></option></arg>
-      <arg><option>-A <replaceable class="parameter">date/offset</replaceable></option></arg>
-      <arg><option>-R <replaceable class="parameter">date/offset</replaceable></option></arg>
-      <arg><option>-I <replaceable class="parameter">date/offset</replaceable></option></arg>
-      <arg><option>-D <replaceable class="parameter">date/offset</replaceable></option></arg>
-      <arg><option>-h</option></arg>
-      <arg><option>-V</option></arg>
-      <arg><option>-v <replaceable class="parameter">level</replaceable></option></arg>
-      <arg><option>-E <replaceable class="parameter">engine</replaceable></option></arg>
-      <arg choice="req">keyfile</arg>
+      <arg choice="opt" rep="norepeat"><option>-f</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-L <replaceable class="parameter">ttl</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-P <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-A <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-R <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-I <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-D <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-V</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-E <replaceable class="parameter">engine</replaceable></option></arg>
+      <arg choice="req" rep="norepeat">keyfile</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
+
     <para><command>dnssec-settime</command>
       读取一个DNSSEC私钥文件并按照<option>-P</option>，
       <option>-A</option>，<option>-R</option>，<option>-I</option>
@@ -84,10 +86,9 @@
       一份人可读的元数据描述。私钥文件的权限总是被设置为除属主外任何人
       都不可访问（模式0600）。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>选项</title>
+  <refsection><info><title>选项</title></info>
 
     <variablelist>
       <varlistentry>
@@ -169,10 +170,10 @@
         </listitem>
       </varlistentry>
     </variablelist>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>定时选项</title>
+  <refsection><info><title>定时选项</title></info>
+
     <para>
       日期可以被表示成YYYYMMDD或YYYYMMDDHHMMSS格式。
       如果参数以'+'或'-'开始，它将会被解释成自当前时间始的偏移量。
@@ -267,10 +268,10 @@
       </varlistentry>
 
     </variablelist>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>打印选项</title>
+  <refsection><info><title>打印选项</title></info>
+
     <para>
       <command>dnssec-settime</command>也能够被用于打印出与一个密钥
       相关联的定时元数据。
@@ -305,10 +306,10 @@
       </varlistentry>
 
     </variablelist>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
+
     <para><citerefentry>
         <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
       </citerefentry>,
@@ -318,16 +319,6 @@
       <citetitle>BIND 9管理员参考手册</citetitle>,
       <citetitle>RFC 5011</citetitle>.
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>作者</title>
-    <para><corpauthor>Internet Systems Consortium</corpauthor>
-    </para>
-  </refsect1>
-
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+</refentry>

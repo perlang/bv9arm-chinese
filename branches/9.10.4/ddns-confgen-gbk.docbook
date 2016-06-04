@@ -1,8 +1,5 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-	       "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2009, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2009, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -17,9 +14,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.ddns-confgen">
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.ddns-confgen">
+  <info>
+    <date>2014-03-06</date>
+  </info>
   <refentryinfo>
-    <date>March 6, 2014</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -37,34 +39,34 @@
     <copyright>
       <year>2009</year>
       <year>2014</year>
+      <year>2015</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>tsig-keygen</command>
-      <arg><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
-      <arg><option>-h</option></arg>
-      <arg><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
-      <arg choice="opt">name</arg>
+      <arg choice="opt" rep="norepeat"><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat">name</arg>
     </cmdsynopsis>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>ddns-confgen</command>
-      <arg><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
-      <arg><option>-h</option></arg>
-      <arg><option>-k <replaceable class="parameter">keyname</replaceable></option></arg>
-      <arg><option>-q</option></arg>
-      <arg><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
-      <group>
-        <arg choice="plain">-s <replaceable class="parameter">name</replaceable></arg>
-        <arg choice="plain">-z <replaceable class="parameter">zone</replaceable></arg>
+      <arg choice="opt" rep="norepeat"><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-k <replaceable class="parameter">keyname</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-q</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
+      <group choice="opt" rep="norepeat">
+        <arg choice="plain" rep="norepeat">-s <replaceable class="parameter">name</replaceable></arg>
+        <arg choice="plain" rep="norepeat">-z <replaceable class="parameter">zone</replaceable></arg>
       </group>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
     <para>
       <command>tsig-keygen</command>和<command>ddns-confgen</command>
       是一个应用程序的调用方法，它为使用TSIG签名生成密钥。例如，作为
@@ -93,10 +95,9 @@
       <command>ddns-confgen</command>只在更复杂的配置才需要：
       例如，如果<command>nsupdate</command>用于来自一个远程系统。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>选项</title>
+  <refsection><info><title>选项</title></info>
 
     <variablelist>
       <varlistentry>
@@ -193,10 +194,9 @@
 	</listitem>
       </varlistentry>
     </variablelist>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
     <para><citerefentry>
 	<refentrytitle>nsupdate</refentrytitle><manvolnum>1</manvolnum>
       </citerefentry>,
@@ -208,16 +208,6 @@
       </citerefentry>,
       <citetitle>BIND 9管理员参考手册</citetitle>.
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>作者</title>
-    <para><corpauthor>Internet Systems Consortium</corpauthor>
-    </para>
-  </refsect1>
-
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+</refentry>

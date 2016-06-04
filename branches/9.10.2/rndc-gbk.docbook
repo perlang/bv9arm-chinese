@@ -347,7 +347,7 @@
        </varlistentry>
 
        <varlistentry>
-         <term><userinput>stats</userinput></term>
+         <term><userinput>zonestats</userinput></term>
          <listitem>
            <para>
              显示给定区的当前状态，包含主文件名以及它加载时包含的所有文件，
@@ -473,7 +473,7 @@
 	    <term><userinput>flushname</userinput> <replaceable>name</replaceable></term>
 	    <listitem>
 	      <para>
-		刷新来自服务器的DNS缓存以及，如果合适，以及来自服务器的名字
+		刷新来自服务器的DNS缓存以及，如果合适，来自服务器的名字
                 服务器地址库或异常服务器缓存的给定名字。
 	      </para>
 	    </listitem>

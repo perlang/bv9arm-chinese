@@ -233,7 +233,7 @@
           </para>
           <note>
             <para>
-              这个选项主要是BIND 9的开发者对其有兴趣，在未来的版本中可能被去掉
+              这个选项主要是对BIND 9的开发者有趣，在未来的版本中可能被去掉
               或改变。
             </para>
           </note>
@@ -300,7 +300,7 @@
         <listitem>
           <para>
             在完成特权操作后，设置用户ID(setuid)为
-            <replaceable class="parameter">user</replaceable>，这样就可以创建套
+            <replaceable class="parameter">user</replaceable>，例如创建套
             接字，使其监听在特权端口上。
           </para>
           <note>

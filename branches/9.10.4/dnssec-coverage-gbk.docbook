@@ -1,8 +1,5 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-               [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2013, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2013-2015  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -17,9 +14,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.dnssec-coverage">
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnssec-coverage">
+  <info>
+    <date>2014-01-11</date>
+  </info>
   <refentryinfo>
-    <date>January 11, 2014</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -37,28 +39,29 @@
     <copyright>
       <year>2013</year>
       <year>2014</year>
+      <year>2015</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>dnssec-coverage</command>
-      <arg><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
-      <arg><option>-l <replaceable class="parameter">length</replaceable></option></arg>
-      <arg><option>-f <replaceable class="parameter">file</replaceable></option></arg>
-      <arg><option>-d <replaceable class="parameter">DNSKEY TTL</replaceable></option></arg>
-      <arg><option>-m <replaceable class="parameter">max TTL</replaceable></option></arg>
-      <arg><option>-r <replaceable class="parameter">interval</replaceable></option></arg>
-      <arg><option>-c <replaceable class="parameter">compilezone path</replaceable></option></arg>
-      <arg><option>-k</option></arg>
-      <arg><option>-z</option></arg>
-      <arg choice="opt">zone</arg>
+      <arg choice="opt" rep="norepeat"><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-l <replaceable class="parameter">length</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-f <replaceable class="parameter">file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-d <replaceable class="parameter">DNSKEY TTL</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-m <replaceable class="parameter">max TTL</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-r <replaceable class="parameter">interval</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">compilezone path</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-k</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-z</option></arg>
+      <arg choice="opt" rep="norepeat">zone</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
+
     <para><command>dnssec-coverage</command>
       验证一个给定的区或一个区集合的DNSSEC密钥是正确设置了定时元数据以确保
       将来没有DNSSEC覆盖的间隔。
@@ -77,10 +80,9 @@
       所有带密钥的区都会被分析。（注意：这个报告方法只在所有带有给定仓库中
       密钥的区共享同样的TTL参数时才是精确的。）
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>选项</title>
+  <refsection><info><title>选项</title></info>
 
     <variablelist>
       <varlistentry>
@@ -214,10 +216,10 @@
         </listitem>
       </varlistentry>
     </variablelist>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
+
     <para>
       <citerefentry>
         <refentrytitle>dnssec-checkds</refentrytitle><manvolnum>8</manvolnum>
@@ -232,16 +234,6 @@
         <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
       </citerefentry>
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>作者</title>
-    <para><corpauthor>Internet Systems Consortium</corpauthor>
-    </para>
-  </refsect1>
-
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+</refentry>

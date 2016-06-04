@@ -1,8 +1,5 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004-2009, 2011, 2013, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004-2009, 2011, 2013-2015  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000, 2001, 2003  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -18,9 +15,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.named">
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.named">
+  <info>
+    <date>2014-02-19</date>
+  </info>
   <refentryinfo>
-    <date>February 19, 2014</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -45,6 +47,7 @@
       <year>2011</year>
       <year>2013</year>
       <year>2014</year>
+      <year>2015</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
     <copyright>
@@ -56,32 +59,33 @@
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>named</command>
-      <arg><option>-4</option></arg>
-      <arg><option>-6</option></arg>
-      <arg><option>-c <replaceable class="parameter">config-file</replaceable></option></arg>
-      <arg><option>-d <replaceable class="parameter">debug-level</replaceable></option></arg>
-      <arg><option>-D <replaceable class="parameter">string</replaceable></option></arg>
-      <arg><option>-E <replaceable class="parameter">engine-name</replaceable></option></arg>
-      <arg><option>-f</option></arg>
-      <arg><option>-g</option></arg>
-      <arg><option>-m <replaceable class="parameter">flag</replaceable></option></arg>
-      <arg><option>-n <replaceable class="parameter">#cpus</replaceable></option></arg>
-      <arg><option>-p <replaceable class="parameter">port</replaceable></option></arg>
-      <arg><option>-s</option></arg>
-      <arg><option>-S <replaceable class="parameter">#max-socks</replaceable></option></arg>
-      <arg><option>-t <replaceable class="parameter">directory</replaceable></option></arg>
-      <arg><option>-U <replaceable class="parameter">#listeners</replaceable></option></arg>
-      <arg><option>-u <replaceable class="parameter">user</replaceable></option></arg>
-      <arg><option>-v</option></arg>
-      <arg><option>-V</option></arg>
-      <arg><option>-x <replaceable class="parameter">cache-file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-4</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-6</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">config-file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-d <replaceable class="parameter">debug-level</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-D <replaceable class="parameter">string</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-E <replaceable class="parameter">engine-name</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-f</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-g</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-M <replaceable class="parameter">option</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-m <replaceable class="parameter">flag</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-n <replaceable class="parameter">#cpus</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-p <replaceable class="parameter">port</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-s</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-S <replaceable class="parameter">#max-socks</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-t <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-U <replaceable class="parameter">#listeners</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-u <replaceable class="parameter">user</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-V</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-x <replaceable class="parameter">cache-file</replaceable></option></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
+
     <para>
       <command>named</command>是一个域名系统（DNS）服务器，是由ISC发布的BIND 9
       的一部份。关于更多DNS的信息，参考RFC 1033，1034，1035。
@@ -91,10 +95,9 @@
       <filename>/etc/named.conf</filename>，从其中读入所有初始数据，并监听端口
       以待请求。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>选项</title>
+  <refsection><info><title>选项</title></info>
 
     <variablelist>
       <varlistentry>
@@ -188,6 +191,17 @@
       </varlistentry>
 
       <varlistentry>
+        <term>-M <replaceable class="parameter">option</replaceable></term>
+        <listitem>
+          <para>
+            设置缺省的内存上下文选项。当前唯一支持的选项为
+            <replaceable class="parameter">external</replaceable>，
+            它绕过了内部内存管理器，以支持系统所提供的内存申请函数。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
         <term>-m <replaceable class="parameter">flag</replaceable></term>
         <listitem>
           <para>
@@ -233,7 +247,7 @@
           </para>
           <note>
             <para>
-              这个选项主要是BIND 9的开发者对其有兴趣，在未来的版本中可能被去掉
+              这个选项主要是对BIND 9的开发者有趣，在未来的版本中可能被去掉
               或改变。
             </para>
           </note>
@@ -288,9 +302,11 @@
              在每个地址上使用
              <replaceable class="parameter">#listeners</replaceable>个工作线程
              来监听UDP请求。如果未指定，<command>named</command>将基于检测到的
-             CPU个数计算一个缺省值：1个CPU为1，2-4个CPU为2，大于4个CPU为检测到
-             的CPU个数除以2。如果将<option>-n</option>设置为比检测到的CPU数目
+             CPU个数计算一个缺省值：1个CPU为1，对超过1个CPU的机器为检测到的CPU
+             个数减一。不能增加到比CPU个数更大的值。
+             如果将<option>-n</option>设置为比检测到的CPU数目
              更大的值，<option>-U</option>将会增加到同样的值，但不会超过它。
+             在Windows上，UDP监听器的数目被硬编码为1，这个选项没有任何效果。
            </para>
          </listitem>
       </varlistentry>
@@ -300,7 +316,7 @@
         <listitem>
           <para>
             在完成特权操作后，设置用户ID(setuid)为
-            <replaceable class="parameter">user</replaceable>，这样就可以创建套
+            <replaceable class="parameter">user</replaceable>，例如创建套
             接字，使其监听在特权端口上。
           </para>
           <note>
@@ -352,10 +368,10 @@
 
     </variablelist>
 
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>信号</title>
+  <refsection><info><title>信号</title></info>
+
     <para>
       在常规操作中，信号不应该用于控制名字服务器；应该使用
       <command>rndc</command>来代替。
@@ -387,10 +403,10 @@
       发送任何其它信号到服务器的结果都未定义。
     </para>
 
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>配置</title>
+  <refsection><info><title>配置</title></info>
+
     <para>
       <command>named</command>的配置文件太复杂而无法在这里详细描述。完整的描述
       在<citetitle>BIND 9管理员参考手册</citetitle>中提供。
@@ -404,10 +420,9 @@
       <function>umask</function>。
     </para>
 
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>文件</title>
+  <refsection><info><title>文件</title></info>
 
     <variablelist>
 
@@ -431,10 +446,10 @@
 
     </variablelist>
 
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
+
     <para><citetitle>RFC 1033</citetitle>,
       <citetitle>RFC 1034</citetitle>,
       <citetitle>RFC 1035</citetitle>,
@@ -460,16 +475,6 @@
       </citerefentry>,
       <citetitle>BIND 9管理员参考手册</citetitle>。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>作者</title>
-    <para><corpauthor>Internet Systems Consortium</corpauthor>
-    </para>
-  </refsect1>
-
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+</refentry>

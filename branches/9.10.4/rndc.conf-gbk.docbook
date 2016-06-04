@@ -1,8 +1,5 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004, 2005, 2007, 2013, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004, 2005, 2007, 2013-2015  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000, 2001  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -18,9 +15,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.rndc.conf">
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.rndc.conf">
+  <info>
+    <date>2013-03-14</date>
+  </info>
   <refentryinfo>
-    <date>March 14, 2013</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -41,6 +43,7 @@
       <year>2007</year>
       <year>2013</year>
       <year>2014</year>
+      <year>2015</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
     <copyright>
@@ -51,13 +54,13 @@
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>rndc.conf</command>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
+
     <para>
 	  <filename>rndc.conf</filename>是BIND 9名字服务器控制工具
 	  <command>rndc</command>的配置文件。这个文件有与
@@ -127,10 +130,9 @@
       字符串。<command>mmencode</command>不随BIND 9提供，但是它在许多
       系统上是可用的。关于每个命令行的样例，参见例子部份。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>例子</title>
+  <refsection><info><title>例子</title></info>
 
     <para><programlisting>
       options {
@@ -196,20 +198,20 @@
     </para>
     <para><userinput>echo "known plaintext for a secret" | mmencode</userinput>
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>名字服务器配置</title>
+  <refsection><info><title>名字服务器配置</title></info>
+
     <para>
       名字服务器必须被配置成接受rndc连接和识别
       <filename>rndc.conf</filename>文件中所指定的密钥，这通过在
       <filename>named.conf</filename>中的controls语句来实现。详细情况参见
       BIND 9管理员参考手册中的<option>controls</option>语句部份。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
+
     <para><citerefentry>
         <refentrytitle>rndc</refentrytitle><manvolnum>8</manvolnum>
       </citerefentry>，
@@ -221,16 +223,6 @@
       </citerefentry>，
       <citetitle>BIND 9管理员参考手册</citetitle>。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>作者</title>
-    <para><corpauthor>Internet Systems Consortium</corpauthor>
-    </para>
-  </refsect1>
-
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+</refentry>

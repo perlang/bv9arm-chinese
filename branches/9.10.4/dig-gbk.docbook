@@ -1,8 +1,7 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-	       [<!ENTITY mdash "&#8212;">]>
+<!DOCTYPE book [
+<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2004-2011, 2013, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2004-2011, 2013-2016  Internet Systems Consortium, Inc. ("ISC")
  - Copyright (C) 2000-2003  Internet Software Consortium.
  -
  - Permission to use, copy, modify, and/or distribute this software for any
@@ -18,10 +17,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.dig">
-
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dig">
+  <info>
+    <date>2014-02-19</date>
+  </info>
   <refentryinfo>
-    <date>February 19, 2014</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -47,6 +50,8 @@
       <year>2011</year>
       <year>2013</year>
       <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
     <copyright>
@@ -59,41 +64,42 @@
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>dig</command>
-      <arg choice="opt">@server</arg>
-      <arg><option>-b <replaceable class="parameter">address</replaceable></option></arg>
-      <arg><option>-c <replaceable class="parameter">class</replaceable></option></arg>
-      <arg><option>-f <replaceable class="parameter">filename</replaceable></option></arg>
-      <arg><option>-k <replaceable class="parameter">filename</replaceable></option></arg>
-      <arg><option>-p <replaceable class="parameter">port#</replaceable></option></arg>
-      <arg><option>-q <replaceable class="parameter">name</replaceable></option></arg>
-      <arg><option>-t <replaceable class="parameter">type</replaceable></option></arg>
-      <arg><option>-V</option></arg>
-      <arg><option>-x <replaceable class="parameter">addr</replaceable></option></arg>
-      <arg><option>-y <replaceable class="parameter"><optional>hmac:</optional>name:key</replaceable></option></arg>
-      <arg><option>-4</option></arg>
-      <arg><option>-6</option></arg>
-      <arg choice="opt">name</arg>
-      <arg choice="opt">type</arg>
-      <arg choice="opt">class</arg>
+      <arg choice="opt" rep="norepeat">@server</arg>
+      <arg choice="opt" rep="norepeat"><option>-b <replaceable class="parameter">address</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-f <replaceable class="parameter">filename</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-k <replaceable class="parameter">filename</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-m</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-p <replaceable class="parameter">port#</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-q <replaceable class="parameter">name</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-t <replaceable class="parameter">type</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-x <replaceable class="parameter">addr</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-y <replaceable class="parameter"><optional>hmac:</optional>name:key</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-4</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-6</option></arg>
+      <arg choice="opt" rep="norepeat">name</arg>
+      <arg choice="opt" rep="norepeat">type</arg>
+      <arg choice="opt" rep="norepeat">class</arg>
       <arg choice="opt" rep="repeat">queryopt</arg>
     </cmdsynopsis>
 
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>dig</command>
-      <arg><option>-h</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
     </cmdsynopsis>
 
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>dig</command>
       <arg choice="opt" rep="repeat">global-queryopt</arg>
       <arg choice="opt" rep="repeat">query</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
+
     <para>
       <command>dig</command>（domain information groper，域信息搜索者）是一个查
       询DNS名字服务器的灵活工具。它执行DNS查找并显示从所查找的名字服务器所返回
@@ -131,10 +137,9 @@
       或者在查找这些顶级域时使用“IN”和“CH”。
     </para>
 
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>简单用法</title>
+  <refsection><info><title>简单用法</title></info>
 
     <para>
       典型的<command>dig</command>调用看起来是这样的：
@@ -187,95 +192,191 @@
       </variablelist>
     </para>
 
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>选项</title>
+  <refsection><info><title>选项</title></info>
 
-    <para>
-      <option>-b</option>选项设置到地址<parameter>address</parameter>的请求的源
-      地址。这必须是主机的一个网络接口上的有效地址，或者为“0.0.0.0”，或者为
-      “::”。可以通过附加“#&lt;port&gt;”指定一个可选的端口。
-    </para>
+    <variablelist>
+      <varlistentry>
+        <term>-4</term>
+        <listitem>
+        <para>
+          仅使用IPv4。
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      缺省的请求类（IN，表示internet）被<option>-c</option>选项所覆盖。
-      <parameter>class</parameter>是任何一个有效的类，如HS，表示Hesiod记录，或
-      者CH，表示CHAOSNET记录。
-    </para>
+      <varlistentry>
+        <term>-6</term>
+        <listitem>
+        <para>
+          仅使用IPv6。
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      <option>-f</option>选项让<command>dig </command>以批处理模式工作，从文件
-      <parameter>filename</parameter>中读入要查找请求的列表，并进行处理。文件包
-      含了一组请求，每行一个。文件中的每一行应该组织成与使用命令行提供请求给
-      <command>dig</command>的同样方式。
-    </para>
+      <varlistentry>
+        <term>-b <replaceable class="parameter">address<optional>#port</optional></replaceable></term>
+        <listitem>
+        <para>
+          设置请求的源IP地址。<parameter>address</parameter>
+          必须是主机的一个网络接口上的有效地址，或者为“0.0.0.0”，或者为“::”。
+          可以通过附加“#&lt;port&gt;”指定一个可选的端口。
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      如果要在一个非标准的端口进行查询，使用<option>-p</option>选项。
-      <parameter>port#</parameter>是<command>dig</command>请求发向的端口号，而
-      不是标准DNS端口号53。这个选项可以用于测试一个名字服务器，将其配置成监听在
-      一个非标准端口号。
-    </para>
+      <varlistentry>
+        <term>-c <replaceable class="parameter">class</replaceable></term>
+        <listitem>
+        <para>
+          设置请求类。缺省<parameter>class</parameter>是IN；
+          其它类是HS，表示Hesiod记录，或CH，表示CHAOSNET记录。
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      <option>-4</option>选项强制<command>dig</command>仅使用IPv4传输请求。
-      <option>-6</option>选项强制<command>dig</command>仅使用IPv6传输请求。
-    </para>
+      <varlistentry>
+        <term>-f <replaceable class="parameter">file</replaceable></term>
+        <listitem>
+        <para>
+          批处理模式：<command>dig</command>从文件
+          <parameter>filename</parameter>中读入要查找请求的列表，并进行处理。
+          文件中的每一行应该组织成与使用命令行提供请求给
+          <command>dig</command>的同样方式。
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      <option>-t</option>选项设置请求类型为<parameter>type</parameter>。它可以
-      是BIND 9所支持的任何有效请求类型。缺省请求类型为“A”，除非设定
-      <option>-x</option>选项，它指定一个反向查找。可以通过指定AXFR的类型的请求
-      进行区传送。当请求一个增量区传送（IXFR）时，<parameter>type</parameter>被
-      设为<literal>ixfr=N</literal>。增量区传送将包含区的变化，区的SOA记录中的
-      序列号为<parameter>N</parameter>。
-    </para>
+      <varlistentry>
+        <term>-i</term>
+        <listitem>
+        <para>
+          使用废弃的RFC1886 IP6.INT域做反向IPv6查找，这已不再使用。
+          废弃的位串标记请求（RFC2874）不再被尝试。
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      <option>-q</option>选项设置请求名为<parameter>name</parameter>。这个帮助
-      区别<parameter>name</parameter>和其它参数。
-    </para>
+      <varlistentry>
+        <term>-k <replaceable class="parameter">keyfile</replaceable></term>
+        <listitem>
+        <para>
+          使用TSIG签名请求，TSIG使用一个从给定的文件中读到的一个密钥。
+          密钥文件可以使用
+          <citerefentry>
+            <refentrytitle>tsig-keygen</refentrytitle><manvolnum>8</manvolnum>
+          </citerefentry>
+          生成。
+          在与<command>dig</command>之间使用TSIG认证时，被请求的名字服务器
+          需要知道所使用的密钥和算法。在BIND中，通过在
+          <filename>named.conf</filename>中指定合适的<command>key</command>
+          和<command>server</command>语句来完成。
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      <option>-v</option>使<command>dig</command>打印出版本号并退出。
-    </para>
+      <varlistentry>
+        <term>-m</term>
+        <listitem>
+        <para>
+          打开内存使用调试。
+          <!-- 它打开 ISC_MEM_DEBUGTRACE 和 ISC_MEM_DEBUGRECORD
+               文档在 include/isc/mem.h 中 -->
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      反向查找 &mdash; 将地址映射到名字 &mdash; 很简单，只需设置
-      <option>-x</option>选项。<parameter>addr</parameter>是一个点分十进制形式
-      的IPv4地址，或者一个以冒号分隔的IPv6地址。在使用这个选项时，不需要提供
-      <parameter>name</parameter>，<parameter>class</parameter>和
-      <parameter>type</parameter>参数。<command>dig</command>自动执行一个类似
-      <literal>11.12.13.10.in-addr.arpa</literal>的查找，并将请求类型和类分别设
-      置为PTR和IN。缺省时，IPv6地址使用半字节格式在IP6.ARPA域名下面查找。要使用
-      旧的RFC1886中的方法而使用IP6.INT域，需要指定<option>-i</option>选项。位串
-      标记（RFC2874）现在是试验性的，最好不要使用。
-    </para>
+      <varlistentry>
+        <term>-p <replaceable class="parameter">port</replaceable></term>
+        <listitem>
+        <para>
+          发送请求到服务器的一个非标准端口，而不是缺省的53端口。
+          这个选项可以用于测试一个名字服务器，将其配置成在一个
+          非标准端口上监听请求。
+        </para>
+        </listitem>
+      </varlistentry>
 
-    <para>
-      为对<command>dig</command>发出的DNS请求和其使用事务签名
-      （transaction signatures，TSIG）的响应，使用<option>-k</option>选项指定一
-      个TSIG密钥。你也可以在命令行使用<option>-y</option>选项指定TSIG密钥本身；
-      <parameter>hmac</parameter>是TSIG的类型，缺省是HMAC-MD5，
-      <parameter>name</parameter>是TSIG密钥的名字，<parameter>key</parameter>是
-      实际的密钥。密钥是一个base-64编码的字符串，典型情况是由
-      <citerefentry>
-        <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
-      </citerefentry>所生成。
-      在多用户系统上使用<option>-y</option>选项应当谨慎，因为密钥可以在
-      <citerefentry>
-        <refentrytitle>ps</refentrytitle><manvolnum>1</manvolnum>
-      </citerefentry>的输出中或者在shell的历史文件中被看到。
-      在<command>dig</command>中使用TSIG认证时，所请求的名字服务器需要知道所用
-      的密钥和算法。在BIND中，这是通过在<filename>named.conf</filename>中使用合
-      适的<command>key</command>和<command>server</command>语句来完成的。
-    </para>
+      <varlistentry>
+        <term>-q <replaceable class="parameter">name</replaceable></term>
+        <listitem>
+        <para>
+          要查询的域名。这个用于区别<parameter>name</parameter>和其它参数。
+        </para>
+        </listitem>
+      </varlistentry>
 
-  </refsect1>
+      <varlistentry>
+        <term>-t <replaceable class="parameter">type</replaceable></term>
+        <listitem>
+        <para>
+          请求的资源记录类型。它可以是BIND 9中所支持的任何有效请求类型。
+          缺省请求类型为“A”，除非设定<option>-x</option>选项，它指定一个反向查找。
+          可以通过指定AXFR的类型的请求进行区传送。当请求一个增量区传送（IXFR）时，
+          <parameter>type</parameter>被设为<literal>ixfr=N</literal>。增量区传送
+          将包含区的变化，区的SOA记录中的序列号为<parameter>N</parameter>。
+        </para>
+        </listitem>
+      </varlistentry>
 
-  <refsect1>
-    <title>请求选项</title>
+      <varlistentry>
+        <term>-v</term>
+        <listitem>
+        <para>
+          打印出版本号并退出。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-x <replaceable class="parameter">addr</replaceable></term>
+        <listitem>
+        <para>
+          简化的反向查找，用于从地址映射到名字。
+          <parameter>addr</parameter>是一个点分十进制形式的IPv4地址，
+          或者一个以冒号分隔的IPv6地址。
+          当使用<option>-x</option>时，不需要提供<parameter>name</parameter>，
+          <parameter>class</parameter>和<parameter>type</parameter>参数。
+          <command>dig</command>自动执行一个类似
+          <literal>94.2.0.192.in-addr.arpa</literal>的查找，并将请求类型和类
+          分别设置为PTR和IN。
+          IPv6地址使用半字节格式在IP6.ARPA域名下面查找。（参见
+          <option>-i</option>选项。）
+          option).
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-y <replaceable class="parameter"><optional>hmac:</optional>keyname:secret</replaceable></term>
+        <listitem>
+        <para>
+          使用TSIG并所给定的认证密钥签名请求。<parameter>keyname</parameter>
+          是密钥的名字，<parameter>secret</parameter>是base64编码的共享密码，
+          <parameter>hmac</parameter>是密钥算法的名字；有效的选择是
+          <literal>hmac-md5</literal>，<literal>hmac-sha1</literal>，
+          <literal>hmac-sha224</literal>，<literal>hmac-sha256</literal>，
+          <literal>hmac-sha384</literal>或<literal>hmac-sha512</literal>。
+          如果未指定<parameter>hmac</parameter>，缺省为
+          <literal>hmac-md5</literal>。
+        </para>
+        <para>
+          注意：你应该使用<option>-k</option>选项并避免
+          <option>-y</option>选项，因为随着<option>-y</option>被提供的
+          共享密码是以明文形式被用作一个命令行参数中。这在
+          <citerefentry>
+              <refentrytitle>ps</refentrytitle><manvolnum>1</manvolnum>
+          </citerefentry>
+          的输出中，或在用户的shell中维护的一个历史文件中是可见的。
+        </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>请求选项</title></info>
 
     <para>
       <command>dig</command>提供许多查询选项，可以影响生成查询和显示结果的方式。
@@ -287,7 +388,10 @@
       每个请求选项由一个前导加号（<literal>+</literal>）和一个关键字标识。一些
       关键字设置或清空一个选项。这些可能由前导字符串<literal>no</literal>来否定
       关键字的含义。其它关键字给选项赋值，就像超时间隔。他们具有
-      <option>+keyword=value</option>的形式。请求选项是：
+      <option>+keyword=value</option>的形式。
+      关键字可以是缩写，前提是缩写是无歧义的；例如<literal>+cd</literal>等效于
+      <literal>+cdflag</literal>。
+      请求选项是：
 
       <variablelist>
 
@@ -389,7 +493,7 @@
         </varlistentry>
 
         <varlistentry>
-          <term><option>+[no]cl</option></term>
+          <term><option>+[no]class</option></term>
           <listitem>
             <para>
               打印记录时显示[不显示]类。
@@ -470,6 +574,37 @@
 	    </para>
 	  </listitem>
 	</varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ednsflags[=#]</option></term>
+          <listitem>
+            <para>
+              设置必须为0的EDNS标志位（Z位）为指定的值。十进制，十六进制和
+              八进制都是可以的。设置一个命名标志（例如 DO）将被静默地忽略。
+              缺省时，不设置Z位。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ednsnegotiation</option></term>
+          <listitem>
+            <para>
+              打开/关闭EDNS版本协商。缺省时EDNS版本协商为打开。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ednsopt[=code[:value]]</option></term>
+          <listitem>
+            <para>
+              使用码点<option>code</option>和可选荷载<option>value</option>
+              指定EDNS选项为一个十六进制字符串。<option>+noednsopt</option>
+              清除将发送的EDNS选项。
+            </para>
+          </listitem>
+        </varlistentry>
 
 	<varlistentry>
 	  <term><option>+[no]expire</option></term>
@@ -581,6 +716,15 @@
         </varlistentry>
 
         <varlistentry>
+          <term><option>+[no]opcode=value</option></term>
+          <listitem>
+            <para>
+              设置[恢复]DNS消息操作码为指定值。缺省值是QUERY（0）。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
           <term><option>+[no]qr</option></term>
           <listitem>
             <para>
@@ -595,6 +739,15 @@
             <para>
               当一个回答返回时，打印[不打印]请求的问题部份。缺省是将问题部份作
               为一个注释打印。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]rdflag</option></term>
+          <listitem>
+            <para>
+              一个<parameter>+[no]recurse</parameter>的近义词。
             </para>
           </listitem>
         </varlistentry>
@@ -706,11 +859,17 @@
         </varlistentry>
 
 	<varlistentry>
-	  <term><option>+[no]subnet=addr/prefix</option></term>
+	  <term><option>+[no]subnet=addr[/prefix-length]</option></term>
 	  <listitem>
 	    <para>
-              发送一个EDNS客户端子网选项，带有指定的IP地址或网络前缀。
+              发送（不发送）一个EDNS客户端子网选项，带有指定的IP地址或网络前缀。
 	    </para>
+            <para>
+                <command>dig +subnet=0.0.0.0/0</command>，或简写为
+                <command>dig +subnet=0</command>，发送一个EDNS客户端子网选项，
+                附带一个空地址和一个源前缀为0，它一个解析器在解析这个请求时，
+                必须<emphasis>不能</emphasis>使用客户端的地址信息。
+            </para>
 	  </listitem>
 	</varlistentry>
 
@@ -754,6 +913,9 @@
               跟踪的。当打开跟踪时，<command>dig</command>迭代发送请求来解析要
               查找的名字。它会跟随自根服务器起所给出的参考信息，显示出来自每个
               解析用到的服务器的回答。
+            </para>
+            <para>
+              如果指定了@server，它仅影响根区名字服务区的初始请求。
             </para>
             <para>
               当设置了+trace时，也会设置<command>+dnssec</command>，来更好地
@@ -814,10 +976,9 @@
       </variablelist>
 
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>多个请求</title>
+  <refsection><info><title>多个请求</title></info>
 
     <para>
       BIND 9的<command>dig </command>实现支持在命令行（另外还支持
@@ -848,10 +1009,9 @@ dig +qr www.isc.org any -x 127.0.0.1 isc.org ns +noqr
       记录时的初始请求。
     </para>
 
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>IDN支持</title>
+  <refsection><info> <title>IDN支持</title></info>
     <para>
       如果编译<command>dig</command>时带有IDN（internationalized domain name，
       国际化域名）支持，它可以接受和显示非ASCII域名。<command>dig</command>会在
@@ -859,18 +1019,16 @@ dig +qr www.isc.org any -x 127.0.0.1 isc.org ns +noqr
       编码。如果由于某种原因你想关闭IDN支持，就定义<envar>IDN_DISABLE</envar>环
       境变量。在<command>dig</command>运行时，如果变量已设置，IDN支持就是关闭的。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>文件</title>
+  <refsection><info><title>文件</title></info>
     <para><filename>/etc/resolv.conf</filename>
     </para>
     <para><filename>${HOME}/.digrc</filename>
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
     <para><citerefentry>
         <refentrytitle>host</refentrytitle><manvolnum>1</manvolnum>
       </citerefentry>,
@@ -882,16 +1040,13 @@ dig +qr www.isc.org any -x 127.0.0.1 isc.org ns +noqr
       </citerefentry>,
       <citetitle>RFC1035</citetitle>.
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>BUGS</title>
+  <refsection><info><title>BUGS</title></info>
+
     <para>
       具有可能是太多的请求选项。
     </para>
-  </refsect1>
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+  </refsection>
+
+</refentry>

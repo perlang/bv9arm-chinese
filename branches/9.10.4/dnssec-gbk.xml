@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
  - Copyright (C) 2010, 2011, 2015  Internet Systems Consortium, Inc. ("ISC")
  -
@@ -15,13 +14,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<sect1 id="dnssec.dynamic.zones">
-  <title>DNSSEC，动态区，和自动化签名</title>
+<!-- Converted by db4-upgrade version 1.0 -->
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="dnssec.dynamic.zones"><info><title>DNSSEC，动态区，和自动化签名</title></info>
+
   <para>作为BIND 9.7.0的一个特性，可以将一个动态区从不安全转变为
   签名的区并备份。一个安全的区可以使用NSEC或NSEC3链。</para>
-  <sect2>
-    <title>从不安全转换到安全</title>
-  </sect2>
+  <section><info><title>从不安全转换到安全</title></info>
+
+  </section>
   <para>有两种方法可以将一个区从不安全转换为安全：使用动态DNS更新，
   或者<command>auto-dnssec</command>区选项。</para>
   <para>对这两种方法，你都需要配置<command>named</command>，使其
@@ -41,9 +41,9 @@
   所有的记录被ZSK签名，并使DNSKEY资源记录集被KSK签名。作为初始签名
   过程的一部份，还会生成一个NSEC链。
   </para>
-  <sect2>
-    <title>动态DNS更新方法</title>
-  </sect2>
+  <section><info><title>动态DNS更新方法</title></info>
+
+  </section>
   <para>要通过动态更新插入密钥：</para>
   <screen>
         % nsupdate

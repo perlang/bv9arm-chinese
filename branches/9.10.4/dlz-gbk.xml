@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- - Copyright (C) 2012-2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2012-2015  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -15,10 +15,9 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<!-- $Id$ -->
+<!-- Converted by db4-upgrade version 1.0 -->
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="dlz-info"><info><title>DLZ (Dynamically Loadable Zones，动态加载区)</title></info>
 
-<sect1 id="dlz-info">
-  <title>DLZ (Dynamically Loadable Zones，动态加载区)</title>
   <para>
     DLZ (Dynamically Loadable Zones，动态加载区)是一项BIND 9扩展，它允许直接从
     一个外部数据库中提取区数据。它对格式或模式没有要求。已经存在对应几种不同的
@@ -46,16 +45,16 @@
     不会收到数据库中区变化的通知信息。）
   </para>
 
-  <sect2>
-    <title>配置DLZ</title>
+  <section><info><title>配置DLZ</title></info>
+
     <para>
       通过<filename>named.conf</filename>中一个<command>dlz</command>语句
       配置一个DLZ数据库：
     </para>
     <screen>
     dlz example {
-        database "dlopen driver.so <option>args</option>";
-        search yes;
+      database "dlopen driver.so <option>args</option>";
+      search yes;
     };
     </screen>
     <para>
@@ -78,18 +77,18 @@
     </para>
     <screen>
     dlz other {
-        database "dlopen driver.so <option>args</option>";
-        search no;
+      database "dlopen driver.so <option>args</option>";
+      search no;
     };
 
     zone "." {
-        type redirect;
-        dlz other;
+      type redirect;
+      dlz other;
     };
     </screen>
-  </sect2>
-  <sect2>
-    <title>样板DLZ驱动</title>
+  </section>
+  <section><info><title>样板DLZ驱动</title></info>
+
     <para>
       为指导实现DLZ模块，目录<filename>contrib/dlz/example</filename>包含了
       一个基本的动态可链接DLZ模块--即一个可以由"dlopen" DLZ驱动在运行时加载
@@ -99,7 +98,7 @@
     </para>
     <screen>
     dlz other {
-        database "dlopen driver.so example.nil";
+      database "dlopen driver.so example.nil";
     };
     </screen>
     <para>
@@ -109,15 +108,15 @@
     </para>
     <screen>
  example.nil.  3600    IN      SOA     example.nil. hostmaster.example.nil. (
-                                               123 900 600 86400 3600
-                                       )
+                                             123 900 600 86400 3600
+                                     )
  example.nil.  3600    IN      NS      example.nil.
  example.nil.  1800    IN      A       10.53.0.1
     </screen>
     <para>
       样板驱动能够提取关于请求客户端的信息，并基于这个信息修改它的响应。
       为演示这个特性，例子驱动用请求的源地址响应对
-      "source-addr.<option>zonename</option>>/TXT"的请求。
+      "source-addr.<option>zonename</option>&gt;/TXT"的请求。
       注意，这个记录将 *不会* 被包含到AXFR或ANY响应中。
       通常，这个特性用于以一些其它的方式修改响应。
       例如，根据请求来自的不同网络而对同一个特定名字提供不同的地址记录。
@@ -127,5 +126,5 @@
       找到。这个目录也包含头文件<filename>dlz_minimal.h</filename>，后者定义
       了这个API并应被包含在任何动态可链接DLZ模块中。
     </para>
-  </sect2>
-</sect1>
+  </section>
+</section>

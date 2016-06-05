@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- - Copyright (C) 2010, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2010, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -15,8 +15,9 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<sect1 id="bind9.library">
-  <title>BIND 9 DNS Library Support</title>
+<!-- Converted by db4-upgrade version 1.0 -->
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="bind9.library"><info><title>BIND 9 DNS库支持</title></info>
+
   <para>本版本的BIND 9“导出”其内部库，使后者可以更容易地被第三方应用
   所利用（我们在本文档中将其称为“导出”库）。除了BIND 9当前用到的所有
   主要的DNS相关的API，导出库还提供下列特性：</para>

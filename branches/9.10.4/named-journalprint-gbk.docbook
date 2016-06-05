@@ -1,8 +1,5 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2009, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2009, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -17,9 +14,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.named-journalprint">
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.named-journalprint">
+  <info>
+    <date>2009-12-04</date>
+  </info>
   <refentryinfo>
-    <date>December 04, 2009</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -37,19 +39,20 @@
     <copyright>
       <year>2009</year>
       <year>2014</year>
+      <year>2015</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>named-journalprint</command>
-      <arg choice="req"><replaceable class="parameter">journal</replaceable></arg>
+      <arg choice="req" rep="norepeat"><replaceable class="parameter">journal</replaceable></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
+
     <para>
       <command>named-journalprint</command>
       以人可读的格式打印一个区的日志文件的内容。
@@ -67,10 +70,10 @@
       人可读的文本格式。每行都以“add”或“del”开头，以指明记录是否被
       增加或删除，并以主区文件格式连续放置资源记录。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
+
     <para>
       <citerefentry>
         <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
@@ -80,16 +83,6 @@
       </citerefentry>,
       <citetitle>BIND 9管理员参考手册</citetitle>.
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>作者</title>
-    <para><corpauthor>Internet Systems Consortium</corpauthor>
-    </para>
-  </refsect1>
-
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+</refentry>

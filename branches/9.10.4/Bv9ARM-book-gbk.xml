@@ -208,8 +208,8 @@
         </informaltable>
       </para>
     </section>
-    <sect1>
-      <title>域名系统（<acronym>DNS</acronym>）</title>
+    <section><info><title>域名系统（<acronym>DNS</acronym>）</title></info>
+
       <para>
         本文档的目的是解释<acronym>BIND</acronym>
         （Berkeley Internet Name Domain ）软件包的安装和维护，我们通过回顾
@@ -217,8 +217,7 @@
         <acronym>BIND</acronym>的关系来作为开始。
       </para>
 
-      <sect2>
-        <title>DNS基础</title>
+      <section xml:id="dns_fundamentals"><info><title>DNS基础</title></info>
 
         <para>
           域名系统（DNS）是一个层次化的分布式数据库。它存储用于互联网主机名与
@@ -235,8 +234,8 @@
 	  ISC得到。
         </para>
 
-        </sect2><sect2>
-        <title>域和域名</title>
+        </section>
+        <section xml:id="domain_names"><info><title>域和域名</title></info>
 
         <para>
           存储在 DNS 中的数据以<emphasis>域名</emphasis>来标识，并根据类别或
@@ -272,10 +271,10 @@
           关于DNS设计和DNS协议的更详细的信息，请参见<xref linkend="rfcs"/>中
           所列的标准文档。
         </para>
-      </sect2>
+      </section>
 
-      <sect2>
-        <title>区</title>
+      <section xml:id="zones"><info><title>区</title></info>
+
         <para>
           为正确运行一个名字服务器，理解一个<emphasis>区</emphasis>和一个
           <emphasis>域</emphasis>之间的差别是很重要的。
@@ -311,10 +310,9 @@
           充当你的<emphasis>域</emphasis>的辅服务器时，你实际上是想要其对一些区
           来担当辅服务器的服务。
         </para>
-      </sect2>
+      </section>
 
-      <sect2>
-        <title>权威名字服务器</title>
+      <section xml:id="auth_servers"><info><title>权威名字服务器</title></info>
 
         <para>
           每个区至少由一台<emphasis>权威名字服务器</emphasis>来服务。后者包含了
@@ -329,8 +327,7 @@
           这样的工具来调试DNS配置时容易鉴别。
         </para>
 
-        <sect3>
-          <title>主服务器</title>
+        <section xml:id="primary_master"><info><title>主服务器</title></info>
 
           <para>
             维护有原始区数据的权威服务器被称为<emphasis>主服务器</emphasis>，
@@ -344,10 +341,9 @@
 	    在某些情况下，主文件是完全无法由手工编辑而成，只能是以
             <emphasis>动态更新</emphasis>操作的结果来代替。
 	  </para>
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>辅服务器</title>
+        <section xml:id="slave_server"><info><title>辅服务器</title></info>
           <para>
             其它的权威服务器，<emphasis>辅服务器</emphasis>（slave，也被称为
             secondary）通过一个名叫<emphasis>区传送</emphasis>（zone transfer）
@@ -355,10 +351,9 @@
             主服务器传送，但是也可能从其它辅服务器传送。换句话说，一个辅服务器
             本身也可以充当一个二级辅服务器的主服务器。
           </para>
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>隐藏服务器</title>
+        <section xml:id="stealth_server"><info><title>隐藏服务器</title></info>
 
           <para>
             通常区的所有权威服务器都在其上级区中有NS 记录。这些NS 记录组成了
@@ -382,12 +377,11 @@
             后面而不能直接同外面的世界通信。
           </para>
 
-        </sect3>
+        </section>
 
-      </sect2>
-      <sect2>
+      </section>
 
-        <title>缓存名字服务器</title>
+      <section xml:id="cache_servers"><info><title>缓存名字服务器</title></info>
 
 	<!--
 	  - Terminology here is inconsistent.  Probably ought to
@@ -414,8 +408,7 @@
 		  记录相关的生存期（Time To Live, TTL）字段所控制的。
         </para>
 
-        <sect3>
-          <title>转发</title>
+        <section xml:id="forwarder"><info><title>转发</title></info>
 
           <para>
             即使一个缓存名字服务器也可以不需要由其本身来执行递归查找。
@@ -433,12 +426,11 @@
             服务器转发请求，后者代表内部的服务器向互联网上的
             <acronym>DNS</acronym>发请求。
           </para>
-        </sect3>
+        </section>
 
-      </sect2>
+        </section>
 
-      <sect2>
-        <title>名字服务器的多个角色</title>
+        <section xml:id="multi_role"><info><title>名字服务器的多个角色</title></info>
 
         <para>
           <acronym>BIND</acronym>名字服务器可以同时作为一些区的主服务器，
@@ -454,16 +446,14 @@
           开放给互联网，可以被放在一个防火墙内部。
         </para>
 
-      </sect2>
-    </sect1>
+      </section>
+    </section>
 
   </chapter>
 
-  <chapter id="Bv9ARM-gbk.ch02">
-    <title><acronym>BIND</acronym>资源要求</title>
+  <chapter xml:id="Bv9ARM.ch02"><info><title><acronym>BIND</acronym>资源要求</title></info>
 
-    <sect1>
-      <title>硬件要求</title>
+    <section xml:id="hw_req"><info><title>硬件要求</title></info>
 
       <para>
         传统上，<acronym>DNS</acronym>对硬件的要求十分适度。对于许多配置，
@@ -475,18 +465,16 @@
         些特性的机构可能需要为其应用考虑更大的系统。<acronym>BIND</acronym> 9是
         完全支持多线程的，可以完整地利用为其需要而配置的多个处理器。
       </para>
-    </sect1>
-    <sect1>
-      <title>CPU要求</title>
+    </section>
+    <section xml:id="cpu_req"><info><title>CPU要求</title></info>
       <para>
         <acronym>BIND</acronym> 9 的CPU要求范围可以从服务于几个静态区并且没有
         缓存服务的i486级机器变化到企业级的机器，如果你要处理多个动态更新且有
         DNSSEC签名的区，并且可以达到每秒数千个请求。
       </para>
-    </sect1>
+    </section>
 
-    <sect1>
-      <title>内存要求</title>
+    <section xml:id="mem_req"><info><title>内存要求</title></info>
       <para>
         服务器的内存必须足够大，以适合缓存和将区数据从硬盘装载到内存。
         <command>max-cache-size</command>选项可以用于限制缓存所使用的内存数量，
@@ -494,7 +482,7 @@
         如果附加部份的缓存（<xref linkend="acache"/>）是打开的，
         <command>max-acache-size</command> 可以用于限制这个机制所使用的内存
         总量。最好的实践是保持足够的内存以装载所有的区并在内存中缓存
-        数据 &mdash; 不幸地，对给定配置来决定这个的最好方法是在运行中观察
+        数据 - 不幸地，对给定配置来决定这个的最好方法是在运行中观察
         名字服务器。经过几周的运行，服务器进程能够达到一个相对稳定的大小，
         这时，缓存中因过期而被丢掉的条目与进入缓存的条目的速度一样。
       </para>
@@ -502,10 +490,9 @@
         - Add something here about leaving overhead for attacks?
 	- How much overhead?  Percentage?
         -->
-    </sect1>
+    </section>
 
-    <sect1>
-      <title>名字服务器增强环境问题</title>
+    <section xml:id="intensive_env"><info><title>名字服务器增强环境问题</title></info>
       <para>
         对于名字服务器增强的环境，用到两种可供选择的配置。第一种是客户端和所有
         的二级内部名字服务器请求一个主名字服务器，后者有足够的内存来建立一个
@@ -514,30 +501,29 @@
         有象第一种方法那样需要巨大的内存和CPU能力，但是这个方法的缺点是需要
         更多的外部查询，因为所有的名字服务器都不共享它们缓存的数据。
       </para>
-    </sect1>
+    </section>
 
-    <sect1>
-      <title>所支持的操作系统</title>
+    <section xml:id="supported_os"><info><title>所支持的操作系统</title></info>
+
       <para>
         ISC <acronym>BIND</acronym> 9可以在大多数类UNIX操作系统和微软
 	Windows Server 2003和2008，以及Windows XP和Vista上编译和运行。
 	查看所支持
         系统的最新名单，参见BIND 9源码分发包的顶级目录中的README文件。
       </para>
-    </sect1>
+    </section>
   </chapter>
 
-  <chapter id="Bv9ARM-gbk.ch03">
-    <title>名字服务器配置</title>
+  <chapter id="Bv9ARM-gbk.ch03"><info><title>名字服务器配置</title></info>
     <para>
       在本章，我们提供一些建议的配置和与之相关的准则。我们建议给某些选项设置
       合理的值。
     </para>
 
-    <sect1 id="sample_configuration">
-      <title>样例配置</title>
-      <sect2>
-        <title>一个只缓存名字服务器</title>
+    <section xml:id="sample_configuration"><info><title>样例配置</title></info>
+
+      <section xml:id="cache_only_sample"><info><title>一个只缓存名字服务器</title></info>
+
         <para>
           下列配置样例合适用于一个只缓存名字服务器，用于一个公司的内部客户端。
           通过使用<command>allow-query</command>选项，所有外来客户端的请求都被
@@ -562,10 +548,10 @@ zone "0.0.127.in-addr.arpa" {
 };
 </programlisting>
 
-      </sect2>
+      </section>
 
-      <sect2>
-        <title>一个只权威名字服务器</title>
+      <section xml:id="auth_only_sample"><info><title>一个只权威名字服务器</title></info>
+
         <para>
           这个样例配置是给只作权威服务器的，在这里服务器作
           “<filename>example.com</filename>”的主服务器和其子域
@@ -611,11 +597,10 @@ zone "eng.example.com" {
 };
 </programlisting>
 
-      </sect2>
-    </sect1>
+      </section>
+    </section>
 
-    <sect1>
-      <title>负载均衡</title>
+    <section xml:id="load_balancing"><info><title>负载均衡</title></info>
       <!--
         - Add explanation of why load balancing is fragile at best
 	- and completely pointless in the general case.
@@ -759,19 +744,16 @@ zone "eng.example.com" {
         <xref endterm="rrset_ordering_title" linkend="rrset_ordering"/>。
       </para>
 
-    </sect1>
+    </section>
 
-    <sect1>
-      <title>名字服务器操作</title>
+    <section xml:id="ns_operations"><info><title>名字服务器操作</title></info>
 
-      <sect2>
-        <title>用于名字服务器后台进程的工具</title>
+      <section xml:id="tools"><info><title>用于名字服务器后台进程的工具</title></info>
         <para>
           本节描述了几个绝对必要的诊断，管理和监控工具，它们是提供给
           系统管理员进行控制和调试名字服务器的。
         </para>
-        <sect3 id="diagnostic_tools">
-          <title>诊断工具</title>
+        <section xml:id="diagnostic_tools"><info><title>诊断工具</title></info>
           <para>
             <command>dig</command>，<command>host</command>和
             <command>nslookup</command>程序都是用于手工向服务器发请求的命令行
@@ -780,7 +762,7 @@ zone "eng.example.com" {
 
           <variablelist>
             <varlistentry>
-              <term id="dig"><command>dig</command></term>
+              <term xml:id="dig"><command>dig</command></term>
               <listitem>
                 <para>
                   域名信息探索者（domain information groper, 
@@ -788,15 +770,15 @@ zone "eng.example.com" {
                   模式：简单交互模式用于单个请求，批处理模式对有多个请求的
                   名单中的每一个执行请求。所有选项都可以从命令行访问。
                 </para>
-                <cmdsynopsis label="用法">
+                <cmdsynopsis label="用法" sepchar=" ">
                   <command>dig</command>
-                  <arg>@<replaceable>server</replaceable></arg>
-                  <arg choice="plain"><replaceable>domain</replaceable></arg>
-                  <arg><replaceable>query-type</replaceable></arg>
-                  <arg><replaceable>query-class</replaceable></arg>
-                  <arg>+<replaceable>query-option</replaceable></arg>
-                  <arg>-<replaceable>dig-option</replaceable></arg>
-                  <arg>%<replaceable>comment</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">@<replaceable>server</replaceable></arg>
+                  <arg choice="plain" rep="norepeat"><replaceable>domain</replaceable></arg>
+                  <arg choice="opt" rep="norepeat"><replaceable>query-type</replaceable></arg>
+                  <arg choice="opt" rep="norepeat"><replaceable>query-class</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">+<replaceable>query-option</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-<replaceable>dig-option</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">%<replaceable>comment</replaceable></arg>
                 </cmdsynopsis>
                 <para>
                   经常使用的<command>dig</command>的简单形式是
@@ -819,19 +801,19 @@ zone "eng.example.com" {
                   它在主机名和互联网地址之间互相转换，但它的功能也可使用选项
                   扩展。
                 </para>
-                <cmdsynopsis label="用法">
+                <cmdsynopsis label="用法" sepchar=" ">
                   <command>host</command>
-                  <arg>-aCdlnrsTwv</arg>
-                  <arg>-c <replaceable>class</replaceable></arg>
-                  <arg>-N <replaceable>ndots</replaceable></arg>
-                  <arg>-t <replaceable>type</replaceable></arg>
-                  <arg>-W <replaceable>timeout</replaceable></arg>
-                  <arg>-R <replaceable>retries</replaceable></arg>
-                  <arg>-m <replaceable>flag</replaceable></arg>
-		  <arg>-4</arg>
-		  <arg>-6</arg>
-                  <arg choice="plain"><replaceable>hostname</replaceable></arg>
-                  <arg><replaceable>server</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-aCdlnrsTwv</arg>
+                  <arg choice="opt" rep="norepeat">-c <replaceable>class</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-N <replaceable>ndots</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-t <replaceable>type</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-W <replaceable>timeout</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-R <replaceable>retries</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-m <replaceable>flag</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-4</arg>
+                  <arg choice="opt" rep="norepeat">-6</arg>
+                  <arg choice="plain" rep="norepeat"><replaceable>hostname</replaceable></arg>
+                  <arg choice="opt" rep="norepeat"><replaceable>server</replaceable></arg>
                 </cmdsynopsis>
                 <para>
                   关于更多的可用命令和选项的清单，参见<command>host</command>的
@@ -849,12 +831,12 @@ zone "eng.example.com" {
                   的查询请求，或者打印出一个域下面的主机列表。非交互模式
                   只能用于打印所查询的某个主机或域的名字和请求信息。
                 </para>
-                <cmdsynopsis label="用法">
+                <cmdsynopsis label="用法" sepchar=" ">
                   <command>nslookup</command>
-                  <arg rep="repeat">-option</arg>
-                  <group>
-                    <arg><replaceable>host-to-find</replaceable></arg>
-                    <arg>- <arg>server</arg></arg>
+                  <arg rep="repeat" choice="opt">-option</arg>
+                  <group choice="opt" rep="norepeat">
+                    <arg choice="opt" rep="norepeat"><replaceable>host-to-find</replaceable></arg>
+                    <arg choice="opt" rep="norepeat">- <arg choice="opt" rep="norepeat">server</arg></arg>
                   </group>
                 </cmdsynopsis>
                 <para>
@@ -876,15 +858,14 @@ zone "eng.example.com" {
 
             </varlistentry>
           </variablelist>
-        </sect3>
+        </section>
 
-        <sect3 id="admin_tools">
-          <title>管理工具</title>
+        <section xml:id="admin_tools"><info><title>管理工具</title></info>
           <para>
             管理工具在一个服务器的管理中扮演一个主要角色。
           </para>
           <variablelist>
-            <varlistentry id="named-checkconf" xreflabel="Named Configuration Checking application">
+            <varlistentry xml:id="named-checkconf" xreflabel="Named Configuration Checking application">
 
               <term><command>named-checkconf</command></term>
               <listitem>
@@ -892,15 +873,15 @@ zone "eng.example.com" {
                   <command>named-checkconf</command>程序用来检查一个
                   <filename>named.conf</filename>文件的语法。
                 </para>
-                <cmdsynopsis label="用法">
+                <cmdsynopsis label="用法" sepchar=" ">
                   <command>named-checkconf</command>
-                  <arg>-jvz</arg>
-                  <arg>-t <replaceable>directory</replaceable></arg>
-                  <arg><replaceable>filename</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-jvz</arg>
+                  <arg choice="opt" rep="norepeat">-t <replaceable>directory</replaceable></arg>
+                  <arg choice="opt" rep="norepeat"><replaceable>filename</replaceable></arg>
                 </cmdsynopsis>
               </listitem>
             </varlistentry>
-            <varlistentry id="named-checkzone" xreflabel="Zone Checking application">
+            <varlistentry xml:id="named-checkzone" xreflabel="Zone Checking application">
 
               <term><command>named-checkzone</command></term>
               <listitem>
@@ -908,22 +889,22 @@ zone "eng.example.com" {
                   <command>named-checkzone</command>程序用来检查一个主文件的
                   语法和一致性。
                 </para>
-                <cmdsynopsis label="用法">
+                <cmdsynopsis label="用法" sepchar=" ">
                   <command>named-checkzone</command>
-                  <arg>-djqvD</arg>
-                  <arg>-c <replaceable>class</replaceable></arg>
-                  <arg>-o <replaceable>output</replaceable></arg>
-                  <arg>-t <replaceable>directory</replaceable></arg>
-                  <arg>-w <replaceable>directory</replaceable></arg>
-                  <arg>-k <replaceable>(ignore|warn|fail)</replaceable></arg>
-                  <arg>-n <replaceable>(ignore|warn|fail)</replaceable></arg>
-                  <arg>-W <replaceable>(ignore|warn)</replaceable></arg>
-                  <arg choice="plain"><replaceable>zone</replaceable></arg>
-                  <arg><replaceable>filename</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-djqvD</arg>
+                  <arg choice="opt" rep="norepeat">-c <replaceable>class</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-o <replaceable>output</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-t <replaceable>directory</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-w <replaceable>directory</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-k <replaceable>(ignore|warn|fail)</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-n <replaceable>(ignore|warn|fail)</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-W <replaceable>(ignore|warn)</replaceable></arg>
+                  <arg choice="plain" rep="norepeat"><replaceable>zone</replaceable></arg>
+                  <arg choice="opt" rep="norepeat"><replaceable>filename</replaceable></arg>
                 </cmdsynopsis>
               </listitem>
             </varlistentry>
-	    <varlistentry id="named-compilezone" xreflabel="Zone Compilation application">
+	    <varlistentry xml:id="named-compilezone" xreflabel="Zone Compilation application">
 	      <term><command>named-compilezone</command></term>
 	      <listitem>
 		<para>
@@ -932,7 +913,7 @@ zone "eng.example.com" {
 		</para>
 	      </listitem>
 	    </varlistentry>
-            <varlistentry id="rndc" xreflabel="Remote Name Daemon Control application">
+            <varlistentry xml:id="rndc" xreflabel="Remote Name Daemon Control application">
 
               <term><command>rndc</command></term>
               <listitem>
@@ -946,14 +927,14 @@ zone "eng.example.com" {
                   <command>ndc</command>的通道模式中也是不支持的。如果你不带任
                   何参数运行<command>rndc</command>，它将显示出以下的用法信息：
                 </para>
-                <cmdsynopsis label="用法">
+                <cmdsynopsis label="用法" sepchar=" ">
                   <command>rndc</command>
-                  <arg>-c <replaceable>config</replaceable></arg>
-                  <arg>-s <replaceable>server</replaceable></arg>
-                  <arg>-p <replaceable>port</replaceable></arg>
-                  <arg>-y <replaceable>key</replaceable></arg>
-                  <arg choice="plain"><replaceable>command</replaceable></arg>
-                  <arg rep="repeat"><replaceable>command</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-c <replaceable>config</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-s <replaceable>server</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-p <replaceable>port</replaceable></arg>
+                  <arg choice="opt" rep="norepeat">-y <replaceable>key</replaceable></arg>
+                  <arg choice="plain" rep="norepeat"><replaceable>command</replaceable></arg>
+                  <arg rep="repeat" choice="opt"><replaceable>command</replaceable></arg>
                 </cmdsynopsis>
 
                 <para>
@@ -1088,11 +1069,10 @@ controls {
             </varlistentry>
           </variablelist>
 
-        </sect3>
-      </sect2>
-      <sect2>
+        </section>
+      </section>
 
-        <title>信号</title>
+      <section xml:id="signals"><info><title>信号</title></info>
         <para>
           某些UNIX信号将使名字服务器进行特定的动作，如下表所列。
 		  这些信号可以由<command>kill</command>命令发出。
@@ -1135,16 +1115,13 @@ controls {
             </tbody>
           </tgroup>
         </informaltable>
-      </sect2>
-    </sect1>
+      </section>
+    </section>
   </chapter>
 
-  <chapter id="Bv9ARM-gbk.ch04">
-    <title>高级DNS特征</title>
+  <chapter xml:id="Bv9ARM-gbk.ch04"><info><title>高级DNS特征</title></info>
 
-    <sect1 id="notify">
-
-      <title>通知（Notify）</title>
+    <section xml:id="notify"><info><title>通知（Notify）</title></info>
       <para>
         <acronym>DNS</acronym> NOTIFY是一个让主服务器通知其辅服务器某个区数据
         发生了变化的机制。作为对来自主服务器的<command>NOTIFY</command>的相应，
@@ -1159,18 +1136,17 @@ controls {
         <command>NOTIFY</command>协议由RFC 1996规定。
       </para>
 
-      <note>
+      <note><simpara>
 	一个辅服务器也可以成为其它辅服务器的主服务器，<command>named</command>
 	在缺省情况下会
         对其所载入的每个区发出<command>NOTIFY</command>消息。
         指定<command>notify master-only;</command>将使<command>named</command>
         只对其所载入区的主服务器发出<command>NOTIFY</command>。
-      </note>
+      </simpara></note>
 
-    </sect1>
+    </section>
 
-    <sect1 id="dynamic_update">
-      <title>动态更新（Dynamic Update）</title>
+    <section xml:id="dynamic_update"><info><title>动态更新（Dynamic Update）</title></info>
 
       <para>
         动态更新是一个通过给主服务器发送一个特殊格式的DNS 消息来增加、替换和
@@ -1206,8 +1182,7 @@ controls {
 	重新生成。更新授权是基于事务签名和一个显式的服务器策略。
       </para>
 
-      <sect2 id="journal">
-      <title>日志文件</title>
+      <section xml:id="journal"><info><title>日志文件</title></info>
 
         <para>
           一个使用动态更新的区的所有变化将保存在这个区的日志文件中。这个文件在
@@ -1237,7 +1212,7 @@ controls {
 
         <para>
           动态更新区的区文件不能象通常那样进行手工编辑，因为没法保证包含最近的
-          动态变化，这些变化只存在于日志文件中。保持动态更新区的区文件最新的
+          动态变化 — 这些变化只存在于日志文件中。保持动态更新区的区文件最新的
           唯一方法是执行<command>rndc stop</command>。
         </para>
 
@@ -1259,12 +1234,11 @@ controls {
           <command>rndc sync -clean</command>。
         </para>
 
-      </sect2>
+      </section>
 
-    </sect1>
+    </section>
 
-    <sect1 id="incremental_zone_transfers">
-      <title>增量区传送（IXFR）</title>
+    <section xml:id="incremental_zone_transfers"><info><title>增量区传送（IXFR）</title></info>
 
       <para>
         增量区传送（incremental zone transfer, IXFR）协议是一个为辅服务器提供
@@ -1286,10 +1260,10 @@ controls {
         更多关于关闭IXFR 的信息，参见<command>server</command>
         语句的<command>request-ixfr</command>子句的描述。
       </para>
-    </sect1>
+    </section>
 
-    <sect1>
-      <title>分割DNS</title>
+    <section xml:id="split_dns"><info><title>分割DNS</title></info>
+
       <para>
         对DNS空间的内部和外部解析器设置不同的视图，或可见度，通常被称为一个
         <emphasis>分割的DNS</emphasis>设置。有几个原因使某个单位想要这样设置
@@ -1796,8 +1770,7 @@ allow-update { key host1-host2. ;};
 		或者在DNS树中这个区上面的另一个区的区密钥。
       </para>
 
-      <sect2>
-        <title>生成密钥</title>
+      <section xml:id="dnssec_keys"><info><title>生成密钥</title></info>
 
         <para>
           <command>dnssec-keygen</command>程序用于生成密钥。
@@ -1847,9 +1820,8 @@ allow-update { key host1-host2. ;};
           <filename>.key</filename>文件的方式插入到区文件中。
         </para>
 
-      </sect2>
-      <sect2>
-        <title>对区签名</title>
+      </section>
+      <section xml:id="dnssec_signing"><info><title>对区签名</title></info>
 
         <para>
           <command>dnssec-signzone</command>程序用于对区签名。
@@ -1887,10 +1859,9 @@ allow-update { key host1-host2. ;};
           记录），后者作为区的安全入口点。
         </para>
 
-      </sect2>
+      </section>
 
-      <sect2>
-        <title>配置服务器</title>
+      <section xml:id="dnssec_config"><info><title>配置服务器</title></info>
 
 	<para>
 	  为了使<command>named</command>正确响应知道DNSSEC的客户端所发出的
@@ -1998,9 +1969,9 @@ options {
 };
 </programlisting>
 
-	<note>
+	<note><simpara>
 	  本例中列出的所有密钥都是无效的。特别是，根密钥是无效的。
-	</note>
+	</simpara></note>
 
 	<para>
 	  当DNSSEC验证被打开并正确地配置后，解析器将会拒绝来自签名的
@@ -2031,21 +2002,19 @@ options {
 	    这是指区，而不是指响应。）
 	  </para>
 	</note>
-      </sect2>
+      </section>
 
-    </sect1>
+    </section>
 
-    <xi:include href="dnssec-utf8.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-utf8.xml"/>
 
-    <xi:include href="managed-keys-utf8.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="managed-keys-utf8.xml"/>
 
-    <xi:include href="pkcs11-utf8.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="pkcs11-utf8.xml"/>
 
-    <xi:include href="dlz-utf8.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dlz-utf8.xml"/>
 
-    <sect1>
-      <title><acronym>BIND</acronym> 9对IPv6的支持</title>
-
+    <section xml:id="ipv6"><info><title><acronym>BIND</acronym> 9对IPv6的支持</title></info>
       <para>
         <acronym>BIND</acronym> 9对当前所定义的各种IPv6形式的名字到地址和
         地址到名字的查找提供完全的支持。它也可以在具有IPv6的系统上使用
@@ -2075,8 +2044,7 @@ options {
         对IPv6地址格式和结构的概括，参见<xref linkend="ipv6addresses"/>。
       </para>
 
-      <sect2>
-        <title>使用AAAA记录查找地址</title>
+      <section><info><title>使用AAAA记录查找地址</title></info>
 
         <para>
           IPv6的AAAA记录与IPv4的A记录相对应，并且与被废除的A6记录不同，
@@ -2093,9 +2061,8 @@ host            3600    IN      AAAA    2001:db8::1
 	  使用一个A记录，而不是带有<literal>::ffff:192.168.42.1</literal>
 	  的AAAA记录来作为其地址。
         </para>
-      </sect2>
-      <sect2>
-        <title>使用半字节格式从地址查名字</title>
+      </section>
+      <section><info><title>使用半字节格式从地址查名字</title></info>
 
         <para>
           在使用半字节格式来查找一个地址时，地址元素只是简单地反转，并且
@@ -2110,14 +2077,14 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
                                      host.example.com. )
 </programlisting>
 
-      </sect2>
-    </sect1>
+      </section>
+    </section>
   </chapter>
 
-  <chapter id="Bv9ARM-gbk.ch05">
-    <title><acronym>BIND</acronym> 9的轻量级解析器</title>
-    <sect1>
-      <title>轻量级解析器库</title>
+  <chapter xml:id="Bv9ARM-gbk.ch05"><info><title><acronym>BIND</acronym> 9的轻量级解析器</title></info>
+
+    <section xml:id="lightweight_resolver"><info><title>轻量级解析器库</title></info>
+
       <para>
         传统的应用链接到一个存根解析器库，通过后者向本地缓存名字服务器
 	发送递归的DNS请求。
@@ -2133,9 +2100,8 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 	用一个基于UDP的简单协议，“轻量级解析器协议”与完全的DNS协议区别开
 	来，并比后者更简单。
       </para>
-    </sect1>
-    <sect1 id="lwresd">
-      <title>运行一个解析器看守进程</title>
+    </section>
+    <section xml:id="lwresd"><info><title>运行一个解析器看守进程</title></info>
 
       <para>
         要使用轻量级解析器接口，系统必须运行解析器后台进程
@@ -2170,11 +2136,10 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 	<filename>named.conf</filename>中使用<command>lwres</command>语句而
 	被配置成充当一个轻量级解析器后台进程。
       </para>
-    </sect1>
+    </section>
   </chapter>
 
-  <chapter id="Bv9ARM-gbk.ch06">
-    <title><acronym>BIND</acronym> 9配置参考</title>
+  <chapter xml:id="Bv9ARM-gbk.ch06"><info><title><acronym>BIND</acronym> 9配置参考</title></info>
 
     <para>
       <acronym>BIND</acronym> 9的配置在很大程度上与<acronym>BIND</acronym> 8
@@ -2189,8 +2154,8 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 	  <filename>contrib/named-bootconf/named-bootconf.sh</filename>转换成
 	  新的格式。
     </para>
-    <sect1 id="configuration_file_elements">
-      <title>配置文件元素</title>
+    <section xml:id="configuration_file_elements"><info><title>配置文件元素</title></info>
+
       <para>
         以下是贯穿在<acronym>BIND</acronym>配置文件的文档中的元素清单：
       </para>
@@ -2528,10 +2493,9 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
           </tbody>
         </tgroup>
       </informaltable>
-      <sect2 id="address_match_lists">
-        <title>地址匹配表</title>
-        <sect3>
-          <title>语法</title>
+      <section xml:id="address_match_lists"><info><title>地址匹配表</title></info>
+
+        <section><info><title>语法</title></info>
 
 <programlisting><varname>address_match_list</varname> = address_match_list_element ;
   <optional> address_match_list_element; ... </optional>
@@ -2539,9 +2503,9 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
    key key_id | acl_name | { address_match_list } )
 </programlisting>
 
-        </sect3>
-        <sect3>
-          <title>定义和用法</title>
+        </section>
+        <section><info><title>定义和用法</title></info>
+
           <para>
             地址匹配表主要用于决定对各种服务器操作的访问控制。它们通常也用在
             <command>listen-on</command>和<command>sortlist</command>语句中。组
@@ -2620,11 +2584,10 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
             <command>! 1.2.3.13; 1.2.3/24</command>修正了这个问题，通过否定符阻
             止了1.2.3.13，而让其它的1.2.3.*主机都通过。
           </para>
-        </sect3>
-      </sect2>
+        </section>
+      </section>
 
-      <sect2>
-        <title>注释语法</title>
+      <section xml:id="comment_syntax"><info><title>注释语法</title></info>
 
         <para>
           <acronym>BIND</acronym> 9注释语法允许注释可以出现在一个BIND配置文件中
@@ -2632,8 +2595,7 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
           C++或shell/perl的风格。
         </para>
 
-        <sect3>
-          <title>语法</title>
+        <section><info><title>语法</title></info>
 
           <para>
             <programlisting>/* This is a <acronym>BIND</acronym> comment as in C */</programlisting>
@@ -2641,9 +2603,9 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
             <programlisting># This is a <acronym>BIND</acronym> comment as in common UNIX shells
 and perl</programlisting>
           </para>
-        </sect3>
-        <sect3>
-          <title>定义和用法</title>
+        </section>
+        <section><info><title>定义和用法</title></info>
+
           <para>
             在一个<acronym>BIND</acronym>配置文件中，注释可以出现在任何空白字符
             可以出现的地方。
@@ -2701,12 +2663,11 @@ and perl</programlisting>
               表示一个配置语句的结束。
             </para>
           </warning>
-        </sect3>
-      </sect2>
-    </sect1>
+        </section>
+      </section>
+    </section>
 
-    <sect1 id="Configuration_File_Grammar">
-      <title>配置文件语法</title>
+    <section xml:id="Configuration_File_Grammar"><info><title>配置文件语法</title></info>
 
       <para>
         <acronym>BIND</acronym> 9的配置文件由语句和注释组成。语句以分号结束。语
@@ -2876,17 +2837,15 @@ and perl</programlisting>
         件中只能出现一次。
       </para>
 
-      <sect2>
-        <title><command>acl</command>语句语法</title>
+      <section xml:id="acl_grammar"><info><title><command>acl</command>语句语法</title></info>
 
 <programlisting><command>acl</command> acl-name {
     address_match_list
 };
 </programlisting>
 
-      </sect2>
-      <sect2 id="acl">
-        <title><command>acl</command>语句定义和用法</title>
+      </section>
+      <section xml:id="acl"><info><title><command>acl</command>语句定义和用法</title></info>
 
         <para>
           <command>acl</command>语句将一个地址匹配列表赋值给一个符号名字。其名
@@ -3001,9 +2960,8 @@ geoip org "Internet Systems Consortium";
 </programlisting>
 
 
-      </sect2>
-      <sect2>
-        <title><command>controls</command>语句语法</title>
+      </section>
+      <section xml:id="controls_grammar"><info><title><command>controls</command>语句语法</title></info>
 
 <programlisting><command>controls</command> {
    [ inet ( ip_addr | * ) [ port ip_port ]
@@ -3016,10 +2974,9 @@ geoip org "Internet Systems Consortium";
 };
 </programlisting>
 
-      </sect2>
+      </section>
 
-      <sect2 id="controls_statement_definition_and_usage">
-        <title><command>controls</command>语句定义和用法</title>
+      <section xml:id="controls_statement_definition_and_usage"><info><title><command>controls</command>语句定义和用法</title></info>
 
         <para>
           <command>controls</command>语句声明控制通道，其被系统管理员用来控制对
@@ -3106,13 +3063,11 @@ geoip org "Internet Systems Consortium";
           <command>controls { };</command>。
         </para>
 
-      </sect2>
-      <sect2>
-        <title><command>include</command>语句语法</title>
+      </section>
+      <section xml:id="include_grammar"><info><title><command>include</command>语句语法</title></info>
         <programlisting><command>include</command> <replaceable>filename</replaceable>;</programlisting>
-      </sect2>
-      <sect2>
-        <title><command>include</command>语句定义和用法</title>
+      </section>
+      <section xml:id="include_statement"><info><title><command>include</command>语句定义和用法</title></info>
 
         <para>
           <command>include</command>语句将指定的文件插入到
@@ -3121,20 +3076,18 @@ geoip org "Internet Systems Consortium";
           例如，这个语句可以包含进只有名字服务器才可以读的私钥。
         </para>
 
-      </sect2>
-      <sect2>
-        <title><command>key</command>语句语法</title>
+      </section>
+      <section xml:id="key_grammar"><info><title><command>key</command>语句语法</title></info>
 
 <programlisting><command>key</command> <replaceable>key_id</replaceable> {
-    algorithm <replaceable>string</replaceable>;
-    secret <replaceable>string</replaceable>;
+    algorithm <replaceable>algorithm_id</replaceable>;
+    secret <replaceable>secret_string</replaceable>;
 };
 </programlisting>
 
-      </sect2>
+      </section>
 
-      <sect2>
-        <title><command>key</command>语句定义和用法</title>
+      <section xml:id="key_statement"><info><title><command>key</command>语句定义和用法</title></info>
 
         <para>
           <command>key</command>语句定义了一个共享密钥，用于TSIG
@@ -3169,9 +3122,8 @@ geoip org "Internet Systems Consortium";
 	  个base-64编码的字符串。
 	</para>
 
-      </sect2>
-      <sect2>
-        <title><command>logging</command>语句语法</title>
+      </section>
+      <section xml:id="logging_grammar"><info><title><command>logging</command>语句语法</title></info>
 
 <programlisting><command>logging</command> {
    [ <command>channel</command> <replaceable>channel_name</replaceable> {
@@ -3194,10 +3146,9 @@ geoip org "Internet Systems Consortium";
 };
 </programlisting>
 
-      </sect2>
+      </section>
 
-      <sect2>
-        <title><command>logging</command>语句定义和用法</title>
+      <section xml:id="logging_statement"><info><title><command>logging</command>语句定义和用法</title></info>
 
         <para>
           <command>logging</command>语句为名字服务器配置了广泛的日志选项种类。
@@ -3224,8 +3175,7 @@ geoip org "Internet Systems Consortium";
           “<option>-g</option>”选项时被写到标准错误中。
         </para>
 
-        <sect3>
-          <title><command>channel</command>短语</title>
+        <section xml:id="channel"><info><title><command>channel</command>短语</title></info>
 
           <para>
             所有的日志输出都写到一个或多个<emphasis>channels</emphasis>；你可以
@@ -3422,10 +3372,9 @@ channel null {
             一旦一个通道被定义后，它不能被重定义。这样你不能直接修改内建的
             通道，但是你可以修改缺省的日志，即将类别指向你所定义的通道。
           </para>
-        </sect3>
+        </section>
 
-        <sect3 id="the_category_phrase">
-          <title><command>category</command>短语</title>
+        <section xml:id="the_category_phrase"><info><title><command>category</command>短语</title></info>
 
           <para>
             存在许多类别，这样你可以发送你想要看的日志，而不看你不想要的日志。
@@ -3994,9 +3943,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 };
 </programlisting>
 
-      </sect2>
-      <sect2>
-        <title><command>lwres</command>语句定义和用法</title>
+      </section>
+      <section xml:id="lwres_statement"><info><title><command>lwres</command>语句定义和用法</title></info>
 
         <para>
           <command>lwres</command>语句把名字服务器配置成为一个轻量级的解析服务
@@ -4027,28 +3975,26 @@ badresp:1,adberr:0,findfail:0,valfail:0]
           的<command>ndots</command>语句等效。它指示在一个相对域名中的点的最小
           数目，将在追加查找路径元素之前作一个精确查找。
         </para>
-      </sect2>
-      <sect2>
-        <title><command>masters</command>语句语法</title>
+      </section>
+      <section xml:id="masters_grammar"><info><title><command>masters</command>语句语法</title></info>
 
 <programlisting>
-<command>masters</command> <replaceable>name</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters_list</replaceable> | 
+<command>masters</command> <replaceable>name</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters_list</replaceable> |
       <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> };
 </programlisting>
 
-      </sect2>
+      </section>
 
-      <sect2>
-        <title><command>masters</command>语句定义和用法</title>
+      <section xml:id="masters_statement"><info><title><command>masters</command>语句定义和用法</title></info>
+
         <para>
           <command>masters</command>列表让一组共同的主服务器易于被用于多个
           存根区和辅区，通过放入后者的<command>masters</command>或
           <command>also-notify</command>列表中。
         </para>
-      </sect2>
+      </section>
 
-      <sect2>
-        <title><command>options</command>语句语法</title>
+      <section xml:id="options_grammar"><info><title><command>options</command>语句语法</title></info>
 
         <para>
           这是<filename>named.conf</filename>文件中<command>options</command>语
@@ -4295,18 +4241,20 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 		  nxdomain | nodata | cname domain</replaceable>) </optional>
 	<optional> recursive-only <replaceable>yes_or_no</replaceable> </optional>
 	<optional> max-policy-ttl <replaceable>number</replaceable> </optional>
-	<optional> break-dnssec <replaceable>yes_or_no</replaceable> </optional>
-	<optional> min-ns-dots <replaceable>number</replaceable> </optional>
-	<optional> qname-wait-recurse <replaceable>yes_or_no</replaceable> </optional>
 	; <optional>...</optional>
-    } ; </optional>
+    } <optional> recursive-only <replaceable>yes_or_no</replaceable> </optional>
+      <optional> max-policy-ttl <replaceable>number</replaceable> </optional>
+      <optional> break-dnssec <replaceable>yes_or_no</replaceable> </optional>
+      <optional> min-ns-dots <replaceable>number</replaceable> </optional>
+      <optional> qname-wait-recurse <replaceable>yes_or_no</replaceable> </optional>
+      <optional> automatic-interface-scan <replaceable>yes_or_no</replaceable> </optional>
+    ; </optional>
 };
 </programlisting>
 
-      </sect2>
+      </section>
 
-      <sect2 id="options">
-        <title><command>options</command>语句定义和用法</title>
+      <section xml:id="options"><info><title><command>options</command>语句定义和用法</title></info>
 
         <para>
           <command>options</command>语句设置<acronym>BIND</acronym>所使用的全局
@@ -4568,7 +4516,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
                 <filename>/var/run/named/named.pid</filename>。PID文件是
 		用于要向正在运行的名字服务器发送信号的程序。指定
                 <command>pid-file none</command>关闭使用一个
-		PID文件 &mdash; 不写文件，如果已经有一个，将被删除。
+		PID文件 — 不写文件，如果已经有一个，将被删除。
 		注意<command>none</command>是一个关键字，不是一个文件名，
 		所以不使用双引号将其包含。
               </para>
@@ -4701,12 +4649,13 @@ badresp:1,adberr:0,findfail:0,valfail:0]
             <listitem>
               <para>
                 如果指定，在一个请求响应的附加部份内的其它粘着记录之前，所列的
-                类型（A或AAAA）将被写入。缺省是不优先任何类型（NONE）。
+                类型（A或AAAA）将被写入。缺省是优先为A记录，如果在响应经由IPv4
+                到达的请求时，以及优先为AAAA记录，如果在响应经由IPv6到达的请求时。
               </para>
             </listitem>
           </varlistentry>
 
-          <varlistentry id="root_delegation_only">
+          <varlistentry xml:id="root_delegation_only">
             <term><command>root-delegation-only</command></term>
             <listitem>
               <para>
@@ -4810,9 +4759,8 @@ options {
                 启动时会装载这个密钥。
                 在<acronym>BIND</acronym> 9安装时，会同时安装这个文件的
                 一个拷贝，并且通常为发行日期。如果DLV密钥过期，可以从
-                <ulink url="https://www.isc.org/solutions/dlv/">
-                https://www.isc.org/solutions/dlv/</ulink>下载
-                一个新的<filename>bind.keys</filename>拷贝。
+                <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/solutions/dlv/">https://www.isc.org/solutions/dlv/</link>
+                下载一个新的<filename>bind.keys</filename>拷贝。
               </para>
               <para>
                 （为避免找不到<filename>bind.keys</filename>带来的问题，
@@ -5407,7 +5355,7 @@ options {
                   注意，设置<command>recursion no</command>不会阻止客户端从服务
                   器的缓存获取数据；它仅仅阻止作为客户端请求结果的新的数据被缓
                   存。缓存仍然会作为服务器内部操作的结果而被产生，例如NOTIFY地
-                  址查找。参见上面的<command>fetch-glue</command>。
+                  址查找。
                 </para>
               </listitem>
             </varlistentry>
@@ -5443,6 +5391,18 @@ options {
 		</para>
 	      </listitem>
 	    </varlistentry>
+
+            <varlistentry>
+              <term><command>nosit-udp-size</command></term>
+              <listitem>
+                <para>
+                  设置给不带有一个有效源标志记号的请求的UDP响应的最大大小。
+                  一个小于128的值将被静默地提升到128.缺省值是4096，但是
+                  <command>max-udp-size</command>选项可以更多地限制响应的
+                  大小。
+                </para>
+              </listitem>
+            </varlistentry>
 
 	    <varlistentry>
 	      <term><command>sit-secret</command></term>
@@ -5699,12 +5659,55 @@ options {
             </varlistentry>
 
             <varlistentry>
+              <term><command>auto-dnssec</command></term>
+              <listitem>
+                <para>
+                  为动态DNS配置的区可以使用这个选项来允许自动DNSSEC密钥管理
+                  变化级别。可以有三个可能的设置：
+                </para>
+                <para>
+                  <command>auto-dnssec allow;</command>允许无论何时用户发送
+                  <command>rndc sign <replaceable>zonename</replaceable></command>
+                  命令时更新密钥和重签整个区。
+                </para>
+                <para>
+                  <command>auto-dnssec maintain;</command> includes the
+                  above, but also automatically adjusts the zone's DNSSEC
+                  keys on schedule, according to the keys' timing metadata
+                  (see <xref linkend="man.dnssec-keygen"/> and
+                  <xref linkend="man.dnssec-settime"/>).  The command
+                  命令<command>rndc sign
+                  <replaceable>zonename</replaceable></command>使得
+                  <command>named</command> to load keys from the key
+                  repository and sign the zone with all keys that are
+                  active.
+                  <command>rndc loadkeys
+                  <replaceable>zonename</replaceable></command> causes
+                  <command>named</command> to load keys from the key
+                  repository and schedule key maintenance events to occur
+                  in the future, but it does not sign the full zone
+                  immediately.  Note: once keys have been loaded for a
+                  zone the first time, the repository will be searched
+                  for changes periodically, regardless of whether
+                  <command>rndc loadkeys</command> is used.  The recheck
+                  interval is defined by
+                  <command>dnssec-loadkeys-interval</command>.)
+                </para>
+                <para>
+                  缺省设置为<command>auto-dnssec off</command>。
+                </para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
               <term><command>dnssec-enable</command></term>
               <listitem>
                 <para>
-                  在<command>named</command>中打开对DNSSEC的支持。除非设为
-                  <userinput>yes</userinput>，否则<command>named</command>
-		  的行为就象其不支持DNSSEC。缺省为<userinput>yes</userinput>。
+                  这指示<command>named</command>是否返回DNSSEC相关的资源记录。
+                  如果设置为<userinput>no</userinput>，
+                  <command>named</command>将不会返回DNSSEC相关的资源记录，
+                  除非对特定的请求。
+                  缺省为<userinput>yes</userinput>。
                 </para>
               </listitem>
             </varlistentry>
@@ -6711,11 +6714,11 @@ avoid-v6-udp-ports {};
                   中列出的源失效并且设置了
                   <command>use-alt-transfer-source</command>。
                 </para>
-		<note>
+		<note><simpara>
 		  如果你不希望使用一个可替换的传送源，你应该正确设置
 		  <command>use-alt-transfer-source</command>，并且你不应该依赖
 		  于从第一个更新请求获得一个回复。
-		</note>
+		</simpara></note>
               </listitem>
             </varlistentry>
 
@@ -6774,10 +6777,10 @@ avoid-v6-udp-ports {};
 
           </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>UDP端口列表</title>
+        <section xml:id="port_lists"><info><title>UDP端口列表</title></info>
+
           <para>
 	    <command>use-v4-udp-ports</command>,
 	    <command>avoid-v4-udp-ports</command>,
@@ -6812,10 +6815,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
              <command>avoid-</command>是冗余的；提供它们是为了向后兼容性和
              有可能简化端口设定。
 	   </para>
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>操作系统资源限制</title>
+        <section xml:id="resource_limits"><info><title>操作系统资源限制</title></info>
 
           <para>
             服务器使用的大多数系统资源是可以限制的。在指定资源限制时的值是可变
@@ -6882,10 +6884,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 
           </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3 id="server_resource_limits">
-          <title>服务器资源限制</title>
+        <section xml:id="server_resource_limits"><info><title>服务器资源限制</title></info>
 
           <para>
             下列选项设置了服务器对资源消耗的限额，这些限额是在服务器内部实现而
@@ -6998,10 +6999,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 
           </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>周期的内部任务</title>
+        <section xml:id="intervals"><info><title>周期的内部任务</title></info>
 
           <variablelist>
 
@@ -7062,10 +7062,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 
           </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3 id="topology">
-          <title>拓扑</title>
+        <section xml:id="topology"><info><title>拓扑</title></info>
 
           <para>
             在所有其它方面都是相同的情况下，当一个服务器在一个名字服务器的列表
@@ -7102,11 +7101,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               选项。
             </simpara>
           </note>
-        </sect3>
+        </section>
 
-        <sect3 id="the_sortlist_statement">
-
-          <title><command>sortlist</command>语句</title>
+        <section xml:id="the_sortlist_statement"><info><title><command>sortlist</command>语句</title></info>
 
           <para>
             一个DNS请求的响应由多个资源记录（Resource Record，RR）构成，它们
@@ -7186,9 +7183,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 };
 </programlisting>
 
-        </sect3>
-        <sect3 id="rrset_ordering">
-          <title id="rrset_ordering_title">资源记录集排序</title>
+        </section>
+        <section xml:id="rrset_ordering"><info><title id="rrset_ordering_title">资源记录集排序</title></info>
+
           <para>
             在一个回答中有多个记录时，配置响应中记录的顺序可能非常有用。
             <command>rrset-order</command>语句允许在一个多记录响应中配置记录的
@@ -7275,7 +7272,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
           </para>
           <para>
             如果出现了多个<command>rrset-order</command>语句，它们不会
-            组合 &mdash; 只有最后一个起作用。
+            组合 — 只有最后一个起作用。
           </para>
           <para>
             缺省时，所有记录以随机顺序返回。
@@ -7289,10 +7286,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	      固定顺序。
             </simpara>
           </note>
-        </sect3>
+        </section>
 
-        <sect3 id="tuning">
-          <title>调优</title>
+        <section xml:id="tuning"><info><title>调优</title></info>
 
           <variablelist>
 
@@ -7655,10 +7651,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	    </varlistentry>
 	  </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3 id="builtin">
-          <title>服务器内置信息区</title>
+        <section xml:id="builtin"><info><title>服务器内置信息区</title></info>
 
           <para>
             服务器通过在伪顶级域<literal>bind</literal>的
@@ -7730,10 +7725,10 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 
           </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3 id="empty">
-          <title>内置空区</title>
+        <section xml:id="empty"><info><title>内置空区</title></info>
+
 	  <para>
 	    named有一些内置空区（仅含有SOA和NS记录）。这是通常情况下只应在本地
 	    响应而不应该发到互联网的根服务器上的请求。覆盖这些名字空间的官方服
@@ -7861,10 +7856,10 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	    找这个空间中的名字。在实际情况中有太多这样的情况，需要部署牺牲服务
 	    器来将查询负载从基础服务器引导出来。
 	  </para>
-	  <note>
+	  <note><simpara>
 	    在这些区的真实的上级服务器中，应该禁止其下的所有空区。对真正的根服
 	    务器，这都是内建空区。这使它们能够返回树中对更深一级的引用。
-	  </note>
+	  </simpara></note>
           <variablelist>
 	    <varlistentry>
 	      <term><command>empty-server</command></term>
@@ -7904,10 +7899,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	      </listitem>
 	    </varlistentry>
           </variablelist>
-        </sect3>
+        </section>
   
-        <sect3 id="acache">
-          <title>附加部份缓存</title>
+        <section xml:id="acache"><info><title>附加部份缓存</title></info>
 
           <para>
             附加部份缓存，也叫做<command>acache</command>，是一个为了提高BIND 9
@@ -7990,10 +7984,10 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 
           </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>内容过滤</title>
+        <section xml:id="content_filtering"><info><title>内容过滤</title></info>
+
 	  <para>
 	    <acronym>BIND</acronym> 9提供了过滤来自外部DNS服务器的，
 	    在回答部份包含某种类型数据的DNS响应的能力。
@@ -8042,9 +8036,9 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	    攻击者访问你的局域网络中的内部节点，而这本不是外部
 	    所能够访问到的。
 	    关于这个攻击更详细的内容参见
-	    <ulink url="http://portal.acm.org/citation.cfm?id=1315245.1315298">
+            <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://portal.acm.org/citation.cfm?id=1315245.1315298">
 	    http://portal.acm.org/citation.cfm?id=1315245.1315298
-	    </ulink>
+	    </link>
 	    处的论文。
 	  </para>
 
@@ -8103,9 +8097,9 @@ deny-answer-aliases { "example.net"; };
 	    某些名字映射到这样的地址。
 	    过滤包含这类地址的DNS记录可能会破坏这类应用。
 	  </para>
-	</sect3>
-        <sect3>
-	  <title>响应策略区（RPZ）重写</title>
+	</section>
+        <section xml:id="rpz"><info><title>响应策略区（RPZ）重写</title></info>
+
 	  <para>
 	    <acronym>BIND</acronym> 9包含了一个限制机制，它修改请求
             的DNS响应，类似于电子邮件中的反垃圾邮件DNS黑名单。响应
@@ -8120,6 +8114,8 @@ deny-answer-aliases { "example.net"; };
             在允许时可以进行普通的查询。
             通常最好使用某些规则限制那些请求，如：
 	    <command>allow-query { localhost; };</command>。
+            注意，使用了<command>masterfile-format map</command>的区不能
+            用作策略区。
 	  </para>
 
 	  <para>
@@ -8141,7 +8137,7 @@ deny-answer-aliases { "example.net"; };
                     <userinput>rpz-client-ip</userinput>的子域名，它相对于
                     策略区原点名字，并编码一个地址或地址块。
                     IPv4地址被表示为
-	            <userinput>prefixlength.B4.B3.B2.B1.rpz-ip</userinput>。
+	            <userinput>prefixlength.B4.B3.B2.B1.rpz-client-ip</userinput>。
                     IPv4前缀长度必须在1和32之间。
 	            所有四个字节，B4，B3，B2和B1，都必须出现。
 	            B4是IPv4地址中的最低字节的十进制数值，如同在IN-ADDR.ARPA
@@ -8149,14 +8145,15 @@ deny-answer-aliases { "example.net"; };
 		  </para>
 		  <para>
 	            IPv6被编码成类似于标准的IPv6文本表示格式，
-	            <userinput>prefixlength.W8.W7.W6.W5.W4.W3.W2.W1.rpz-ip</userinput>。
+	            <userinput>prefixlength.W8.W7.W6.W5.W4.W3.W2.W1.rpz-client-ip</userinput>。
 	            W8，...，W1中的每个都是一个一到四位的十六进制数，表示IPv6
                     地址中的16位，如同IPv6地址的标准文本表示法，但是是如同
-                    IN-ADDR.ARPA中的反向表示的。
+                    IN6.ARPA中的反向表示的。（注意，这个IPv6地址表示是与IP6.ARPA中
+                    的每个16进制数字占据一个标记是不同的。）
 	            所有的8个双字节都必须出现，除非一个连续值为零的双字节集合，
                     后者被替换为<userinput>.zz.</userinput>，类似于标准IPv6文本
                     编码中的双冒号（::）。
-	            IPv6前缀长度必须在64和128之间。
+	            IPv6前缀长度必须在1和128之间。
 		  </para>
 		</listitem>
 	      </varlistentry>
@@ -8217,7 +8214,7 @@ deny-answer-aliases { "example.net"; };
             一条响应所触发。由于DNS响应根据至多一条策略记录被重写，必须选择一条
             策略编码一个动作（除<command>DISABLED</command>策略之外）。
 	    以下列顺序为重写选择编码它们的触发器或记录：
-	    <itemizedlist>
+	    <itemizedlist inheritnum="ignore" continuation="restarts">
 	      <listitem>选择区中最先在<command>response-policy</command>选项中
                 出现的触发器记录。
 	      </listitem>
@@ -8232,7 +8229,7 @@ deny-answer-aliases { "example.net"; };
 	      <listitem>在带有相同前缀长度的触发器之间，优先选择匹配最小IP地址
                 的IP或NSIP触发器。
 	      </listitem>
-	    </itemizedlist>
+	    </orderedlist>
 	  </para>
 
 	  <para>
@@ -8487,10 +8484,10 @@ example.com                 CNAME   rpz-tcp-only.
           <para>
             由RPZ所重写的响应在<command>RPZRewrites</command>统计中被计数。
           </para>
-        </sect3>
+        </section>
 
-	<sect3>
-	  <title>响应比率限制</title>
+	<section xml:id="rrl"><info><title>响应比率限制</title></info>
+
 	  <para>
             过多的几乎同样的UDP<emphasis>responses</emphasis>可以通过在一个
             <command>options</command>或<command>view</command>语句中
@@ -8665,11 +8662,10 @@ example.com                 CNAME   rpz-tcp-only.
 	    被比率限制所截断的响应被包含在<command>RateSlipped</command>和
             <command>RespTruncated</command>统计中。
 	  </para>
-	</sect3>
-      </sect2>
+	</section>
+      </section>
 
-      <sect2 id="server_statement_grammar">
-        <title><command>server</command>语句语法</title>
+      <section xml:id="server_statement_grammar"><info><title><command>server</command>语句语法</title></info>
 
 <programlisting><command>server</command> <replaceable>ip_addr[/prefixlen]</replaceable> {
     <optional> bogus <replaceable>yes_or_no</replaceable> ; </optional>
@@ -8679,11 +8675,10 @@ example.com                 CNAME   rpz-tcp-only.
     <optional> request-sit <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> edns <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> edns-udp-size <replaceable>number</replaceable> ; </optional>
-    <optional> nosit-udp-size <replaceable>number</replaceable> ; </optional>
     <optional> max-udp-size <replaceable>number</replaceable> ; </optional>
     <optional> transfers <replaceable>number</replaceable> ; </optional>
     <optional> transfer-format <replaceable>( one-answer | many-answers )</replaceable> ; ]</optional>
-    <optional> keys <replaceable>{ string ; <optional> string ; <optional>...</optional></optional> }</replaceable> ; </optional>
+    <optional> keys { <replaceable>key_id</replaceable> }; </optional>
     <optional> transfer-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
@@ -8698,10 +8693,9 @@ example.com                 CNAME   rpz-tcp-only.
 };
 </programlisting>
 
-        </sect2>
+        </section>
 
-        <sect2 id="server_statement_definition_and_usage">
-          <title><command>server</command>语句定义和用法</title>
+        <section xml:id="server_statement_definition_and_usage"><info><title><command>server</command>语句定义和用法</title></info>
 
           <para>
             <command>server</command>语句定义与一个远程名字服务器相关的特性。如
@@ -9123,10 +9117,9 @@ example.com                 CNAME   rpz-tcp-only.
             用于初始化密钥维护进程的密钥是内建于<command>named</command>，
 	    并且能够被<command>bindkeys-file</command>中的密钥所覆盖。
 	  </para>
-	</sect2>
+	</section>
 
-        <sect2 id="view_statement_grammar">
-          <title><command>view</command>语句语法</title>
+        <section xml:id="view_statement_grammar"><info><title><command>view</command>语句语法</title></info>
 
 <programlisting><command>view</command> <replaceable>view_name</replaceable>
       <optional><replaceable>class</replaceable></optional> {
@@ -9138,9 +9131,8 @@ example.com                 CNAME   rpz-tcp-only.
 };
 </programlisting>
 
-        </sect2>
-        <sect2>
-          <title><command>view</command>语句定义和用法</title>
+        </section>
+        <section xml:id="view_statement"><info><title><command>view</command>语句定义和用法</title></info>
 
           <para>
             <command>view</command>语句是<acronym>BIND</acronym> 9的一个强大功
@@ -9162,7 +9154,7 @@ example.com                 CNAME   rpz-tcp-only.
             <command>keys</command>，它给客户端提供了一个选择视图的机制。一个视
             图也可以指定成为<command>match-recursive-only</command>，它表示仅仅
             来自匹配客户的递归请求才匹配此视图。<command>view</command>语句的顺
-            序非常重要 &mdash; 一个客户端请求将在它所匹配的第一个
+            序非常重要 — 一个客户端请求将在它所匹配的第一个
             <command>view</command>的上下文中被解析。
           </para>
 
@@ -9233,9 +9225,8 @@ view "external" {
 };
 </programlisting>
 
-        </sect2>
-        <sect2 id="zone_statement_grammar">
-          <title><command>zone</command>语句语法</title>
+        </section>
+        <section xml:id="zone_statement_grammar"><info<title><command>zone</command>语句语法</title></info>
 
 <programlisting><command>zone</command> <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
     type master;
@@ -9247,8 +9238,9 @@ view "external" {
     <optional> dnssec-dnskey-kskonly <replaceable>yes_or_no</replaceable>; </optional>
     <optional> dnssec-loadkeys-interval <replaceable>number</replaceable>; </optional>
     <optional> update-policy <replaceable>local</replaceable> | { <replaceable>update_policy_rule</replaceable> <optional>...</optional> }; </optional>
-    <optional> also-notify { <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ;
-		  <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> also-notify <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
+                            <optional>port <replaceable>ip_port</replaceable></optional>
+                            <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> }; </optional>
     <optional> check-names (<constant>warn</constant>|<constant>fail</constant>|<constant>ignore</constant>) ; </optional>
     <optional> check-mx (<constant>warn</constant>|<constant>fail</constant>|<constant>ignore</constant>) ; </optional>
     <optional> check-wildcard <replaceable>yes_or_no</replaceable>; </optional>
@@ -9308,7 +9300,6 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     <optional> try-tcp-refresh <replaceable>yes_or_no</replaceable>; </optional>
     <optional> also-notify <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable>
                               <optional>port <replaceable>ip_port</replaceable></optional>
-			      <optional>dscp <replaceable>ip_dscp</replaceable></optional>
                               <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> }; </optional>
     <optional> check-names (<constant>warn</constant>|<constant>fail</constant>|<constant>ignore</constant>) ; </optional>
     <optional> dialup <replaceable>dialup_option</replaceable> ; </optional>
@@ -9666,10 +9657,10 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
                 </tbody>
               </tgroup>
             </informaltable>
-          </sect3>
+          </section>
 
-          <sect3>
-            <title>类</title>
+          <section xml:id="class"><info><title>类</title></info>
+
             <para>
               作为可选项，区的名字后面可以跟一个类。如果未指定类，就设定为类
               <literal>IN</literal>（表示<varname>Internet</varname>）。这在
@@ -9684,10 +9675,9 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
               另一个MIT开发的是Chaosnet，一个创建于1970年代中期的局域网协议。
               它的区数据可以使用<literal>CHAOS</literal>类指定。
             </para>
-          </sect3>
+          </section>
 
-          <sect3>
-            <title>区选项</title>
+          <section xml:id="zone_options"><info><title>区选项</title></info>
 
             <variablelist>
 
@@ -10407,9 +10397,9 @@ example.com. NS ns2.example.net.
 
             </variablelist>
 
-          </sect3>
-          <sect3 id="dynamic_update_policies">
-            <title>动态更新策略</title>
+          </section>
+          <section xml:id="dynamic_update_policies"><info><title>动态更新策略</title></info>
+
             <para>
               <acronym>BIND</acronym> 9支持两种方法来授权客户端对一个区执行动态
               更新，分别是配置<command>allow-update</command>和
@@ -11479,9 +11469,9 @@ view external {
               资源记录的RDATA部份中的数据作为二进制字符串和域名的一个组成部份被
               携带。域名频繁地被用作指向DNS中其它数据的“指针”。
             </para>
-          </sect3>
-          <sect3>
-            <title>文本形式的资源记录表示</title>
+          </section>
+          <section xml:id="rr_text"><info><title>文本形式的资源记录表示</title></info>
+
             <para>
               资源记录在DNS协议包内被表示成二进制形式，而在存放到一个名字服务器
               或解析器中通常被表示成高级编码的形式。在RFC 1034中提供的例子中，
@@ -11660,11 +11650,10 @@ view external {
               这个例子显示了<literal>XX.LCS.MIT.EDU</literal>的两个地址，分别在
               不同的类中。
             </para>
-          </sect3>
-        </sect2>
+          </section>
+        </section>
 
-        <sect2>
-          <title>对MX记录的讨论</title>
+        <section xml:id="mx_records"><info><title>对MX记录的讨论</title></info>
 
           <para>
             如同上面所描述的，域名服务器将消息存放为一系列资源数据，每个资源数
@@ -11940,14 +11929,14 @@ view external {
           </informaltable>
           <note>
             <para>
-              例子中的<command>$ORIGIN</command>行用于提供相当于例子的上下文，
+              例子中的<command>$ORIGIN</command>行用于提供相对于例子的上下文 —
               仅仅用在实际中不需要出现的地方。它们用于这里，仅仅是指明例子是相
               对于所列出的起点。
             </para>
           </note>
-        </sect2>
-        <sect2>
-          <title>其它区文件指令</title>
+        </section>
+        <section xml:id="zone_directives"><info><title>其它区文件指令</title></info>
+
           <para>
             主文件格式最初由RFC 1035定义，后来被扩展。虽然主文件格式本身是类独
             立的，但主文件中的所有记录都必须是属于同一个类。
@@ -11956,17 +11945,17 @@ view external {
             主文件指令包括<command>$ORIGIN</command>，
             <command>$INCLUDE</command>和<command>$TTL</command>。
           </para>
-          <sect3>
-            <title>The <command>@</command> (at-sign)</title>
+          <section xml:id="atsign"><info><title>The <command>@</command> (at-sign)</title></info>
+
             <para>
 	      当asperand或at符号（@）（译注：即圈a）用于标记（或名字）
 	      字段中时，它表示当前原点。
 	      在区文件的开始处，它就是
 	      &lt;<varname>zone_name</varname>&gt; （后跟一个结尾的点）。
             </para>
-          </sect3>
-          <sect3>
-            <title><command>$ORIGIN</command>指令</title>
+          </section>
+          <section xml:id="origin_directive"><info><title><command>$ORIGIN</command>指令</title></info>
+
             <para>
               语法：<command>$ORIGIN</command>
 	      <replaceable>domain-name</replaceable>
@@ -11994,9 +11983,8 @@ WWW     CNAME   MAIN-SERVER
 WWW.EXAMPLE.COM. CNAME MAIN-SERVER.EXAMPLE.COM.
 </programlisting>
 
-          </sect3>
-          <sect3>
-            <title><command>$INCLUDE</command>指令</title>
+          </section>
+          <section xml:id="include_directive"><info><title><command>$INCLUDE</command>指令</title></info>
             <para>
               语法：<command>$INCLUDE</command>
               <replaceable>filename</replaceable>
@@ -12021,9 +12009,9 @@ WWW.EXAMPLE.COM. CNAME MAIN-SERVER.EXAMPLE.COM.
                 这可能构成RFC 1035的一个派生，或者一个特征，也许都是。
               </para>
             </note>
-          </sect3>
-          <sect3>
-            <title><command>$TTL</command>指令</title>
+          </section>
+          <section xml:id="ttl_directive"><info><title><command>$TTL</command>指令</title></info>
+
             <para>
               语法：<command>$TTL</command>
               <replaceable>default-ttl</replaceable>
@@ -12037,10 +12025,10 @@ WWW.EXAMPLE.COM. CNAME MAIN-SERVER.EXAMPLE.COM.
             <para>
               <command>$TTL</command>在RFC 2308中定义。
             </para>
-          </sect3>
-        </sect2>
-        <sect2>
-          <title><acronym>BIND</acronym>主文件扩展：<command>$GENERATE</command>指令</title>
+          </section>
+        </section>
+        <section xml:id="generate_directive"><info><title><acronym>BIND</acronym>主文件扩展：<command>$GENERATE</command>指令</title></info>
+
           <para>
             语法：<command>$GENERATE</command>
 	    <replaceable>range</replaceable>
@@ -12215,10 +12203,10 @@ HOST-127.EXAMPLE. MX 0 .
           <para>
             BIND 8不支持可选的TTL和CLASS字段。
           </para>
-        </sect2>
+        </section>
 
-	<sect2 id="zonefile_format">
-	  <title>附加文件格式</title>
+	<section xml:id="zonefile_format"><info><title>附加文件格式</title></info>
+
 	  <para>
 	    除了标准的文件格式，BIND 9支持读或者列出其它格式区文件的能力。
 	  </para>
@@ -12259,11 +12247,10 @@ HOST-127.EXAMPLE. MX 0 .
             的区文件，或者给这样的文件做一个可移植的备份，推荐将其转换为
             <constant>text</constant>格式。
 	  </para>
-	</sect2>
-      </sect1>
+	</section>
+      </section>
 
-      <sect1 id="statistics">
-        <title>BIND9统计</title>
+      <section xml:id="statistics"><info><title>BIND9统计</title></info>
         <para>
 	  <acronym>BIND</acronym> 9维护许多统计信息并为用户提供几个
 	  接口来访问这些统计。
@@ -12647,7 +12634,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>RespTruncated</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13307,7 +13294,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>EDNS0Fail</command></para>
 						 </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13548,10 +13535,9 @@ HOST-127.EXAMPLE. MX 0 .
               </tgroup>
             </informaltable>
 
-	  </sect3>
+	  </section>
 
-	  <sect3>
-            <title>套接字I/O统计计数器</title>
+	  <section xml:id="socket_stats"><info><title>套接字I/O统计计数器</title></info>
 
 	    <para>
 	      套接字I/O统计计数器是按每种套接字类型定义的，它们是
@@ -14082,11 +14068,11 @@ zone "example.com" {
             IPv6地址规范通常包含一大串0，所以架构师引入了指示这个的缩写方式。
             一对冒号（‘::’）指示可能出现的最长0串，其在地址中仅能出现一次。
           </para>
-      </sect1>
-      <sect1 id="bibliography">
-        <title>参考书目（和建议读物）</title>
-        <sect2 id="rfcs">
-          <title>注释请求（RFC）</title>
+      </section>
+      <section xml:id="bibliography"><info><title>参考书目（和建议读物）</title></info>
+
+        <section xml:id="rfcs"><info><title>注释请求（RFC）</title></info>
+
           <para>
             包括<acronym>DNS</acronym>的互联网协议族的规范文档是作为注释请求
             （RFC）系列的技术备忘的一部份被出版的。标准本身是由互联网工程任务组
@@ -14094,1282 +14080,805 @@ zone "example.com" {
             地址获得：
 	  </para>
 	  <para>
-            <ulink url="ftp://www.isi.edu/in-notes/">
+            <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="ftp://www.isi.edu/in-notes/">
 	      ftp://www.isi.edu/in-notes/RFC<replaceable>xxxx</replaceable>.txt
-	    </ulink>
+	    </link>
 	  </para>
 	  <para>
             （在这里<replaceable>xxxx</replaceable>是RFC的编号）。
             RFC也可以通过主页获得：
 	  </para>
 	  <para>
-            <ulink url="http://www.ietf.org/rfc/"
-	               >http://www.ietf.org/rfc/</ulink>.
+            <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.ietf.org/rfc/">http://www.ietf.org/rfc/</link>.
           </para>
           <bibliography>
-            <bibliodiv>
+            <bibliodiv><info><title>标准</title></info>
               <!-- one of (BIBLIOENTRY BIBLIOMIXED) -->
-              <title>标准</title>
+
               <biblioentry>
                 <abbrev>RFC974</abbrev>
-                <author>
-                  <surname>Partridge</surname>
-                  <firstname>C.</firstname>
-                </author>
-                <title>Mail Routing and the Domain System</title>
+                <author><personname><surname>Partridge</surname><firstname>C.</firstname></personname></author>
+                <citetitle>Mail Routing and the Domain System</citetitle>
                 <pubdate>January 1986</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1034</abbrev>
-                <author>
-                  <surname>Mockapetris</surname>
-                  <firstname>P.V.</firstname>
-                </author>
-                <title>Domain Names &mdash; Concepts and Facilities</title>
+                <author><personname><surname>Mockapetris</surname><firstname>P.V.</firstname></personname></author>
+                <citetitle>Domain Names — Concepts and Facilities</citetitle>
                 <pubdate>November 1987</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1035</abbrev>
-                <author>
-                  <surname>Mockapetris</surname>
-                  <firstname>P. V.</firstname>
-                  </author> <title>Domain Names &mdash; Implementation and
-                  Specification</title>
+                <author><personname><surname>Mockapetris</surname><firstname>P. V.</firstname></personname></author> <citetitle>Domain Names — Implementation and
+                  Specification</citetitle>
                 <pubdate>November 1987</pubdate>
               </biblioentry>
             </bibliodiv>
-            <bibliodiv id="proposed_standards" xreflabel="建议标准">
+            <bibliodiv xml:id="proposed_standards" xreflabel="建议标准"><info><title>建议标准</title></info>
 
-              <title>建议标准</title>
               <!-- one of (BIBLIOENTRY BIBLIOMIXED) -->
               <biblioentry>
                 <abbrev>RFC2181</abbrev>
-                <author>
-                  <surname>Elz</surname>
-                  <firstname>R., R. Bush</firstname>
-                </author>
-                <title>Clarifications to the <acronym>DNS</acronym>
-                  Specification</title>
+                <author><personname><surname>Elz</surname><firstname>R., R. Bush</firstname></personname></author>
+                <citetitle>Clarifications to the <acronym>DNS</acronym>
+                  Specification</citetitle>
                 <pubdate>July 1997</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2308</abbrev>
-                <author>
-                  <surname>Andrews</surname>
-                  <firstname>M.</firstname>
-                </author>
-                <title>Negative Caching of <acronym>DNS</acronym>
-                  Queries</title>
+                <author><personname><surname>Andrews</surname><firstname>M.</firstname></personname></author>
+                <citetitle>Negative Caching of <acronym>DNS</acronym>
+                  Queries</citetitle>
                 <pubdate>March 1998</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1995</abbrev>
-                <author>
-                  <surname>Ohta</surname>
-                  <firstname>M.</firstname>
-                </author>
-                <title>Incremental Zone Transfer in <acronym>DNS</acronym></title>
+                <author><personname><surname>Ohta</surname><firstname>M.</firstname></personname></author>
+                <citetitle>Incremental Zone Transfer in <acronym>DNS</acronym></citetitle>
                 <pubdate>August 1996</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1996</abbrev>
-                <author>
-                  <surname>Vixie</surname>
-                  <firstname>P.</firstname>
-                </author>
-                <title>A Mechanism for Prompt Notification of Zone Changes</title>
+                <author><personname><surname>Vixie</surname><firstname>P.</firstname></personname></author>
+                <citetitle>A Mechanism for Prompt Notification of Zone Changes</citetitle>
                 <pubdate>August 1996</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2136</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Vixie</surname>
-                    <firstname>P.</firstname>
-                  </author>
-                  <author>
-                    <firstname>S.</firstname>
-                    <surname>Thomson</surname>
-                  </author>
-                  <author>
-                    <firstname>Y.</firstname>
-                    <surname>Rekhter</surname>
-                  </author>
-                  <author>
-                    <firstname>J.</firstname>
-                    <surname>Bound</surname>
-                  </author>
+                  <author><personname><surname>Vixie</surname><firstname>P.</firstname></personname></author>
+                  <author><personname><firstname>S.</firstname><surname>Thomson</surname></personname></author>
+                  <author><personname><firstname>Y.</firstname><surname>Rekhter</surname></personname></author>
+                  <author><personname><firstname>J.</firstname><surname>Bound</surname></personname></author>
                 </authorgroup>
-                <title>Dynamic Updates in the Domain Name System</title>
+                <citetitle>Dynamic Updates in the Domain Name System</citetitle>
                 <pubdate>April 1997</pubdate>
               </biblioentry>
 	      <biblioentry>
                 <abbrev>RFC2671</abbrev>
                 <authorgroup>
-                  <author>
-                    <firstname>P.</firstname>
-                    <surname>Vixie</surname>
-                  </author>
+                  <author><personname><firstname>P.</firstname><surname>Vixie</surname></personname></author>
                 </authorgroup>
-                <title>Extension Mechanisms for DNS (EDNS0)</title>
+                <citetitle>Extension Mechanisms for DNS (EDNS0)</citetitle>
                 <pubdate>August 1997</pubdate>
 	      </biblioentry>
 	      <biblioentry>
                 <abbrev>RFC2672</abbrev>
                 <authorgroup>
-                  <author>
-                    <firstname>M.</firstname>
-                    <surname>Crawford</surname>
-                  </author>
+                  <author><personname><firstname>M.</firstname><surname>Crawford</surname></personname></author>
                 </authorgroup>
-                <title>Non-Terminal DNS Name Redirection</title>
+                <citetitle>Non-Terminal DNS Name Redirection</citetitle>
                 <pubdate>August 1999</pubdate>
 	      </biblioentry>
               <biblioentry>
                 <abbrev>RFC2845</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Vixie</surname>
-                    <firstname>P.</firstname>
-                  </author>
-                  <author>
-                    <firstname>O.</firstname>
-                    <surname>Gudmundsson</surname>
-                  </author>
-                  <author>
-                    <firstname>D.</firstname>
-                    <surname>Eastlake</surname>
-                    <lineage>3rd</lineage>
-                  </author>
-                  <author>
-                    <firstname>B.</firstname>
-                    <surname>Wellington</surname>
-                  </author>
+                  <author><personname><surname>Vixie</surname><firstname>P.</firstname></personname></author>
+                  <author><personname><firstname>O.</firstname><surname>Gudmundsson</surname></personname></author>
+                  <author><personname><firstname>D.</firstname><surname>Eastlake</surname><lineage>3rd</lineage></personname></author>
+                  <author><personname><firstname>B.</firstname><surname>Wellington</surname></personname></author>
                 </authorgroup>
-                <title>Secret Key Transaction Authentication for <acronym>DNS</acronym> (TSIG)</title>
+                <citetitle>Secret Key Transaction Authentication for <acronym>DNS</acronym> (TSIG)</citetitle>
                 <pubdate>May 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2930</abbrev>
                 <authorgroup>
-                  <author>
-                    <firstname>D.</firstname>
-                    <surname>Eastlake</surname>
-                    <lineage>3rd</lineage>
-                  </author>
+                  <author><personname><firstname>D.</firstname><surname>Eastlake</surname><lineage>3rd</lineage></personname></author>
                 </authorgroup>
-                <title>Secret Key Establishment for DNS (TKEY RR)</title>
+                <citetitle>Secret Key Establishment for DNS (TKEY RR)</citetitle>
                 <pubdate>September 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2931</abbrev>
                 <authorgroup>
-                  <author>
-                    <firstname>D.</firstname>
-                    <surname>Eastlake</surname>
-                    <lineage>3rd</lineage>
-                  </author>
+                  <author><personname><firstname>D.</firstname><surname>Eastlake</surname><lineage>3rd</lineage></personname></author>
                 </authorgroup>
-                <title>DNS Request and Transaction Signatures (SIG(0)s)</title>
+                <citetitle>DNS Request and Transaction Signatures (SIG(0)s)</citetitle>
                 <pubdate>September 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3007</abbrev>
                 <authorgroup>
-                  <author>
-                    <firstname>B.</firstname>
-                    <surname>Wellington</surname>
-                  </author>
+                  <author><personname><firstname>B.</firstname><surname>Wellington</surname></personname></author>
                 </authorgroup>
-                <title>Secure Domain Name System (DNS) Dynamic Update</title>
+                <citetitle>Secure Domain Name System (DNS) Dynamic Update</citetitle>
                 <pubdate>November 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3645</abbrev>
                 <authorgroup>
-                  <author>
-                    <firstname>S.</firstname>
-                    <surname>Kwan</surname>
-                  </author>
-                  <author>
-                    <firstname>P.</firstname>
-                    <surname>Garg</surname>
-                  </author>
-                  <author>
-                    <firstname>J.</firstname>
-                    <surname>Gilroy</surname>
-                  </author>
-                  <author>
-                    <firstname>L.</firstname>
-                    <surname>Esibov</surname>
-                  </author>
-                  <author>
-                    <firstname>J.</firstname>
-                    <surname>Westhead</surname>
-                  </author>
-                  <author>
-                    <firstname>R.</firstname>
-                    <surname>Hall</surname>
-                  </author>
+                  <author><personname><firstname>S.</firstname><surname>Kwan</surname></personname></author>
+                  <author><personname><firstname>P.</firstname><surname>Garg</surname></personname></author>
+                  <author><personname><firstname>J.</firstname><surname>Gilroy</surname></personname></author>
+                  <author><personname><firstname>L.</firstname><surname>Esibov</surname></personname></author>
+                  <author><personname><firstname>J.</firstname><surname>Westhead</surname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Hall</surname></personname></author>
                 </authorgroup>
-                <title>Generic Security Service Algorithm for Secret
+                <citetitle>Generic Security Service Algorithm for Secret
 		       Key Transaction Authentication for DNS
-		       (GSS-TSIG)</title>
+		       (GSS-TSIG)</citetitle>
                 <pubdate>October 2003</pubdate>
               </biblioentry>
             </bibliodiv>
-	    <bibliodiv>
-	      <title><acronym>DNS</acronym>安全建议标准</title>
+	    <bibliodiv><info><title><acronym>DNS</acronym>安全建议标准</title></info>
 	      <biblioentry>
 		<abbrev>RFC3225</abbrev>
 	 	<authorgroup>
-		  <author>
-		    <firstname>D.</firstname>
-		    <surname>Conrad</surname>
-		  </author>
+                  <author><personname><firstname>D.</firstname><surname>Conrad</surname></personname></author>
 	 	</authorgroup>
-		<title>Indicating Resolver Support of DNSSEC</title>
+                <citetitle>Indicating Resolver Support of DNSSEC</citetitle>
 		<pubdate>December 2001</pubdate>
 	      </biblioentry>
 	      <biblioentry>
 	        <abbrev>RFC3833</abbrev>
 	 	<authorgroup>
-		  <author>
-		    <firstname>D.</firstname>
-		    <surname>Atkins</surname>
-		  </author>
-		  <author>
-		    <firstname>R.</firstname>
-		    <surname>Austein</surname>
-		  </author>
+                  <author><personname><firstname>D.</firstname><surname>Atkins</surname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Austein</surname></personname></author>
 		</authorgroup>
-		<title>Threat Analysis of the Domain Name System (DNS)</title>
+                <citetitle>域名系统(DNS)的威胁分析</citetitle>
 		<pubdate>August 2004</pubdate>
 	      </biblioentry>
 	      <biblioentry>
 	        <abbrev>RFC4033</abbrev>
 	 	<authorgroup>
-		  <author>
-		    <firstname>R.</firstname>
-		    <surname>Arends</surname>
-		  </author>
-		  <author>
-		    <firstname>R.</firstname>
-		    <surname>Austein</surname>
-		  </author>
-		  <author>
-		    <firstname>M.</firstname>
-		    <surname>Larson</surname>
-		  </author>
-		  <author>
-		    <firstname>D.</firstname>
-		    <surname>Massey</surname>
-		  </author>
-		  <author>
-		    <firstname>S.</firstname>
-		    <surname>Rose</surname>
-		  </author>
+                  <author><personname><firstname>R.</firstname><surname>Arends</surname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Austein</surname></personname></author>
+                  <author><personname><firstname>M.</firstname><surname>Larson</surname></personname></author>
+                  <author><personname><firstname>D.</firstname><surname>Massey</surname></personname></author>
+                  <author><personname><firstname>S.</firstname><surname>Rose</surname></personname></author>
 		</authorgroup>
-		<title>DNS Security Introduction and Requirements</title>
+                <citetitle>DNS Security Introduction and Requirements</citetitle>
 		<pubdate>March 2005</pubdate>
 	      </biblioentry>
 	      <biblioentry>
 	        <abbrev>RFC4034</abbrev>
 	 	<authorgroup>
-		  <author>
-		    <firstname>R.</firstname>
-		    <surname>Arends</surname>
-		  </author>
-		  <author>
-		    <firstname>R.</firstname>
-		    <surname>Austein</surname>
-		  </author>
-		  <author>
-		    <firstname>M.</firstname>
-		    <surname>Larson</surname>
-		  </author>
-		  <author>
-		    <firstname>D.</firstname>
-		    <surname>Massey</surname>
-		  </author>
-		  <author>
-		    <firstname>S.</firstname>
-		    <surname>Rose</surname>
-		  </author>
+                  <author><personname><firstname>R.</firstname><surname>Arends</surname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Austein</surname></personname></author>
+                  <author><personname><firstname>M.</firstname><surname>Larson</surname></personname></author>
+                  <author><personname><firstname>D.</firstname><surname>Massey</surname></personname></author>
+                  <author><personname><firstname>S.</firstname><surname>Rose</surname></personname></author>
 		</authorgroup>
-		<title>Resource Records for the DNS Security Extensions</title>
+                <citetitle>Resource Records for the DNS Security Extensions</citetitle>
 		<pubdate>March 2005</pubdate>
 	      </biblioentry>
 	      <biblioentry>
 	        <abbrev>RFC4035</abbrev>
 	 	<authorgroup>
-		  <author>
-		    <firstname>R.</firstname>
-		    <surname>Arends</surname>
-		  </author>
-		  <author>
-		    <firstname>R.</firstname>
-		    <surname>Austein</surname>
-		  </author>
-		  <author>
-		    <firstname>M.</firstname>
-		    <surname>Larson</surname>
-		  </author>
-		  <author>
-		    <firstname>D.</firstname>
-		    <surname>Massey</surname>
-		  </author>
-		  <author>
-		    <firstname>S.</firstname>
-		    <surname>Rose</surname>
-		  </author>
+                  <author><personname><firstname>R.</firstname><surname>Arends</surname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Austein</surname></personname></author>
+                  <author><personname><firstname>M.</firstname><surname>Larson</surname></personname></author>
+                  <author><personname><firstname>D.</firstname><surname>Massey</surname></personname></author>
+                  <author><personname><firstname>S.</firstname><surname>Rose</surname></personname></author>
 		</authorgroup>
-		<title>Protocol Modifications for the DNS
-		       Security Extensions</title>
+                <citetitle>Protocol Modifications for the DNS
+                       Security Extensions</citetitle>
 		<pubdate>March 2005</pubdate>
 	      </biblioentry>
             </bibliodiv>
-            <bibliodiv>
-              <title>其它关于<acronym>DNS</acronym>实现的重要RFC</title>
+            <bibliodiv><info><title>其它关于<acronym>DNS</acronym>实现的重要RFC</title></info>
+
               <biblioentry>
                 <abbrev>RFC1535</abbrev>
-                <author>
-                  <surname>Gavron</surname>
-                  <firstname>E.</firstname>
-                </author>
-                <title>A Security Problem and Proposed Correction With Widely
-                  Deployed <acronym>DNS</acronym> Software.</title>
+                <author><personname><surname>Gavron</surname><firstname>E.</firstname></personname></author>
+                <citetitle>A Security Problem and Proposed Correction With Widely
+                  Deployed <acronym>DNS</acronym> Software.</citetitle>
                 <pubdate>October 1993</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1536</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Kumar</surname>
-                    <firstname>A.</firstname>
-                  </author>
-                  <author>
-                    <firstname>J.</firstname>
-                    <surname>Postel</surname>
-                  </author>
-                  <author>
-                    <firstname>C.</firstname>
-                    <surname>Neuman</surname>
-                  </author>
-                  <author>
-                    <firstname>P.</firstname>
-                    <surname>Danzig</surname>
-                  </author>
-                  <author>
-                    <firstname>S.</firstname>
-                    <surname>Miller</surname>
-                  </author>
+                  <author><personname><surname>Kumar</surname><firstname>A.</firstname></personname></author>
+                  <author><personname><firstname>J.</firstname><surname>Postel</surname></personname></author>
+                  <author><personname><firstname>C.</firstname><surname>Neuman</surname></personname></author>
+                  <author><personname><firstname>P.</firstname><surname>Danzig</surname></personname></author>
+                  <author><personname><firstname>S.</firstname><surname>Miller</surname></personname></author>
                 </authorgroup>
-                <title>Common <acronym>DNS</acronym> Implementation
-                  Errors and Suggested Fixes</title>
+                <citetitle>Common <acronym>DNS</acronym> Implementation
+                  Errors and Suggested Fixes</citetitle>
                 <pubdate>October 1993</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1982</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Elz</surname>
-                    <firstname>R.</firstname>
-                  </author>
-                  <author>
-                    <firstname>R.</firstname>
-                    <surname>Bush</surname>
-                  </author>
+                  <author><personname><surname>Elz</surname><firstname>R.</firstname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Bush</surname></personname></author>
                 </authorgroup>
-                <title>Serial Number Arithmetic</title>
+                <citetitle>Serial Number Arithmetic</citetitle>
                 <pubdate>August 1996</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC4074</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Morishita</surname>
-                    <firstname>Y.</firstname>
-                  </author>
-                  <author>
-                    <firstname>T.</firstname>
-                    <surname>Jinmei</surname>
-                  </author>
+                  <author><personname><surname>Morishita</surname><firstname>Y.</firstname></personname></author>
+                  <author><personname><firstname>T.</firstname><surname>Jinmei</surname></personname></author>
                 </authorgroup>
-                <title>Common Misbehaviour Against <acronym>DNS</acronym>
-		Queries for IPv6 Addresses</title>
+                <citetitle>Common Misbehaviour Against <acronym>DNS</acronym>
+                Queries for IPv6 Addresses</citetitle>
                 <pubdate>May 2005</pubdate>
               </biblioentry>
             </bibliodiv>
-            <bibliodiv>
-              <title>资源记录类型</title>
+            <bibliodiv><info><title>资源记录类型</title></info>
+
               <biblioentry>
                 <abbrev>RFC1183</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Everhart</surname>
-                    <firstname>C.F.</firstname>
-                  </author>
-                  <author>
-                    <firstname>L. A.</firstname>
-                    <surname>Mamakos</surname>
-                  </author>
-                  <author>
-                    <firstname>R.</firstname>
-                    <surname>Ullmann</surname>
-                  </author>
-                  <author>
-                    <firstname>P.</firstname>
-                    <surname>Mockapetris</surname>
-                  </author>
+                  <author><personname><surname>Everhart</surname><firstname>C.F.</firstname></personname></author>
+                  <author><personname><firstname>L. A.</firstname><surname>Mamakos</surname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Ullmann</surname></personname></author>
+                  <author><personname><firstname>P.</firstname><surname>Mockapetris</surname></personname></author>
                 </authorgroup>
-                <title>New <acronym>DNS</acronym> RR Definitions</title>
+                <citetitle>New <acronym>DNS</acronym> RR Definitions</citetitle>
                 <pubdate>October 1990</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1706</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Manning</surname>
-                    <firstname>B.</firstname>
-                  </author>
-                  <author>
-                    <firstname>R.</firstname>
-                    <surname>Colella</surname>
-                  </author>
+                  <author><personname><surname>Manning</surname><firstname>B.</firstname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Colella</surname></personname></author>
                 </authorgroup>
-                <title><acronym>DNS</acronym> NSAP Resource Records</title>
+                <citetitle><acronym>DNS</acronym> NSAP Resource Records</citetitle>
                 <pubdate>October 1994</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2168</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Daniel</surname>
-                    <firstname>R.</firstname>
-                  </author>
-                  <author>
-                    <firstname>M.</firstname>
-                    <surname>Mealling</surname>
-                  </author>
+                  <author><personname><surname>Daniel</surname><firstname>R.</firstname></personname></author>
+                  <author><personname><firstname>M.</firstname><surname>Mealling</surname></personname></author>
                 </authorgroup>
-                <title>Resolution of Uniform Resource Identifiers using
-                  the Domain Name System</title>
+                <citetitle>Resolution of Uniform Resource Identifiers using
+                  the Domain Name System</citetitle>
                 <pubdate>June 1997</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1876</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Davis</surname>
-                    <firstname>C.</firstname>
-                  </author>
-                  <author>
-                    <firstname>P.</firstname>
-                    <surname>Vixie</surname>
-                  </author>
-                  <author>
-                    <firstname>T.</firstname>
-                    <firstname>Goodwin</firstname>
-                  </author>
-                  <author>
-                    <firstname>I.</firstname>
-                    <surname>Dickinson</surname>
-                  </author>
+                  <author><personname><surname>Davis</surname><firstname>C.</firstname></personname></author>
+                  <author><personname><firstname>P.</firstname><surname>Vixie</surname></personname></author>
+                  <author><personname><firstname>T.</firstname><firstname>Goodwin</firstname></personname></author>
+                  <author><personname><firstname>I.</firstname><surname>Dickinson</surname></personname></author>
                 </authorgroup>
-                <title>A Means for Expressing Location Information in the
+                <citetitle>A Means for Expressing Location Information in the
                   Domain
-                  Name System</title>
+                  Name System</citetitle>
                 <pubdate>January 1996</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2052</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Gulbrandsen</surname>
-                    <firstname>A.</firstname>
-                  </author>
-                  <author>
-                    <firstname>P.</firstname>
-                    <surname>Vixie</surname>
-                  </author>
+                  <author><personname><surname>Gulbrandsen</surname><firstname>A.</firstname></personname></author>
+                  <author><personname><firstname>P.</firstname><surname>Vixie</surname></personname></author>
                 </authorgroup>
-                <title>A <acronym>DNS</acronym> RR for Specifying the
+                <citetitle>A <acronym>DNS</acronym> RR for Specifying the
                   Location of
-                  Services.</title>
+                  Services.</citetitle>
                 <pubdate>October 1996</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2163</abbrev>
-                <author>
-                  <surname>Allocchio</surname>
-                  <firstname>A.</firstname>
-                </author>
-                <title>Using the Internet <acronym>DNS</acronym> to
+                <author><personname><surname>Allocchio</surname><firstname>A.</firstname></personname></author>
+                <citetitle>Using the Internet <acronym>DNS</acronym> to
                   Distribute MIXER
-                  Conformant Global Address Mapping</title>
+                  Conformant Global Address Mapping</citetitle>
                 <pubdate>January 1998</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2230</abbrev>
-                <author>
-                  <surname>Atkinson</surname>
-                  <firstname>R.</firstname>
-                </author>
-                <title>Key Exchange Delegation Record for the <acronym>DNS</acronym></title>
+                <author><personname><surname>Atkinson</surname><firstname>R.</firstname></personname></author>
+                <citetitle>Key Exchange Delegation Record for the <acronym>DNS</acronym></citetitle>
                 <pubdate>October 1997</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2536</abbrev>
-                <author>
-                  <surname>Eastlake</surname>
-                  <firstname>D.</firstname>
-                  <lineage>3rd</lineage>
-                </author>
-                <title>DSA KEYs and SIGs in the Domain Name System (DNS)</title>
+                <author><personname><surname>Eastlake</surname><firstname>D.</firstname><lineage>3rd</lineage></personname></author>
+                <citetitle>DSA KEYs and SIGs in the Domain Name System (DNS)</citetitle>
                 <pubdate>March 1999</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2537</abbrev>
-                <author>
-                  <surname>Eastlake</surname>
-                  <firstname>D.</firstname>
-                  <lineage>3rd</lineage>
-                </author>
-                <title>RSA/MD5 KEYs and SIGs in the Domain Name System (DNS)</title>
+                <author><personname><surname>Eastlake</surname><firstname>D.</firstname><lineage>3rd</lineage></personname></author>
+                <citetitle>RSA/MD5 KEYs and SIGs in the Domain Name System (DNS)</citetitle>
                 <pubdate>March 1999</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2538</abbrev>
 		<authorgroup>
-                  <author>
-                    <surname>Eastlake</surname>
-                    <firstname>D.</firstname>
-                    <lineage>3rd</lineage>
-                  </author>
-		  <author>
-		    <surname>Gudmundsson</surname>
-		    <firstname>O.</firstname>
-		  </author>
-		</authorgroup>
-                <title>Storing Certificates in the Domain Name System (DNS)</title>
+                  <author><personname><surname>Eastlake</surname><firstname>D.</firstname><lineage>3rd</lineage></personname></author>
+                  <author><personname><surname>Gudmundsson</surname><firstname>O.</firstname></personname></author>
+                </authorgroup>
+                <citetitle>Storing Certificates in the Domain Name System (DNS)</citetitle>
                 <pubdate>March 1999</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2539</abbrev>
 		<authorgroup>
-                  <author>
-                    <surname>Eastlake</surname>
-                    <firstname>D.</firstname>
-                    <lineage>3rd</lineage>
-                  </author>
-		</authorgroup>
-                <title>Storage of Diffie-Hellman Keys in the Domain Name System (DNS)</title>
+                  <author><personname><surname>Eastlake</surname><firstname>D.</firstname><lineage>3rd</lineage></personname></author>
+                </authorgroup>
+                <citetitle>Storage of Diffie-Hellman Keys in the Domain Name System (DNS)</citetitle>
                 <pubdate>March 1999</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2540</abbrev>
 		<authorgroup>
-                  <author>
-                    <surname>Eastlake</surname>
-                    <firstname>D.</firstname>
-                    <lineage>3rd</lineage>
-                  </author>
-		</authorgroup>
-                <title>Detached Domain Name System (DNS) Information</title>
+                  <author><personname><surname>Eastlake</surname><firstname>D.</firstname><lineage>3rd</lineage></personname></author>
+                </authorgroup>
+                <citetitle>Detached Domain Name System (DNS) Information</citetitle>
                 <pubdate>March 1999</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2782</abbrev>
-                <author>
-                  <surname>Gulbrandsen</surname>
-                  <firstname>A.</firstname>
-                </author>
-                <author>
-                  <surname>Vixie</surname>
-                  <firstname>P.</firstname>
-                </author>
-                <author>
-                  <surname>Esibov</surname>
-                  <firstname>L.</firstname>
-                </author>
-                <title>A DNS RR for specifying the location of services (DNS SRV)</title>
+                <author><personname><surname>Gulbrandsen</surname><firstname>A.</firstname></personname></author>
+                <author><personname><surname>Vixie</surname><firstname>P.</firstname></personname></author>
+                <author><personname><surname>Esibov</surname><firstname>L.</firstname></personname></author>
+                <citetitle>A DNS RR for specifying the location of services (DNS SRV)</citetitle>
                 <pubdate>February 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2915</abbrev>
-                <author>
-                  <surname>Mealling</surname>
-                  <firstname>M.</firstname>
-                </author>
-                <author>
-                  <surname>Daniel</surname>
-                  <firstname>R.</firstname>
-                </author>
-                <title>The Naming Authority Pointer (NAPTR) DNS Resource Record</title>
+                <author><personname><surname>Mealling</surname><firstname>M.</firstname></personname></author>
+                <author><personname><surname>Daniel</surname><firstname>R.</firstname></personname></author>
+                <citetitle>The Naming Authority Pointer (NAPTR) DNS Resource Record</citetitle>
                 <pubdate>September 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3110</abbrev>
-                <author>
-                    <surname>Eastlake</surname>
-                    <firstname>D.</firstname>
-                    <lineage>3rd</lineage>
-                </author>
-                <title>RSA/SHA-1 SIGs and RSA KEYs in the Domain Name System (DNS)</title>
+                <author><personname><surname>Eastlake</surname><firstname>D.</firstname><lineage>3rd</lineage></personname></author>
+                <citetitle>RSA/SHA-1 SIGs and RSA KEYs in the Domain Name System (DNS)</citetitle>
                 <pubdate>May 2001</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3123</abbrev>
-                <author>
-                  <surname>Koch</surname>
-                  <firstname>P.</firstname>
-                </author>
-                <title>A DNS RR Type for Lists of Address Prefixes (APL RR)</title>
+                <author><personname><surname>Koch</surname><firstname>P.</firstname></personname></author>
+                <citetitle>A DNS RR Type for Lists of Address Prefixes (APL RR)</citetitle>
                 <pubdate>June 2001</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3596</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Thomson</surname>
-                    <firstname>S.</firstname>
-                  </author>
-                  <author>
-                    <firstname>C.</firstname>
-                    <surname>Huitema</surname>
-                  </author>
-                  <author>
-                    <firstname>V.</firstname>
-                    <surname>Ksinant</surname>
-                  </author>
-                  <author>
-                    <firstname>M.</firstname>
-                    <surname>Souissi</surname>
-                  </author>
+                  <author><personname><surname>Thomson</surname><firstname>S.</firstname></personname></author>
+                  <author><personname><firstname>C.</firstname><surname>Huitema</surname></personname></author>
+                  <author><personname><firstname>V.</firstname><surname>Ksinant</surname></personname></author>
+                  <author><personname><firstname>M.</firstname><surname>Souissi</surname></personname></author>
                 </authorgroup>
-                <title><acronym>DNS</acronym> Extensions to support IP
-                  version 6</title>
+                <citetitle><acronym>DNS</acronym> Extensions to support IP
+                  version 6</citetitle>
                 <pubdate>October 2003</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3597</abbrev>
-                <author>
-                  <surname>Gustafsson</surname>
-                  <firstname>A.</firstname>
-                </author>
-                <title>Handling of Unknown DNS Resource Record (RR) Types</title>
+                <author><personname><surname>Gustafsson</surname><firstname>A.</firstname></personname></author>
+                <citetitle>Handling of Unknown DNS Resource Record (RR) Types</citetitle>
                 <pubdate>September 2003</pubdate>
               </biblioentry>
             </bibliodiv>
-            <bibliodiv>
-              <title><acronym>DNS</acronym>和互联网</title>
+            <bibliodiv><info><title><acronym>DNS</acronym>和互联网</title></info>
+
               <biblioentry>
                 <abbrev>RFC1101</abbrev>
-                <author>
-                  <surname>Mockapetris</surname>
-                  <firstname>P. V.</firstname>
-                </author>
-                <title><acronym>DNS</acronym> Encoding of Network Names
-                  and Other Types</title>
+                <author><personname><surname>Mockapetris</surname><firstname>P. V.</firstname></personname></author>
+                <citetitle><acronym>DNS</acronym> Encoding of Network Names
+                  and Other Types</citetitle>
                 <pubdate>April 1989</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1123</abbrev>
-                <author>
-                  <surname>Braden</surname>
-                  <surname>R.</surname>
-                </author>
-                <title>Requirements for Internet Hosts - Application and
-                  Support</title>
+                <author><personname><surname>Braden</surname><surname>R.</surname></personname></author>
+                <citetitle>Requirements for Internet Hosts - Application and
+                  Support</citetitle>
                 <pubdate>October 1989</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1591</abbrev>
-                <author>
-                  <surname>Postel</surname>
-                  <firstname>J.</firstname>
-                </author>
-                <title>Domain Name System Structure and Delegation</title>
+                <author><personname><surname>Postel</surname><firstname>J.</firstname></personname></author>
+                <citetitle>Domain Name System Structure and Delegation</citetitle>
                 <pubdate>March 1994</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2317</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Eidnes</surname>
-                    <firstname>H.</firstname>
-                  </author>
-                  <author>
-                    <firstname>G.</firstname>
-                    <surname>de Groot</surname>
-                  </author>
-                  <author>
-                    <firstname>P.</firstname>
-                    <surname>Vixie</surname>
-                  </author>
+                  <author><personname><surname>Eidnes</surname><firstname>H.</firstname></personname></author>
+                  <author><personname><firstname>G.</firstname><surname>de Groot</surname></personname></author>
+                  <author><personname><firstname>P.</firstname><surname>Vixie</surname></personname></author>
                 </authorgroup>
-                <title>Classless IN-ADDR.ARPA Delegation</title>
+                <citetitle>Classless IN-ADDR.ARPA Delegation</citetitle>
                 <pubdate>March 1998</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2826</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Internet Architecture Board</surname>
-                  </author>
+                  <author><personname><surname>Internet Architecture Board</surname></personname></author>
                 </authorgroup>
-                <title>IAB Technical Comment on the Unique DNS Root</title>
+                <citetitle>IAB Technical Comment on the Unique DNS Root</citetitle>
                 <pubdate>May 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2929</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Eastlake</surname>
-                    <firstname>D.</firstname>
-                    <lineage>3rd</lineage>
-                  </author>
-                  <author>
-                    <surname>Brunner-Williams</surname>
-                    <firstname>E.</firstname>
-                  </author>
-                  <author>
-                    <surname>Manning</surname>
-                    <firstname>B.</firstname>
-                  </author>
+                  <author><personname><surname>Eastlake</surname><firstname>D.</firstname><lineage>3rd</lineage></personname></author>
+                  <author><personname><surname>Brunner-Williams</surname><firstname>E.</firstname></personname></author>
+                  <author><personname><surname>Manning</surname><firstname>B.</firstname></personname></author>
                 </authorgroup>
-                <title>Domain Name System (DNS) IANA Considerations</title>
+                <citetitle>Domain Name System (DNS) IANA Considerations</citetitle>
                 <pubdate>September 2000</pubdate>
               </biblioentry>
             </bibliodiv>
-            <bibliodiv>
-              <title><acronym>DNS</acronym>运行</title>
+            <bibliodiv><info><title><acronym>DNS</acronym>运行</title></info>
+
               <biblioentry>
                 <abbrev>RFC1033</abbrev>
-                <author>
-                  <surname>Lottor</surname>
-                  <firstname>M.</firstname>
-                </author>
-                <title>Domain administrators operations guide.</title>
+                <author><personname><surname>Lottor</surname><firstname>M.</firstname></personname></author>
+                <citetitle>Domain administrators operations guide.</citetitle>
                 <pubdate>November 1987</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1537</abbrev>
-                <author>
-                  <surname>Beertema</surname>
-                  <firstname>P.</firstname>
-                </author>
-                <title>Common <acronym>DNS</acronym> Data File
-                  Configuration Errors</title>
+                <author><personname><surname>Beertema</surname><firstname>P.</firstname></personname></author>
+                <citetitle>Common <acronym>DNS</acronym> Data File
+                  Configuration Errors</citetitle>
                 <pubdate>October 1993</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1912</abbrev>
-                <author>
-                  <surname>Barr</surname>
-                  <firstname>D.</firstname>
-                </author>
-                <title>Common <acronym>DNS</acronym> Operational and
-                  Configuration Errors</title>
+                <author><personname><surname>Barr</surname><firstname>D.</firstname></personname></author>
+                <citetitle>Common <acronym>DNS</acronym> Operational and
+                  Configuration Errors</citetitle>
                 <pubdate>February 1996</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2010</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Manning</surname>
-                    <firstname>B.</firstname>
-                  </author>
-                  <author>
-                    <firstname>P.</firstname>
-                    <surname>Vixie</surname>
-                  </author>
+                  <author><personname><surname>Manning</surname><firstname>B.</firstname></personname></author>
+                  <author><personname><firstname>P.</firstname><surname>Vixie</surname></personname></author>
                 </authorgroup>
-                <title>Operational Criteria for Root Name Servers.</title>
+                <citetitle>Operational Criteria for Root Name Servers.</citetitle>
                 <pubdate>October 1996</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2219</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Hamilton</surname>
-                    <firstname>M.</firstname>
-                  </author>
-                  <author>
-                    <firstname>R.</firstname>
-                    <surname>Wright</surname>
-                  </author>
+                  <author><personname><surname>Hamilton</surname><firstname>M.</firstname></personname></author>
+                  <author><personname><firstname>R.</firstname><surname>Wright</surname></personname></author>
                 </authorgroup>
-                <title>Use of <acronym>DNS</acronym> Aliases for
-                  Network Services.</title>
+                <citetitle>Use of <acronym>DNS</acronym> Aliases for
+                  Network Services.</citetitle>
                 <pubdate>October 1997</pubdate>
               </biblioentry>
             </bibliodiv>
-	    <bibliodiv>
-              <title>国际化域名</title>
+	    <bibliodiv><info><title>国际化域名</title></info>
               <biblioentry>
                 <abbrev>RFC2825</abbrev>
 		<authorgroup>
-                  <author>
-                    <surname>IAB</surname>
-                  </author>
-                  <author>
-                    <surname>Daigle</surname>
-                    <firstname>R.</firstname>
-                  </author>
-		</authorgroup>
-                <title>A Tangled Web: Issues of I18N, Domain Names,
-		       and the Other Internet protocols</title>
+                  <author><personname><surname>IAB</surname></personname></author>
+                  <author><personname><surname>Daigle</surname><firstname>R.</firstname></personname></author>
+                </authorgroup>
+                <citetitle>A Tangled Web: Issues of I18N, Domain Names,
+                       and the Other Internet protocols</citetitle>
                 <pubdate>May 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3490</abbrev>
 		<authorgroup>
-                  <author>
-                    <surname>Faltstrom</surname>
-                    <firstname>P.</firstname>
-                  </author>
-                  <author>
-                    <surname>Hoffman</surname>
-                    <firstname>P.</firstname>
-                  </author>
-                  <author>
-                    <surname>Costello</surname>
-                    <firstname>A.</firstname>
-                  </author>
-		</authorgroup>
-                <title>Internationalizing Domain Names in Applications (IDNA)</title>
+                  <author><personname><surname>Faltstrom</surname><firstname>P.</firstname></personname></author>
+                  <author><personname><surname>Hoffman</surname><firstname>P.</firstname></personname></author>
+                  <author><personname><surname>Costello</surname><firstname>A.</firstname></personname></author>
+                </authorgroup>
+                <citetitle>Internationalizing Domain Names in Applications (IDNA)</citetitle>
                 <pubdate>March 2003</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3491</abbrev>
 		<authorgroup>
-                  <author>
-                    <surname>Hoffman</surname>
-                    <firstname>P.</firstname>
-                  </author>
-                  <author>
-                    <surname>Blanchet</surname>
-                    <firstname>M.</firstname>
-                  </author>
-		</authorgroup>
-                <title>Nameprep: A Stringprep Profile for Internationalized Domain Names</title>
+                  <author><personname><surname>Hoffman</surname><firstname>P.</firstname></personname></author>
+                  <author><personname><surname>Blanchet</surname><firstname>M.</firstname></personname></author>
+                </authorgroup>
+                <citetitle>Nameprep: A Stringprep Profile for Internationalized Domain Names</citetitle>
                 <pubdate>March 2003</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3492</abbrev>
 		<authorgroup>
-                  <author>
-                    <surname>Costello</surname>
-                    <firstname>A.</firstname>
-                  </author>
-		</authorgroup>
-                <title>Punycode: A Bootstring encoding of Unicode
-		       for Internationalized Domain Names in
-		       Applications (IDNA)</title>
+                  <author><personname><surname>Costello</surname><firstname>A.</firstname></personname></author>
+                </authorgroup>
+                <citetitle>Punycode: A Bootstring encoding of Unicode
+                       for Internationalized Domain Names in
+                       Applications (IDNA)</citetitle>
                 <pubdate>March 2003</pubdate>
               </biblioentry>
 	    </bibliodiv>
-            <bibliodiv>
-              <title>其它<acronym>DNS</acronym>相关的RFC</title>
+            <bibliodiv><info><title>其它<acronym>DNS</acronym>相关的RFC</title></info>
               <note>
                 <para>
-                  Note: the following list of RFCs, although
-                  <acronym>DNS</acronym>-related, are not
-                  concerned with implementing software.
+                  注意：下列RFC，虽然是与<acronym>DNS</acronym>
+                  相关，但是与实现的软件无关。
                 </para>
               </note>
               <biblioentry>
                 <abbrev>RFC1464</abbrev>
-                <author>
-                  <surname>Rosenbaum</surname>
-                  <firstname>R.</firstname>
-                </author>
-                <title>Using the Domain Name System To Store Arbitrary String
-                  Attributes</title>
+                <author><personname><surname>Rosenbaum</surname><firstname>R.</firstname></personname></author>
+                <citetitle>Using the Domain Name System To Store Arbitrary String
+                  Attributes</citetitle>
                 <pubdate>May 1993</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1713</abbrev>
-                <author>
-                  <surname>Romao</surname>
-                  <firstname>A.</firstname>
-                </author>
-                <title>Tools for <acronym>DNS</acronym> Debugging</title>
+                <author><personname><surname>Romao</surname><firstname>A.</firstname></personname></author>
+                <citetitle>Tools for <acronym>DNS</acronym> Debugging</citetitle>
                 <pubdate>November 1994</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC1794</abbrev>
-                <author>
-                  <surname>Brisco</surname>
-                  <firstname>T.</firstname>
-                </author>
-                <title><acronym>DNS</acronym> Support for Load
-                  Balancing</title>
+                <author><personname><surname>Brisco</surname><firstname>T.</firstname></personname></author>
+                <citetitle><acronym>DNS</acronym> Support for Load
+                  Balancing</citetitle>
                 <pubdate>April 1995</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2240</abbrev>
-                <author>
-                  <surname>Vaughan</surname>
-                  <firstname>O.</firstname>
-                </author>
-                <title>A Legal Basis for Domain Name Allocation</title>
+                <author><personname><surname>Vaughan</surname><firstname>O.</firstname></personname></author>
+                <citetitle>A Legal Basis for Domain Name Allocation</citetitle>
                 <pubdate>November 1997</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2345</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Klensin</surname>
-                    <firstname>J.</firstname>
-                  </author>
-                  <author>
-                    <firstname>T.</firstname>
-                    <surname>Wolf</surname>
-                  </author>
-                  <author>
-                    <firstname>G.</firstname>
-                    <surname>Oglesby</surname>
-                  </author>
+                  <author><personname><surname>Klensin</surname><firstname>J.</firstname></personname></author>
+                  <author><personname><firstname>T.</firstname><surname>Wolf</surname></personname></author>
+                  <author><personname><firstname>G.</firstname><surname>Oglesby</surname></personname></author>
                 </authorgroup>
-                <title>Domain Names and Company Name Retrieval</title>
+                <citetitle>Domain Names and Company Name Retrieval</citetitle>
                 <pubdate>May 1998</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2352</abbrev>
-                <author>
-                  <surname>Vaughan</surname>
-                  <firstname>O.</firstname>
-                </author>
-                <title>A Convention For Using Legal Names as Domain Names</title>
+                <author><personname><surname>Vaughan</surname><firstname>O.</firstname></personname></author>
+                <citetitle>A Convention For Using Legal Names as Domain Names</citetitle>
                 <pubdate>May 1998</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3071</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Klensin</surname>
-                    <firstname>J.</firstname>
-                  </author>
+                  <author><personname><surname>Klensin</surname><firstname>J.</firstname></personname></author>
                 </authorgroup>
-                <title>Reflections on the DNS, RFC 1591, and Categories of Domains</title>
+                <citetitle>Reflections on the DNS, RFC 1591, and Categories of Domains</citetitle>
                 <pubdate>February 2001</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3258</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Hardie</surname>
-                    <firstname>T.</firstname>
-                  </author>
+                  <author><personname><surname>Hardie</surname><firstname>T.</firstname></personname></author>
                 </authorgroup>
-                <title>Distributing Authoritative Name Servers via
-		       Shared Unicast Addresses</title>
+                <citetitle>Distributing Authoritative Name Servers via
+                       Shared Unicast Addresses</citetitle>
                 <pubdate>April 2002</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3901</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Durand</surname>
-                    <firstname>A.</firstname>
-                  </author>
-                  <author>
-                    <firstname>J.</firstname>
-                    <surname>Ihren</surname>
-                  </author>
+                  <author><personname><surname>Durand</surname><firstname>A.</firstname></personname></author>
+                  <author><personname><firstname>J.</firstname><surname>Ihren</surname></personname></author>
                 </authorgroup>
-                <title>DNS IPv6 Transport Operational Guidelines</title>
+                <citetitle>DNS IPv6 Transport Operational Guidelines</citetitle>
                 <pubdate>September 2004</pubdate>
               </biblioentry>
             </bibliodiv>
-            <bibliodiv>
-              <title>废弃和未实现的试验性RFC</title>
+            <bibliodiv><info><title>废弃和未实现的试验性RFC</title></info>
+
               <biblioentry>
                 <abbrev>RFC1712</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Farrell</surname>
-                    <firstname>C.</firstname>
-                  </author>
-                  <author>
-                    <firstname>M.</firstname>
-                    <surname>Schulze</surname>
-                  </author>
-                  <author>
-                    <firstname>S.</firstname>
-                    <surname>Pleitner</surname>
-                  </author>
-                  <author>
-                    <firstname>D.</firstname>
-                    <surname>Baldoni</surname>
-                  </author>
+                  <author><personname><surname>Farrell</surname><firstname>C.</firstname></personname></author>
+                  <author><personname><firstname>M.</firstname><surname>Schulze</surname></personname></author>
+                  <author><personname><firstname>S.</firstname><surname>Pleitner</surname></personname></author>
+                  <author><personname><firstname>D.</firstname><surname>Baldoni</surname></personname></author>
                 </authorgroup>
-                <title><acronym>DNS</acronym> Encoding of Geographical
-                  Location</title>
+                <citetitle><acronym>DNS</acronym> Encoding of Geographical
+                  Location</citetitle>
                 <pubdate>November 1994</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2673</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Crawford</surname>
-                    <firstname>M.</firstname>
-                  </author>
+                  <author><personname><surname>Crawford</surname><firstname>M.</firstname></personname></author>
                 </authorgroup>
-                <title>Binary Labels in the Domain Name System</title>
+                <citetitle>Binary Labels in the Domain Name System</citetitle>
                 <pubdate>August 1999</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2874</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Crawford</surname>
-                    <firstname>M.</firstname>
-                  </author>
-                  <author>
-                    <surname>Huitema</surname>
-                    <firstname>C.</firstname>
-                  </author>
+                  <author><personname><surname>Crawford</surname><firstname>M.</firstname></personname></author>
+                  <author><personname><surname>Huitema</surname><firstname>C.</firstname></personname></author>
                 </authorgroup>
-                <title>DNS Extensions to Support IPv6 Address Aggregation
-		       and Renumbering</title>
+                <citetitle>DNS Extensions to Support IPv6 Address Aggregation
+                       and Renumbering</citetitle>
                 <pubdate>July 2000</pubdate>
               </biblioentry>
             </bibliodiv>
-            <bibliodiv>
-              <title>废弃的DNS安全RFC</title>
+            <bibliodiv><info><title>废弃的DNS安全RFC</title></info>
 	      <note>
 		<para>
-		  Most of these have been consolidated into RFC4033,
-		  RFC4034 and RFC4035 which collectively describe DNSSECbis.
+                  大多数这些RFC被RFC4033，RFC4034，RFC4035所整理，它们纠正了
+                  关于DNSSECbis的描述。
 		</para>
 	      </note>
               <biblioentry>
                 <abbrev>RFC2065</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Eastlake</surname>
-                    <lineage>3rd</lineage>
-                    <firstname>D.</firstname>
-                  </author>
-                  <author>
-                    <firstname>C.</firstname>
-                    <surname>Kaufman</surname>
-                  </author>
+                  <author><personname><surname>Eastlake</surname><lineage>3rd</lineage><firstname>D.</firstname></personname></author>
+                  <author><personname><firstname>C.</firstname><surname>Kaufman</surname></personname></author>
                 </authorgroup>
-                <title>Domain Name System Security Extensions</title>
+                <citetitle>Domain Name System Security Extensions</citetitle>
                 <pubdate>January 1997</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2137</abbrev>
-                <author>
-                  <surname>Eastlake</surname>
-                  <lineage>3rd</lineage>
-                  <firstname>D.</firstname>
-                </author>
-                <title>Secure Domain Name System Dynamic Update</title>
+                <author><personname><surname>Eastlake</surname><lineage>3rd</lineage><firstname>D.</firstname></personname></author>
+                <citetitle>Secure Domain Name System Dynamic Update</citetitle>
                 <pubdate>April 1997</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC2535</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Eastlake</surname>
-                    <lineage>3rd</lineage>
-                    <firstname>D.</firstname>
-                  </author>
+                  <author><personname><surname>Eastlake</surname><lineage>3rd</lineage><firstname>D.</firstname></personname></author>
                 </authorgroup>
-                <title>Domain Name System Security Extensions</title>
+                <citetitle>Domain Name System Security Extensions</citetitle>
                 <pubdate>March 1999</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3008</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Wellington</surname>
-                    <firstname>B.</firstname>
-                  </author>
+                  <author><personname><surname>Wellington</surname><firstname>B.</firstname></personname></author>
                 </authorgroup>
-                <title>Domain Name System Security (DNSSEC)
-		       Signing Authority</title>
+                <citetitle>Domain Name System Security (DNSSEC)
+                       Signing Authority</citetitle>
                 <pubdate>November 2000</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3090</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Lewis</surname>
-                    <firstname>E.</firstname>
-                  </author>
+                  <author><personname><surname>Lewis</surname><firstname>E.</firstname></personname></author>
                 </authorgroup>
-                <title>DNS Security Extension Clarification on Zone Status</title>
+                <citetitle>DNS Security Extension Clarification on Zone Status</citetitle>
                 <pubdate>March 2001</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3445</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Massey</surname>
-                    <firstname>D.</firstname>
-                  </author>
-                  <author>
-                    <surname>Rose</surname>
-                    <firstname>S.</firstname>
-                  </author>
+                  <author><personname><surname>Massey</surname><firstname>D.</firstname></personname></author>
+                  <author><personname><surname>Rose</surname><firstname>S.</firstname></personname></author>
                 </authorgroup>
-                <title>Limiting the Scope of the KEY Resource Record (RR)</title>
+                <citetitle>Limiting the Scope of the KEY Resource Record (RR)</citetitle>
                 <pubdate>December 2002</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3655</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Wellington</surname>
-                    <firstname>B.</firstname>
-                  </author>
-                  <author>
-                    <surname>Gudmundsson</surname>
-                    <firstname>O.</firstname>
-                  </author>
+                  <author><personname><surname>Wellington</surname><firstname>B.</firstname></personname></author>
+                  <author><personname><surname>Gudmundsson</surname><firstname>O.</firstname></personname></author>
                 </authorgroup>
-                <title>Redefinition of DNS Authenticated Data (AD) bit</title>
+                <citetitle>Redefinition of DNS Authenticated Data (AD) bit</citetitle>
                 <pubdate>November 2003</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3658</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Gudmundsson</surname>
-                    <firstname>O.</firstname>
-                  </author>
+                  <author><personname><surname>Gudmundsson</surname><firstname>O.</firstname></personname></author>
                 </authorgroup>
-                <title>Delegation Signer (DS) Resource Record (RR)</title>
+                <citetitle>Delegation Signer (DS) Resource Record (RR)</citetitle>
                 <pubdate>December 2003</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3755</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Weiler</surname>
-                    <firstname>S.</firstname>
-                  </author>
+                  <author><personname><surname>Weiler</surname><firstname>S.</firstname></personname></author>
                 </authorgroup>
-                <title>Legacy Resolver Compatibility for Delegation Signer (DS)</title>
+                <citetitle>Legacy Resolver Compatibility for Delegation Signer (DS)</citetitle>
                 <pubdate>May 2004</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3757</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Kolkman</surname>
-                    <firstname>O.</firstname>
-                  </author>
-                  <author>
-                    <surname>Schlyter</surname>
-                    <firstname>J.</firstname>
-                  </author>
-                  <author>
-                    <surname>Lewis</surname>
-                    <firstname>E.</firstname>
-                  </author>
+                  <author><personname><surname>Kolkman</surname><firstname>O.</firstname></personname></author>
+                  <author><personname><surname>Schlyter</surname><firstname>J.</firstname></personname></author>
+                  <author><personname><surname>Lewis</surname><firstname>E.</firstname></personname></author>
                 </authorgroup>
-                <title>Domain Name System KEY (DNSKEY) Resource Record
-		      (RR) Secure Entry Point (SEP) Flag</title>
+                <citetitle>Domain Name System KEY (DNSKEY) Resource Record
+                      (RR) Secure Entry Point (SEP) Flag</citetitle>
                 <pubdate>April 2004</pubdate>
               </biblioentry>
               <biblioentry>
                 <abbrev>RFC3845</abbrev>
                 <authorgroup>
-                  <author>
-                    <surname>Schlyter</surname>
-                    <firstname>J.</firstname>
-                  </author>
+                  <author><personname><surname>Schlyter</surname><firstname>J.</firstname></personname></author>
                 </authorgroup>
-                <title>DNS Security (DNSSEC) NextSECure (NSEC) RDATA Format</title>
+                <citetitle>DNS Security (DNSSEC) NextSECure (NSEC) RDATA Format</citetitle>
                 <pubdate>August 2004</pubdate>
               </biblioentry>
             </bibliodiv>
           </bibliography>
-        </sect2>
-        <sect2 id="internet_drafts">
-          <title>互联网草案</title>
+        </section>
+        <section xml:id="internet_drafts"><info><title>互联网草案</title></info>
           <para>
             互联网草案（ID）是互联网工程任务组粗略草案的工作文档。它们本质上
             是RFC前期的开发阶段。实现者要小心不要将ID当成归档的标准，并且不要
             在正式文档中引用它们，除非附带有它们处于“工作进程中”的免责声明。
             ID具有六个月的生命，之后它们将被删除，除非被作者所更新。
           </para>
-        </sect2>
-        <sect2>
-          <title>其它关于<acronym>BIND</acronym>的文档</title>
+        </section>
+        <section xml:id="more_about_bind"><info>><title>其它关于<acronym>BIND</acronym>的文档</title></info>
+
           <para/>
           <bibliography>
             <biblioentry>
               <authorgroup>
-                <author>
-                  <surname>Albitz</surname>
-                  <firstname>Paul</firstname>
-                </author>
-                <author>
-                  <firstname>Cricket</firstname>
-                  <surname>Liu</surname>
-                </author>
+                <author><personname><surname>Albitz</surname><firstname>Paul</firstname></personname></author>
+                <author><personname><firstname>Cricket</firstname><surname>Liu</surname></personname></author>
               </authorgroup>
-              <title><acronym>DNS</acronym> and <acronym>BIND</acronym></title>
+              <citetitle><acronym>DNS</acronym> and <acronym>BIND</acronym></citetitle>
               <copyright>
                 <year>1998</year>
                 <holder>Sebastopol, CA: O'Reilly and Associates</holder>
               </copyright>
             </biblioentry>
           </bibliography>
-        </sect2>
-      </sect1>
+        </section>
+      </section>
     </appendix>
 
-    <appendix id="Bv9ARM-gbk.ch12">
-      <title>BIND 9 DNS库支持</title>
-      <xi:include href="libdns-utf8.xml"/>
-    </appendix>
+    <appendix xml:id="Bv9ARM.ch12"><info><title>BIND 9 DNS库支持</title></info>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="libdns-utf8.xml"/>
 
-    <reference id="Bv9ARM-gbk.ch13">
-      <title>手册页</title>
-      <xi:include href="dig-utf8.docbook"/>
-      <xi:include href="host-utf8.docbook"/>
-      <xi:include href="delv-utf8.docbook"/>
-      <xi:include href="dnssec-checkds-utf8.docbook"/>
-      <xi:include href="dnssec-coverage-utf8.docbook"/>
-      <xi:include href="dnssec-dsfromkey-utf8.docbook"/>
-      <xi:include href="dnssec-importkey-utf8.docbook"/>
-      <xi:include href="dnssec-keyfromlabel-utf8.docbook"/>
-      <xi:include href="dnssec-keygen-utf8.docbook"/>
-      <xi:include href="dnssec-revoke-utf8.docbook"/>
-      <xi:include href="dnssec-settime-utf8.docbook"/>
-      <xi:include href="dnssec-signzone-utf8.docbook"/>
-      <xi:include href="dnssec-verify-utf8.docbook"/>
-      <xi:include href="named-checkconf-utf8.docbook"/>
-      <xi:include href="named-checkzone-utf8.docbook"/>
-      <xi:include href="named-utf8.docbook"/>
-      <xi:include href="named-journalprint-utf8.docbook"/>
-      <xi:include href="named-rrchecker-utf8.docbook"/>
-      <!-- named.conf.docbook and others? -->
-      <xi:include href="nsupdate-utf8.docbook"/>
-      <xi:include href="rndc-utf8.docbook"/>
-      <xi:include href="rndc.conf-utf8.docbook"/>
-      <xi:include href="rndc-confgen-utf8.docbook"/>
-      <xi:include href="ddns-confgen-utf8.docbook"/>
-      <xi:include href="arpaname-utf8.docbook"/>
-      <xi:include href="genrandom-utf8.docbook"/>
-      <xi:include href="isc-hmac-fixup-utf8.docbook"/>
-      <xi:include href="nsec3hash-utf8.docbook"/>
+    <reference xml:id="Bv9ARM-gbk.ch13"><info><title>手册页</title></info>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dig-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="host-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="delv-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-checkds-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-coverage-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-dsfromkey-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-importkey-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-keyfromlabel-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-keygen-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-revoke-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-settime-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-signzone-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-verify-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkconf-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkzone-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named.conf-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lwresd-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-journalprint-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-rrchecker-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="nsupdate-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rndc-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rndc.conf-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rndc-confgen-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ddns-confgen-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="arpaname-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="genrandom-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="isc-hmac-fixup-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="nsec3hash-utf8.docbook"/>
     </reference>
 
   </book>
-
-<!--
-  - Local variables:
-  - mode: sgml
-  - End:
- -->

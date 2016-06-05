@@ -1,8 +1,5 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
-	       [<!ENTITY mdash "&#8212;">]>
 <!--
- - Copyright (C) 2009-2011, 2014  Internet Systems Consortium, Inc. ("ISC")
+ - Copyright (C) 2009-2011, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
  -
  - Permission to use, copy, modify, and/or distribute this software for any
  - purpose with or without fee is hereby granted, provided that the above
@@ -17,9 +14,14 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.genrandom">
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.genrandom">
+  <info>
+    <date>2011-08-08</date>
+  </info>
   <refentryinfo>
-    <date>August 08, 2011</date>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
   </refentryinfo>
 
   <refmeta>
@@ -39,30 +41,31 @@
       <year>2010</year>
       <year>2011</year>
       <year>2014</year>
+      <year>2015</year>
       <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
     </copyright>
   </docinfo>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
       <command>genrandom</command>
-      <arg><option>-n <replaceable class="parameter">number</replaceable></option></arg>
-      <arg choice="req"><replaceable class="parameter">size</replaceable></arg>
-      <arg choice="req"><replaceable class="parameter">filename</replaceable></arg>
+      <arg choice="opt" rep="norepeat"><option>-n <replaceable class="parameter">number</replaceable></option></arg>
+      <arg choice="req" rep="norepeat"><replaceable class="parameter">size</replaceable></arg>
+      <arg choice="req" rep="norepeat"><replaceable class="parameter">filename</replaceable></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
-    <title>描述</title>
+  <refsection><info><title>描述</title></info>
+
     <para>
       <command>genrandom</command>
       生成一个或多个包含指定数量的伪随机数据的文件，在没有随机设备的系统上，
       这些数据可以用作其它命令的熵源。
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参数</title>
+  <refsection><info><title>参数</title></info>
+
     <variablelist>
       <varlistentry>
         <term>-n <replaceable class="parameter">number</replaceable></term>
@@ -92,10 +95,10 @@
         </listitem>
       </varlistentry>
     </variablelist>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>参见</title>
+  <refsection><info><title>参见</title></info>
+
     <para>
       <citerefentry>
         <refentrytitle>rand</refentrytitle><manvolnum>3</manvolnum>
@@ -104,16 +107,6 @@
         <refentrytitle>arc4random</refentrytitle><manvolnum>3</manvolnum>
       </citerefentry>
     </para>
-  </refsect1>
+  </refsection>
 
-  <refsect1>
-    <title>作者</title>
-    <para><corpauthor>Internet Systems Consortium</corpauthor>
-    </para>
-  </refsect1>
-
-</refentry><!--
- - Local variables:
- - mode: sgml
- - End:
--->
+</refentry>

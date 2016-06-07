@@ -215,7 +215,8 @@ INSTALL_DATA =		${INSTALL} -m 644
 XSLTPROC =		/usr/bin/xsltproc --novalid --xinclude --nonet
 PERL =			/usr/bin/perl
 LATEX =			/usr/local/texlive/2015/bin/x86_64-linux/latex
-PDFLATEX =		/usr/local/texlive/2015/bin/x86_64-linux/pdflatex
+#PDFLATEX =		/usr/local/texlive/2015/bin/x86_64-linux/pdflatex
+PDFLATEX =		/Library/TeX/texbin/pdflatex
 W3M =			/usr/bin/w3m
 
 GBKFILE=dig host

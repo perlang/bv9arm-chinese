@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
  - Copyright (C) 2010, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
  -
@@ -44,15 +43,15 @@
       事件库。</para>
     </listitem>
   </itemizedlist>
-  <sect2>
-    <title>先决条件</title>
+  <section><info><title>先决条件</title></info>
+
   <para>构建导出库要求用GNU make（BIND 9的其它部分仍然可以使用其它类型的
   make来构建）。在本文档的剩余部份，“make”表示GNU make。注意在某些平台
   上，你可能需要发起一个不同于“make”的命令名（例如“gmake”）来表示其
   是GNU make。</para>
-  </sect2>
-  <sect2>
-    <title>编译</title>
+  </section>
+  <section><info><title>编译</title></info>
+
   <screen>
 $ <userinput>./configure --enable-exportlib <replaceable>[other flags]</replaceable></userinput>
 $ <userinput>make</userinput>
@@ -62,9 +61,9 @@ $ <userinput>make</userinput>
   例如，<filename>lib/export/dns/libdns.a</filename>是BIND 9 DNS库的
   导出版本的库文件。使用库的例子应用程序也将在lib/export/samples目录
   下构建（见下）。</para>
-  </sect2>
-  <sect2>
-    <title>安装</title>
+  </section>
+  <section><info><title>安装</title></info>
+
   <screen>
 $ <userinput>cd lib/export</userinput>
 $ <userinput>make install</userinput>
@@ -79,9 +78,9 @@ $ <userinput>make install</userinput>
   <para>
   要了解如何在安装之后构建你自己的应用，参见
   <filename>lib/export/samples/Makefile-postinstall.in</filename>。</para>
-  </sect2>
-  <sect2>
-    <title>已知的缺陷/限制</title>
+  </section>
+  <section><info><title>已知的缺陷/限制</title></info>
+
   <itemizedlist>
     <listitem>
 <!-- TODO: what about AIX? -->
@@ -116,9 +115,9 @@ $ <userinput>make</userinput>
       “ndots”。</para>
     </listitem>
   </itemizedlist>
-  </sect2>
-  <sect2>
-    <title>dns.conf文件</title>
+  </section>
+  <section><info><title>dns.conf文件</title></info>
+
   <para>IRS库支持一个与DNS库相关的“高级”配置文件，其配置参数会超越
   <filename>resolv.conf</filename>的功能。
   特别地，它还打算提供DNSSEC相关的配置参数。缺省时，这个配置文件的路径
@@ -126,15 +125,15 @@ $ <userinput>make</userinput>
   这个模块极具试验性，其配置语法和库接口在将来的版本中可能会有变化。
   当前，只支持<command>trusted-keys</command>语句，其语法与
   <filename>named.conf</filename>中的同名语句一样。（更详细的内容，
-  参见<xref linkend="trusted-keys" />。）</para>
-  </sect2>
-  <sect2>
-    <title>例子应用</title>
+  参见<xref linkend="trusted-keys"/>。）</para>
+  </section>
+  <section><info><title>例子应用</title></info>
+
   <para>这里提供了一些使用这个API的例子应用程序供参考。下面是对这些应用的
   一个简要描述。
   </para>
-  <sect3>
-    <title>sample: 一个简单的存根解析器应用</title>
+  <section><info><title>sample: 一个简单的存根解析器应用</title></info>
+
   <para>
   它向一个指定的递归服务器发送一个指定名字（作为选项，也可指定资源记录类型）
   的请求，并将结果打印为一个资源记录的列表。如果通过命令行选项的集合给出了
@@ -162,16 +161,16 @@ $ <userinput>make</userinput>
         在命令行指定一个DNS密钥，用于验证响应。例如，指定下面example.com
         的DNSKEY：
 <literallayout>
-                example.com. 3600 IN DNSKEY 257 3 5 xxx
+              example.com. 3600 IN DNSKEY 257 3 5 xxx
 </literallayout>
         以下指定选项：
 <screen>
 <userinput>
-          -e -k example.com -K "xxx"
+        -e -k example.com -K "xxx"
 </userinput>
 </screen>
-        -e表示这个密钥是一个区的“密钥签名密钥”（也被称为“安全入口点”）。
-        当省略-a时，缺省使用rsasha1。
+      -e表示这个密钥是一个区的“密钥签名密钥”（也被称为“安全入口点”）。
+      当省略-a时，缺省使用rsasha1。
   </para></listitem>
   </varlistentry>
   <varlistentry>
@@ -179,26 +178,26 @@ $ <userinput>make</userinput>
   -s domain:alt_server_address
   </term>
   <listitem><para>
-         为特定“域”指定一个单独的递归服务器地址。例如：
-         -s example.com:2001:db8::1234
+      为特定“域”指定一个单独的递归服务器地址。例如：
+      -s example.com:2001:db8::1234
   </para></listitem>
   </varlistentry>
   <varlistentry>
   <term>server_address</term>
   <listitem><para>
-        请求发向的递归服务器的一个IP（v4/v6）地址。
+      请求发向的递归服务器的一个IP（v4/v6）地址。
   </para></listitem>
   </varlistentry>
   <varlistentry>
   <term>hostname</term>
   <listitem><para>
-        请求的域名
+      请求的域名
   </para></listitem>
   </varlistentry>
   </variablelist>
-  </sect3>
-  <sect3>
-    <title>sample-async: 一个例子存根解析器，异步工作</title>
+  </section>
+  <section><info><title>sample-async: 一个简单的存根解析器，异步工作</title></info>
+
   <para>
   与“sample”相似，但是以一个独立文件方式接受（请求）域名清单并
   异步解析这些名字。</para>
@@ -238,9 +237,9 @@ $ <userinput>make</userinput>
   </listitem>
     </varlistentry>
     </variablelist>
-  </sect3>
-  <sect3>
-    <title>sample-request: 一个简单的DNS事物客户端</title>
+  </section>
+  <section><info><title>sample-request: 一个简单的DNS事务客户端</title></info>
+
   <para>
   它向一个特定的服务器发送一个请求，并输出经过最小处理的响应。它不充当
   一个“存根解析器”：一旦它从服务器获得任何响应，就停止处理进程，无论
@@ -285,9 +284,9 @@ $ <userinput>make</userinput>
   </listitem>
   </varlistentry>
   </variablelist>
-  </sect3>
-  <sect3>
-    <title>sample-gai: getaddrinfo()和getnameinfo()测试代码</title>
+  </section>
+  <section><info><title>sample-gai: getaddrinfo()和getnameinfo()测试代码</title></info>
+
   <para>
   这是一个用于检查getaddrinfo()和getnameinfo()行为的测试程序。它使用
   一个主机名作为测试，以给定的主机名调用getaddrinfo()，并用getaddrinfo()
@@ -298,9 +297,9 @@ $ <userinput>make</userinput>
   <para>
   Usage: sample-gai hostname
   </para>
-  </sect3>
-  <sect3>
-    <title>sample-update: 一个简单的动态更新客户端程序</title>
+  </section>
+  <section><info><title>sample-update: 一个简单的动态更新客户端程序</title></info>
+
   <para>
   它接受一个更新命令作为一个命令行参数，发送一个更新请求消息给权威
   服务器，并输出从服务器回来的响应。换句话说，这就是一个简化版的
@@ -318,9 +317,9 @@ $ <userinput>make</userinput>
   -a auth_server
    </term>
    <listitem><para>
-        作为包含所更新名字的区的权威服务器的一个IP地址。这通常应该是
-        接受动态更新的主权威服务器。它也可以是一个被配置为向主服务器
-        转发更新请求的辅服务器。
+      作为包含所更新名字的区的权威服务器的一个IP地址。这通常应该是
+      接受动态更新的主权威服务器。它也可以是一个被配置为向主服务器
+      转发更新请求的辅服务器。
    </para></listitem>
    </varlistentry>
    <varlistentry>
@@ -328,8 +327,8 @@ $ <userinput>make</userinput>
   -k keyfile
    </term>
    <listitem><para>
-        一个TSIG密钥文件，用于保证更新事务的安全。密钥文件格式与nsupdate
-        实用程序所用的一致。
+      一个TSIG密钥文件，用于保证更新事务的安全。密钥文件格式与nsupdate
+      实用程序所用的一致。
    </para></listitem>
    </varlistentry>
    <varlistentry>
@@ -337,8 +336,8 @@ $ <userinput>make</userinput>
   -p prerequisite
    </term>
    <listitem><para>
-        一个更新的先决条件（只能指定一个先决条件）。这个先决条件的格式
-        与nsupdate实用程序所能接受的一致。
+      一个更新的先决条件（只能指定一个先决条件）。这个先决条件的格式
+      与nsupdate实用程序所能接受的一致。
    </para></listitem>
    </varlistentry>
    <varlistentry>
@@ -346,8 +345,8 @@ $ <userinput>make</userinput>
   -r recursive_server
    </term>
    <listitem><para>
-        这个应用将会用到的一个递归服务器的一个IP地址。必须使用一个
-        递归服务器来获取权威服务器的地址，再向后者发送更新请求。
+      这个应用将会用到的一个递归服务器的一个IP地址。必须使用一个
+      递归服务器来获取权威服务器的地址，再向后者发送更新请求。
    </para></listitem>
    </varlistentry>
    <varlistentry>
@@ -355,7 +354,7 @@ $ <userinput>make</userinput>
   -z zonename
    </term>
    <listitem><para>
-        The domain name of the zone that contains
+      区所包含的域名。
    </para></listitem>
    </varlistentry>
    <varlistentry>
@@ -363,7 +362,7 @@ $ <userinput>make</userinput>
   (add|delete)
    </term>
    <listitem><para>
-        指定更新操作的类型。必须是“add”或者“delete”之一。
+      指定更新操作的类型。必须是“add”或者“delete”之一。
    </para></listitem>
    </varlistentry>
    <varlistentry>
@@ -371,13 +370,15 @@ $ <userinput>make</userinput>
   "update data"
    </term>
    <listitem><para>
-        指定要改更新的数据。典型的数据例子看起来像“name TTL RRtype RDATA”。
+      指定要改更新的数据。典型的数据例子看起来像“name TTL RRtype RDATA”。
   </para></listitem>
   </varlistentry>
   </variablelist>
 
-   <note>实际上，必须指定-a或者-r。其它是可选的；下层的库例程试图为更新标识
-   合适的服务器和区名。</note>
+   <note><simpara>
+      实际上，必须指定-a或者-r。其它是可选的；下层的库例程试图为更新标识
+      合适的服务器和区名。
+   </simpara></note>
 
    <para>
    例如：假设dynamic.example.com区的主权威服务器有一个IPv6地址
@@ -398,9 +399,9 @@ $ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dy
    <para>
      使用给定的密钥删除foo.dynamic.example.com的所有记录。
    </para>
-  </sect3>
-  <sect3>
-    <title>nsprobe: domain/name server checker in terms of RFC 4074</title>
+  </section>
+  <section><info><title>nsprobe: domain/name server checker in terms of RFC 4074</title></info>
+
   <para>
   它检查一个域名集合，按照RFC 4074的描述查看域名的名字服务器的行为是否正确。
   它被包含在一系列例子程序的集合中，这些程序展示了如何将导出库用于DNS相关的
@@ -419,8 +420,8 @@ $ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dy
   -d
   </term>
   <listitem><para>
-        在“debug”模式运行。使用这个选项，nsprobe将会转储其所收到的
-        每个资源记录。
+      在“debug”模式运行。使用这个选项，nsprobe将会转储其所收到的
+      每个资源记录。
   </para></listitem>
   </varlistentry>
   <varlistentry>
@@ -428,7 +429,7 @@ $ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dy
   -v
   </term>
   <listitem><para>
-        增加其它普通日志消息的可见性。这个可以被多次指定。
+      增加其它普通日志消息的可见性。这个可以被多次指定。
   </para></listitem>
   </varlistentry>
   <varlistentry>
@@ -436,9 +437,9 @@ $ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dy
   -c cache_address
   </term>
   <listitem><para>
-        指定一个递归（缓存）名字服务器的一个IP地址。nsprobe使用这个服务器
-        来获取每个域名的NS资源记录集和名字服务器的A和/或AAAA资源记录集。
-        缺省值是127.0.0.1。
+      指定一个递归（缓存）名字服务器的一个IP地址。nsprobe使用这个服务器
+      来获取每个域名的NS资源记录集和名字服务器的A和/或AAAA资源记录集。
+      缺省值是127.0.0.1。
   </para></listitem>
   </varlistentry>
   <varlistentry>
@@ -446,21 +447,20 @@ $ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dy
   input_file
   </term>
   <listitem><para>
-        一个包含了需要被探测的域（区）名清单的文件的文件名。输入文件的
-        每行指定了一个域名，如“example.com”。通常这个域名必须是某些
-        DNS区的顶点名（而不是普通的“主机名”如“www.example.com”）。
-        nsprobe首先识别给定域名的NS资源记录集，并向这些服务器发送A和
-        AAAA请求，请求区下某些“广泛使用的”名字；特别地，在区名前增加
-        “www”和“ftp”。
+      一个包含了需要被探测的域（区）名清单的文件的文件名。输入文件的
+      每行指定了一个域名，如“example.com”。通常这个域名必须是某些
+      DNS区的顶点名（而不是普通的“主机名”如“www.example.com”）。
+      nsprobe首先识别给定域名的NS资源记录集，并向这些服务器发送A和
+      AAAA请求，请求区下某些“广泛使用的”名字；特别地，在区名前增加
+      “www”和“ftp”。
   </para></listitem>
   </varlistentry>
   </variablelist>
-  </sect3>
-  </sect2>
-  <sect2>
-    <title>库参考</title>
+  </section>
+  </section>
+  <section><info><title>库参考</title></info>
+
   <para>截至目前撰写的文稿，这个库还没有正式的“手册”，除了本文档，
   头文件（其中一些提供了非常详细的解释），和例子应用程序。</para>
-  </sect2>
-</sect1>
-<!-- $Id: libdns.xml,v 1.3 2010/02/03 23:49:07 tbox Exp $ -->
+  </section>
+</section>

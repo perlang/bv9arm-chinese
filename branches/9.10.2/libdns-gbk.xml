@@ -197,7 +197,7 @@ $ <userinput>make</userinput>
   </variablelist>
   </sect3>
   <sect3>
-    <title>sample-async: 一个例子存根解析器，异步工作</title>
+    <title>sample-async: 一个简单的存根解析器，异步工作</title>
   <para>
   与“sample”相似，但是以一个独立文件方式接受（请求）域名清单并
   异步解析这些名字。</para>

@@ -271,6 +271,9 @@ docbooks=dig-utf8.docbook host-utf8.docbook delv-utf8.docbook \
 	ddns-confgen-utf8.docbook \
 	named-journalprint-utf8.docbook \
 	named-rrchecker-utf8.docbook \
+	named-rrchecker-utf8.docbook \
+	named.conf-utf8.docbook \
+	lwresd-utf8.docbook \
 	arpaname-utf8.docbook \
 	genrandom-utf8.docbook \
 	isc-hmac-fixup-utf8.docbook \
@@ -384,6 +387,12 @@ named-checkzone-utf8.docbook: named-checkzone-gbk.docbook
 
 named-utf8.docbook: named-gbk.docbook
 	iconv -f gbk -t utf-8 named-gbk.docbook > named-utf8.docbook
+
+named.conf-utf8.docbook: named.conf-gbk.docbook
+	iconv -f gbk -t utf-8 named.conf-gbk.docbook > named.conf-utf8.docbook
+
+lwresd-utf8.docbook: lwresd-gbk.docbook
+	iconv -f gbk -t utf-8 lwresd-gbk.docbook > lwresd-utf8.docbook
 
 named-journalprint-utf8.docbook: named-journalprint-gbk.docbook
 	iconv -f gbk -t utf-8 $^ > $@

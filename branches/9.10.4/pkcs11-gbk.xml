@@ -142,22 +142,23 @@ $ <userinput> /opt/pkcs11/usr/bin/softhsm-util --init-token 0 --slot 0 --label s
       </listitem>
     </itemizedlist>
     <para>修改的OpenSSL代码包含在BIND 9发行版中，以针对最新OpenSSL版本的带上下
-        文的diff结果的形式。OpenSSL 0.9.8，1.0.0和1.0.1都被支持；分别有各自版本
-        的diff文件。在后面的例子中，我们使用了OpenSSL 0.9.8，但是同样的方法也
-        适用于OpenSSL 1.0.0和1.0.1。
+        文的diff结果的形式。OpenSSL 0.9.8，1.0.0，1.0.1和1.0.2都被支持；
+        分别有各自版本的diff文件。在后面的例子中，我们使用了OpenSSL 0.9.8，
+        但是同样的方法也适用于OpenSSL 1.0.0到1.0.2。
     </para>
-    <note>
-      这篇文档（2015年1月）的最新OpenSSL版本是0.9.8zc，1.0.0o和1.0.1j。
+    <note><simpara>
+      这篇文档（2016年1月）的最新OpenSSL版本是0.9.8zh，1.0.0t，1.0.1q和1.0.2f。
       ISC在新版本的OpenSSL发布时会提供升级的补丁。在以下例子中的版本号预期
       也会改变。
-    </note>
+    </simpara></note>
     <para>
-    在构建带PKCS#11支持的BIND 9之前，需要在适当的位置使用这个补丁构建
-    OpenSSL并使用你的HSM的PKCS#11提供者库的路径来配置它。</para>
-    <sect3>
-      <title>给OpenSSL打补丁</title>
+      在构建带PKCS#11支持的BIND 9之前，需要在适当的位置使用这个补丁构建
+      OpenSSL并使用你的HSM的PKCS#11提供者库的路径来配置它。
+    </para>
+    <section><info><title>给OpenSSL打补丁</title></info>
+
       <screen>
-$ <userinput>wget <ulink>http://www.openssl.org/source/openssl-0.9.8zc.tar.gz</ulink></userinput>
+$ <userinput>wget <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="">http://www.openssl.org/source/openssl-0.9.8zc.tar.gz</link></userinput>
 </screen>
       <para>解压tar包：</para>
       <screen>
@@ -168,10 +169,10 @@ $ <userinput>tar zxf openssl-0.9.8zc.tar.gz</userinput>
 $ <userinput>patch -p1 -d openssl-0.9.8zc \
             &lt; bind9/bin/pkcs11/openssl-0.9.8zc-patch</userinput>
 </screen>
-    <note>
-      注意，补丁文件可能与不同操作系统下的"patch"应用不兼容。
+    <note><simpara>
+      补丁文件可能与不同操作系统下的"patch"应用不兼容。
       你可能需要安装GNU patch。
-    </note>
+    </simpara></note>
     <para>
       在构建OpenSSL时，将其放在一个非标准的位置，这样它不会干扰系统上的
       OpenSSL库。在下面的例子中，我们选择安装到"/opt/pkcs11/usr"。我们将在
@@ -180,10 +181,10 @@ $ <userinput>patch -p1 -d openssl-0.9.8zc \
     <para>
       之后，在构建BIND 9时，用户构建OpenSSL库的位置需要通过configure指定。
     </para>
-    </sect3>
-    <sect3>
+    </section>
+    <section><info><title>在Linux上为AEP Keyper构建OpenSSL</title></info>
       <!-- Example 1 -->
-      <title>在Linux上为AEP Keyper构建OpenSSL</title>
+
       <para>
         AEP Keyper是一个高安全密钥存储设备，但是不提供硬件加密加速。
         它能够执行加密操作，但是可能会减慢你的系统CPU。因此，我们在构建
@@ -216,10 +217,10 @@ $ <userinput>./Configure linux-generic32 -m32 -pthread \
         失败并输出"pthread_atfork() not found"，你可能忘记加上前面提到的
         -pthread了。
       </para>
-    </sect3>
-    <sect3>
+    </section>
+    <section><info><title>为Solaris上的SCA 6000构建OpenSSL</title></info>
       <!-- Example 2 -->
-      <title>为Solaris上的SCA 6000构建OpenSSL</title>
+
       <para>
         SCA-6000 PKCS#11提供者是作为一个系统库libpkcs11安装的。
         它是一个真正的加密加速器，能够比任何CPU快4倍以上，所以特性应该
@@ -240,15 +241,15 @@ $ <userinput>./Configure solaris64-x86_64-cc \
         在配置之后，运行<command>make</command>和
         <command>make test</command>。
       </para>
-    </sect3>
-    <sect3>
+    </section>
+    <section><info><title>为SoftHSM构建OpenSSL</title></info>
       <!-- Example 3 -->
-      <title>为SoftHSM构建OpenSSL</title>
+
       <para>
         SoftHSM（版本1）是一个由OpenDNSSEC项目
-	（<ulink url="http://www.opendnssec.org">
-	  http://www.opendnssec.org
-	</ulink>）
+        (<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.opendnssec.org">
+          http://www.opendnssec.org
+        </link>)
         所提供的软件库，它提供了一个虚拟HSM的PKCS#11接口，以一个在本地文件系统
         上的SQLite3数据库的形式实现。
         SoftHSM使用Botan库执行加密功能。
@@ -264,7 +265,7 @@ $ <userinput> configure --prefix=/opt/pkcs11/usr </userinput>
 $ <userinput> make </userinput>
 $ <userinput> make install </userinput>
 $ <userinput> export SOFTHSM_CONF=/opt/pkcs11/softhsm.conf </userinput>
-$ <userinput> echo "0:/opt/pkcs11/softhsm.db" > $SOFTHSM_CONF </userinput>
+$ <userinput> echo "0:/opt/pkcs11/softhsm.db" &gt; $SOFTHSM_CONF </userinput>
 $ <userinput> /opt/pkcs11/usr/bin/softhsm --init-token 0 --slot 0 --label softhsm </userinput>
       </screen>
       <para>
@@ -283,7 +284,7 @@ $ <userinput>./Configure linux-x86_64 -pthread \
         在配置之后，运行"<command>make</command>"和
         "<command>make test</command>"。
       </para>
-    </sect3>
+    </section>
     <para>
       一旦你完成构建OpenSSL，运行
       "<command>apps/openssl engine pkcs11</command>"来确认PKCS#11支持
@@ -306,9 +307,9 @@ $ <userinput>./Configure linux-x86_64 -pthread \
       如果输出正确，运行"<command>make install</command>"，将会
       把修改后的OpenSSL套件安装到<filename>/opt/pkcs11/usr</filename>。
     </para>
-    <sect3>
+    <section><info><title>为Linux配置带AEP Keyper的BIND 9</title></info>
       <!-- Example 4 -->
-      <title>为Linux配置带AEP Keyper的BIND 9</title>
+
       <para>
         为了链接到PKCS#11提供者，在构建BIND 9时必须打开对线程的支持。
       </para>
@@ -323,10 +324,10 @@ $ <userinput>./configure CC="gcc -m32" --enable-threads \
            --with-openssl=/opt/pkcs11/usr \
            --with-pkcs11=/opt/pkcs11/usr/lib/libpkcs11.so</userinput>
 </screen>
-    </sect3>
-    <sect3>
+    </section>
+    <section><info><title>为Solaris配置带SCA 6000的BIND 9</title></info>
       <!-- Example 5 -->
-      <title>为Solaris配置带SCA 6000的BIND 9</title>
+
       <para>
         为链接到PKCS#11提供者，必须在BIND 9构建时打开对线程的支持。
       </para>
@@ -342,17 +343,17 @@ $ <userinput>./configure CC="cc -xarch=amd64" --enable-threads \
         搭配的体系结构。或者，你可能没有为OpenSSL指定正确的路径（这个
         路径应该与OpenSSL配置时的--prefix参数一样）。
       </para>
-    </sect3>
-    <sect3>
+    </section>
+    <section><info><title>为SoftHSM配置BIND 9</title></info>
       <!-- Example 6 -->
-      <title>为SoftHSM配置BIND 9</title>
+
       <screen>
 $ <userinput>cd ../bind9</userinput>
 $ <userinput>./configure --enable-threads \
            --with-openssl=/opt/pkcs11/usr \
            --with-pkcs11=/opt/pkcs11/usr/lib/libsofthsm.so</userinput>
 </screen>
-    </sect3>
+    </section>
     <para>
       在配置后，运行
       "<command>make</command>",
@@ -363,9 +364,9 @@ $ <userinput>./configure --enable-threads \
       （注意：如果“make test“在“pkcs11“系统测试中失败，你可能是忘记设置
       SOFTHSM_CONF环境变量了。）
     </para>
-  </sect2>
-  <sect2>
-    <title>PKCS#11工具</title>
+  </section>
+  <section><info><title>PKCS#11工具</title></info>
+
     <para>
       BIND 9包含一个用以操作HSM的工具的最小集合，包括
       <command>pkcs11-keygen</command>，用于在HSM内生成一个新的密钥对，
@@ -379,9 +380,9 @@ $ <userinput>./configure --enable-threads \
       PKCS#11提供者的路径，这时这些工具会被构建，但是提供者将会保持
       未定义的状态。使用-m选项或PKCS11_PROVIDER环境变量来指定提供者的路径。
     </para>
-  </sect2>
-  <sect2>
-    <title>使用HSM</title>
+  </section>
+  <section><info><title>使用HSM</title></info>
+
     <para>
       对基于OpenSSL的PKCS#11，我们必须设置运行时环境，以便装载OpenSSL和
       PKCS#11库：
@@ -484,9 +485,9 @@ Zone signing complete:
 Algorithm: NSEC3RSASHA1: ZSKs: 1, KSKs: 1 active, 0 revoked, 0 stand-by
 example.net.signed
 </screen>
-  </sect2>
-  <sect2>
-    <title>在命令行指定引擎</title>
+  </section>
+  <section><info><title>在命令行指定引擎</title></info>
+
     <para>
       在使用基于OpenSSL的PKCS#11时，OpenSSL所使用的"引擎"可以通过使用
       "-E &lt;engine&gt;"命令行选项在<command>named</command>和所有BIND的
@@ -509,9 +510,9 @@ $ <userinput>dnssec-signzone -E '' -S example.net</userinput>
       当使用原生PKCS#11模式构建时，"引擎"选项具有一个不同的含义：它指定
       PKCS#11提供者库的路径。这在测试一个新的提供者库时可能很有用。
     </para>
-  </sect2>
-  <sect2>
-    <title>以自动区重签的方式运行named</title>
+  </section>
+  <section><info><title>以自动区重签的方式运行named</title></info>
+
     <para>
       如果你想要<command>named</command>使用HSM密钥动态重签区，
       和/或签名通过nsupdate插入的新记录，named必须能够访问HSM的PIN。
@@ -549,5 +550,5 @@ $ <userinput>dnssec-signzone -E '' -S example.net</userinput>
         安全优势。在以这种方式配置系统之前，确认这就是你想要的方式。
       </para>
     </warning>
-  </sect2>
-</sect1>
+  </section>
+</section>

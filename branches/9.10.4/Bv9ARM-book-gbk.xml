@@ -1283,8 +1283,7 @@ controls {
         （保留IP空间，在RFC 1918中说明）中的内部网络去查询互联网上的DNS。分割
         DNS也可以用于允许来自外部的回复邮件进入内部网络。
       </para>
-     <sect2>
-      <title>分割DNS设置的例子</title>
+     <section xml:id="split_dns_sample"><info><title>分割DNS设置的例子</title></info>
       <para>
         让我们假设一个名叫<emphasis>Example</emphasis>的公司
         （<literal>example.com</literal>）有几个公司站点，有一个使用保留地址空
@@ -1304,88 +1303,6 @@ controls {
       </para>
       <para>
         内部服务器配置成除了对<filename>site1.internal</filename>，
-        <filename>site2.internal</filename>，
-        <filename>site1.example.com</filename>和
-        <filename>site2.example.com</filename>之外的所有请求都转发给在DMZ的
-        服务器。这些内部服务器都有关于<filename>site1.example.com</filename>，
-        <filename>site2.example.com</filename>，
-	<filename>site1.internal</filename>和
-	<filename>site2.internal</filename>的全部信息。
-      </para>
-      <para>
-        为保护<filename>site1.internal</filename>和
-        <filename>site2.internal</filename>域，内部服务器必须配置成不允许任何
-        外部主机对这些域的请求来访问，其中也包括堡垒主机。
-      </para>
-      <para>
-        在堡垒主机上的外部服务器被配置成服务于
-        <filename>site1.example.com</filename>和
-        <filename>site2.example.com</filename>区的“公共”版本。其中可能包括
-        这样的一些公共服务器（<filename>www.example.com</filename>和
-        <filename>ftp.example.com</filename>）的主机记录以及邮件交换（MX）记录
-        （<filename>a.mx.example.com</filename>和
-        <filename>b.mx.example.com</filename>）。
-      </para>
-      <para>
-        另外，公共的<filename>site1.example.com</filename>和
-        <filename>site2.example.com</filename>区应该有包括通配（‘*’）记录的
-        特定MX 记录指向堡垒主机。这是必须的，因为外部邮件服务器没有其它任何
-        方式来查到如何将邮件投递到那些内部的主机。使用通配记录，邮件可以投递
-        到堡垒主机，堡垒主机再将邮件转发到内部主机。
-      </para>
-      <para>
-        这里是一个通配MX 记录的例子：
-      </para>
-      <programlisting>*   IN MX 10 external1.example.com.</programlisting>
-      <para>
-        堡垒主机代表内部网络的任何主机接收邮件，它需要指定如何将邮件投递到
-        内部主机。为了这样的机制正常运转，堡垒主机上的解析器需要配置成指向
-        内部名字服务器，以完成DNS解析。
-      </para>
-      <para>
-        对内部主机的查询请求将由内部服务器回答，对外部主机的查询请求将转发到
-        堡垒主机上的DNS服务器。
-      </para>
-      <para>
-        为了让以上这些正常工作，内部客户端需要配置成<emphasis>只</emphasis>请求
-        内部名字服务器。这个也可以通过网络上的选择性过滤器来进行加强。
-      </para>
-      <para>
-        如果所有的东西都正确设置，<emphasis>Example</emphasis>公司的
-        内部客户端将能够：
-      </para>
-      <itemizedlist>
-        <listitem>
-          <simpara>
-            查询<literal>site1.example.com</literal>和
-            <literal>site2.example.com</literal>区上的所有主机。
-          </simpara>
-        </listitem>
-        <listitem>
-          <simpara>
-            查询<literal>site1.internal</literal>和
-            <literal>site2.internal</literal>域上的所有主机。
-          </simpara>
-        </listitem>
-        <listitem>
-          <simpara>查询互联网上的所有主机。</simpara>
-        </listitem>
-        <listitem>
-          <simpara>同内部网和外部网上的人员交换电子邮件。</simpara>
-        </listitem>
-      </itemizedlist>
-      <para>
-        互联网上的主机将能够：
-      </para>
-      <itemizedlist>
-        <listitem>
-          <simpara>
-            查询<literal>site1.example.com</literal>和
-			<literal>site2.example.com</literal>区上的所有主机。
-          </simpara>
-        </listitem>
-        <listitem>
-          <simpara>
             同<literal>site1.example.com</literal>和
             <literal>site2.example.com</literal>区上的任何人交换电子邮件。
           </simpara>
@@ -1513,30 +1430,66 @@ nameserver 172.16.72.3
 nameserver 172.16.72.4
 </programlisting>
 
-     </sect2>
-    </sect1>
-    <sect1 id="tsig">
-      <title>TSIG</title>
-      <para>
-        这是一个在<acronym>BIND</acronym>中设置基于事务安全的事务签名
-		（Transaction SIGnatures，TSIG）的简短指导。它描述了配置文件需要作的变化，
-		以及不同特征所要求的变化，包括创建事务密钥的过程和在<acronym>BIND</acronym>
-		中使用事务签名。
-      </para>
-      <para>
-        <acronym>BIND</acronym>基本支持TSIG，用于服务器到服务器的通信。包括
-        区传送，通知和递归查询的信息。基于<acronym>BIND</acronym> 8较新版本的
-        解析器对TSIG提供有限的支持。
-      </para>
+     </section>
+    </section>
+    <section xml:id="tsig"><info><title>TSIG</title></info>
 
       <para>
-        TSIG也可以用于动态更新。使用动态区的主服务器应该控制对动态更新
-        服务的访问，但是基于IP 的访问控制是不够的。由TSIG所提供的加密访
-        问控制要好得多。<command>nsupdate</command>程序通过
-        <option>-k</option>和<option>-y</option>命令行选项或使用内置的
-        <command>key</command>语句来支持TSIG。
+        TSIG（Transaction SIGnatures，事务签名）是一个认证DNS消息的机制，最早
+        在RFC 2845中规定。它允许DNS消息被使用一个共享密钥加密签名。TSIG可以
+        被用于任何DNS事务，可以作为一种限制授权的客户端对某个服务器功能访问
+        （例如，递归请求）的方法，这时基于IP的访问控制已无法满足需求或者需要
+        被覆盖，或者作为一种确保消息认证的方法，这时其对服务器完整性非常关键，
+        例如配合动态更新消息或者从一个主服务器到一个辅服务器的区传送。
+      </para>
+      <para>
+        这是一个在<acronym>BIND</acronym>中设置TSIG的指导。它描述了配置语法和
+        创建TSIG密钥的过程。
+      </para>
+      <para>
+        <command>named</command>支持TSIG用于服务器到服务器的通信，一些
+        <acronym>BIND</acronym>附带工具也支持TSIG用于发送消息给
+        <command>named</command>：
+        <itemizedlist>
+          <listitem>
+            <xref linkend="man.nsupdate"/>通过
+            <option>-k</option>，<option>-l</option>和
+            <option>-y</option>命令行选项，或在交互方式下通过
+            <command>key</command>命令支持TSIG。
+          </listitem>
+          <listitem>
+            <xref linkend="man.dig"/>通过
+            <option>-k</option>和<option>-y</option>命令行选项支持TSIG。
+          </listitem>
+        </itemizedlist>
       </para>
 
+      <section><info><title>生成一个共享密钥</title></info>
+        <para>
+          TSIG密钥可以使用<command>tsig-keygen</command>命令生成；命令的输出是
+          一个适合放入<filename>named.conf</filename>的
+          <command>key</command>指令。密钥名，算法名和大小可以由命令行参数指定；
+          缺省分别是“tsig-key“，HMAC-SHA256和256位。
+        </para>
+        <para>
+          任意一个有效DNS名字都可以用作一个密钥名，例如，在服务器
+          <emphasis>host1</emphasis>和<emphasis>host2</emphasis>之间
+          共享的密钥可以叫做“host1-host2.”，这个密钥可以使用
+        </para>
+<programlisting>
+  $ tsig-keygen host1-host2. > host1-host2.key
+</programlisting>
+        <para>
+          生成。
+        </para>
+        <para>
+          然后这个密钥被拷贝到两台主机上。在两台主机上密钥名和密码
+          必须一致。
+          （注意：从一台服务器到另一台服务器拷贝一个共享密码超出了
+          DNS的范围。应该使用一个安全的传输机制：安全FTP，SSL，ssh，
+          电话，加密电子邮件等等。）
+        </para>
+        <para>
       <sect2>
         <title>对每对主机生成共享密钥</title>
         <para>
@@ -9999,179 +9952,6 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
                   </para>
                 </listitem>
               </varlistentry>
-
-              <varlistentry>
-                <term><command>max-transfer-idle-in</command></term>
-                <listitem>
-                  <para>
-                    参见<xref linkend="zone_transfers"/>中对
-                    <command>max-transfer-idle-in</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>max-transfer-time-out</command></term>
-                <listitem>
-                  <para>
-                    参见<xref linkend="zone_transfers"/>中对
-                    <command>max-transfer-time-out</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>max-transfer-idle-out</command></term>
-                <listitem>
-                  <para>
-                    参见<xref linkend="zone_transfers"/>中对
-                    <command>max-transfer-idle-out</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>notify</command></term>
-                <listitem>
-                  <para>
-                    参见<xref linkend="boolean_options"/>中对
-                    <command>notify</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>notify-delay</command></term>
-                <listitem>
-                  <para>
-                    参见<xref linkend="tuning"/>中对
-                    <command>notify-delay</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>notify-to-soa</command></term>
-                <listitem>
-                  <para>
-                    参见<xref linkend="boolean_options"/>中对
-                    <command>notify-to-soa</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>pubkey</command></term>
-                <listitem>
-                  <para>
-                    在<acronym>BIND</acronym> 8中，这个选项用于指定一个公共区密
-                    钥，它是为了在从磁盘中装载DNSSEC签名的区时校验区的签名的。
-                    <acronym>BIND</acronym> 9在装载时不校验签名，并忽略此选项。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>zone-statistics</command></term>
-                <listitem>
-                  <para>
-                    如果为<userinput>yes</userinput>，服务器将会保持这个区的统
-                    计信息，这些信息可以被导出到服务器选项
-                    <command>statistics-file</command>所指定的文件中。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>server-addresses</command></term>
-                <listitem>
-                  <para>
-                    仅对静态存根区有意义。这是一个IP地址列表，在递归解析这个区
-                    时，请求将被发向这个列表。
-                    为这个选项配置一个非空列表，将会在内部配置顶点NS资源记录及
-                    附带的粘连A或者AAAA记录。
-                  </para>
-		  <para>
-		    例如，如果“example.com”被配置成一个静态存根区，在一个
-                    <command>server-addresses</command>选项中配置192.0.2.1和
-                    2001:db8::1234，内部将被配置为下列资源记录。
-		  </para>
-<programlisting>example.com. NS example.com.
-example.com. A 192.0.2.1
-example.com. AAAA 2001:db8::1234</programlisting>
-		  <para>
-		    这些记录将会被用于解析这个静态存根区下的名字。例如，如果
-                    服务器受到一个带RD位的“www.example.com”请求，服务器将
-                    发起一个递归解析，将请求发给192.0.2.1和/或2001:db8::1234。
-		  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>server-names</command></term>
-                <listitem>
-                  <para>
-                    仅对静态存根区有意义。这是一个名字服务器域名的列表，充当
-                    这个静态存根区的权威服务器。
-		    在<command>named</command>需要发送请求到这些服务器时，这些
-                    名字将被解析成IP地址。
-		    为使这个补充解析能够成功，这些名字必须不能是静态存根区原点
-                    名的子域名。即，当一个静态存根区的原点是“example.net”时，
-                    “ns.example”和“master.example.com”可以设定在
-                    <command>server-names</command>选项中，但是
-                    “ns.example.net”不能，它将被配置分析器拒绝。
-		  </para>
-		  <para>
-                    为这个选项配置一个非空列表，将会使用指定的名字在内部配置
-                    顶点NS资源记录。例如，如果“example.com”被配置为一个静态
-                    存根区，并在一个<command>server-names</command>选项配置
-                    “ns1.example.net”和“ns2.example.net”，内部将被配置为
-                    下列资源记录。
-		  </para>
-<programlisting>example.com. NS ns1.example.net.
-example.com. NS ns2.example.net.
-</programlisting>
-		  <para>
-		    这些记录将会被用于解析这个静态存根区下的名字。例如，如果
-                    服务器受到一个带RD位的“www.example.com”请求，服务器将
-                    发起一个递归解析，先将“ns1.example.net”和/或
-                    “ns2.example.net”解析成IP地址，再将请求发给（一个或多个）
-                    这些地址。
-		  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>sig-validity-interval</command></term>
-                <listitem>
-                  <para>
-		    参见<xref linkend="tuning"/>中对
-		    <command>sig-validity-interval</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>sig-signing-nodes</command></term>
-                <listitem>
-                  <para>
-		    参见<xref linkend="tuning"/>中对
-		    <command>sig-signing-nodes</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
-                <term><command>sig-signing-signatures</command></term>
-                <listitem>
-                  <para>
-		    参见<xref linkend="tuning"/>中对
-		    <command>sig-signing-signatures</command>的描述。
-                  </para>
-                </listitem>
-              </varlistentry>
-
-              <varlistentry>
                 <term><command>sig-signing-type</command></term>
                 <listitem>
                   <para>
@@ -12744,7 +12524,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QryNxrrset</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>

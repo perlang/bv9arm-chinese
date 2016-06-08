@@ -71,9 +71,9 @@
   链。一个私有类型的记录将被创建，以记录操作状态（参见下面更详细的
   描述），并在操作完成之后被删除。</para>
   <para>当初始签名及NSEC/NSEC3链正在生成时，其它更新也可能发生。</para>
-  <sect2>
-    <title>完全自动化区签名</title>
-  </sect2>
+  <section><info><title>完全自动化区签名</title></info>
+
+  </section>
   <para>要打开自动签名，需要在<filename>named.conf</filename>的
   区语句中增加<command>auto-dnssec</command>选项。
   <command>auto-dnssec</command>有两个可能的参数：
@@ -123,9 +123,9 @@
   <command>allow-update</command>或
   <command>update-policy</command>语句来实现的。如果没有这个，
   配置就会失败。</para>
-  <sect2>
-    <title>私有类型记录</title>
-  </sect2>
+  <section><info><title>私有类型记录</title></info>
+
+  </section>
   <para>签名过程的状态由私有类型记录（带有一个缺省值65534）发信号通知。
   当签名完成，这些记录将会在最后一个字节有一个非零值（这些记录都有一个
   初始的非零值）。</para>
@@ -155,14 +155,14 @@
   0x20 NONSEC
 </literallayout>
   </para>
-  <sect2>
-    <title>DNSKEY轮转</title>
-  </sect2>
+  <section><info><title>DNSKEY轮转</title></info>
+
+  </section>
   <para>随着不安全到安全的转换，轮转DNSSEC密钥可以使用两种方法完成：
   使用一个动态DNS更新，或者<command>auto-dnssec</command>区选项。</para>
-  <sect2>
-    <title>动态DNS更新方法</title>
-  </sect2>
+  <section><info><title>动态DNS更新方法</title></info>
+
+  </section>
   <para>为通过动态更新执行密钥轮转，你需要为新密钥添加
   <filename>K*</filename>文件，这样<command>named</command>就能够找到
   它们。然后你可以通过动态更新添加新的DNSKEY资源记录集。
@@ -175,9 +175,9 @@
   <para>可以通过UPDATE删除旧的DNSKEY。需要小心指定正确的密钥。
   在更新完成后，<command>named</command>将会清理由旧密钥生成的所有签名。
   </para>
-  <sect2>
-    <title>自动密钥轮转</title>
-  </sect2>
+  <section><info><title>自动密钥轮转</title></info>
+
+  </section>
   <para>当一个新密钥到达其激活日期（由<command>dnssec-keygen</command>
   或<command>dnssec-settime</command>所设置的）时，如果
   <command>auto-dnssec</command>区选项被设置为<constant>maintain</constant>，
@@ -186,26 +186,26 @@
   的算法，则区将被增量重签，在其签名有效期过期后，旧密钥的签名被新密钥的签名
   所替代缺省时，这个轮转在30天内完成，之后就可以安全地将旧密钥从DNSKEY资源记
   录集中删掉。</para>
-  <sect2>
-    <title>通过UPDATE轮转NSEC3PARAM</title>
-  </sect2>
+  <section><info><title>通过UPDATE轮转NSEC3PARAM</title></info>
+
+  </section>
   <para>通过动态更新增加新的NSEC3PARAM记录。当生成了新的NSEC3链之后，
   NSEC3PARAM标志字段被置为零。在这时，你可以删除旧的NSEC3PARAM记录。
   旧的链将会在更新请求完成之后被删除。</para>
-  <sect2>
-    <title>从NSEC转换到NSEC3</title>
-  </sect2>
+  <section><info><title>从NSEC转换到NSEC3</title></info>
+
+  </section>
   <para>要做这个，你只需要添加一条NSEC3PARAM记录。在转换完成后，NSEC链
   将被移除，NSEC3PARAM记录有一个0标志域。NSEC3链将在NSEC链被去掉之前
   生成。</para>
-  <sect2>
-    <title>从NSEC3转换到NSEC</title>
-  </sect2>
+  <section><info><title>从NSEC3转换到NSEC</title></info>
+
+  </section>
   <para>要做这件事，使用<command>nsupdate</command>删除所有带有一个零
   标志字段的NSEC3PARAM记录。在NSEC3链被删除之前先生成NSEC链。</para>
-  <sect2>
-    <title>从安全转换为不安全</title>
-  </sect2>
+  <section><info><title>从安全转换为不安全</title></info>
+
+  </section>
   <para>要使用动态DNS将一个签名的区转换为未签名的区，需要使用
   <command>nsupdate</command>删除区顶点的所有DNSKEY记录。所有签名，
   NSEC或NSEC3链，以及相关的NSEC3PARAM记录都会被自动地删除掉。这个
@@ -216,16 +216,16 @@
   <para>此外，如果使用了<command>auto-dnssec maintain</command>区命令，
   应该将其去掉或者将其值改为<command>allow</command>（或者重签名）。
   </para>
-  <sect2>
-    <title>周期性的重签名</title>
-  </sect2>
+  <section><info><title>周期性的重签名</title></info>
+
+  </section>
   <para>在任何支持动态更新的安全区中，named会周期性地对因为某些
   更新动作而变为未签名的资源记录集进行重新签名。签名的生存期会被
   调整，这样就会将重新签名的负载分散在一段时间而不是集中在一起。
   </para>
-  <sect2>
-    <title>NSEC3 and OPTOUT</title>
-  </sect2>
+  <section><info><title>NSEC3 and OPTOUT</title></info>
+
+  </section>
   <para>
   <command>named</command>仅仅支持一个区的所有NSEC3记录都有同样的
   OPTOUT状态才建立新的NSEC3链。
@@ -233,4 +233,4 @@
   状态的区。
   <command>named</command>不支持变更一个单独NSEC3记录的OPTOUT状态，
   如果需要变更一个单独NSEC3记录的OPTOUT状态，就需要变更整个链。</para>
-</sect1>
+</section>

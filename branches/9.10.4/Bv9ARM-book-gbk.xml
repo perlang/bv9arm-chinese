@@ -45,7 +45,7 @@
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="releaseinfo.xml"/>
   </info>
 
-  <chapter xml:id="Bv9ARM.ch01"><info><title>介绍</title></info>
+  <chapter xml:id="Bv9ARM-gbk.ch01"><info><title>介绍</title></info>
 
     <para>
       互联网域名系统（<acronym>DNS</acronym>）由以下几个部份组成：
@@ -451,7 +451,7 @@
 
   </chapter>
 
-  <chapter xml:id="Bv9ARM.ch02"><info><title><acronym>BIND</acronym>资源要求</title></info>
+  <chapter xml:id="Bv9ARM-gbk.ch02"><info><title><acronym>BIND</acronym>资源要求</title></info>
 
     <section xml:id="hw_req"><info><title>硬件要求</title></info>
 
@@ -1303,6 +1303,88 @@ controls {
       </para>
       <para>
         内部服务器配置成除了对<filename>site1.internal</filename>，
+        <filename>site2.internal</filename>，
+        <filename>site1.example.com</filename>和
+        <filename>site2.example.com</filename>之外的所有请求都转发给在DMZ的
+        服务器。这些内部服务器都有关于<filename>site1.example.com</filename>，
+        <filename>site2.example.com</filename>，
+        <filename>site1.internal</filename>和
+        <filename>site2.internal</filename>的全部信息。
+      </para>
+      <para>
+        为保护<filename>site1.internal</filename>和
+        <filename>site2.internal</filename>域，内部服务器必须配置成不允许任何
+        外部主机对这些域的请求来访问，其中也包括堡垒主机。
+      </para>
+      <para>
+        在堡垒主机上的外部服务器被配置成服务于
+        <filename>site1.example.com</filename>和
+        <filename>site2.example.com</filename>区的“公共”版本。其中可能包括
+        这样的一些公共服务器（<filename>www.example.com</filename>和
+        <filename>ftp.example.com</filename>）的主机记录以及邮件交换（MX）记录
+        （<filename>a.mx.example.com</filename>和
+        <filename>b.mx.example.com</filename>）。
+      </para>
+      <para>
+        另外，公共的<filename>site1.example.com</filename>和
+        <filename>site2.example.com</filename>区应该有包括通配（‘*’）记录的
+        特定MX 记录指向堡垒主机。这是必须的，因为外部邮件服务器没有其它任何
+        方式来查到如何将邮件投递到那些内部的主机。使用通配记录，邮件可以投递
+        到堡垒主机，堡垒主机再将邮件转发到内部主机。
+      </para>
+      <para>
+        这里是一个通配MX 记录的例子：
+      </para>
+      <programlisting>*   IN MX 10 external1.example.com.</programlisting>
+      <para>
+        堡垒主机代表内部网络的任何主机接收邮件，它需要指定如何将邮件投递到
+        内部主机。为了这样的机制正常运转，堡垒主机上的解析器需要配置成指向
+        内部名字服务器，以完成DNS解析。
+      </para>
+      <para>
+        对内部主机的查询请求将由内部服务器回答，对外部主机的查询请求将转发到
+        堡垒主机上的DNS服务器。
+      </para>
+      <para>
+        为了让以上这些正常工作，内部客户端需要配置成<emphasis>只</emphasis>请求
+        内部名字服务器。这个也可以通过网络上的选择性过滤器来进行加强。
+      </para>
+      <para>
+        如果所有的东西都正确设置，<emphasis>Example</emphasis>公司的
+        内部客户端将能够：
+      </para>
+      <itemizedlist>
+        <listitem>
+          <simpara>
+            查询<literal>site1.example.com</literal>和
+            <literal>site2.example.com</literal>区上的所有主机。
+          </simpara>
+        </listitem>
+        <listitem>
+          <simpara>
+            查询<literal>site1.internal</literal>和
+            <literal>site2.internal</literal>域上的所有主机。
+          </simpara>
+        </listitem>
+        <listitem>
+          <simpara>查询互联网上的所有主机。</simpara>
+        </listitem>
+        <listitem>
+          <simpara>同内部网和外部网上的人员交换电子邮件。</simpara>
+        </listitem>
+      </itemizedlist>
+      <para>
+        互联网上的主机将能够：
+      </para>
+      <itemizedlist>
+        <listitem>
+          <simpara>
+            查询<literal>site1.example.com</literal>和
+                        <literal>site2.example.com</literal>区上的所有主机。
+          </simpara>
+        </listitem>
+        <listitem>
+          <simpara>
             同<literal>site1.example.com</literal>和
             <literal>site2.example.com</literal>区上的任何人交换电子邮件。
           </simpara>
@@ -1490,213 +1572,183 @@ nameserver 172.16.72.4
           电话，加密电子邮件等等。）
         </para>
         <para>
-      <sect2>
-        <title>对每对主机生成共享密钥</title>
-        <para>
-          生成一个共享密钥，由<emphasis>host1</emphasis>和
-		  <emphasis>host2</emphasis>共享。可以任意选择一个密钥名：
-		  “host1-host2.”。两台主机上的密钥名必须一致。
+          <command>tsig-keygen</command>也可以被用作
+          <command>ddns-confgen</command>，在这种情况下，其输出包括在
+          <command>named</command>中设置动态DNS所用的附加配置。参见
+          <xref linkend="man.ddns-confgen"/>获取详细信息。
         </para>
-        <sect3>
-          <title>自动生成</title>
-          <para>
-            下面的命令将生成一个上面所描述的128位（16字节）HMAC-SHA256密钥。
-            密钥越长越好，但是更短的密钥更易读。注意最大的密钥长度是摘要
-            长度，在这里是256位。
-            长度超过512位的密钥将被MD5算法摘要成为一个128位的密钥。
-          </para>
-          <para>
-            <userinput>dnssec-keygen -a hmac-sha256 -b 128 -n HOST host1-host2.</userinput>
-          </para>
-          <para>
-            密钥在文件<filename>Khost1-host2.+163+00000.private</filename>中。
-            并不直接使用这个文件，但是可以从中将“<literal>Key:</literal>”后面
-            base-64编码的字符串抽取出来，用作一个共享密钥。
-          </para>
-          <programlisting>Key: La/E5CjG9O+os1jq0a2jdA==</programlisting>
-          <para>
-            字符串“<literal>La/E5CjG9O+os1jq0a2jdA==</literal>”可以用作
-            共享密钥。
-          </para>
-        </sect3>
-        <sect3>
-          <title>手工生成</title>
-          <para>
-            共享密钥只是一个简单的以base-64编码的随机二进制位序列。大多数ASCII
-            字符串都是有效的base-64字符串（假设其长度是4的倍数，并且只含有有效
-            字符），所以共享密钥可以手工生成。
-          </para>
-          <para>
-            同样，一个字符串也可以通过使用<command>mmencode</command>或类似的
-			程序来生成base-64编码的数据。
-          </para>
-        </sect3>
-      </sect2>
-      <sect2>
-        <title>拷贝共享密钥到两台主机</title>
-        <para>
-          这已经超出了DNS的范围。应该使用一个安全的传输机制。可以通过
-		  安全的FTP，ssh，电话等等。
-        </para>
-      </sect2>
-      <sect2>
-        <title>告知服务器密钥的存在</title>
-        <para>
-          设想<emphasis>host1</emphasis>和<emphasis>host 2</emphasis>为两台
-		  服务器。将下列语句添加到各自的<filename>named.conf</filename>文件中：
-        </para>
+      </section>
 
+      <section><info><title>Loading A New Key</title></info>
+        <para>
+          如果一个密钥在服务器<emphasis>host1</emphasis>和
+          <emphasis>host2</emphasis>之间共享，每个服务器的
+          <filename>named.conf</filename>文件可以添加如下内容：
+        </para>
 <programlisting>
-key host1-host2. {
-  algorithm hmac-sha256;
-  secret "La/E5CjG9O+os1jq0a2jdA==";
+key "host1-host2." {
+        algorithm hmac-sha256;
+        secret "DAopyf1mhCbFVZw7pgmNPBoLUq8wEUT7UuPoLENP2HY=";
 };
 </programlisting>
-
         <para>
-	  密钥是由以上方式所生成的。因为这是一个秘密，推荐将
-          <filename>named.conf</filename>设置成并非所有人可读的，或者
-          使用key指令将一个并非所有人可读的文件包含进
-	  <filename>named.conf</filename>中。
+          （这是上面使用<command>tsig-keygen</command>生成的
+          同一个密钥。）
         </para>
         <para>
-          在这一点，密钥是可识别的。这意味着如果服务器收到一个由这个密钥所签名
-		  的消息，它可以验证这个签名。如果成功验证签名，响应就会使用同样的密钥
-		  签名。
+          由于这段文本包含一个密码，推荐无论是<filename>named.conf</filename>
+          还是存放<command>key</command>指令的文件都不是任何人可读的，后者是
+          通过<command>include</command>指令包含进<filename>named.conf</filename>。
         </para>
-      </sect2>
-
-      <sect2>
-        <title>指示服务器使用密钥</title>
         <para>
-          由于密钥仅仅在两台主机之间共享，服务器必须被告知去使用它。下列指令被
-		  添加到<emphasis>host1</emphasis>的<filename>named.conf</filename>文件中，
-		  假定<emphasis>host2</emphasis>的IP地址是10.1.2.3：
+          一旦一个密钥被添加到<filename>named.conf</filename>，服务器要重启或
+          重新读入配置，才能识别密钥。如果服务器收到密钥签名的消息，它将能够
+          验证签名。如果签名有效，响应将会使用同一个密钥签名。
         </para>
+        <para>
+          一个服务器所知的TSIG密钥可以使用命令<command>rndc tsig-list</command>
+          列出。
+        </para>
+      </section>
 
+      <section><info><title>Instructing the Server to Use a Key</title></info>
+        <para>
+          一个向其它服务器发送请求的服务器必须被告知是否使用一个密钥，
+          以及如果使用，使用那个密钥。
+        </para>
+        <para>
+          例如，必须位一个辅区定义中的<command>masters</command>语句中
+          的每一个服务器指定一个密钥；在这种情况下，所有SOA请求消息，
+          NOTIFY消息和区传送请求（AXFR或IXFR）都将使用指定密钥签名。密钥
+          也可在一个主区或辅区中的<command>also-notify</command>语句中
+          指定，导致NOTIFY消息使用指定的密钥签名。
+        </para>
+        <para>
+          密钥也可以在一个<command>server</command>指令中指定。添加下列
+          内容到<emphasis>host1</emphasis>，如果<emphasis>host2</emphasis>
+          的IP地址是10.1.2.3，将会导致<emphasis>所有</emphasis>从
+          <emphasis>host1</emphasis>到<emphasis>host2</emphasis>的请求，
+          包括普通DNS请求，使用<command>host1-host2.</command>密钥签名：
+        </para>
 <programlisting>
 server 10.1.2.3 {
-  keys { host1-host2. ;};
+        keys { host1-host2. ;};
 };
 </programlisting>
+        <para>
+          <command>keys</command>语句中可以提供多个密钥，但只能使用第一个。
+          由于这条指令不包含任何密码，所以它可以放在一个所有人可读的文件中。
+        </para>
+        <para>
+          从<emphasis>host2</emphasis>发向<emphasis>host1</emphasis>的消息将
+          <emphasis>不会</emphasis>被签名，除非在<emphasis>host2</emphasis>的
+          配置文件中有一个类似的<command>server</command>指令。
+        </para>
+        <para>
+         无论何时，任何服务器发出了一个TSIG签名的DNS请求，它将会期待响应被
+         同一个密钥签名。如果响应未被签名，或者签名无效，响应将会被拒绝。
+        </para>
+      </section>
 
+      <section><info><title>基于TSIG的访问控制</title></info>
         <para>
-          可以提供多个密钥，但只能使用第一个。这条指令不包含任何秘密，所以它
-		  可以放在一个所有人可读的文件中。
+          TSIG密钥可以在ACL定义和诸如<command>allow-query</command>，
+          <command>allow-transfer</command>和<command>allow-update</command>
+          的ACL指令中指定。
+          上述密钥在一个ACL元素中被表示成<command>key host1-host2.</command>
         </para>
         <para>
-          如果<emphasis>host1</emphasis>发出的消息是一个到那个地址的请求，这个
-		  消息将被指定的密钥签名。<emphasis>host1</emphasis>将会期望对这个被签
-		  名的消息的回应都被同一个密钥签名。
+          一个<command>allow-update</command>指令使用一个TSIG密钥的例子为：
         </para>
-        <para>
-          一个类似的语句必须出现在<emphasis>host2</emphasis>的配置文件（使用
-		  <emphasis>host1</emphasis>的IP地址）中，供<emphasis>host2</emphasis>
-		  将发向<emphasis>host1</emphasis>的消息进行签名。
-        </para>
-      </sect2>
-      <sect2>
-        <title>基于TSIG密钥的访问控制</title>
-        <para>
-          <acronym>BIND</acronym>允许在ACL定义和
-		  <command>allow-{ query | transfer | update }</command>指令中指定IP地址
-		  和网络范围。这个也被扩展到允许TSIG密钥。上述密钥被表示成
-		  <command>key host1-host2.</command>。
-        </para>
-        <para>
-          一个<command>allow-update</command>指令的例子是：
-        </para>
-
 <programlisting>
-allow-update { key host1-host2. ;};
+allow-update { !{ !localnets; any; }; key host1-host2. ;};
 </programlisting>
-
         <para>
-          这仅允许被名为“<command>host1-host2.</command>”的密钥所签名的
-          动态更新请求能够成功。
+          这允许动态更新仅仅在UPDATE请求来自一个<command>localnets</command>
+          内的地址，<emphasis>并且</emphasis>它使用<command>host1-host2.</command>
+          密钥签名时才会成功。
         </para>
         <para>
-          关于<command>update-policy</command>语句更灵活的讨论，参见
-          <xref linkend="dynamic_update_policies"/>。
+          参见<xref linkend="dynamic_update_policies"/>查看更为灵活的
+          <command>update-policy</command>语句的讨论。
         </para>
+      </section>
 
-      </sect2>
-      <sect2>
-        <title>错误</title>
-
+      <section><info><title>错误</title></info>
         <para>
-          TSIG签名消息的过程可能产生一些错误。如果一个签名消息被放到一个
-          不知道TSIG的服务器，将返回一个FORMERR（格式错误）错误，因为服
-	  务器不能够理解这个记录。这个是错误配置的结果，因为服务器必须被
-	  显式地配置成发一个TSIG签名的消息到一个指定的服务器。
+          处理TSIG签名消息可能产生一些错误。
+          <itemizedlist>
+            <listitem>
+              如果一个有TSIG意识的服务器收到一个它所不知道的密钥的签名
+              消息，响应将不会被签名，TSIG扩展错误码将被设置为BADKEY。
+            </listitem>
+            <listitem>
+              如果一个有TSIG意识的服务器收到一个它所知道密钥的却无效的
+              签名消息，响应将不会被签名，TSIG扩展错误码将被设置为BADSIG。
+            </listitem>
+            <listitem>
+              如果一个有TSIG意识的服务器收到一个允许的时间范围之外的消息，
+              响应将会被签名，TSIG扩展错误码将被设置为BADTIME，并且时间值
+              将会被调整以使响应能够被成功验证。
+            </listitem>
+          </itemizedlist>
+          在以上所有情况中，服务器都将返回一个NOTAUTH响应码（未认证的）。
         </para>
+      </section>
+    </section>
 
-        <para>
-          如果一个知道TSIG的服务器收到一个由其不知道的密钥所签名的消息，
-		  它将返回一个未被签名的消息，并且TSIG扩展的错误码被置为BADKEY。
-		  如果一个知道TSIG的服务器收到一个带有无效签名的消息，它将返回
-		  一个未被签名的消息，并且TSIG扩展的错误码被置为BADSIG。如果一
-		  个知道TSIG的服务器收到一个在允许的时间范围之外的消息，它将返
-		  回一个被签名的消息，并且TSIG扩展的错误码被置为BADTIME，并调整
-		  时间值，以使回应可以被成功验证。在所有这些情况，消息的rcode
-		  （响应码）都被置为NOTAUTH（未被认证）。
-        </para>
-
-      </sect2>
-    </sect1>
-    <sect1>
-      <title>TKEY</title>
+    <section xml:id="tkey"><info><title>TKEY</title></info>
 
       <para>
-	    <command>TKEY</command>是一个在两台主机之间自动生成共享密钥的机制。
-		<command>TKEY</command>有几种“模式”来指定如何生成和分派密钥。
-        <acronym>BIND</acronym>	9只实现了这些模式中的一种，即Diffie-Hellman
-		密钥交换。两台主机都需要具有Diffie-Hellman KEY记录（虽然并不要求这
-		个记录出现在一个区中）。<command>TKEY</command>过程必须使用签名消息，
-		可以使用TSIG或SIG(0)签名。<command>TKEY</command>的结果是一个共享秘
-		密，可以用于在TSIG中签名消息。<command>TKEY</command>也可以用来删除
-		它先前生成的共享密钥。
+        TKEY（事务KEY）是一个用于在两台主机之间自动协商一个共享密码的机制，
+        最早在RFC 2930中规定。
       </para>
+      <para>
+        有几种TKEY“模式”来指定如何生成和分派一个密钥。
+        <acronym>BIND</acronym>	9只实现了这些模式中的一种：Diffie-Hellman
+        密钥交换。两台主机都需要有一个带DH算法的KEY记录（虽然并不要求这
+        个记录出现在一个区中）。
+      </para>
+      <para>
+        TKEY过程由一个客户端或服务器通过发出一个TKEY类型的请求到一个有TKEY
+        意识的服务器开始。请求必须在附加部分包括一个合适的KEY记录，并且必须
+        用TSIG或者SIG(0)使用先前建立的密钥签名。服务器的响应，如果成功，必须
+        在其回答部分包括一个TKEY记录。在这个事务之后，两个参与方都有足够的
+        信息使用Diffie-Hellman密钥交换计算一个共享密码。共享密码就能被用于
+        两台服务器之间签名随后的事务。
+      </para>
+      <para>
+        服务器所知的TSIG密钥，包括TKEY协商的密钥，可以使用
+        <command>rndc tsig-list</command>列出。
+      </para>
+      <para>
+        TKEY协商的密钥可以使用<command>rndc tsig-delete</command>从一个
+        服务器删除。这也可以经由TKEY协议自身，通过发送一个认证的TKEY请求
+        指定“key deletion“模式来完成。
+      </para>
+
+    </section>
+    <section xml:id="sig0"><info><title>SIG(0)</title></info>
 
       <para>
-        <command>TKEY</command>过程是由一个客户端或者服务器向一个知道
-		TKEY的服务器发送一个签名的<command>TKEY</command>请求（包括任
-		何合适的KEY）来发起的。服务器的响应，如果它指示是成功的，将包
-		含一个<command>TKEY</command>记录和任何合适的密钥。完成这次交
-		换后，两方的参与者都有足够的信息来决定共享密钥；精确的过程依
-		赖于<command>TKEY</command>的模式。
-		当使用Diffie-Hellman <command>TKEY</command>模式时，互相交换
-		Diffie-Hellman密钥，两个参与方就得到了共享密钥。
+        <acronym>BIND</acronym>部份支持RFC 2535和RFC 2931中所指定的
+        DNSSEC SIG(0)事务签名。SIG(0)使用公钥/私钥来认证消息。访问控制
+        的执行与TSIG密钥类似；可以基于密钥名授予或拒绝权限。
       </para>
-
-    </sect1>
-    <sect1>
-      <title>SIG(0)</title>
-
-      <para>
-        <acronym>BIND</acronym> 9部份支持RFC 2535和RFC 2931中所指定的
-		DNSSEC SIG(0)事务签名。SIG(0)使用公钥/私钥来认证消息。访问控制
-		的执行与TSIG密钥类似；可以基于密钥名授予或拒绝权限。
-      </para>
-
       <para>
         当收到一个SIG(0)签名消息时，仅仅在服务器知道并相信密钥的情况下
-		才会验证它；服务器不会试图定位和（或）证实密钥。
+        才会验证它；服务器不会试图递归获取或验证密钥。
       </para>
-
       <para>
         多个消息的TCP流的SIG(0)签名还不支持。
       </para>
-
       <para>
         跟随<acronym>BIND</acronym> 9发行的生成SIG(0)签名消息的唯一工具
 	是<command>nsupdate</command>。
       </para>
+    </section>
 
-    </sect1>
-    <sect1 id="DNSSEC">
-      <title>DNSSEC</title>
-
+    <section xml:id="DNSSEC"><info><title>DNSSEC</title></info>
       <para>
         通过RFC 4033、RFC 4034和RFC 4035所定义的DNS安全
 	（<emphasis>DNSSEC-bis</emphasis>）扩展，DNS信息的加密认证是可能做到的。
@@ -3366,317 +3418,10 @@ category notify { null; };
             以下是可用类别及其所包含的日志信息类型的简单描述。将来的
             <acronym>BIND</acronym>发行版会添加更多的类别。
           </para>
-          <informaltable colsep="0" rowsep="0">
-            <tgroup cols="2" colsep="0" rowsep="0" tgroupstyle="4Level-table">
-              <colspec colname="1" colnum="1" colsep="0" colwidth="1.150in"/>
-              <colspec colname="2" colnum="2" colsep="0" colwidth="3.350in"/>
-              <tbody>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>default</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      缺省类别，为没有被明确定义的配置的类别指定的日志选项。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>general</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      捕捉所有。许多未被分类到某个类别中，都被记入此类。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>database</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      与数据库相关的消息，数据库指名字服务器内部用于存储区和缓
-                      存数据。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>security</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      同意和拒绝请求。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>config</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      配置文件分析及处理。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>resolver</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      DNS解析，例如由缓存名字服务器所进行的递归查询给客户端的影
-                      响。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>xfer-in</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      服务器所接受的区传送。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>xfer-out</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      服务器所发出的区传送。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>notify</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      NOTIFY协议。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>client</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      对客户端请求的处理。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>unmatched</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      <command>named</command>不能够决定的类别或者没有合适的
-                      <command>view</command>与之匹配的消息。一个单行的摘要也
-                      记入<command>client</command>类别。这个类别最好发送到一个
-                      文件或标准错误，缺省时它被发送到<command>null</command>
-                      通道。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>network</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      网络操作。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>update</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      动态更新。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>update-security</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      同意和拒绝更新请求。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>queries</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      指定记录请求日志的地方。
-                    </para>
-                    <para>
-		      在启动时，指定<command>queries</command>类别将启动对请求
-                      的日志，除非设定<command>querylog</command>选项。
-                    </para>
-                    <para>
-                      请求日志条目报告了客户端IP地址和端口，请求的名字，类和类
-                      型。接下来它报告是否设置了期望递归（Recursion Desired）
-		      的标志（如果设置是+，如果未设置是-），请求是否被签名
-		      （S），是否使用EDNS（E），是否使用TCP（T），DO位
-		      （DNSSEC Ok）是否被设置（D），
-		      或者CD位（Checking Disables）是否被设置（C）。
-		      在这之后，报告请求被发送到的目标地址。
-                    </para>
-                    <para>
-                      <computeroutput>client 127.0.0.1#62536 (www.example.com): query: www.example.com IN AAAA +SE</computeroutput>
-                    </para>
-                    <para>
-                      <computeroutput>client ::1#62537 (www.example.net): query: www.example.net IN AAAA -SE</computeroutput>
-                    </para>
-                    <para>
-                       （这条日志消息的第一部份，显示了客户端地址/端口号和
-                       请求名，在随后所有与同样请求相关的日志消息中都被
-                       重复。）
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>query-errors</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-		      关于导致失败的请求信息。
-		    </para>
-		  </entry>
-		</row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>dispatch</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      分发收到的包到将要处理它们的服务器模块。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>dnssec</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      DNSSEC和TSIG协议处理。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>lame-servers</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      跛服务器。这是远端服务器上的错误配置，是在解析过程中试图
-                      向其发请求时由BIND 9所发现的。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>delegation-only</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      只授权。记录被强制成NXDOMAIN的请求，它是一个只授权区或一
-                      个转发、提示或存根区定义中有
-                      <command>delegation-only</command>的结果。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>edns-disabled</command></para>
-                  </entry>
-		  <entry colname="2">
-		    <para>
-		      记录由于超时而被强制使用普通DNS的请求日志。这
-		      通常是因为远端服务器不是兼容RFC 1034（对EDNS请求
-		      和其不明白的DNS其它扩展并不总是返回FORMERR或类似
-		      的东西）。换句话说，这是瞄准服务器不能响应其不明白
-		      的DNS请求的。
-                    </para>
-                    <para>
-		      注意：日志消息也可能是因为包丢失。在报告服务器
-		      不兼容RFC 1034之前，应该再测试它们以决定不兼容
-		      的类别。这个测试应当阻止或减少不正确报告的数目。
-                    </para>
-                    <para>
-		      注意：最后，<command>named</command>必须不将这样的
-		      超时归咎为不兼容RFC 1034而将其当作普通的包丢失。
-		      将包丢失错误地归咎为不兼容RFC 1034会影响DNSSEC验证，
-		      后者要求对DNSSEC记录返回EDNS。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>RPZ</command></para>
-                  </entry>
-                  <entry colname="2">
-                    <para>
-                      关于响应策略区文件中错误，重写响应以及最高级
-                      <command>debug</command>中试图重写响应等的信息。
-                    </para>
-                  </entry>
-                </row>
-                <row rowsep="0">
-                  <entry colname="1">
-                    <para><command>rate-limit</command></para>
-                  </entry>
-                <entry colname="2">
-                  <para>
-                    一个响应流的比率限制的启动、周期性及结束通知将以
-                    <command>info</command>级别被写入这个类别。
-                    这些消息包含响应域名的一个散列值和域名自身，没有足够的
-                    内存来记录结束通知的名字这种情况除外。
-                    结束通知通常延迟到比率限制停止一分钟之后。
-                    内存不足可能导致仓促发出结束通知，这种情况下以一个星号
-                    （*）开头。各种内部事件以调试级别1或更高级记录日志。
-                  </para>
-                  <para>
-                    对单个请求的比率限制记录在<command>query-errors</command>
-                    类别中。
-                  </para>
-                </entry>
-              </row>
-		<row rowsep="0">
-		  <entry colname="1">
-		    <para><command>cname</command></para>
-		  </entry>
-		  <entry colname="2">
-		    <para>
-                      记录因为一个CNAME记录而非A/AAAA记录而被跳过的名字服务器。
-		    </para>
-		  </entry>
-		</row>
+          <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="logging-categories.xml"/>
+        </section>
+	<section xml:id="query_errors"><info><title><command>query-errors</command>类别</title></info>
 
-              </tbody>
-            </tgroup>
-          </informaltable>
-        </sect3>
-	<sect3>
-	  <title><command>query-errors</command>类别</title>
 	  <para>
 	    <command>query-errors</command>类别是专门用于调试目的：
 	    是为了标识特定的请求为什么以及怎样导致错误响应。
@@ -3736,8 +3481,6 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 
           <informaltable colsep="0" rowsep="0">
             <tgroup cols="2" colsep="0" rowsep="0" tgroupstyle="4Level-table">
-              <!-- colspec colname="1" colnum="1" colsep="0" / -->
-              <!-- colspec colname="2" colnum="2" colsep="0" / -->
               <colspec colname="1" colnum="1" colsep="0" colwidth="1.150in"/>
               <colspec colname="2" colnum="2" colsep="0" colwidth="3.350in"/>
               <tbody>
@@ -3862,25 +3605,24 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 		    </para>
 		  </entry>
 		</row>
-	      </tbody>
-	    </tgroup>
-	  </informaltable>
-	  <para>
-	    在3或更高的调试级别时，记录那些与在调试级别1相同的消息，
-	    但只对其它错误，而不记录SERVFAIL。
-	    注意，在这里，象NXDOMAIN这样的否定响应并不被当作错误。
-	  </para>
-	  <para>
-	    在4或更高的调试级别时，记录那些与在调试级别2相同的消息，
-	    但只对其它错误，而不记录SERVFAIL。
-	    与上面的级别3的情况不同，否定响应的消息要被记录。
-	    这是因为在递归的情况下，调试任何未预期的结果都可能很难。
-	  </para>
-	</sect3>
-      </sect2>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          <para>
+            在3或更高的调试级别时，记录那些与在调试级别1相同的消息，
+            但只对其它错误，而不记录SERVFAIL。
+            注意，在这里，象NXDOMAIN这样的否定响应并不被当作错误。
+          </para>
+          <para>
+            在4或更高的调试级别时，记录那些与在调试级别2相同的消息，
+            但只对其它错误，而不记录SERVFAIL。
+            与上面的级别3的情况不同，否定响应的消息要被记录。
+            这是因为在递归的情况下，调试任何未预期的结果都可能很难。
+          </para>
+        </section>
+      </section>
 
-      <sect2>
-        <title><command>lwres</command>语句语法</title>
+      <section xml:id="lwres_grammar"><info><title><command>lwres</command>语句语法</title></info>
 
         <para>
            这是<filename>named.conf</filename>文件中<command>lwres</command>语
@@ -3980,6 +3722,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> pid-file <replaceable>path_name</replaceable>; </optional>
     <optional> recursing-file <replaceable>path_name</replaceable>; </optional>
     <optional> request-sit <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> nosit-udp-size <replaceable>number</replaceable> ; </optional>
+    <optional> sit-secret <replaceable>secret_string</replaceable> ; </optional>
     <optional> statistics-file <replaceable>path_name</replaceable>; </optional>
     <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
     <optional> auth-nxdomain <replaceable>yes_or_no</replaceable>; </optional>
@@ -4000,6 +3744,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> use-id-pool <replaceable>yes_or_no</replaceable>; </optional>
     <optional> maintain-ixfr-base <replaceable>yes_or_no</replaceable>; </optional>
     <optional> ixfr-from-differences (<replaceable>yes_or_no</replaceable> | <constant>master</constant> | <constant>slave</constant>); </optional>
+    <optional> auto-dnssec <constant>allow</constant>|<constant>maintain</constant>|<constant>off</constant>; </optional>
     <optional> dnssec-enable <replaceable>yes_or_no</replaceable>; </optional>
     <optional> dnssec-validation (<replaceable>yes_or_no</replaceable> | <constant>auto</constant>); </optional>
     <optional> dnssec-lookaside ( <replaceable>auto</replaceable> | 
@@ -4011,7 +3756,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> forwarders { <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; ... </optional> }; </optional>
     <optional> dual-stack-servers <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> {
 	( <replaceable>domain_name</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> |
-	  <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional>) ; 
+          <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional>) ;
         ... }; </optional>
     <optional> check-names ( <replaceable>master</replaceable> | <replaceable>slave</replaceable> | <replaceable>response</replaceable> )
           ( <replaceable>warn</replaceable> | <replaceable>fail</replaceable> | <replaceable>ignore</replaceable> ); </optional>
@@ -4069,9 +3814,14 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> max-transfer-time-out <replaceable>number</replaceable>; </optional>
     <optional> max-transfer-idle-in <replaceable>number</replaceable>; </optional>
     <optional> max-transfer-idle-out <replaceable>number</replaceable>; </optional>
-    <optional> tcp-clients <replaceable>number</replaceable>; </optional>
     <optional> reserved-sockets <replaceable>number</replaceable>; </optional>
     <optional> recursive-clients <replaceable>number</replaceable>; </optional>
+    <optional> tcp-clients <replaceable>number</replaceable>; </optional>
+    <optional> clients-per-query <replaceable>number</replaceable> ; </optional>
+    <optional> max-clients-per-query <replaceable>number</replaceable> ; </optional>
+    <optional> fetches-per-server <replaceable>number</replaceable> <optional><replaceable>(drop | fail)</replaceable></optional>; </optional>
+    <optional> fetch-quota-params <replaceable>number fixedpoint fixedpoint fixedpoint</replaceable> ; </optional>
+    <optional> fetches-per-zone <replaceable>number</replaceable> <optional><replaceable>(drop | fail)</replaceable></optional>; </optional>
     <optional> serial-query-rate <replaceable>number</replaceable>; </optional>
     <optional> serial-queries <replaceable>number</replaceable>; </optional>
     <optional> tcp-listen-queue <replaceable>number</replaceable>; </optional>
@@ -4088,9 +3838,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> notify-source (<replaceable>ip4_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> notify-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>) <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> notify-to-soa <replaceable>yes_or_no</replaceable> ; </optional>
-    <optional> also-notify { <replaceable>ip_addr</replaceable>
-		    <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> <optional>key <replaceable>keyname</replaceable></optional> ;
-		    <optional> <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> <optional>key <replaceable>keyname</replaceable></optional> ; ... </optional> }; </optional>
+    <optional> also-notify <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> { ( <replaceable>masters</replaceable> | <replaceable>ip_addr</replaceable>
+                  <optional>port <replaceable>ip_port</replaceable></optional> ) <optional>key <replaceable>keyname</replaceable></optional> ; ... }; </optional>
     <optional> max-ixfr-log-size <replaceable>number</replaceable>; </optional>
     <optional> max-journal-size <replaceable>size_spec</replaceable>; </optional>
     <optional> coresize <replaceable>size_spec</replaceable> ; </optional>
@@ -4107,7 +3856,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> lame-ttl <replaceable>number</replaceable>; </optional>
     <optional> max-ncache-ttl <replaceable>number</replaceable>; </optional>
     <optional> max-cache-ttl <replaceable>number</replaceable>; </optional>
-    <optional> max-zone-ttl <replaceable>number</replaceable> ; </optional>
+    <optional> max-zone-ttl ( <constant>unlimited</constant> | <replaceable>number</replaceable> ; </optional>
+    <optional> serial-update-method <constant>increment</constant>|<constant>unixtime</constant>|<constant>date</constant>; </optional>
     <optional> sig-validity-interval <replaceable>number</replaceable> <optional><replaceable>number</replaceable></optional> ; </optional>
     <optional> sig-signing-nodes <replaceable>number</replaceable> ; </optional>
     <optional> sig-signing-signatures <replaceable>number</replaceable> ; </optional>
@@ -4135,7 +3885,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
       <optional> clients { <replaceable>address_match_list</replaceable> }; </optional>
       <optional> mapped { <replaceable>address_match_list</replaceable> }; </optional>
         <optional> exclude { <replaceable>address_match_list</replaceable> }; </optional>
-      <optional> suffix IPv6-address; </optional>
+      <optional> suffix <replaceable>IPv6-address</replaceable>; </optional>
       <optional> recursive-only <replaceable>yes_or_no</replaceable>; </optional>
       <optional> break-dnssec <replaceable>yes_or_no</replaceable>; </optional>
     }; </optional>;
@@ -4154,8 +3904,6 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> acache-enable <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> acache-cleaning-interval <replaceable>number</replaceable>; </optional>
     <optional> max-acache-size <replaceable>size_spec</replaceable> ; </optional>
-    <optional> clients-per-query <replaceable>number</replaceable> ; </optional>
-    <optional> max-clients-per-query <replaceable>number</replaceable> ; </optional>
     <optional> max-recursion-depth <replaceable>number</replaceable> ; </optional>
     <optional> max-recursion-queries <replaceable>number</replaceable> ; </optional>
     <optional> masterfile-format
@@ -4815,6 +4563,24 @@ options {
             </listitem>
 	  </varlistentry>
 
+          <varlistentry>
+            <term><command>dnssec-loadkeys-interval</command></term>
+            <listitem>
+                <para>
+                  当一个区配置了<command>auto-dnssec maintain;</command>，
+                  它的密钥仓库必须周期性检查，以查看是否有密钥被添加或者
+                  任何现有的密钥的时间元数据被修改（参见
+                  <xref linkend="man.dnssec-keygen"/>和
+                  <xref linkend="man.dnssec-settime"/>）。
+                  <command>dnssec-loadkeys-interval</command>选项仓库自动
+                  检查的频率，以分钟计。缺省是<literal>60</literal>（1小时），
+                  最小是<literal>1</literal>（1分钟），最大是
+                  <literal>1440</literal>（24小时）；任何更大的值将被默默地
+                  减小。
+                </para>
+            </listitem>
+          </varlistentry>
+
 	  <varlistentry>
 	    <term><command>dnssec-update-mode</command></term>
 	    <listitem>
@@ -4863,8 +4629,34 @@ options {
 		（注意：因为<constant>map</constant>格式的文件直接装载到
                 内存中，这个选项不适应它。）
 	      </para>
+              <para>
+                缺省值是<constant>unlimited</constant>。
+                一个为0的<option>max-zone-ttl</option>被当成
+                <constant>unlimited</constant>看待。
+              </para>
 	    </listitem>
 	  </varlistentry>
+
+              <varlistentry>
+                <term><command>serial-update-method</command></term>
+                <listitem>
+                  <para>
+                    被配置为动态DNS的区可以使用这个选项设置用于更新SOA记录中区
+                    序列号的更新方法。
+                  </para>
+                  <para>
+                    使用缺省的设置
+                    <command>serial-update-method increment;</command>，
+                    SOA序列号将会在每次区被更新时加一。
+                  </para>
+                  <para>
+                    当设置为
+                    <command>serial-update-method unixtime;</command>时，
+                    SOA序列号将被设置为UNIX纪元以来的秒数，除非序列号已经大于
+                    或等于那个值，这时它只是简单的加一。
+                  </para>
+                </listitem>
+              </varlistentry>
 
           <varlistentry>
             <term><command>zone-statistics</command></term>
@@ -4897,8 +4689,7 @@ options {
           </varlistentry>
         </variablelist>
 
-        <sect3 id="boolean_options">
-          <title>布尔选项</title>
+        <section xml:id="boolean_options"><info><title>布尔选项</title></info>
 
           <variablelist>
 
@@ -5680,6 +5471,13 @@ options {
                   <command>managed-keys</command>语句手工配置一个信任锚。
                   缺省为<userinput>yes</userinput>。
                 </para>
+                <note>
+                  <para>
+                    无论何时解析器发出请求到EDNS兼容的服务器，它总是设置DO位
+                    表示它可以支持DNSSEC响应，即使
+                    <command>dnssec-validation</command>被关闭。
+                  </para>
+                </note>
               </listitem>
             </varlistentry>
 
@@ -5932,10 +5730,10 @@ options {
 
           </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>转发</title>
+        <section xml:id="forwarding"><info><title>转发</title></info>
+
           <para>
             转发设施可以被用于在一些服务器上建立一个大的缓存，并减少到外部名字
             服务器的流量。它也允许这样的请求，服务器不能直接访问互联网，但也希
@@ -5950,7 +5748,7 @@ options {
                 <para>
                   这个选项仅在转发服务器列表非空的情况下有意义。值为
                   <varname>first</varname>时，即其缺省值，将使服务器首先请求转
-                  发服务器 &mdash; 并且如果它不回答问题时，服务器再自行查找
+                  发服务器 — 并且如果它不回答问题时，服务器再自行查找
                   回答。如果指定<varname>only</varname>，服务器只请求
                   转发服务器。
                 </para>
@@ -5974,10 +5772,10 @@ options {
             <command>forward only/first</command>行为，或者全都不转发，参见
             <xref linkend="zone_statement_grammar"/>。
           </para>
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>双栈服务器</title>
+        <section xml:id="dual_stack"><info><title>双栈服务器</title></info>
+
           <para>
             双栈服务器是服务器的最后手段，用于解决这样的问题，即由于主机缺乏
             IPv4或IPv6可达性。
@@ -5998,10 +5796,9 @@ options {
               </listitem>
             </varlistentry>
           </variablelist>
-        </sect3>
+        </section>
 
-        <sect3 id="access_control">
-          <title>访问控制</title>
+        <section xml:id="access_control"><info><title>访问控制</title></info>
 
           <para>
             对服务器的访问可以基于发出请求的系统的IP地址进行限制。参见
@@ -6252,10 +6049,10 @@ options {
 
           </variablelist>
 
-        </sect3>
+        </section>
 
-        <sect3>
-          <title>接口</title>
+        <section xml:id="interfaces"><info><title>接口</title></info>
+
           <para>
             服务器回答请求的接口和端口可以由<command>listen-on</command>
 	    选项指定。<command>listen-on</command>接受作为可选项的端口号
@@ -6326,10 +6123,10 @@ listen-on-v6 port 1234 { !2001:db8::/32; any; };
 <programlisting>listen-on-v6 { none; };
 </programlisting>
 
-        </sect3>
+        </section>
 
-        <sect3 id="query_address">
-          <title>请求地址</title>
+        <section xml:id="query_address"><info><title>请求地址</title></info>
+
           <para>
             如果不知道一个问题答案，它就会请求其它的名字服务器。
             <command>query-source</command>指定这样的请求所使用的地址和端口。对
@@ -6456,10 +6253,10 @@ avoid-v6-udp-ports {};
               <command>notify-source</command>。
             </para>
           </note>
-        </sect3>
+        </section>
 
-        <sect3 id="zone_transfers">
-          <title>区传送</title>
+        <section xml:id="zone_transfers"><info><title>区传送</title></info>
+
           <para>
             <acronym>BIND</acronym>有机制来做区传送，并在系统进行区传送的地方对
             负载量设置限制。下列选项应用于区传送。
@@ -6864,7 +6661,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <listitem>
                 <para>
                   设置每个日志文件（参见<xref linkend="journal"/>）的最大大小。
-                  当日志文件达到指定的大小时，其中一些最旧的事物会被自动删除。
+                  当日志文件达到指定的大小时，其中一些最旧的事务会被自动删除。
                   允许的最大值为2G字节。缺省是<literal>unlimited</literal>，也
                   表示2G字节。这也可以基于每个区来设置。
                 </para>
@@ -6885,11 +6682,23 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <term><command>recursive-clients</command></term>
               <listitem>
                 <para>
-                  执行并行递归查询的最大数目，这是服务器所提供给客户端的行为。
+                  服务器代表客户端执行的并行递归查询的最大数目（“硬限额”），
                   缺省值是<literal>1000</literal>。因为每个递归查询使用相当大小
-                  的内存，大致是20k字节，在内存有限的主机上可以降低
+                  的内存（大致是20k字节），在内存有限的主机上可以降低
                   <command>recursive-clients</command>选项的值。
                 </para>
+                <para>
+                  <option>recursive-clients</option>为等待的递归客户端定义
+                  一个“硬限额“：当超过这个数目的客户端在等待时，新进入的请求
+                  将不被接受，对每个新进入的请求，先前等待的请求将被丢弃。
+                </para>
+                  <para>
+                    也可以设置一个“软限额”。当这个更低的限额被超过时，新进入
+                    的请求被接受，但是对每个新进入的请求，一个等待的请求将被丢弃。
+                    如果<option>recursive-clients</option>大于1000，软限额被
+                    设置为<option>recursive-clients</option>减100；否则，它被
+                    设置为<option>recursive-clients</option>的90%。
+                  </para>
               </listitem>
             </varlistentry>
 
@@ -7542,7 +7351,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	      </listitem>
 	    </varlistentry>
 
-	    <varlistentry id="max-recursion-queries">
+	    <varlistentry xml:id="max-recursion-queries">
 	      <term><command>max-recursion-queries</command></term>
 	      <listitem>
 		<para>
@@ -8167,7 +7976,7 @@ deny-answer-aliases { "example.net"; };
             一条响应所触发。由于DNS响应根据至多一条策略记录被重写，必须选择一条
             策略编码一个动作（除<command>DISABLED</command>策略之外）。
 	    以下列顺序为重写选择编码它们的触发器或记录：
-	    <itemizedlist inheritnum="ignore" continuation="restarts">
+            <orderedlist inheritnum="ignore" continuation="restarts">
 	      <listitem>选择区中最先在<command>response-policy</command>选项中
                 出现的触发器记录。
 	      </listitem>
@@ -8756,8 +8565,7 @@ example.com                 CNAME   rpz-tcp-only.
           </para>
 
           <para>
-            虽然<command>keys</command>子句的语法允许多个key，但是当前只支持每
-            个服务器一个key。
+            当前只支持每个服务器一个key。
           </para>
 
           <para>
@@ -8799,10 +8607,9 @@ example.com                 CNAME   rpz-tcp-only.
             <command>request-sit</command>设置。named可能决定SIT不被远程服务器
             支持并且不在请求中添加一个SIT EDNS选项。
 	  </para>
-	</sect2>
+	</section>
 
-      <sect2 id="statschannels">
-        <title><command>statistics-channels</command>语句语法</title>
+      <section xml:id="statschannels"><info><title><command>statistics-channels</command>语句语法</title></info>
 
 <programlisting><command>statistics-channels</command> {
    [ inet ( ip_addr | * ) [ port ip_port ]
@@ -8810,10 +8617,9 @@ example.com                 CNAME   rpz-tcp-only.
    [ inet ...; ]
 };
 </programlisting>
-      </sect2>
+      </section>
 
-      <sect2>
-          <title><command>statistics-channels</command>语句定义和用法</title>
+      <section xml:id="statistics_channels"><info><title><command>statistics-channels</command>语句定义和用法</title></info>
 
         <para>
 	  <command>statistics-channels</command>语句声明了系统管理员用来获取
@@ -8860,8 +8666,8 @@ example.com                 CNAME   rpz-tcp-only.
         <para>
           统计以不同格式和视图提供，依赖于访问它们所使用的URI。例如，
           如果配置了统计通道并监听在127.0.0.1的8888端口，就可以以XML格式在
-          <ulink url="http://127.0.0.1:8888/">http://127.0.0.1:8888/</ulink>或
-          <ulink url="http://127.0.0.1:8888/xml">http://127.0.0.1:8888/xml</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/">http://127.0.0.1:8888/</link>或
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml">http://127.0.0.1:8888/xml</link>
           访问统计。
           引入一个CSS文件，在使用一个样式表兼容的浏览器查看时，可以将XML统计
           转换格式为表格，在使用一个支持javascript的浏览器查看时，可以使用
@@ -8870,65 +8676,50 @@ example.com                 CNAME   rpz-tcp-only.
 
         <para>
           依赖某一特定XML模式的应用可以请求
-          <ulink url="http://127.0.0.1:8888/xml/v2"
-                  >http://127.0.0.1:8888/xml/v2</ulink>获得版本2的
-          统计XML模式或者
-          <ulink url="http://127.0.0.1:8888/xml/v3"
-                  >http://127.0.0.1:8888/xml/v3</ulink>获得版本3的。
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v2">http://127.0.0.1:8888/xml/v2</link>
+          获得版本2的统计XML模式或者
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3">http://127.0.0.1:8888/xml/v3</link>
+          获得版本3的。
           如果服务器支持所请求的模式，就会有响应；如果不支持，就会返回
           一个“page not found”错误。
         </para>
 
 	<para>
           统计的单独子项可以在下列位置查看
-	  <ulink url="http://127.0.0.1:8888/xml/v3/status"
-		  >http://127.0.0.1:8888/xml/v3/status</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/status">http://127.0.0.1:8888/xml/v3/status</link>
 	  （服务器运行时间和上次修改配置时间），
-	  <ulink url="http://127.0.0.1:8888/xml/v3/server"
-		  >http://127.0.0.1:8888/xml/v3/server</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/server">http://127.0.0.1:8888/xml/v3/server</link>
 	  （服务器和解析器统计），
-	  <ulink url="http://127.0.0.1:8888/xml/v3/zones"
-		  >http://127.0.0.1:8888/xml/v3/zones</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/zones">http://127.0.0.1:8888/xml/v3/zones</link>
 	  （区统计），
-	  <ulink url="http://127.0.0.1:8888/xml/v3/net"
-		  >http://127.0.0.1:8888/xml/v3/net</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/net">http://127.0.0.1:8888/xml/v3/net</link>
 	  （网络状态和套接字统计），
-	  <ulink url="http://127.0.0.1:8888/xml/v3/mem"
-		  >http://127.0.0.1:8888/xml/v3/mem</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/mem">http://127.0.0.1:8888/xml/v3/mem</link>
 	  （内存管理统计），
-	  <ulink url="http://127.0.0.1:8888/xml/v3/tasks"
-		  >http://127.0.0.1:8888/xml/v3/tasks</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/tasks">http://127.0.0.1:8888/xml/v3/tasks</link>
 	  （任务管理统计）。
 	</para>
 
 	<para>
 	  也可以JSON格式读取完整的统计集合
-	  <ulink url="http://127.0.0.1:8888/json"
-		  >http://127.0.0.1:8888/json</ulink>,
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json">http://127.0.0.1:8888/json</link>,
 	  在下列位置查看单独子项
-	  <ulink url="http://127.0.0.1:8888/json/v1/status"
-		  >http://127.0.0.1:8888/json/v1/status</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/status">http://127.0.0.1:8888/json/v1/status</link>
 	  （服务器运行时间和上次修改配置时间），
-	  <ulink url="http://127.0.0.1:8888/json/v1/server"
-		  >http://127.0.0.1:8888/json/v1/server</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/server">http://127.0.0.1:8888/json/v1/server</link>
 	  （服务器和解析器统计），
-	  <ulink url="http://127.0.0.1:8888/json/v1/zones"
-		  >http://127.0.0.1:8888/json/v1/zones</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/zones">http://127.0.0.1:8888/json/v1/zones</link>
 	  （区统计），
-	  <ulink url="http://127.0.0.1:8888/json/v1/net"
-		  >http://127.0.0.1:8888/json/v1/net</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/net">http://127.0.0.1:8888/json/v1/net</link>
 	  （网络状态和套接字统计），
-	  <ulink url="http://127.0.0.1:8888/json/v1/mem"
-		  >http://127.0.0.1:8888/json/v1/mem</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/mem">http://127.0.0.1:8888/json/v1/mem</link>
 	  （内存管理统计），
-	  <ulink url="http://127.0.0.1:8888/json/v1/tasks"
-		  >http://127.0.0.1:8888/json/v1/tasks</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/tasks">http://127.0.0.1:8888/json/v1/tasks</link>
 	  （任务管理统计）。
 	</para>
-      </sect2>
+      </section>
 
-        <sect2 id="trusted-keys">
-          <title><command>trusted-keys</command>语句语法</title>
+      <section xml:id="trusted-keys"><info><title><command>trusted-keys</command>语句语法</title></info>
 
 <programlisting><command>trusted-keys</command> {
     <replaceable>string</replaceable> <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>number</replaceable> <replaceable>string</replaceable> ;
@@ -8936,9 +8727,9 @@ example.com                 CNAME   rpz-tcp-only.
 };
 </programlisting>
 
-        </sect2>
-	<sect2>
-	  <title><command>trusted-keys</command>语句定义和用法</title>
+        </section>
+	<section xml:id="trusted_keys"><info><title><command>trusted-keys</command>语句定义和用法</title></info>
+
 	  <para>
 	    <command>trusted-keys</command>语句定义DNSSEC安全根。DNSSEC在
 	    <xref linkend="DNSSEC"/>中描述。一个安全根被定义，当一个非授权区的
@@ -8965,10 +8756,9 @@ example.com                 CNAME   rpz-tcp-only.
 	    被所有的视图所继承，但是在一个视图内部定义的密钥只能用于
 	    那个视图。
 	  </para>
-	</sect2>
+	</section>
 
-        <sect2 id="managed-keys">
-          <title><command>managed-keys</command> Statement Grammar</title>
+        <section xml:id="managed_keys"><info><title><command>managed-keys</command> Statement Grammar</title></info>
 
 <programlisting><command>managed-keys</command> {
     <replaceable>name</replaceable> initial-key <replaceable>flags</replaceable> <replaceable>protocol</replaceable> <replaceable>algorithm</replaceable> <replaceable>key-data</replaceable> ;
@@ -8976,10 +8766,9 @@ example.com                 CNAME   rpz-tcp-only.
 };
 </programlisting>
 
-        </sect2>
-	<sect2>
-	  <title><command>managed-keys</command> Statement Definition
-	    and Usage</title>
+        </section>
+	<section xml:id="managed-keys"><info><title><command>managed-keys</command>语句定义和用法</title></info>
+
 	  <para>
 	    于<command>trusted-keys</command>相似，
 	    <command>managed-keys</command>语句定义DNSSEC安全根。
@@ -9179,7 +8968,7 @@ view "external" {
 </programlisting>
 
         </section>
-        <section xml:id="zone_statement_grammar"><info<title><command>zone</command>语句语法</title></info>
+        <section xml:id="zone_statement_grammar"><info><title><command>zone</command>语句语法</title></info>
 
 <programlisting><command>zone</command> <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
     type master;
@@ -9337,7 +9126,7 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     <optional> alt-transfer-source-v6 (<replaceable>ip6_addr</replaceable> | <constant>*</constant>)
 			    <optional>port <replaceable>ip_port</replaceable></optional> <optional>dscp <replaceable>ip_dscp</replaceable></optional> ; </optional>
     <optional> use-alt-transfer-source <replaceable>yes_or_no</replaceable>; </optional>
-    <optional> zone-statistics <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
     <optional> database <replaceable>string</replaceable> ; </optional>
     <optional> min-refresh-time <replaceable>number</replaceable> ; </optional>
     <optional> max-refresh-time <replaceable>number</replaceable> ; </optional>
@@ -9350,8 +9139,8 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
     type static-stub;
     <optional> allow-query { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> server-addresses { <optional> <replaceable>ip_addr</replaceable> ; ... </optional> }; </optional>
-    <optional> server-names { <optional> <replaceable>namelist</replaceable> </optional> }; </optional>  
-    <optional> zone-statistics <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> server-names { <optional> <replaceable>namelist</replaceable> </optional> }; </optional>
+    <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
 };
 
 zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replaceable></optional> {
@@ -9379,11 +9168,21 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
 
 </programlisting>
 
-        </sect2>
-        <sect2>
-          <title><command>zone</command>语句定义和用法</title>
-          <sect3>
-            <title>区类型</title>
+        </section>
+        <section xml:id="zone_statement"><info><title><command>zone</command>语句定义和用法</title></info>
+
+          <section xml:id="zone_types"><info><title>区类型</title></info>
+
+            <para>
+              <command>zone</command>配置要求<command>type</command>关键字，
+              除非它时一个<command>in-view</command>配置。可以接受的值包括：
+              <varname>delegation-only</varname>，
+              <varname>forward</varname>，<varname>hint</varname>，
+              <varname>master</varname>，<varname>redirect</varname>，
+              <varname>slave</varname>，<varname>static-stub</varname>和
+              <varname>stub</varname>。
+            </para>
+
             <informaltable colsep="0" rowsep="0">
               <tgroup cols="2" colsep="0" rowsep="0" tgroupstyle="3Level-table">
                 <!--colspec colname="1" colnum="1" colsep="0" colwidth="1.108in"/-->
@@ -9806,6 +9605,16 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
               </varlistentry>
 
               <varlistentry>
+                <term><command>dnssec-loadkeys-interval</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="options"/>中对
+                    <command>dnssec-loadkeys-interval</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
                 <term><command>dnssec-update-mode</command></term>
                 <listitem>
                   <para>
@@ -9952,6 +9761,178 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
                   </para>
                 </listitem>
               </varlistentry>
+
+              <varlistentry>
+                <term><command>max-transfer-idle-in</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="zone_transfers"/>中对
+                    <command>max-transfer-idle-in</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>max-transfer-time-out</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="zone_transfers"/>中对
+                    <command>max-transfer-time-out</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>max-transfer-idle-out</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="zone_transfers"/>中对
+                    <command>max-transfer-idle-out</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>notify</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="boolean_options"/>中对
+                    <command>notify</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>notify-delay</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="tuning"/>中对
+                    <command>notify-delay</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>notify-to-soa</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="boolean_options"/>中对
+                    <command>notify-to-soa</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>pubkey</command></term>
+                <listitem>
+                  <para>
+                    在<acronym>BIND</acronym> 8中，这个选项用于指定一个公共区密
+                    钥，它是为了在从磁盘中装载DNSSEC签名的区时校验区的签名的。
+                    <acronym>BIND</acronym> 9在装载时不校验签名，并忽略此选项。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>zone-statistics</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="options"/>中对
+                    <command>zone-statistics</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>server-addresses</command></term>
+                <listitem>
+                  <para>
+                    仅对静态存根区有意义。这是一个IP地址列表，在递归解析这个区
+                    时，请求将被发向这个列表。
+                    为这个选项配置一个非空列表，将会在内部配置顶点NS资源记录及
+                    附带的粘连A或者AAAA记录。
+                  </para>
+                  <para>
+                    例如，如果“example.com”被配置成一个静态存根区，在一个
+                    <command>server-addresses</command>选项中配置192.0.2.1和
+                    2001:db8::1234，内部将被配置为下列资源记录。
+                  </para>
+<programlisting>example.com. NS example.com.
+example.com. A 192.0.2.1
+example.com. AAAA 2001:db8::1234</programlisting>
+                  <para>
+                    这些记录将会被用于解析这个静态存根区下的名字。例如，如果
+                    服务器受到一个带RD位的“www.example.com”请求，服务器将
+                    发起一个递归解析，将请求发给192.0.2.1和/或2001:db8::1234。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>server-names</command></term>
+                <listitem>
+                  <para>
+                    仅对静态存根区有意义。这是一个名字服务器域名的列表，充当
+                    这个静态存根区的权威服务器。
+                    在<command>named</command>需要发送请求到这些服务器时，这些
+                    名字将被解析成IP地址。
+                    为使这个补充解析能够成功，这些名字必须不能是静态存根区原点
+                    名的子域名。即，当一个静态存根区的原点是“example.net”时，
+                    “ns.example”和“master.example.com”可以设定在
+                    <command>server-names</command>选项中，但是
+                    “ns.example.net”不能，它将被配置分析器拒绝。
+                  </para>
+                  <para>
+                    为这个选项配置一个非空列表，将会使用指定的名字在内部配置
+                    顶点NS资源记录。例如，如果“example.com”被配置为一个静态
+                    存根区，并在一个<command>server-names</command>选项配置
+                    “ns1.example.net”和“ns2.example.net”，内部将被配置为
+                    下列资源记录。
+                  </para>
+<programlisting>example.com. NS ns1.example.net.
+example.com. NS ns2.example.net.
+</programlisting>
+                  <para>
+                    这些记录将会被用于解析这个静态存根区下的名字。例如，如果
+                    服务器受到一个带RD位的“www.example.com”请求，服务器将
+                    发起一个递归解析，先将“ns1.example.net”和/或
+                    “ns2.example.net”解析成IP地址，再将请求发给（一个或多个）
+                    这些地址。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>sig-validity-interval</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="tuning"/>中对
+                    <command>sig-validity-interval</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>sig-signing-nodes</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="tuning"/>中对
+                    <command>sig-signing-nodes</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
+                <term><command>sig-signing-signatures</command></term>
+                <listitem>
+                  <para>
+                    参见<xref linkend="tuning"/>中对
+                    <command>sig-signing-signatures</command>的描述。
+                  </para>
+                </listitem>
+              </varlistentry>
+
+              <varlistentry>
                 <term><command>sig-signing-type</command></term>
                 <listitem>
                   <para>
@@ -10528,10 +10509,10 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
               注意当遇到一个删除与一个名字相关的所有记录的企图时，需要针对
 	      每个现存记录类型对规则进行检查。
             </para>
-          </sect3>
+          </section>
 
-	  <sect3>
-	    <title>多视图</title>
+	  <section xml:id="multiple_views"><info><title>多视图</title></info>
+
 	    <para>
               当使用了多个视图，一个区可能被在超过一个视图中引用。通常，这些
               视图会对同样的名字包含不同的区，即运行不同的客户端对同样请求收到
@@ -10567,24 +10548,33 @@ view external {
               <command>forwarders</command>之外的任何其它选项。
               （这些选项控制包含视图的行为，而不是改变区对象自身。）
 	    </para>
+            <para>
+              区级访问控制表（例如：allow-query，allow-transfer）和
+              区的其它详细配置是在定义区的视图中设置。需要足够仔细地
+              确保这些访问控制表足够广泛能适应引用区的所有视图。
+            </para>
 	    <para>
 	      一个<command>in-view</command>区不能用作一个响应策略区。
 	    </para>
-	  </sect3>
+            <para>
+              一个 <command>in-view</command>区不能引用一个
+              一个<command>forward</command>区。
+            </para>
 
-        </sect2>
-      </sect1>
-      <sect1>
-        <title>区文件</title>
-        <sect2 id="types_of_resource_records_and_when_to_use_them">
-          <title>资源记录的类型及使用时机</title>
+	  </section>
+
+        </section>
+      </section>
+      <section xml:id="zone_file"><info><title>区文件</title></info>
+
+        <section xml:id="types_of_resource_records_and_when_to_use_them"><info><title>资源记录的类型及使用时机</title></info>
+
           <para>
             本节很大部份是引用自RFC 1034，描述资源记录（RR）的概念并解释了其使
             用时机。自从RFC 1034公布以来，几种新的RR被确定并在DNS中实现。这些
             RR也被包括进来。
           </para>
-          <sect3>
-            <title>资源记录</title>
+          <section><info><title>资源记录</title></info>
 
             <para>
               一个域名标识一个节点。每个节点有一个资源信息的集合，这个集合可以
@@ -10743,6 +10733,67 @@ view external {
                   <row rowsep="0">
                     <entry colname="1">
                       <para>
+                        ATMA
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        ATM地址。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        AVC
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        应用可见性和控制记录。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        CAA
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        确定哪个证书权威可以发放这个域的证书，以及它们在
+                        这样做时需要遵从哪些规则。在RFC 6844中定义。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        CDNSKEY
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        确定哪个DNSKEY记录应该和DS记录一样在父区中被发布。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        CDS
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        包含可以被父区发布的DS记录的集合。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
                         CERT
                       </para>
                     </entry>
@@ -10767,6 +10818,18 @@ view external {
                   <row rowsep="0">
                     <entry colname="1">
                       <para>
+                        CSYNC
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        在DNS中从子区到父区的同步，在RFC7477中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
                         DHCID
                       </para>
                     </entry>
@@ -10774,6 +10837,19 @@ view external {
                       <para>
 			用于识别哪一个DHCP客户端被关联到这个名字。
 			在RFC 4701中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        DLV
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        一个DNS旁视验证记录，它包含用作在一个DLV名字空间中
+                        区的信任锚的记录。在RFC 4431中描述。
                       </para>
                     </entry>
                   </row>
@@ -10818,6 +10894,54 @@ view external {
                   <row rowsep="0">
                     <entry colname="1">
                       <para>
+                        EID
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        终点标识符。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        EUI48
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        一个48位EUI地址。在RFC 7043中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        EUI64
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        一个64位EUI地址。在RFC 7043中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        GID
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        保留。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
                         GPOS
                       </para>
                     </entry>
@@ -10836,6 +10960,19 @@ view external {
                     <entry colname="2">
                       <para>
                         指定主机所用的CPU和OS。在RFC 1035中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        HIP
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        主机身份协议地址。
+                        在RFC 5205中描述。
                       </para>
                     </entry>
                   </row>
@@ -10893,12 +11030,123 @@ view external {
                   <row rowsep="0">
                     <entry colname="1">
                       <para>
+                        L32
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        为标识符-定位器网络协议存放32位定位值。
+                        在RFC 6742中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        L64
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        为标识符-定位器网络协议存放64位定位值。
+                        在RFC 6742中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
                         LOC
                       </para>
                     </entry>
                     <entry colname="2">
                       <para>
                         存放GPS信息。在RFC 1876中描述。试验性的。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        LP
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        标识符-定位器网络协议。
+                        在RFC 6742中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        MB
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        邮箱。已成历史。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        MD
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        邮件目的地。已成历史。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        MF
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        邮件转发者。已成历史。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        MG
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        邮件组。已成历史。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        MINFO
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        邮件信息。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        MR
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        邮件改名。已成历史。
                       </para>
                     </entry>
                   </row>
@@ -10925,6 +11173,43 @@ view external {
                     <entry colname="2">
                       <para>
                         名字权威指针。在RFC 2915中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        NID
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        存放标识符-定位器网络协议中的节点标识符值。
+                        在RFC 6742中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        NINFO
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        包含区状态信息。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        NIMLOC
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        Nimrod定位器。
                       </para>
                     </entry>
                   </row>
@@ -10998,6 +11283,18 @@ view external {
                   <row rowsep="0">
                     <entry colname="1">
                       <para>
+                        NULL
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        这是一个不透明容器。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
                         NXT
                       </para>
                     </entry>
@@ -11007,6 +11304,18 @@ view external {
                         源记录不存在于一个区中，并指明对一个存在的名字具有哪种
                         类型的资源记录。在原始的DNSSEC中使用；在DNSSECbis中被
                         NSEC取代。在RFC 2535中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        OPENPGPKEY
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        用于保存一个OPENPGPKEY。
                       </para>
                     </entry>
                   </row>
@@ -11031,6 +11340,18 @@ view external {
                     <entry colname="2">
                       <para>
                         在RFC 822和X.400地址之间提供映射。在RFC 2163中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        RKEY
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        资源密钥。
                       </para>
                     </entry>
                   </row>
@@ -11088,6 +11409,30 @@ view external {
                   <row rowsep="0">
                     <entry colname="1">
                       <para>
+                        SINK
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        通用容器记录。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        SMIMEA
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        S/MIME安全认证协会。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
                         SOA
                       </para>
                     </entry>
@@ -11139,12 +11484,97 @@ view external {
                   <row rowsep="0">
                     <entry colname="1">
                       <para>
+                        TA
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        信任锚，试验性。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        TALINK
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        信任锚链，试验性。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        TLSA
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        传输层安全认证协会。在RFC 6698中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
                         TXT
                       </para>
                     </entry>
                     <entry colname="2">
                       <para>
                         文本记录。在RFC 1035中描述。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        UID
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        保留。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        UINFO
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        保留。
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        UNSPEC
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        保留。历史的。
+                        Reserved. Historical.
+                      </para>
+                    </entry>
+                  </row>
+                  <row rowsep="0">
+                    <entry colname="1">
+                      <para>
+                        URI
+                      </para>
+                    </entry>
+                    <entry colname="2">
+                      <para>
+                        保存一个URI。在RFC 7553中描述。
                       </para>
                     </entry>
                   </row>
@@ -11448,9 +11878,9 @@ view external {
             域名。优先级控制电子邮件尝试投递的顺序，数字最小的最优先。如果两个
             优先级相同，就随机选择一个服务器。如果一个给定优先级的服务器没有响
             应，邮件传输代理（MTA，mail transport agent）将会选择下一个更大的优
-            先数。优先数大小没有绝对含义－它们仅仅是相对于这个域名的其它MX记录
+            先数。优先数大小没有绝对含义 — 它们仅仅是相对于这个域名的其它MX记录
             而言。所给出的域名是邮件将要被投递到的机器。它
-            <emphasis>必须</emphasis>有一个相关的地址记录（A或者AAAA） &mdash; 
+            <emphasis>必须</emphasis>有一个相关的地址记录（A或者AAAA） — 
             CNAME是不够的。
           </para>
           <para>
@@ -11601,9 +12031,9 @@ view external {
             <literal>mail2.example.com</literal>（以任何顺序），然后如果都没有
             成功，将会尝试投递到<literal>mail.backup.org</literal>。
           </para>
-        </sect2>
-        <sect2 id="Setting_TTLs">
-          <title>设置TTL</title>
+        </section>
+        <section xml:id="Setting_TTLs"><info><title>设置TTL</title></info>
+
           <para>
             资源记录的生存期字段是一个32位的整数，它的单位为秒，主要用于解析器
             缓存资源记录。TTL描述一个资源记录在被丢弃前可以被缓存多长时间。当前
@@ -11663,9 +12093,9 @@ view external {
             所有这三种TTL的缺省单位都是秒，虽然单位都可以被显式指定，例如，
             <literal>1h30m</literal>。
           </para>
-        </sect2>
-        <sect2>
-          <title>IPv4中的反向映射</title>
+        </section>
+        <section xml:id="ipv4_reverse"><info><title>IPv4中的反向映射</title></info>
+
           <para>
             反向名字解析（即将IP地址翻译成名字）是通过使用
             <emphasis>in-addr.arpa</emphasis>域和PTR记录来实现的。in-addr.arpa
@@ -12151,11 +12581,15 @@ HOST-127.EXAMPLE. MX 0 .
 
 	<para>
 	  当<command>zone-statistics</command>被设为
-	  <userinput>yes</userinput>时，对服务器是其权威的每个区，
+          <userinput>full</userinput>（或<userinput>yes</userinput>
+          以便向后兼容）时，对服务器是其权威的每个区，
 	  都收集并显示名字服务器统计的一个子集。
-	  这些统计计数器与其区和视图名一起显示。
-	  在某些情况，缺省视图的视图名被省略。
 	</para>
+
+        <para>
+          这些统计计数器和它们的区和视图名一起显示。如果服务器没有
+          显式配置视图，视图名被省略。
+        </para>
 
 	<para>
 	  当前有两种用户接口可以用来访问统计信息。
@@ -12166,8 +12600,8 @@ HOST-127.EXAMPLE. MX 0 .
 	  （参见<xref linkend="statschannels"/>）。
 	</para>
 
-        <sect3 id="statsfile">
-          <title>统计文件</title>
+        <section xml:id="statsfile"><info><title>统计文件</title></info>
+
           <para>
             文本格式的统计转印以类似下面这一行开始：
 	  </para>
@@ -12196,10 +12630,10 @@ HOST-127.EXAMPLE. MX 0 .
           <para>
 	    <command>--- Statistics Dump --- (973798949)</command>
           </para>
-	</sect3>
+	</section>
 
-        <sect2 id="statistics_counters">
-	  <title>统计计数器</title>
+        <section xml:id="statistics_counters"><info><title>统计计数器</title></info>
+
 	  <para>
 	    下表概括了<acronym>BIND</acronym>所提供的统计计数器。
 	    对表的每一行，最左一列是计数器的缩写符号名。
@@ -12211,8 +12645,7 @@ HOST-127.EXAMPLE. MX 0 .
 	    如果合适的时候。
 	  </para>
 
-	  <sect3>
-            <title>名字服务器统计计数器</title>
+	  <section xml:id="stats_counters"><info><title>名字服务器统计计数器</title></info>
 
             <informaltable colsep="0" rowsep="0">
               <tgroup cols="3" colsep="0" rowsep="0" tgroupstyle="4Level-table">
@@ -12271,7 +12704,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ReqEdns0</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12284,7 +12717,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ReqBadEDNSVer</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12297,7 +12730,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ReqTSIG</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12310,7 +12743,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ReqSIG0</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12323,7 +12756,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ReqBadSIG</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12427,7 +12860,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>RespEDNS0</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12440,7 +12873,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>RespTSIG</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12453,7 +12886,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>RespSIG0</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12466,7 +12899,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QrySuccess</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12483,7 +12916,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QryAuthAns</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12509,7 +12942,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QryReferral</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12612,7 +13045,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QryDropped</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12620,7 +13053,8 @@ HOST-127.EXAMPLE. MX 0 .
 			并随后被丢弃的巨量递归查询。
 			这是由于<command>clients-per-query</command>
 			和<command>max-clients-per-query</command>
-			选项（参见关于<xref linkend="clients-per-query"/>
+			选项（参见关于
+                        <xref endterm="cpq_term" linkend="clients-per-query"/>
 			的描述）所解释的原因而被丢弃的查询的数目。
 			这相当于先前<acronym>BIND</acronym> 9版本
 			中的<command>dropped</command>计数器。
@@ -12632,7 +13066,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QryFailure</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12652,7 +13086,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>XfrReqDone</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12665,7 +13099,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>UpdateReqFwd</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12678,7 +13112,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>UpdateRespFwd</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12691,7 +13125,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>UpdateFwdFail</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12704,7 +13138,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>UpdateDone</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12717,7 +13151,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>UpdateFail</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12730,7 +13164,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>UpdateBadPrereq</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12743,7 +13177,7 @@ HOST-127.EXAMPLE. MX 0 .
                       <para><command>RateDropped</command></para>
                     </entry>
                     <entry colname="2">
-                      <para><command></command></para>
+                      <para><command/></para>
                     </entry>
                     <entry colname="3">
                       <para>
@@ -12756,7 +13190,7 @@ HOST-127.EXAMPLE. MX 0 .
                       <para><command>RateSlipped</command></para>
                     </entry>
                     <entry colname="2">
-                      <para><command></command></para>
+                      <para><command/></para>
                     </entry>
                     <entry colname="3">
                       <para>
@@ -12769,7 +13203,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>RPZRewrites</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -12780,10 +13214,9 @@ HOST-127.EXAMPLE. MX 0 .
 		</tbody>
               </tgroup>
             </informaltable>
-          </sect3>
+          </section>
 
-	  <sect3>
-            <title>区维护统计计数器</title>
+	  <section xml:id="zone_stats"><info><title>区维护统计计数器</title></info>
 
             <informaltable colsep="0" rowsep="0">
               <tgroup cols="2" colsep="0" rowsep="0" tgroupstyle="4Level-table">
@@ -12936,10 +13369,9 @@ HOST-127.EXAMPLE. MX 0 .
 		</tbody>
               </tgroup>
             </informaltable>
-	  </sect3>
+	  </section>
 
-	  <sect3>
-            <title>解析器统计计数器</title>
+	  <section xml:id="resolver_stats"><info><title>解析器统计计数器</title></info>
 
             <informaltable colsep="0" rowsep="0">
               <tgroup cols="3" colsep="0" rowsep="0" tgroupstyle="4Level-table">
@@ -13104,7 +13536,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>Truncated</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13143,7 +13575,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QueryAbort</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13156,7 +13588,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QuerySockFail</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13171,7 +13603,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QueryTimeout</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13210,7 +13642,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>GlueFetchv4Fail</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13223,7 +13655,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>GlueFetchv6Fail</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13236,7 +13668,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ValAttempt</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13249,7 +13681,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ValOk</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13262,7 +13694,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ValNegOk</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13275,7 +13707,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>ValFail</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13288,7 +13720,7 @@ HOST-127.EXAMPLE. MX 0 .
 		      <para><command>QryRTTnn</command></para>
 		    </entry>
 		    <entry colname="2">
-		      <para><command></command></para>
+		      <para><command/></para>
 		    </entry>
 		    <entry colname="3">
 		      <para>
@@ -13466,9 +13898,10 @@ HOST-127.EXAMPLE. MX 0 .
 		</tbody>
               </tgroup>
 	    </informaltable>
-	  </sect3>
-	  <sect3>
-            <title>对<emphasis>BIND</emphasis> 8计数器的兼容性</title>
+	  </section>
+
+	  <section xml:id="bind8_compatibility"><info><title>对<emphasis>BIND</emphasis> 8计数器的兼容性</title></info>
+
 	    <para>
 	      如以上的表格所示，大多数在<command>BIND</command> 8中
 	      可用的统计计数器在<command>BIND</command> 9中也被支持。
@@ -13515,15 +13948,15 @@ HOST-127.EXAMPLE. MX 0 .
 		</listitem>
 	      </varlistentry>
 	    </variablelist>
-	  </sect3>
-        </sect2>
-      </sect1>
+	  </section>
+        </section>
+      </section>
 
     </chapter>
-    <chapter id="Bv9ARM-gbk.ch07">
-      <title><acronym>BIND</acronym> 9安全考虑</title>
-      <sect1 id="Access_Control_Lists">
-        <title>访问控制表</title>
+    <chapter xml:id="Bv9ARM-gbk.ch07"><info><title><acronym>BIND</acronym> 9安全考虑</title></info>
+
+      <section xml:id="Access_Control_Lists"><info><title>访问控制表</title></info>
+
         <para>
           访问控制表（Access Control Lists，ACL）是地址匹配表，你可以建立并
           命名，以备以后用于<command>allow-notify</command>，
@@ -13577,9 +14010,9 @@ zone "example.com" {
         <para>
           这将允许外部对服务器进行递归查询，除非在之前递归被禁止。
         </para>
-      </sect1>
-      <sect1>
-        <title><command>Chroot</command>和<command>Setuid</command></title>
+      </section>
+      <section xml:id="chroot_and_setuid"><info><title><command>Chroot</command>和<command>Setuid</command></title></info>
+
         <para>
           在UNIX服务器上，可以通过为<command>named</command>
 	  设定“<option>-t</option>”选项
@@ -13604,8 +14037,7 @@ zone "example.com" {
           <userinput>/usr/local/sbin/named -u 202 -t /var/named</userinput>
         </para>
 
-        <sect2>
-          <title><command>chroot</command>环境</title>
+        <section xml:id="chroot"><info><title><command>chroot</command>环境</title></info>
 
           <para>
             为了让一个<command>chroot</command>环境在一个特定目录（例如，
@@ -13624,10 +14056,9 @@ zone "example.com" {
             <filename>/dev/log</filename>以及
             <filename>/etc/localtime</filename>。
           </para>
-        </sect2>
+        </section>
 
-        <sect2>
-          <title>使用<command>setuid</command>函数</title>
+        <section xml:id="setuid"><info><title>使用<command>setuid</command>函数</title></info>
 
           <para>
             在运行<command>named</command>服务之前，在你想让
@@ -13635,15 +14066,14 @@ zone "example.com" {
             序（改变文件访问和修改时间）或者<command>chown</command>应用程序
             （设置用户id和/或 组id）。
           </para>
-	  <note>
+	  <note><simpara>
 	    注意如果<command>named</command>后台进程是以一个非特权用户身份运行
 	    的，如果服务器重新加载，它将不能够绑定到新的限制端口上。
-	  </note>
-        </sect2>
-      </sect1>
+	  </simpara></note>
+        </section>
+      </section>
 
-      <sect1 id="dynamic_update_security">
-        <title>动态更新的安全</title>
+      <section xml:id="dynamic_update_security"><info><title>动态更新的安全</title></info>
 
         <para>
           应该严格限制对动态更新设施的访问。在早期的<acronym>BIND</acronym>版本
@@ -13669,15 +14099,14 @@ zone "example.com" {
           据的顶级区就完全不允许对其进行动态更新。
         </para>
 
-      </sect1>
+      </section>
     </chapter>
 
-    <chapter id="Bv9ARM-gbk.ch08">
-      <title>排除故障</title>
-      <sect1>
-        <title>通常问题</title>
-        <sect2>
-          <title>它不工作；我如何判定哪里出错了？</title>
+    <chapter xml:id="Bv9ARM-gbk.ch08"><info><title>排除故障</title></info>
+
+      <section xml:id="common_problems"><info><title>常见问题</title></info>
+
+        <section><info><title>它不工作；我如何判定哪里出错了？</title></info>
 
           <para>
             解决安装和配置问题的最好方法是通过预先设置日志文件来采取预防性的措
@@ -13685,13 +14114,12 @@ zone "example.com" {
             如何来解决问题。
           </para>
 
-        </sect2>
-      </sect1>
-      <sect1>
-        <title>增加和修改序列号</title>
+        </section>
+      </section>
+      <section><info><title>增加和修改序列号</title></info>
 
 	<para>
-	  区的序列号只是数字，它们与日期没有联系。大多数人将它们设置成表示日期
+	  区的序列号只是数字 — 它们与日期没有联系。大多数人将它们设置成表示日期
 	  的一个数，通常是YYYYMMDDRR的格式。偶尔地，他们会错误地将它们设置为一
 	  个“未来的日期”然后试图通过将其设置为“当前的日期”来纠正错误。这就
 	  产生了问题，因为序列号是用来指示一个区被更新了。如果一个辅服务器上的
@@ -13709,9 +14137,8 @@ zone "example.com" {
           区。
         </para>
 
-      </sect1>
-      <sect1>
-        <title>从哪里获得帮助？</title>
+      </section>
+      <section xml:id="more_help"><info><title>从哪里获得帮助？</title></info>
 
         <para>
           互联网系统集团（Internet Systems Consortium，<acronym>ISC</acronym>）
@@ -13725,24 +14152,22 @@ zone "example.com" {
 
         <para>
           要讨论对支持的安排，请联系
-          <ulink url="mailto:info@isc.org">info@isc.org</ulink>或访问
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="mailto:info@isc.org">info@isc.org</link>
+          或访问
           <acronym>ISC</acronym>的主页
-          <ulink url="http://www.isc.org/services/support/"
-	             >http://www.isc.org/services/support/</ulink>
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/services/support/">http://www.isc.org/services/support/</link>
 	  以了解更多信息。
         </para>
-      </sect1>
+      </section>
     </chapter>
 
-    <appendix id="Bv9ARM-gbk.ch09">
-      <title>发行注记</title>
-      <xi:include href="notes-utf8.xml"/>
+    <appendix xml:id="Bv9ARM-gbk.ch09"><info><title>发行注记</title></info>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="notes-utf8.xml"/>
     </appendix>
 
-    <appendix id="Bv9ARM-gbk.ch10">
-      <title><acronym>DNS</acronym>和<acronym>BIND</acronym>的简要历史</title>
-      <sect1 id="historical_dns_information">
-          <para>
+    <appendix id="Bv9ARM-gbk.ch10"><info><title><acronym>DNS</acronym>和<acronym>BIND</acronym>的简要历史</title></info>
+
+      <para id="historical_dns_information">
             尽管域名系统的“官方的”开始是随着RFC 920的公布而发生在1984年，
             但这个新系统的核心是由RFC 882和883在1983年描述的。
             从1984年到1987年，ARPAnet（今天的互联网的前身）成为一个在
@@ -13806,13 +14231,12 @@ zone "example.com" {
             今天，在几个公司的赞助下，并且经过许多人的不懈地努力工作，
             <acronym>BIND</acronym>开发工作才成为可能。
           </para>
-      </sect1>
       </appendix>
 
-      <appendix id="Bv9ARM-gbk.ch11">
-        <title>通用<acronym>DNS</acronym>参考信息</title>
-        <sect1 id="ipv6addresses">
-          <title>IPv6地址（AAAA）</title>
+      <appendix xml:id="Bv9ARM-gbk.ch11"><info><title>通用<acronym>DNS</acronym>参考信息</title></info>
+
+        <section xml:id="ipv6addresses"><info><title>IPv6地址（AAAA）</title></info>
+
           <para>
             IPv6地址是128位接口和接口集合的标识符，它被引入
             <acronym>DNS</acronym>以促进可扩展的互联网路由。有三种类型的地址：
@@ -14626,7 +15050,7 @@ zone "example.com" {
       </section>
     </appendix>
 
-    <appendix xml:id="Bv9ARM.ch12"><info><title>BIND 9 DNS库支持</title></info>
+    <appendix xml:id="Bv9ARM-gbk.ch12"><info><title>BIND 9 DNS库支持</title></info>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="libdns-utf8.xml"/>
 
     <reference xml:id="Bv9ARM-gbk.ch13"><info><title>手册页</title></info>

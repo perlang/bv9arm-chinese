@@ -42,7 +42,7 @@
       <year>2003</year>
       <holder>Internet Software Consortium.</holder>
     </copyright>
-    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="releaseinfo.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="releaseinfo-utf8.xml"/>
   </info>
 
   <chapter xml:id="Bv9ARM-gbk.ch01"><info><title>介绍</title></info>
@@ -63,7 +63,7 @@
         （Internet Systems Consortium，<acronym>ISC</acronym>）
         的<acronym>BIND</acronym>版本9软件包的基本信息。
       </para>
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="pkgversion.xml"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="pkgversion-utf8.xml"/>
     </section>
 
     <section xml:id="organization"><info><title>本文档的组织</title></info>
@@ -3418,7 +3418,7 @@ category notify { null; };
             以下是可用类别及其所包含的日志信息类型的简单描述。将来的
             <acronym>BIND</acronym>发行版会添加更多的类别。
           </para>
-          <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="logging-categories.xml"/>
+          <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="logging-categories-utf8.xml"/>
         </section>
 	<section xml:id="query_errors"><info><title><command>query-errors</command>类别</title></info>
 
@@ -6712,6 +6712,155 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               </listitem>
             </varlistentry>
 
+	    <varlistentry xml:id="clients-per-query">
+	      <term><command>clients-per-query</command></term>
+	      <term><command>max-clients-per-query</command></term>
+              <listitem>
+		<para>
+		  这些设置允许同时进行的针对任何给定请求
+		  （&lt;qname，qtype，qclass&gt;）的递归客户端的
+		  初始数目（最小值）和最大数目，对任何超过这个数目的额外请求，
+		  服务器都将扔掉。<command>named</command>会尝试自己调整这个值，
+		  并将改变记入日志。缺省值为10和100。
+		</para>
+
+		<para>
+	          这个值应该反映自它开始解析某个名字开始的一段时间内进来了多少个
+		  针对给定名字的请求。如果请求的数目超过这个值，
+		  <command>named</command>将会假定它正在与一个无响应的区打交道，
+		  就会扔掉多余的请求。如果它在扔掉请求后收到响应，它会调高估值。
+		  如果没有变化，20分钟后估值会被降低。
+		</para>
+
+		<para>
+		  如果<command>clients-per-query</command>设为零，表示每个请求
+		  的客户端没有限制，没有请求被扔掉。
+		</para>
+
+		<para>
+		  如果<command>max-clients-per-query</command>设为零，表示除了
+		  <command>recursive-clients</command>所设定的值外没有上限。
+		</para>
+              </listitem>
+	    </varlistentry>
+
+	    <varlistentry xml:id="fetches-per-zone">
+	      <term><command>fetches-per-zone</command></term>
+	      <listitem>
+		<para>
+		  对任何一个域的最大并发迭代请求数目，在这个数目内服务器会允许，
+                  超过这个数目，服务器或阻塞对这个区及之下数据的请求。
+		  这个值反映了在它所承担的解析时间内，对任意一个区，可以发送
+                  多少个正常的解析请求。它应该小于
+                  <option>recursive-clients</option>。
+		</para>
+		<para>
+                  当多个客户端并发请求同样的名字和类型，客户端将被归并为
+                  同一次解析，直到达到
+                  <option>max-clients-per-query</option>限制，
+                  并且只发出一个迭代请求。
+                  然而，当不同的客户端并发请求
+                  <emphasis>不同的</emphasis>名字或类型，将会发出
+                  多个请求，而<option>max-clients-per-query</option>
+                  没有限制效果。
+		</para>
+		<para>
+		  做为可选项，这个值可以跟随关键字
+		  <literal>drop</literal>或<literal>fail</literal>，
+                  指示针对一个区超过解析限额的请求是毫无响应地丢弃
+                  还是回应SERVFAIL。缺省是<literal>drop</literal>。
+		</para>
+		<para>
+		  如果<command>fetches-per-zone</command>被设置为0，
+                  对每个请求的解析数没有限制，不会丢弃请求。缺省是0.
+		</para>
+		<para>
+		  当前活跃解析的名单可以通过运行
+                  <command>rndc recursing</command>导出。名单包括
+                  对每个域活跃解析的数目和通过的请求数目以及作为
+                  <option>fetches-per-zone</option>限制结果而丢弃的
+                  请求数目。（注意：这些计数器不随时间而累积；无论何时
+                  一个域的活跃解析数目下降为0，这个域的计数器将被删除，
+                  下一次一个解析发到这个域，就会重建计数器并被设置为0.）
+		</para>
+		<para>
+                  （注意：这个选项仅在BIND使用
+                  <command>configure --enable-fetchlimit</command>
+                  构建时才可用。）
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry xml:id="fetches-per-server">
+	      <term><command>fetches-per-server</command></term>
+	      <listitem>
+		<para>
+		  服务器允许发送给单一上游服务器的最大并发迭代请求数目，
+                  超过这个数目，服务器阻塞额外的请求。
+		  这个值反映了在它所承担的解析时间内，对任意一个服务器，
+                  可以发送多少个正常的解析请求。它应该小于
+                  <option>recursive-clients</option>。
+		</para>
+		<para>
+		  做为可选项，这个值可以跟随关键字
+		  <literal>drop</literal>或<literal>fail</literal>，
+                  指示在一个区的所有权威服务器被发现超过per-server限额时，
+                  请求是应该毫无响应地丢弃还是回应SERVFAIL。
+                  缺省是<literal>fail</literal>。
+		</para>
+		<para>
+		  如果<command>fetches-per-server</command>被设置为0，
+                  对每个请求的解析数没有限制，不会丢弃请求。缺省是0.
+		</para>
+		<para>
+		  响应中的<command>fetches-per-server</command>限额是
+                  动态调整以检测拥塞。发给服务器的请求要么被响应，要么
+                  超时，会计算一个响应超时比率的指数加权移动平均值。
+                  如果当前平均超时比率上升到超过“高”限，那台服务器的
+                  <command>fetches-per-server</command>被减小。
+                  如果超时比率下降到“低”限以下，
+                  <command>fetches-per-server</command>被增加。
+		  <command>fetch-quota-params</command>选项可以用来
+                  调整这个计算的参数。
+		</para>
+		<para>
+                  （注意：这个选项仅在BIND使用
+                  <command>configure --enable-fetchlimit</command>
+                  构建时才可用。）
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>fetch-quota-params</command></term>
+	      <listitem>
+		<para>
+                  设置用于动态增减<option>fetches-per-server</option>
+                  限额的参数。上述限额是在响应中检测拥塞。
+		</para>
+		<para>
+		  第一个参数是一个整数，指示重新计算对每个服务器响应超时
+                  比率的移动平均值的频率。缺省值是100，意谓着每100个请求
+                  被回答或超时之后我们重新计算平均比率。
+		</para>
+		<para>
+                  剩余三个参数表示“低”限（缺省是0.1的超时比率），
+                  “高”限（缺省是0.3的比率）和移动平均值的折扣率
+                  （缺省是0.7）。
+                  越大的折扣率在计算移动平均值时使最近的事件权重更大；
+                  越小的折扣率使更远的事件权重更大，平滑掉超时比率中的
+                  短期噪点。
+		  这些参数都是定点数，精度为1/100：小数点后至少2位是要
+                  保留的。
+		</para>
+		<para>
+                  （注意：这个选项仅在BIND使用
+                  <command>configure --enable-fetchlimit</command>
+                  构建时才可用。）
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>reserved-sockets</command></term>
               <listitem>
@@ -7306,39 +7455,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	      </listitem>
 	    </varlistentry>
 
-	    <varlistentry id="clients-per-query">
-	      <term><command>clients-per-query</command></term>
-	      <term><command>max-clients-per-query</command></term>
-              <listitem>
-		<para>
-		  这些设置允许同时进行的针对任何给定请求
-		  （&lt;qname，qtype，qclass&gt;）的递归客户端的
-		  初始数目（最小值）和最大数目，对任何超过这个数目的额外请求，
-		  服务器都将扔掉。<command>named</command>会尝试自己调整这个值，
-		  并将改变记入日志。缺省值为10和100。
-		</para>
-
-		<para>
-	          这个值应该反映自它开始解析某个名字开始的一段时间内进来了多少个
-		  针对给定名字的请求。如果请求的数目超过这个值，
-		  <command>named</command>将会假定它正在与一个无响应的区打交道，
-		  就会扔掉多余的请求。如果它在扔掉请求后收到响应，它会调高估值。
-		  如果没有变化，20分钟后估值会被降低。
-		</para>
-
-		<para>
-		  如果<command>clients-per-query</command>设为零，表示每个请求
-		  的客户端没有限制，没有请求被扔掉。
-		</para>
-
-		<para>
-		  如果<command>max-clients-per-query</command>设为零，表示除了
-		  <command>recursive-clients</command>所设定的值外没有上限。
-		</para>
-              </listitem>
-	    </varlistentry>
-
-	    <varlistentry id="max-recursion-depth">
+	    <varlistentry xml:id="max-recursion-depth">
 	      <term><command>max-recursion-depth</command></term>
 	      <listitem>
 		<para>
@@ -8530,12 +8647,6 @@ example.com                 CNAME   rpz-tcp-only.
 	    的EDNS UDP消息的最大大小。有效值是从512到4096字节（在这个范围之外的
 	    值将被静默地调整）。这个选项是用于当你知道有防火墙阻止来自
 	    <command>named</command>的大回复包时。
-	  </para>
-
-	  <para>
-	    <command>nosit-udp-size</command>选项设置发送给没有有效源身份特征
-            请求方的UDP响应的最大大小。<command>max-udp-size</command>选项
-            可以更进一步地限制响应的大小。
 	  </para>
 
           <para>
@@ -10052,33 +10163,8 @@ example.com. NS ns2.example.net.
                 <term><command>auto-dnssec</command></term>
                 <listitem>
                   <para>
-                    被配置为动态DNS的区也使用这个选项来允许多个级别的
-                    自动DNSSEC密钥管理。有下列三种可能的设置：
-                  </para>
-                  <para>
-                    <command>auto-dnssec allow;</command>允许密钥被更新，
-                    区被全部重新签名，无论何时用户发出命令<command>rndc sign
-		    <replaceable>zonename</replaceable></command>。
-                  </para>
-                  <para>
-                    <command>auto-dnssec maintain;</command>包含以上命令，
-                    还能够工具密钥的计时元数据自动按时间表调整区的DNSSEC
-                    密钥（参见<xref linkend="man.dnssec-keygen"/>和
-                    <xref linkend="man.dnssec-settime"/>）。命令
-                    <command>rndc sign
-                    <replaceable>zonename</replaceable></command>让
-                    <command>named</command>从密钥仓库装载密钥并使用所有
-                    激活的密钥签名区。<command>rndc loadkeys
-                    <replaceable>zonename</replaceable></command>让
-                    <command>named</command>从密钥仓库装载密钥并调度
-                    将来发生的的密钥维护事件，但是它不立即签名整个区。
-                    注意：一旦一个区的密钥被首次装载后，将定期搜索仓库以查找
-                    变化，无论是否使用了<command>rndc loadkeys</command>。
-                    重新检查的间隔被<command>dnssec-loadkeys-interval</command>
-                    所定义。）
-                  </para>
-                  <para>
-                    缺省设置是<command>auto-dnssec off</command>。
+                    参见<xref linkend="options"/>中对
+                    <command>auto-dnssec</command>的描述。
                   </para>
                 </listitem>
               </varlistentry>
@@ -10087,19 +10173,8 @@ example.com. NS ns2.example.net.
                 <term><command>serial-update-method</command></term>
                 <listitem>
                   <para>
-                    被配置为动态DNS的区可以使用这个选项设置用于更新SOA记录中区
-                    序列号的更新方法。
-                  </para>
-                  <para>
-                    使用缺省的设置
-                    <command>serial-update-method increment;</command>，
-                    SOA序列号将会在每次区被更新时加一。
-                  </para>
-                  <para>
-                    当设置为
-                    <command>serial-update-method unixtime;</command>时，
-                    SOA序列号将被设置为UNIX纪元以来的秒数，除非序列号已经大于
-                    或等于那个值，这时它只是简单的加一。
+                    参见<xref linkend="options"/>中对
+                    <command>serial-update-method</command>的描述。
                   </para>
                 </listitem>
               </varlistentry>
@@ -15052,6 +15127,7 @@ zone "example.com" {
 
     <appendix xml:id="Bv9ARM-gbk.ch12"><info><title>BIND 9 DNS库支持</title></info>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="libdns-utf8.xml"/>
+    </appendix>
 
     <reference xml:id="Bv9ARM-gbk.ch13"><info><title>手册页</title></info>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dig-utf8.docbook"/>

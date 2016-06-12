@@ -33,7 +33,7 @@
 
   <refnamediv>
     <refname><application>lwresd</application></refname>
-    <refpurpose>lightweight resolver daemon</refpurpose>
+    <refpurpose>轻量级解析器后台进程</refpurpose>
   </refnamediv>
 
   <docinfo>
@@ -91,26 +91,21 @@
       轻量级解析器使用UDP端口921接收和响应请求。
     </para>
     <para>
-      Incoming lightweight resolver requests are decoded by the
-      server which then resolves them using the DNS protocol.  When
-      the DNS lookup completes, <command>lwresd</command> encodes
-      the answers in the lightweight resolver format and returns
-      them to the client that made the request.
+      进入的轻量级解析器请求由服务器解码，然后使用DNS协议进行解析。
+      当DNS查找完成，<command>lwresd</command>将回答编码为轻量级
+      解析器格式并返回给发出请求的客户端。
     </para>
     <para>
-      If <filename>/etc/resolv.conf</filename> contains any
-      <option>nameserver</option> entries, <command>lwresd</command>
-      sends recursive DNS queries to those servers.  This is similar
-      to the use of forwarders in a caching name server.  If no
-      <option>nameserver</option> entries are present, or if
-      forwarding fails, <command>lwresd</command> resolves the
-      queries autonomously starting at the root name servers, using
-      a built-in list of root server hints.
+      如果<filename>/etc/resolv.conf</filename>包含任何
+      <option>nameserver</option>条目，<command>lwresd</command>
+      会发送递归DNS请求到这些服务器。这类似于在一个缓存名字服务器
+      中使用转发者。如果没有提供<option>nameserver</option>条目，
+      或者转发失败，<command>lwresd</command>使用内置根服务器提示
+      名单，自动开始从根服务器解析请求。
     </para>
   </refsection>
 
-  <refsection><info><title>OPTIONS</title></info>
-
+  <refsection><info><title>选项</title></info>
 
     <variablelist>
 
@@ -191,9 +186,9 @@
         <term>-i <replaceable class="parameter">pid-file</replaceable></term>
         <listitem>
           <para>
-            Use <replaceable class="parameter">pid-file</replaceable> as the
-            PID file instead of the default,
-            <filename>/var/run/lwresd/lwresd.pid</filename>.
+            使用<replaceable class="parameter">pid-file</replaceable>作为
+            PID文件，而不是缺省的，
+            <filename>/var/run/lwresd/lwresd.pid</filename>。
           </para>
         </listitem>
       </varlistentry>
@@ -240,11 +235,9 @@
         <term>-p <replaceable class="parameter">port</replaceable></term>
         <listitem>
           <para>
-            Send DNS lookups to port <replaceable class="parameter">port</replaceable>.  If not
-            specified, the default is port 53.  This provides a
-            way of testing the lightweight resolver daemon with a
-            name server that listens for queries on a non-standard
-            port number.
+            发送DNS查询到端口<replaceable class="parameter">port</replaceable>。
+            如果未指定，缺省是端口53。这为测试带有一个名字服务器且监听在一个
+            非标准端口的轻量级解析器后台进程提供了一个方法。
           </para>
         </listitem>
       </varlistentry>

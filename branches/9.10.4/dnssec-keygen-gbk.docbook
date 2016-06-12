@@ -15,7 +15,6 @@
  - PERFORMANCE OF THIS SOFTWARE.
 -->
 
-<refentry id="man.dnssec-keygen">
 <!-- Converted by db4-upgrade version 1.0 -->
 <refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnssec-keygen">
   <info>

@@ -690,6 +690,12 @@
       </variablelist>
     </para>
 
+    <para>
+      以分号开始的行为注释，将被忽略。
+    </para>
+
+  </refsection>
+
   <refsection><info><title>例子</title></info>
 
     <para>

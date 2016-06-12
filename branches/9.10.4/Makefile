@@ -217,6 +217,7 @@ PERL =			/usr/bin/perl
 LATEX =			/usr/local/texlive/2015/bin/x86_64-linux/latex
 #PDFLATEX =		/usr/local/texlive/2015/bin/x86_64-linux/pdflatex
 PDFLATEX =		/Library/TeX/texbin/pdflatex
+DBLATEX =		dblatex
 W3M =			/usr/bin/w3m
 
 GBKFILE=dig host
@@ -282,9 +283,10 @@ docbooks=dig-utf8.docbook host-utf8.docbook delv-utf8.docbook \
 	pkgversion-utf8.xml \
 	dlz-utf8.xml \
 	notes-utf8.xml \
-	noteversion-utf8.xml
+	noteversion-utf8.xml \
+	logging-categories-utf8.xml
 
-VERSION=9.10.2
+VERSION=9.10.4
 
 MANOBJS = Bv9ARM.html
 
@@ -311,13 +313,15 @@ clean::
 	rm -f releaseinfo-utf8.xml
 	rm -f pkgversion-utf8.xml
 	rm -f dlz-utf8.xml
+	rm -f notes-utf8.xml
 	rm -f noteversion-utf8.xml
+	rm -f logging-categories-utf8.xml
 
 docclean manclean maintainer-clean:: clean
 	rm -f *.html ${PDFOBJS}
 
 docclean manclean maintainer-clean distclean::
-	rm -f releaseinfo.xml
+	rm -f releaseinfo-utf8.xml
 	rm -f noteversion-utf8.xml
 
 Bv9ARM.html: Bv9ARM-book.xml releaseinfo.xml
@@ -442,8 +446,11 @@ notes-utf8.xml: notes-gbk.xml
 noteversion-utf8.xml: noteversion-gbk.xml
 	iconv -f gbk -t utf-8 $^ > $@
 
+logging-categories-utf8.xml: logging-categories-gbk.xml
+	iconv -f gbk -t utf-8 $^ > $@
 
-Bv9ARM-gbk.html: Bv9ARM-book-utf8.xml releaseinfo.xml \
+
+Bv9ARM-gbk.html: Bv9ARM-book-utf8.xml releaseinfo-utf8.xml \
 	${docbooks} dnssec-utf8.xml managed-keys-utf8.xml pkcs11-utf8.xml
 	expand Bv9ARM-book-utf8.xml | \
 	${XSLTPROC} --stringparam root.filename Bv9ARM-cn \
@@ -456,7 +463,7 @@ Bv9ARM.tex: Bv9ARM-book.xml releaseinfo.xml
 	/usr/bin/perl latex-fixup.pl >$@.tmp 
 	if test -s $@.tmp; then mv $@.tmp $@; else rm -f $@.tmp; exit 1; fi
 
-Bv9ARM-unicode.tex: Bv9ARM-book-utf8.xml releaseinfo.xml ${docbooks} \
+Bv9ARM-unicode.tex: Bv9ARM-book-utf8.xml releaseinfo-utf8.xml ${docbooks} \
 	dnssec-utf8.xml managed-keys-utf8.xml pkcs11-utf8.xml libdns-utf8.xml
 	expand Bv9ARM-book-utf8.xml | \
 	${XSLTPROC} pre-latex.xsl - | \
@@ -481,18 +488,28 @@ Bv9ARM-gbk.tex: Bv9ARM-unicode.tex add_cjk_tex.pl foo.pl preprocess.pl
 	./foo.pl Bv9ARM-unicode.tex.tmp01> Bv9ARM-gbk.tex.tmp01
 	./preprocess.pl Bv9ARM-gbk.tex.tmp01> Bv9ARM-gbk.tex
 
-Bv9ARM-gbk.pdf: Bv9ARM-gbk.tex releaseinfo.xml 
-	rm -f Bv9ARM-book-gbk.aux Bv9ARM-gbk.pdf Bv9ARM-book-gbk.log ;\
-	${PDFLATEX} '\batchmode\input Bv9ARM-gbk.tex' ;\
-	${PDFLATEX} '\batchmode\input Bv9ARM-gbk.tex' ;\
-	/usr/local/bin/gbk2uni Bv9ARM-gbk.out ;\
-	${PDFLATEX} '\batchmode\input Bv9ARM-gbk.tex'
+#Bv9ARM-gbk.pdf: Bv9ARM-gbk.tex releaseinfo.xml 
+#	rm -f Bv9ARM-book-gbk.aux Bv9ARM-gbk.pdf Bv9ARM-book-gbk.log ;\
+#	${PDFLATEX} '\batchmode\input Bv9ARM-gbk.tex' ;\
+#	${PDFLATEX} '\batchmode\input Bv9ARM-gbk.tex' ;\
+#	/usr/local/bin/gbk2uni Bv9ARM-gbk.out ;\
+#	${PDFLATEX} '\batchmode\input Bv9ARM-gbk.tex'
+
+Bv9ARM-gbk.pdf: Bv9ARM-book-gbk.xml releaseinfo-gbk.xml pkgversion-gbk.xml noteversion-gbk.xml
+	expand Bv9ARM-book-gbk.xml | \
+	${XSLTPROC} pre-latex.xsl - | \
+	${DBLATEX} -c Bv9ARM-gbk.conf -o Bv9ARM-gbk.pdf -
+
+Bv9ARM-utf8.pdf: Bv9ARM-book-utf8.xml releaseinfo-utf8.xml pkgversion-utf8.xml noteversion-utf8.xml
+	expand Bv9ARM-book-utf8.xml | \
+	${XSLTPROC} pre-latex.xsl - | \
+	${DBLATEX} -c Bv9ARM-utf8.conf -o Bv9ARM-utf8.pdf -
 
 FORCE:
 
-releaseinfo.xml: FORCE
-	echo >$@ '<releaseinfo>BIND Version ${VERSION}</releaseinfo>'
+#releaseinfo.xml: FORCE
+#	echo >$@ '<releaseinfo>BIND Version ${VERSION}</releaseinfo>'
 
-noteversion-gbk.xml: FORCE
-	echo >$@ '<title>BIND版本${VERSION}的发行注记</title>'
+#noteversion-gbk.xml: FORCE
+#	echo >$@ '<title>BIND版本${VERSION}的发行注记</title>'
 

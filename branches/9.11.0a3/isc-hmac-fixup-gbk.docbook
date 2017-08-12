@@ -1,0 +1,94 @@
+<!--
+ - Copyright (C) 2010, 2013, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.isc-hmac-fixup">
+  <info>
+    <date>2013-04-28</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>isc-hmac-fixup</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>isc-hmac-fixup</application></refname>
+    <refpurpose>修补旧版本的BIND所生成的HMAC密钥</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2010</year>
+      <year>2013</year>
+      <year>2014</year>
+      <year>2015</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>isc-hmac-fixup</command>
+      <arg choice="req" rep="norepeat"><replaceable class="parameter">algorithm</replaceable></arg>
+      <arg choice="req" rep="norepeat"><replaceable class="parameter">secret</replaceable></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+
+    <para>
+      BIND 9的各个版本直到并包含BIND 9.6都包含一个缺陷，它导致HMAC-SHA* TSIG
+      密钥比hash算法（如，SHA1密钥超过160位，SHA256密钥超过256位等等）的摘要
+      长度更长，因此不能正确使用，其生成一个消息认证码与其它DNS实现不兼容。
+    </para>
+    <para>
+      这个缺陷在BIND 9.7中被修补了。然而，这个修补可能导致在使用长的密钥时，
+      旧的和新的BIND版本之间不兼容。<command>isc-hmac-fixup</command>修改了
+      那些密钥以恢复兼容性。
+    </para>
+    <para>
+      要修改一个密钥，运行<command>isc-hmac-fixup</command>并在命令行指定
+      密钥的算法和口令。如果口令比算法的摘要长度更长（对SHA1到SHA256为64字节，
+      或者对SHA384和SHA512为128字节），将会生成一个新的口令，它由旧的口令
+      的一个hash摘要所组成。（如果口令不要求转换，就不加修改地输出它。）
+    </para>
+  </refsection>
+
+  <refsection><info><title>安全考虑</title></info>
+
+    <para>
+      被<command>isc-hmac-fixup</command>所转换的口令被缩短了，但是这
+      就是HMAC协议的工作方式，它没有影响安全。RFC 2104中提到，
+      “比[摘要长度]更长的密钥时可接受的，但是额外的长度不应较大地增加
+      函数的强度。”
+    </para>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+
+    <para>
+      <citetitle>BIND 9管理员参考手册</citetitle>,
+      <citetitle>RFC 2104</citetitle>.
+    </para>
+  </refsection>
+
+</refentry>

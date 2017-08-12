@@ -1,0 +1,347 @@
+<!--
+ - Copyright (C) 2009-2011, 2014, 2015  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnssec-settime">
+  <info>
+    <date>2015-08-21</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-settime</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-settime</application></refname>
+    <refpurpose>为一个DNSSEC密钥设置密钥定时元数据</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2009</year>
+      <year>2010</year>
+      <year>2011</year>
+      <year>2014</year>
+      <year>2015</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>dnssec-settime</command>
+      <arg choice="opt" rep="norepeat"><option>-f</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-L <replaceable class="parameter">ttl</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-P <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-P sync <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-A <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-R <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-I <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-D sync <replaceable class="parameter">date/offset</replaceable></option></arg>
+      <arg><option>-D sync <replaceable class="parameter">date/offset</replaceable></option></arg>
+
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-V</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-E <replaceable class="parameter">engine</replaceable></option></arg>
+      <arg choice="req" rep="norepeat">keyfile</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+
+    <para><command>dnssec-settime</command>
+      读取一个DNSSEC私钥文件并按照<option>-P</option>，
+      <option>-A</option>，<option>-R</option>，<option>-I</option>
+      和<option>-D</option>选项的指定设置密钥定时的元数据。
+      元数据可以用于<command>dnssec-signzone</command>或其它签名软件，
+      以决定何时发布一个密钥，密钥是否可以用于对一个区签名等等。
+    </para>
+    <para>
+      如果命令行中没有设置这些选项，<command>dnssec-settime</command>
+      只是简单地打印已经存储在密钥中的密钥定时元数据。
+    </para>
+    <para>
+      当密钥的元数据字段被改变时，密钥对的两个文件（
+      <filename>Knnnn.+aaa+iiiii.key</filename>和
+      <filename>Knnnn.+aaa+iiiii.private</filename>）都被重新生成。
+      元数据字段存放在private文件中。在key文件中也以注释形式存放
+      一份人可读的元数据描述。私钥文件的权限总是被设置为除属主外任何人
+      都不可访问（模式0600）。
+    </para>
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+
+    <variablelist>
+      <varlistentry>
+	<term>-f</term>
+        <listitem>
+	  <para>
+	    强制更新一个不带元数据字段的旧格式的密钥。如果没有这个选项，
+	    <command>dnssec-settime</command>在试图更新一个旧密钥时将会
+	    失败。有这个选项时，将会以新格式重新生成密钥，但是会保留
+	    原始的密钥数据。密钥的创建日期会被设置为当前时间。如果未指定
+            其它值，密钥的发布日期和激活日期也将被设置为当前时间。
+	  </para>
+        </listitem>
+      </varlistentry>
+  
+      <varlistentry>
+        <term>-K <replaceable class="parameter">directory</replaceable></term>
+        <listitem>
+          <para>
+            设置存放密钥文件的目录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-L <replaceable class="parameter">ttl</replaceable></term>
+        <listitem>
+          <para>
+            设置本密钥在被转换进一个DNSKEY资源记录中时的缺省TTL值。如果这个
+            密钥被导入进一个区，这就被用作密钥的TTL，除非区中已经有一个
+            DNSKEY资源记录集，在后者的情况下，已经存在的TTL将会优先。
+            如果未设置这个值并且不存在DNSKEY资源记录集，TTL缺省将是SOA TTL。
+            将缺省的TTL设置为<literal>0</literal>或者<literal>none</literal>
+            从密钥中删除它。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-h</term>
+        <listitem>
+	  <para>
+	    输出用法消息并退出。
+	  </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-V</term>
+        <listitem>
+	  <para>
+	    打印版本信息。
+	  </para>
+        </listitem>
+      </varlistentry>
+  
+      <varlistentry>
+        <term>-v <replaceable class="parameter">level</replaceable></term>
+        <listitem>
+          <para>
+            设置调试级别。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-E <replaceable class="parameter">engine</replaceable></term>
+        <listitem>
+          <para>
+            如果适用，指定要使用的加密硬件。
+          </para>
+          <para>
+            当BIND使用带OpenSSL PKCS#11支持构建时，这个缺省值是字符串
+            "pkcs11"，它标识一个可以驱动一个加密加速器或硬件服务模块的
+            OpenSSL引擎，当BIND使用带原生PKCS#11加密
+            （--enable-native-pkcs11）构建时，它缺省是由"--with-pkcs11"
+            指定的PKCS#11提供者库的路径。
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>定时选项</title></info>
+
+    <para>
+      日期可以被表示成YYYYMMDD或YYYYMMDDHHMMSS格式。
+      如果参数以'+'或'-'开始，它将会被解释成自当前时间始的偏移量。
+      为方便起见，如果这个偏移量带有这些后缀之一，'y'，'mo'，'w'，
+      'd'，'h'或'mi'，这个偏移量就分别被以年（定义为365个24小时的天，
+      忽略闰年），月（定义为30个24小时的天），周，天，小时或分钟计算。
+      没有后缀时，偏移量以秒计算。要清除一个日期，使用'none'或'never'。
+    </para>
+
+    <variablelist>
+      <varlistentry>
+        <term>-P <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置一个密钥被发布到区的日期。在此日期之后，密钥将会被包含到
+            区中，但不会用于对其签名。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-P sync <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置匹配这个密钥的CDS和CDNSKEY记录被发布到区的日期。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-A <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置密钥被激活的日期。在此日期之后，密钥将会被包含到区中并用于
+            对其签名。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-R <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置密钥被撤销的日期。在此日期之后，密钥将被标志为被撤销。
+            它将会被包含到区中并用于对其签名。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-I <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置密钥被退休的日期。在此日期之后，密钥仍然被包含在区中，
+            但它不再被用于签名。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-D <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置密钥被删除的日期。在此日期之后，密钥将不再被包含在区中。
+            （然而，它可能仍然保留在密钥仓库中。）
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-D sync <replaceable class="parameter">date/offset</replaceable></term>
+        <listitem>
+          <para>
+            设置匹配这个密钥的CDS和CDNSKEY记录被删除的日期。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-S <replaceable class="parameter">predecessor key</replaceable></term>
+        <listitem>
+          <para>
+            选择一个密钥，被修改的密钥是其明确的后继。前驱密钥的名字，算法，
+            大小，和类型必须与被修改密钥的精确匹配。
+            后继密钥的激活日期将被设置为前驱密钥的失效日期。
+            其发布日期被设置为激活日期减去发布前间隔，后者缺省是30天。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-i <replaceable class="parameter">interval</replaceable></term>
+        <listitem>
+          <para>
+            为一个密钥设置发布前间隔。如果设置，则发布日期与激活日期之间必须
+            至少间隔这么多的日期。如果指定了激活日期而没有指定发布日期，则发
+            布日期缺省为激活日期之前这么多时间；相反地，如果指定了发布日期但
+            没有指定激活日期，则激活日期将被设置为在发布日期之后这么多时间。
+          </para>
+          <para>
+            正在被创建的密钥是另一个密钥的明确后继，则缺省的发布前间隔是30天；
+            否则就是零。
+          </para>
+          <para>
+            与日期偏移量相伴，如果参数后面有后缀‘y’，‘mo’，‘w’，‘d’，
+            ‘h’，或‘mi’中的一个，则间隔的单位分别为年，月，周，天，小时，
+            分钟。没有后缀的情况，间隔的单位为秒。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>打印选项</title></info>
+
+    <para>
+      <command>dnssec-settime</command>也能够被用于打印出与一个密钥
+      相关联的定时元数据。
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>-u</term>
+        <listitem>
+	  <para>
+	    打印UNIX纪元格式的时间。
+	  </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable class="parameter">C/P/A/R/I/D/all</replaceable></term>
+        <listitem>
+	  <para>
+	    打印一个指定的元数据值或元数据值的集合。
+            <option>-p</option>选项可以跟随一个或多个下列字符或字符串，以表示要
+	    打印哪一个或哪几个值：
+            <option>C</option>表示创建日期，
+            <option>P</option>表示发布日期，
+            <option>Psync</option>表示CDS和CDNSKEY发布日期，
+            <option>A</option>表示激活日期，
+            <option>R</option>表示撤销日期，
+            <option>I</option>表示失效日期，
+            <option>D</option>表示删除日期和
+            <option>Dsync</option>表示CDS和CDNSKEY删除日期，
+            使用<option>-p all</option>打印所有的元数据。
+	  </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+
+    <para><citerefentry>
+        <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>,
+      <citetitle>RFC 5011</citetitle>.
+    </para>
+  </refsection>
+
+</refentry>

@@ -1,0 +1,348 @@
+<!--
+ - Copyright (C) 2015  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<informaltable xmlns="http://docbook.org/ns/docbook" version="5.0" colsep="0" rowsep="0">
+  <tgroup cols="2" colsep="0" rowsep="0" tgroupstyle="4Level-table">
+    <colspec colname="1" colnum="1" colsep="0" colwidth="1.150in"/>
+    <colspec colname="2" colnum="2" colsep="0" colwidth="3.350in"/>
+    <tbody>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>client</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    对客户端请求的处理。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>cname</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            记录因为一个CNAME记录而非A/AAAA记录而被跳过的名字服务器。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>config</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    配置文件分析及处理。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>database</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            与数据库相关的消息，数据库指名字服务器内部用于存储区和
+            缓存数据。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>default</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            缺省类别，为没有被明确定义的配置的类别指定的日志选项。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>delegation-only</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            只授权。记录被强制成NXDOMAIN的请求，它是一个只授权区或一
+            个转发、提示或存根区定义中有
+            <command>delegation-only</command>的结果。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>dispatch</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            分发收到的包到将要处理它们的服务器模块。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>dnssec</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    DNSSEC和TSIG协议处理。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+          <para><command>dnstap</command></para>
+        </entry>
+        <entry colname="2">
+          <para>
+            “dnstap”DNS流量捕获系统。
+          </para>
+        </entry>
+      </row>
+      <row rowsep="0">
+        <entry colname="1">
+	  <para><command>edns-disabled</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            记录由于超时而被强制使用普通DNS的请求日志。这
+            通常是因为远端服务器不是兼容RFC 1034（对EDNS请求
+            和其不明白的DNS其它扩展并不总是返回FORMERR或类似
+            的东西）。换句话说，这是瞄准服务器不能响应其不明白
+            的DNS请求的。
+	  </para>
+	  <para>
+            注意：日志消息也可能是因为包丢失。在报告服务器
+            不兼容RFC 1034之前，应该再测试它们以决定不兼容
+            的类别。这个测试应当阻止或减少不正确报告的数目。
+	  </para>
+	  <para>
+            注意：最后，<command>named</command>必须不将这样的
+            超时归咎为不兼容RFC 1034而将其当作普通的包丢失。
+            将包丢失错误地归咎为不兼容RFC 1034会影响DNSSEC验证，
+            后者要求对DNSSEC记录返回EDNS。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>general</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            捕捉所有。许多未被分类到某个类别中，都被记入此类。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>lame-servers</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            跛服务器。这是远端服务器上的错误配置，是在解析过程中试图
+            向其发请求时由BIND 9所发现的。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>network</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    网络操作。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>notify</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    NOTIFY协议。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>queries</command></para>
+	</entry>
+	<entry colname="2">
+          <para>
+            指定记录请求日志的地方。
+          </para>
+          <para>
+            在启动时，指定<command>queries</command>类别将启动对请求
+            的日志，除非设定<command>querylog</command>选项。
+          </para>
+          <para>
+            请求日志条目报告了客户端IP地址和端口，请求的名字，类和类
+            型。接下来它报告是否设置了期望递归（Recursion Desired）
+            的标志（如果设置是+，如果未设置是-），请求是否被签名
+            （S），是否使用EDNS并伴随EDNS版本号（E(#)），
+            是否使用TCP（T），DO位
+            （DNSSEC Ok）是否被设置（D），
+            CD位（Checking Disables）是否被设置（C），是否接收了
+            一个有效的DNS服务器COOKIE（V），或者在没有出现一个有效的
+            服务器COOKIE的情况下是否有一个DNS COOKIE选项。
+            在这之后，记录请求被发送到的目标地址。
+          </para>
+          <para>
+            <computeroutput>client 127.0.0.1#62536 (www.example.com): query: www.example.com IN AAAA +SE</computeroutput>
+          </para>
+          <para>
+            <computeroutput>client ::1#62537 (www.example.net): query: www.example.net IN AAAA -SE</computeroutput>
+          </para>
+          <para>
+             （这条日志消息的第一部份，显示了客户端地址/端口号和
+             请求名，在随后所有与同样请求相关的日志消息中都被
+             重复。）
+          </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>query-errors</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    关于导致失败的请求信息。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>rate-limit</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            一个响应流的比率限制的启动、周期性及结束通知将以
+            <command>info</command>级别被写入这个类别。
+            这些消息包含响应域名的一个散列值和域名自身，没有足够的
+            内存来记录结束通知的名字这种情况除外。
+            结束通知通常延迟到比率限制停止一分钟之后。
+            内存不足可能导致仓促发出结束通知，这种情况下以一个星号
+            （*）开头。各种内部事件以调试级别1或更高级记录日志。
+          </para>
+          <para>
+            对单个请求的比率限制记录在<command>query-errors</command>
+            类别中。
+          </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>resolver</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            DNS解析，例如由缓存名字服务器所进行的递归查询给客户端的
+            影响。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>rpz</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            关于响应策略区文件中错误，重写响应以及最高级
+            <command>debug</command>中试图重写响应等的信息。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>security</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    同意和拒绝请求。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>spill</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            记录被终止的请求，要么被丢弃，要么响应SERVFAIL，是解析限制
+            配额被超过后的结果。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>unmatched</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+            <command>named</command>不能够决定的类别或者没有合适的
+            <command>view</command>与之匹配的消息。一个单行的摘要也
+            记入<command>client</command>类别。这个类别最好发送到一个
+            文件或标准错误，缺省时它被发送到<command>null</command>
+            通道。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>update</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    动态更新。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>update-security</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    同意和拒绝更新请求。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>xfer-in</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    服务器所接受的区传送。
+	  </para>
+	</entry>
+      </row>
+      <row rowsep="0">
+	<entry colname="1">
+	  <para><command>xfer-out</command></para>
+	</entry>
+	<entry colname="2">
+	  <para>
+	    服务器所发出的区传送。
+	  </para>
+	</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</informaltable>

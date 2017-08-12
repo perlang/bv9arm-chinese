@@ -1,0 +1,367 @@
+<!DOCTYPE book [
+<!ENTITY Scaron "&#x160;">
+<!ENTITY ccaron "&#x10D;">
+<!ENTITY aacute "&#x0E1;">
+<!ENTITY mdash "&#8212;">
+<!ENTITY ouml "&#xf6;">]>
+<!--
+ - Copyright (C) 2014-2016  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - Permission to use, copy, modify, and/or distribute this software for any
+ - purpose with or without fee is hereby granted, provided that the above
+ - copyright notice and this permission notice appear in all copies.
+ -
+ - THE SOFTWARE IS PROVIDED "AS IS" AND ISC DISCLAIMS ALL WARRANTIES WITH
+ - REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+ - AND FITNESS.  IN NO EVENT SHALL ISC BE LIABLE FOR ANY SPECIAL, DIRECT,
+ - INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+ - LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+ - OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ - PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<section xmlns="http://docbook.org/ns/docbook" version="5.0"><info/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion-utf8.xml"/>
+  <section xml:id="relnotes_intro"><info><title>介绍</title></info>
+    <para>
+      BIND 9.11.0是一个带新特性的BIND发行版，仍然在开发中。
+      本文档总结了在这个分支中引入的新特性和功能变化。随着每个在
+      最终BIND 9.11.0发行版之前的开发版本，本文档都会更新新加入的
+      特性和漏洞修补。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_download"><info><title>下载</title></info>
+    <para>
+      最新版的BIND 9软件总是可以在
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/downloads/">http://www.isc.org/downloads/</link>找到。
+      在那里，你会发现每个版本的附加信息，源码和微软Windows操作系统
+      上的预编译版本。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_security"><info><title>安全修补</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+          无。
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_features"><info><title>新特性</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+          增加了一个被称为“目录区（Catalog Zones）“的提供辅服务器的新
+          方法。这是对
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://datatracker.ietf.org/doc/draft-muks-dnsop-dns-catalog-zones/">
+            draft-muks-dnsop-dns-catalog-zones/
+          </link>的一个实现。
+        </para>
+        <para>
+          一个目录区是一个包含“成员区“列表的普通区，并带有每一个这些区
+          的配置选项。当服务器被配置为使用一个目录区时，所有在目录区中
+          所列的区都被作为辅区添加到本地服务器。当目录区被更新（例如，
+          增加或删除区，或者修改现存区的配置选项），这些变化都会被执行。
+          由于目录区自身也是时一个DNS区，这意谓着配置变化可以使用标准
+          的AXFR/IXFR更新机制传播到辅服务器。
+        </para>
+        <para>
+          这个特性应该被当作试验性的。它当前仅支持基本的特性；更多高级
+          特性例如ACL和TSIG密钥还不支持。目录区配置的例子可以在BIND管理员
+          参考手册的第9章找到。
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          增加rndc python模块。
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          增加对DynDB的支持，这是一个从外部数据看装载区数据的新接口，
+          由红帽为FreeIPA项目开发。（特别感谢红帽的Adam Tkac和
+          Petr Spacek的贡献。）
+        </para>
+        <para>
+          与现存的DLZ和SDB接口不同，它们在BIND内提供了一个有限的
+          数据库功能子集 &mdash; 将DNS请求翻译为实时数据库查找，相对
+          而言极低的性能并且没有处理DNSSEC签名数据的能力 &mdash;
+          DynDB能够完全实现并扩展BIND原生使用的数据库API。
+        </para>
+        <para>
+          一个DynDB模块可以从一个外部数据源预装载数据，然后以传统
+          BIND区相似的性能和功能提供服务，并带有利用BIND中没有的
+          数据库特性的能力，诸如多主复制。
+        </para>
+      </listitem>
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+	<para>
+          增加了新的限额以限制从递归服务器发向权威服务器的请求
+          所经历的拒绝服务攻击。当配置了这个选项时，它们可以既
+          减少对权威服务器的伤害，同时也避免递归服务器可能经历
+          的资源耗尽，当其被用作一个攻击的工具时。
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              <option>fetches-per-server</option>限制能够同时
+              发送到单一权威服务器的请求数量。配置值是一个起点；
+              如果服务器是部份或完全没用响应，它自动向下调整。
+              用于调整限额的算法可以通过
+              <option>fetch-quota-params</option>选项配置。
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <option>fetches-per-zone</option>限制能够同时
+              发送请求单个域内名字的请求数量。（注意：与
+              “fetches-per-server”不同，这个值不能自我调节。）
+            </para>
+          </listitem>
+        </itemizedlist>
+        <para>
+          统计计时器也被增加，以跟踪受这些限额影响的请求数。
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          增加对<command>dnstap</command>的支持，这是捕捉和记录
+          DNS流量的一个快速，灵活的方法，由Farsight Security, Inc.
+          的Robert Edmonds所开发，非常感谢他的帮助。
+        </para>
+        <para>
+          要在编译时打开<command>dnstap</command>，必须要使
+          <command>fstrm</command>和<command>protobuf-c</command>
+          库可用，并且BIND必须使用<option>--enable-dnstap</option>
+          配置。
+        </para>
+        <para>
+          增加一个新工具<command>dnstap-read</command>以允许
+          <command>dnstap</command>数据被表示成人可读的格式。
+        </para>
+        <para>
+          更多关于<command>dnstap</command>的信息，参见
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dnstap.info">http://dnstap.info</link>。
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          增加了新的统计计数器以跟踪流量大小，这在RSSAC002中规定。
+          请求和响应消息的大小被分解为不同大小的桶：
+          TCP和UDP请求的大小为0-15，16-31，...，272-288以及288+，
+          TCP和UDP响应的大小为0-15，16-31，...，4080-4095以及4096+.
+          这些值可以通过XML和JSON统计通道访问，例如，在地址，
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8888/xml/v3/traffic">http://localhost:8888/xml/v3/traffic</link>
+          或
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://localhost:8888/json/v1/traffic">http://localhost:8888/json/v1/traffic</link>。
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          增加了一个新的DNSSEC密钥管理工具<command>dnssec-keymgr</command>。
+          
+          A new DNSSEC key management utility,
+          <command>dnssec-keymgr</command>, has been added. This tool
+          is meant to run unattended (e.g., under <command>cron</command>).
+          It reads a policy definition file
+          (default: <filename>/etc/dnssec.policy</filename>)
+          and creates or updates DNSSEC keys as necessary to ensure that a
+          zone's keys match the defined policy for that zone.  New keys are
+          created whenever necessary to ensure rollovers occur correctly.
+          Existing keys' timing metadata is adjusted as needed to set the
+          correct rollover period, prepublication interval, etc.  If
+          the configured policy changes, keys are corrected automatically.
+          See the <command>dnssec-keymgr</command> man page for full details.
+
+        </para>
+        <para>
+          注意：<command>dnssec-keymgr</command>依赖Python和
+          Python lex/yacc模块，PLY。其它基于Python的工具，
+          <command>dnssec-coverage</command>和
+          <command>dnssec-checkds</command>，作为这项工作的一部份而被重构和
+          更新。
+        </para>
+        <para>
+          （非常感谢Sebasti&aacute;n Castro在Buenos Aires, April 2016的
+          IETF 95 Hackathon上对开发这个工具的帮助。）
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          一个动态更新区的序列号可以使用
+          <command>rndc signing -serial <replaceable>number</replaceable> <replaceable>zonename</replaceable></command>
+          设置。
+          这在使用了<option>inline-signing</option>区且被重置时特别有用。
+          设置大于辅服务器的序列号将触发一个AXFR区传送。
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          当回答递归请求时，SERVFAIL响应现在可以被服务器缓存一段有限的时间；
+          随后的对同样名字和类型的请求将返回另一个SERVFAIL，指定缓存超时。
+          这在一个请求一直失败时，这对递归服务器时一个负担，可以降低重试频率。
+          SERVFAIL缓存超时可以通过<option>servfail-ttl</option>控制，缺省为1秒，
+          最大为30.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          新的<command>rndc nta</command>命令现在可以用于设置一个“否定信任锚”
+          （Negative Trust Anchor，NTA），对一个特定域关闭DNSSEC验证；
+          
+
+
+
+
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+	<para>
+          在装载一个签名区时，<command>named</command>现在会检查一个
+          RRSIG的开始时间是否在将来，如果是这样，它将立即重新生成这个
+          RRSIG。这对系统时钟需要向后调整有帮助。
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_changes"><info><title>有变化的特性</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          更新H.ROOT-SERVERS.NET和L.ROOT-SERVERS.NET的编译内置地址。
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          The default preferred glue is now the address type of the
+          transport the query was received over.
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          在2个或更多处理器（CPU）的机器上，UDP监听器数目的缺省值被
+          改为检测到的处理器数减一。
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          区传送现在使用更小的消息大小以提高消息压缩率。这导致减少
+          网络使用量。
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+          named -V的输出现在包括操作系统的详细信息。
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_port"><info><title>移植性修改</title></info>
+    <itemizedlist>
+      <listitem>
+      <para>
+        Microsoft Windows安装工具<command>BINDInstall.exe</command>
+        需要用一个非免费的Visual Studio版本来构建，现在使用两个由
+        perl脚本Configure创建的文件（标志和文件的列表）并带有所有
+        需要的信息，这些信息以前时编译在库中，阅读
+        <filename>win32utils/build.txt</filename>以获得更详细的信息。
+        [RT #38915]
+      </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_bugs"><info><title>修订的缺陷</title></info>
+    <itemizedlist>
+      <listitem>
+      <para>
+        rndc flushtree现在能够工作，即使在一个特定的名字没有一个
+        缓存的节点。 [RT #41846]
+      </para>
+      </listitem>
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+      <para>
+        不发出TTL为0的记录，除非收到一个TTL为0的记录。在返回一个
+        等待中的客户端后，回答将被葱缓存中丢弃。 [RT #41687]
+      </para>
+      </listitem>
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+      <para>
+        对Windows平台，SIT（Source Identity Token，源标识符号）支持
+        被恢复。（它曾在一个之前的带有新的9.11 COOKIE支持的beta版中
+        被部分错误的替代。） [RT #41905]
+      </para>
+      </listitem>
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+      <para>
+        当从一个区数据库中删除记录时，内部节点可以为空但不能被删除，
+        这会对向后搜索的性能产生损害。 [RT #40997] [RT #41941]
+      </para>
+      </listitem>
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+      <para>
+        如果一个区传送超时，服务可能因为“先释放后使用”而宕掉。
+        [RT #41297]
+      </para>
+      </listitem>
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+      <para>
+        被标识为伪造的权威服务器（例如，配置中的黑名单或者带有非法地址）
+        被请求。 [RT #41321]
+      </para>
+      </listitem>
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+      <para>
+        GeoIP ACL中的某些选项，包括“areacode”，“metrocode”和“timezone”，
+        在文档中被错误地写成“area”，“metro”和“tz”。长版本和缩写版本
+        现在都被接受。
+      </para>
+      </listitem>
+    </itemizedlist>
+    <itemizedlist>
+      <listitem>
+      <para>
+        被配置成使用<command>map</command>格式主文件的区不能用作
+        策略区，因为这样的区被映射到内存时，RPZ概要数据不能被编译。
+        这个限制可能会在一个将来的版本被修正，但同时它会被写入文档，
+        试图在<command>response-policy</command>语句中使用这样的区
+        现在是一个配置错误。 [RT #38321]
+      </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="end_of_life"><info><title>生命周期</title></info>
+    <para>
+      BIND 9.10的生命周期还未确定，但不会早于BIND 9.12.0发布之后半年。
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>
+    </para>
+  </section>
+
+  <section xml:id="relnotes_thanks"><info><title>谢谢您</title></info>
+    <para>
+      谢谢每一个您对我们的帮助，使得这个版本成为可能。
+      如果你想捐助ISC以帮助我们不断提供优质的开源软件，请访问我们的赞助网页
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/donate/">http://www.isc.org/donate/</link>。
+    </para>
+  </section>
+</section>

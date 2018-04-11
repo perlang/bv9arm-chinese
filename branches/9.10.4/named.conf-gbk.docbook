@@ -298,9 +298,9 @@ options {
 	dns64-server <replaceable>string</replaceable>;
 	dns64-contact <replaceable>string</replaceable>;
 	dns64 <replaceable>prefix</replaceable> {
-		clients { <replacable>acl</replacable>; };
-		exclude { <replacable>acl</replacable>; };
-		mapped { <replacable>acl</replacable>; };
+		clients { <replaceable>acl</replaceable>; };
+		exclude { <replaceable>acl</replaceable>; };
+		mapped { <replaceable>acl</replaceable>; };
 		break-dnssec <replaceable>boolean</replaceable>;
 		recursive-only <replaceable>boolean</replaceable>;
 		suffix <replaceable>ipv6_address</replaceable>;
@@ -490,9 +490,9 @@ view <replaceable>string</replaceable> <replaceable>optional_class</replaceable>
 	dns64-server <replaceable>string</replaceable>;
 	dns64-contact <replaceable>string</replaceable>;
 	dns64 <replaceable>prefix</replaceable> {
-		clients { <replacable>acl</replacable>; };
-		exclude { <replacable>acl</replacable>; };
-		mapped { <replacable>acl</replacable>; };
+		clients { <replaceable>acl</replaceable>; };
+		exclude { <replaceable>acl</replaceable>; };
+		mapped { <replaceable>acl</replaceable>; };
 		break-dnssec <replaceable>boolean</replaceable>;
 		recursive-only <replaceable>boolean</replaceable>;
 		suffix <replaceable>ipv6_address</replaceable>;

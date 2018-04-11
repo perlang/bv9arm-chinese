@@ -503,7 +503,8 @@ Bv9ARM-gbk.pdf: Bv9ARM-book-gbk.xml releaseinfo-gbk.xml pkgversion-gbk.xml notev
 Bv9ARM-utf8.pdf: Bv9ARM-book-utf8.xml releaseinfo-utf8.xml pkgversion-utf8.xml noteversion-utf8.xml
 	expand Bv9ARM-book-utf8.xml | \
 	${XSLTPROC} pre-latex.xsl - | \
-	${DBLATEX} -c Bv9ARM-utf8.conf -o Bv9ARM-utf8.pdf -
+	#${DBLATEX} -c Bv9ARM-utf8.conf -o Bv9ARM-utf8.pdf -
+	${DBLATEX} -o Bv9ARM-utf8.pdf -
 
 FORCE:
 

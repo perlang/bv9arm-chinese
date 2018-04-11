@@ -1579,7 +1579,7 @@ nameserver 172.16.72.4
         </para>
       </section>
 
-      <section><info><title>Loading A New Key</title></info>
+      <section><info><title>装入一个新密钥</title></info>
         <para>
           如果一个密钥在服务器<emphasis>host1</emphasis>和
           <emphasis>host2</emphasis>之间共享，每个服务器的
@@ -1611,7 +1611,7 @@ key "host1-host2." {
         </para>
       </section>
 
-      <section><info><title>Instructing the Server to Use a Key</title></info>
+      <section><info><title>命令服务器使用一个新密钥</title></info>
         <para>
           一个向其它服务器发送请求的服务器必须被告知是否使用一个密钥，
           以及如果使用，使用那个密钥。
@@ -5415,27 +5415,22 @@ options {
                   命令时更新密钥和重签整个区。
                 </para>
                 <para>
-                  <command>auto-dnssec maintain;</command> includes the
-                  above, but also automatically adjusts the zone's DNSSEC
-                  keys on schedule, according to the keys' timing metadata
-                  (see <xref linkend="man.dnssec-keygen"/> and
-                  <xref linkend="man.dnssec-settime"/>).  The command
+                  <command>auto-dnssec maintain;</command>包括以上，但也
+                  根据密钥的定时元数据按预定时间自动地调整区的DNSSEC密钥
+                  （参见<xref linkend="man.dnssec-keygen"/>和
+                  <xref linkend="man.dnssec-settime"/>）。
                   命令<command>rndc sign
                   <replaceable>zonename</replaceable></command>使得
-                  <command>named</command> to load keys from the key
-                  repository and sign the zone with all keys that are
-                  active.
+                  <command>named</command>从密钥仓库中装入密钥并使用
+                  全部活跃的密钥签名区。
                   <command>rndc loadkeys
-                  <replaceable>zonename</replaceable></command> causes
-                  <command>named</command> to load keys from the key
-                  repository and schedule key maintenance events to occur
-                  in the future, but it does not sign the full zone
-                  immediately.  Note: once keys have been loaded for a
-                  zone the first time, the repository will be searched
-                  for changes periodically, regardless of whether
-                  <command>rndc loadkeys</command> is used.  The recheck
-                  interval is defined by
-                  <command>dnssec-loadkeys-interval</command>.)
+                  <replaceable>zonename</replaceable></command>使
+                  <command>named</command>从密钥仓库中装入密钥并调度
+                  未来的密钥维护时间，但是它不立即对全部区签名。
+                  注意：一旦一个区的密钥首次被装入，仓库会周期性地
+                  被搜索以查找变化，而不管是否使用了
+                  <command>rndc loadkeys</command>。重新检查的间隔由
+                  <command>dnssec-loadkeys-interval</command>定义。
                 </para>
                 <para>
                   缺省设置为<command>auto-dnssec off</command>。

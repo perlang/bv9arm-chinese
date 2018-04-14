@@ -158,7 +158,7 @@ cleandir: distclean
 superclean: maintainer-clean
 
 clean distclean maintainer-clean::
-	rm -f *.o *.o *.lo *.la core *.core .depend
+	rm -f *.o *.o *.lo *.la core *.core .depend *.aux *.cb *.idx *.glo *.toc *.log *.bbl *.unicode
 	rm -rf .libs
 
 distclean maintainer-clean::
@@ -217,8 +217,9 @@ PERL =			/usr/bin/perl
 LATEX =			/usr/local/texlive/2015/bin/x86_64-linux/latex
 #PDFLATEX =		/usr/local/texlive/2015/bin/x86_64-linux/pdflatex
 PDFLATEX =		/Library/TeX/texbin/pdflatex
-DBLATEX =		dblatex
+DBLATEX =		/usr/bin/dblatex
 W3M =			/usr/bin/w3m
+XELATEX =		/usr/bin/xelatex
 
 GBKFILE=dig host
 UTF8FILE = dig host
@@ -286,7 +287,7 @@ docbooks=dig-utf8.docbook host-utf8.docbook delv-utf8.docbook \
 	noteversion-utf8.xml \
 	logging-categories-utf8.xml
 
-VERSION=9.10.4
+VERSION=9.11.0a3
 
 MANOBJS = Bv9ARM.html
 
@@ -300,7 +301,6 @@ clean::
 	rm -f Bv9ARM.log Bv9ARM.out Bv9ARM.tex Bv9ARM.tex.tmp
 	rm -f Bv9ARM-gbk.aux Bv9ARM-gbk.brf Bv9ARM-gbk.glo Bv9ARM-gbk.idx Bv9ARM-gbk.toc
 	rm -f Bv9ARM-gbk.log Bv9ARM-gbk.out Bv9ARM-gbk.tex Bv9ARM-gbk.tex.tmp
-	rm -f Bv9ARM-book-utf8.xml
 	rm -f *utf8.docbook
 	rm -f *.tmp01
 	rm -f Bv9ARM-unicode.tex
@@ -310,12 +310,13 @@ clean::
 	rm -f dlz-utf8.xml
 	rm -f managed-keys-utf8.xml
 	rm -f libdns-utf8.xml
-	rm -f releaseinfo-utf8.xml
 	rm -f pkgversion-utf8.xml
 	rm -f dlz-utf8.xml
-	rm -f notes-utf8.xml
-	rm -f noteversion-utf8.xml
 	rm -f logging-categories-utf8.xml
+	rm -f Bv9ARM-book-utf8.unicode.tex*
+	rm -f Bv9ARM-book-utf8.utf8.tex*
+	rm -f Bv9ARM-zh_CN.tex
+	rm -f tmplst-idm*.tex
 
 docclean manclean maintainer-clean:: clean
 	rm -f *.html ${PDFOBJS}
@@ -328,9 +329,6 @@ Bv9ARM.html: Bv9ARM-book.xml releaseinfo.xml
 	expand Bv9ARM-book.xml | \
 	${XSLTPROC} --stringparam root.filename Bv9ARM \
 		${top_srcdir}/doc/xsl/isc-docbook-chunk.xsl -
-
-Bv9ARM-book-utf8.xml: Bv9ARM-book-gbk.xml
-	iconv -f gbk -t utf-8 $^ > $@
 
 dnssec-utf8.xml: dnssec-gbk.xml
 	iconv -f gbk -t utf-8 $^ > $@
@@ -431,19 +429,10 @@ isc-hmac-fixup-utf8.docbook: isc-hmac-fixup-gbk.docbook
 nsec3hash-utf8.docbook: nsec3hash-gbk.docbook
 	iconv -f gbk -t utf-8 $^ > $@
 
-releaseinfo-utf8.xml: releaseinfo-gbk.xml
-	iconv -f gbk -t utf-8 $^ > $@
-
 pkgversion-utf8.xml: pkgversion-gbk.xml
 	iconv -f gbk -t utf-8 $^ > $@
 
 dlz-utf8.xml: dlz-gbk.xml
-	iconv -f gbk -t utf-8 $^ > $@
-
-notes-utf8.xml: notes-gbk.xml
-	iconv -f gbk -t utf-8 $^ > $@
-
-noteversion-utf8.xml: noteversion-gbk.xml
 	iconv -f gbk -t utf-8 $^ > $@
 
 logging-categories-utf8.xml: logging-categories-gbk.xml
@@ -495,16 +484,26 @@ Bv9ARM-gbk.tex: Bv9ARM-unicode.tex add_cjk_tex.pl foo.pl preprocess.pl
 #	/usr/local/bin/gbk2uni Bv9ARM-gbk.out ;\
 #	${PDFLATEX} '\batchmode\input Bv9ARM-gbk.tex'
 
-Bv9ARM-gbk.pdf: Bv9ARM-book-gbk.xml releaseinfo-gbk.xml pkgversion-gbk.xml noteversion-gbk.xml
-	expand Bv9ARM-book-gbk.xml | \
+Bv9ARM-book-utf8.unicode.tex: Bv9ARM-book-utf8.xml releaseinfo-utf8.xml pkgversion-utf8.xml dnssec-utf8.xml managed-keys-utf8.xml pkcs11-utf8.xml dlz-utf8.xml logging-categories-utf8.xml notes-utf8.xml libdns-utf8.xml dig-utf8.docbook host-utf8.docbook delv-utf8.docbook dnssec-checkds-utf8.docbook dnssec-coverage-utf8.docbook dnssec-dsfromkey-utf8.docbook dnssec-importkey-utf8.docbook dnssec-keyfromlabel-utf8.docbook dnssec-keygen-utf8.docbook dnssec-revoke-utf8.docbook dnssec-settime-utf8.docbook dnssec-signzone-utf8.docbook dnssec-verify-utf8.docbook named-checkconf-utf8.docbook named-checkzone-utf8.docbook named-utf8.docbook named.conf-utf8.docbook lwresd-utf8.docbook named-journalprint-utf8.docbook named-rrchecker-utf8.docbook nsupdate-utf8.docbook rndc-utf8.docbook rndc.conf-utf8.docbook rndc-confgen-utf8.docbook ddns-confgen-utf8.docbook arpaname-utf8.docbook genrandom-utf8.docbook isc-hmac-fixup-utf8.docbook nsec3hash-utf8.docbook noteversion-utf8.xml
+	expand $< | \
 	${XSLTPROC} pre-latex.xsl - | \
-	${DBLATEX} -c Bv9ARM-gbk.conf -o Bv9ARM-gbk.pdf -
+	${DBLATEX} -c Bv9ARM-CN.conf -t tex -o $@ -
 
-Bv9ARM-utf8.pdf: Bv9ARM-book-utf8.xml releaseinfo-utf8.xml pkgversion-utf8.xml noteversion-utf8.xml
-	expand Bv9ARM-book-utf8.xml | \
-	${XSLTPROC} pre-latex.xsl - | \
-	#${DBLATEX} -c Bv9ARM-utf8.conf -o Bv9ARM-utf8.pdf -
-	${DBLATEX} -o Bv9ARM-utf8.pdf -
+Bv9ARM-book-utf8.unicode.tex.01: Bv9ARM-book-utf8.unicode.tex
+	./add_cjk_tex.pl $< > $@
+
+Bv9ARM-book-utf8.utf8.tex: Bv9ARM-book-utf8.unicode.tex.01
+	./unicode2utf8.pl $< > $@
+
+Bv9ARM-book-utf8.utf8.tex.01: Bv9ARM-book-utf8.utf8.tex
+	./preprocess_utf8.pl $< > $@
+
+Bv9ARM-zh_CN.tex: Bv9ARM-book-utf8.utf8.tex.01
+	./add_xelatex.pl $< > $@
+
+Bv9ARM-zh_CN.pdf: Bv9ARM-zh_CN.tex
+	${XELATEX} '\batchmode\input $<'; \
+	${XELATEX} '\batchmode\input $<'
 
 FORCE:
 

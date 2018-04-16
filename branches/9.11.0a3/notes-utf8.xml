@@ -219,12 +219,10 @@ this can be used when responses from a domain
       </listitem>
       <listitem>
         <para>
-          The EDNS Client Subnet (ECS) option is now supported for
-          authoritative servers; if a query contains an ECS option then
-          ACLs containing <option>geoip</option> or <option>ecs</option>
-          elements can match against the address encoded in the option.
-          This can be used to select a view for a query, so that different
-          answers can be provided depending on the client network.
+          EDNS客户端子网（ECS）选项当前支持权威服务器；如果一个请求
+          包含一个ECS选项，包含<option>geoip</option>或
+          <option>ecs</option>元素的ACL可以与选项中所编码的地址就行
+          匹配，这样针对不同客户端网络，可以提供不同的响应。
         </para>
       </listitem>
       <listitem>
@@ -674,9 +672,8 @@ this can be used when responses from a domain
       </listitem>
       <listitem>
         <para>
-          Within the <option>response-policy</option> option, it is now
-          possible to configure RPZ rewrite logging on a per-zone basis
-          using the <option>log</option> clause.
+          在<option>response-policy</option>选项中，现在能够通过使用
+          <option>log</option>字句针对每个区配置RPZ重写日志
         </para>
       </listitem>
       <listitem>

@@ -301,7 +301,6 @@ clean::
 	rm -f Bv9ARM.log Bv9ARM.out Bv9ARM.tex Bv9ARM.tex.tmp
 	rm -f Bv9ARM-gbk.aux Bv9ARM-gbk.brf Bv9ARM-gbk.glo Bv9ARM-gbk.idx Bv9ARM-gbk.toc
 	rm -f Bv9ARM-gbk.log Bv9ARM-gbk.out Bv9ARM-gbk.tex Bv9ARM-gbk.tex.tmp
-	rm -f *utf8.docbook
 	rm -f *.tmp01
 	rm -f Bv9ARM-unicode.tex
 	rm -f Bv9ARM-gbk.out.bak
@@ -397,15 +396,6 @@ named-journalprint-utf8.docbook: named-journalprint-gbk.docbook
 
 named-rrchecker-utf8.docbook: named-rrchecker-gbk.docbook
 	iconv -f gbk -t utf-8 $^ > $@
-
-nsupdate-utf8.docbook: nsupdate-gbk.docbook
-	iconv -f gbk -t utf-8 nsupdate-gbk.docbook > nsupdate-utf8.docbook
-
-rndc.conf-utf8.docbook: rndc.conf-gbk.docbook
-	iconv -f gbk -t utf-8 rndc.conf-gbk.docbook > rndc.conf-utf8.docbook
-
-rndc-confgen-utf8.docbook: rndc-confgen-gbk.docbook
-	iconv -f gbk -t utf-8 rndc-confgen-gbk.docbook > rndc-confgen-utf8.docbook
 
 ddns-confgen-utf8.docbook: ddns-confgen-gbk.docbook
 	iconv -f gbk -t utf-8 ddns-confgen-gbk.docbook > ddns-confgen-utf8.docbook

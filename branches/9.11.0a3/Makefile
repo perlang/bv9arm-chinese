@@ -305,7 +305,6 @@ clean::
 	rm -f *.tmp01
 	rm -f Bv9ARM-unicode.tex
 	rm -f Bv9ARM-gbk.out.bak
-	rm -f pkcs11-utf8.xml
 	rm -f dnssec-utf8.xml
 	rm -f dlz-utf8.xml
 	rm -f managed-keys-utf8.xml
@@ -334,9 +333,6 @@ dnssec-utf8.xml: dnssec-gbk.xml
 	iconv -f gbk -t utf-8 $^ > $@
 
 managed-keys-utf8.xml: managed-keys-gbk.xml
-	iconv -f gbk -t utf-8 $^ > $@
-
-pkcs11-utf8.xml: pkcs11-gbk.xml
 	iconv -f gbk -t utf-8 $^ > $@
 
 libdns-utf8.xml: libdns-gbk.xml
@@ -404,9 +400,6 @@ named-rrchecker-utf8.docbook: named-rrchecker-gbk.docbook
 
 nsupdate-utf8.docbook: nsupdate-gbk.docbook
 	iconv -f gbk -t utf-8 nsupdate-gbk.docbook > nsupdate-utf8.docbook
-
-rndc-utf8.docbook: rndc-gbk.docbook
-	iconv -f gbk -t utf-8 rndc-gbk.docbook > rndc-utf8.docbook
 
 rndc.conf-utf8.docbook: rndc.conf-gbk.docbook
 	iconv -f gbk -t utf-8 rndc.conf-gbk.docbook > rndc.conf-utf8.docbook

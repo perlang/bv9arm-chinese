@@ -2461,6 +2461,23 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
             <row rowsep="0">
               <entry colname="1">
                 <para>
+                  <varname>size_or_percent</varname>
+                </para>
+              </entry>
+              <entry colname="2">
+                <para>
+                  <varname>size_spec</varname>或整数值，后跟“%”，表示百分比。
+                </para>
+                <para>
+                  这个行为与<varname>size_spec</varname>完全相同，
+                  但是<varname>size_or_percent</varname>还允许指定
+                  一个正整数后跟“%”来表示百分比。
+                </para>
+              </entry>
+            </row>
+            <row rowsep="0">
+              <entry colname="1">
+                <para>
                   <varname>yes_or_no</varname>
                 </para>
               </entry>
@@ -2918,63 +2935,18 @@ and perl</programlisting>
           </tgroup>
         </informaltable>
 
-	<para>
-	  当<acronym>BIND</acronym> 9是带GeoIP支持构建时，ACL也可用于
-          地理访问限制。通过指定一个如下形式的ACL元素可以达成：
-	  <command>geoip <optional>db <replaceable>database</replaceable></optional> <replaceable>field</replaceable> <replaceable>value</replaceable></command>
-	</para>
-	<para>
-	  <replaceable>field</replaceable>指示在一个匹配时搜索哪个字段。可用的
-          字段为"country"，"region"，"city"，"continent"，"postal"（邮政编码），
-	  "metro"（城区代码），"area"（地区编码），"tz"（时区），"isp"，"org"，
-          "asnum"，"domain"和"netspeed"。
-	</para>
-	<para>
-	  <replaceable>value</replaceable>是要在数据库中搜索的值。一个包含空格
-          或其它特殊字符的字符串必须使用引号。如果是一个"asnum"搜索，需要使用
-          "ASNNNN"开始的字符串，否则必须使用完整描述
-          （例如，"ASNNNN 某某公司名"）。如果是一个"country"搜索并且字符串是
-          两个字符长度，它必须是一个标准的ISO-3166-1双字符国家代码，如果是
-          三个字符长度，它必须是一个ISO-3166-1三字符国家代码；否则就应该是国家
-          的全称。类似地，如果是一个"region"搜索并且字符串是两个字符长度，它
-          必须是一个标准的双字符州或省的缩写；否则它就是州或省的全称。
-	</para>
-	<para>
-	  <replaceable>database</replaceable>字段指示匹配时要搜索哪个GeoIP
-          数据库。大多数情况这不是必须的，因为大多数搜索字段只能在单个数据库
-          中找到。然而，对一个国家的搜索可以由"city"，"region"或"country"数据库
-          回答，对区域的搜索（例如，州或省）可以由"city"或"region"数据库回答。
-          对这些搜索类型，指定一个<replaceable>database</replaceable>将强制
-          请求由那个数据库而不是别的数据库回答。如果未指定
-          <replaceable>database</replaceable>，这些请求将会按照顺序由"city"
-          数据库回答，如果安装了这个数据库，或者由"region"数据库回答，如果
-          安装了这个数据库，或者由"country"数据库回答。
-	</para>
-	<para>
-          一些GeoIP ACL的例子：
-	</para>
-	<programlisting>geoip country US;
-geoip country JAP;
-geoip db country country Canada;
-geoip db region region WA;
-geoip city "San Francisco";
-geoip region Oklahoma;
-geoip postal 95062;
-geoip tz "America/Los_Angeles";
-geoip org "Internet Systems Consortium";
-</programlisting>
-
-
       </section>
       <section xml:id="controls_grammar"><info><title><command>controls</command>语句语法</title></info>
 
 <programlisting><command>controls</command> {
    [ inet ( ip_addr | * ) [ port ip_port ]
                 allow { <replaceable> address_match_list </replaceable> }
-                keys { <replaceable>key_list</replaceable> }; ]
+                [ keys { <replaceable>key_list</replaceable> } ]
+                [ read-only <replaceable>yes_or_no</replaceable> ] ; ]
    [ inet ...; ]
    [ unix <replaceable>path</replaceable> perm <replaceable>number</replaceable> owner <replaceable>number</replaceable> group <replaceable>number</replaceable>
-     keys { <replaceable>key_list</replaceable> }; ]
+              [ keys { <replaceable>key_list</replaceable> } ]
+              [ read-only <replaceable>yes_or_no</replaceable> ] ; ]
    [ unix ...; ]
 };
 </programlisting>
@@ -3027,6 +2999,17 @@ geoip org "Internet Systems Consortium";
           <command>key_id</command>都被授权能够通过控制通道执行命令。关于在
           <command>rndc</command>中配置密钥的信息，参见
           <xref linkend="admin_tools"/>中的<xref linkend="rndc"/>。
+        </para>
+
+        <para>
+          如果打开<command>read-only</command>子句，控制通道被限制于下列
+          只读命令集中：
+          <command>nta -dump</command>，
+          <command>null</command>，<command>status</command>，
+          <command>showzone</command>，<command>testgen</command>和
+          <command>zonestatus</command>。
+          缺省情况，
+          <command>read-only</command>没有打开，控制通道允许读写访问。
         </para>
 
         <para>
@@ -3117,7 +3100,7 @@ geoip org "Internet Systems Consortium";
 
 	<para>
 	  <replaceable>algorithm_id</replaceable>是一个指定安全/认证算法的字符
-	  串。named支持<literal>hmac-md5</literal>，
+	  串。<command>named</command>服务器支持<literal>hmac-md5</literal>，
 	  <literal>hmac-sha1</literal>，<literal>hmac-sha224</literal>，
 	  <literal>hmac-sha256</literal>，<literal>hmac-sha384</literal>和
 	  <literal>hmac-sha512</literal> TSIG认证。通过在尾部增加一个以减号开始
@@ -3143,6 +3126,7 @@ geoip org "Internet Systems Consortium";
      [ <command>print-category</command> <option>yes</option> or <option>no</option>; ]
      [ <command>print-severity</command> <option>yes</option> or <option>no</option>; ]
      [ <command>print-time</command> <option>yes</option> or <option>no</option>; ]
+     [ <command>buffered</command> <option>yes</option> or <option>no</option>; ]
    }; ]
    [ <command>category</command> <replaceable>category_name</replaceable> {
      <replaceable>channel_name</replaceable> ; [ <replaceable>channel_name</replaceable> ; ... ]
@@ -3172,12 +3156,24 @@ geoip org "Internet Systems Consortium";
 };
 </programlisting>
 
+      <para>
+        如果<command>named</command>以<option>-L</option>选项
+        启动，它将日志记录到指定的文件，而不是使用syslog。在这种情况，
+        日志配置将会是：
+      </para>
+
+<programlisting>logging {
+     category default { default_logfile; default_debug; };
+     category unmatched { null; };
+};
+</programlisting>
+
         <para>
           在<acronym>BIND</acronym> 9中，日志配置只是在全部的配置文件被分析完成
           之后才建立。在<acronym>BIND</acronym> 8中，日志配置是在
           <command>logging</command>语句被分析时建立的。在服务器启动时，所有关
           于配置文件中语法错误的日志消息都被写到缺省通道，或者在指定
-          “<option>-g</option>”选项时被写到标准错误中。
+          <option>-g</option>选项时被写到标准错误中。
         </para>
 
         <section xml:id="channel"><info><title><command>channel</command>短语</title></info>
@@ -3325,8 +3321,16 @@ geoip org "Internet Systems Consortium";
           </para>
 
           <para>
+            如果打开了<command>buffered</command>，输出到文件将不会在
+            每条日志条目时刷新。缺省时，所有的日志消息都被刷新。
+          </para>
+
+          <para>
             有四个预定义的通道供<command>named</command>缺省日志使用，
-            具体如下：如何使用它们在<xref linkend="the_category_phrase"/>描述。
+            具体如后。
+            如果<command>named</command>以<option>-L</option>启动，
+            会增加第五个通道<command>default_logfile</command>。
+            如何使用它们在<xref linkend="the_category_phrase"/>描述。
           </para>
 
 <programlisting>channel default_syslog {
@@ -3339,7 +3343,7 @@ geoip org "Internet Systems Consortium";
 channel default_debug {
     // write to named.run in the working directory
     // Note: stderr is used instead of "named.run" if
-    // the server is started with the '-f' option.
+    // the server is started with the '-g' option.
     file "named.run";
     // log at the server's current debug level
     severity dynamic;
@@ -3356,6 +3360,14 @@ channel null {
    // toss anything sent to this channel
    null;
 };
+channel default_logfile {
+    // this channel is only present if named is
+    // started with the -L option, whose argument
+    // provides the file name
+    file "...";
+    // log at the server's current debug level
+    severity dynamic;
+};
 </programlisting>
 
           <para>
@@ -3365,12 +3377,13 @@ channel null {
           </para>
 
           <para>
-            由于安全原因，当使用了“<option>-u</option>”命令行选项时，
+            由于安全原因，当使用了<option>-u</option>命令行选项时，
             <filename>named.run</filename>文件只在<command>named</command>改变
             为新的UID之后才被创建，并且在<command>named</command>启动过程中还以
             root运行时所产生的调试输出都被丢弃。如果你需要捕捉这些输出，你必须
-            使用“<option>-g</option>”选项运行服务器并将标准错误重定向到一个文
-            件。
+            在运行服务器时使用<option>-L</option>选项指定一个缺省的日志文件，
+            或者使用<option>-g</option>选项将日志记录到标准错误，然后你可以
+            将其重定向到一个文件。
           </para>
 
           <para>
@@ -3391,6 +3404,13 @@ channel null {
 <programlisting>category default { default_syslog; default_debug; };
 </programlisting>
 
+        <para>
+          如果以<option>-L</option>选项启动<command>named</command>，
+          缺省的日志类别是：
+        </para>
+
+<programlisting>category default { default_logfile; default_debug; };
+</programlisting>
           <para>
             作为一个例子，我们假设你想将安全事件记录到一个文件，但是你也想保持
             缺省的日志行为。你会如下设定：
@@ -3421,7 +3441,6 @@ category notify { null; };
           <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="logging-categories-utf8.xml"/>
         </section>
 	<section xml:id="query_errors"><info><title><command>query-errors</command>类别</title></info>
-
 	  <para>
 	    <command>query-errors</command>类别是专门用于调试目的：
 	    是为了标识特定的请求为什么以及怎样导致错误响应。
@@ -3635,6 +3654,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> view <replaceable>view_name</replaceable>; </optional>
     <optional> search { <replaceable>domain_name</replaceable> ; <optional> <replaceable>domain_name</replaceable> ; ... </optional> }; </optional>
     <optional> ndots <replaceable>number</replaceable>; </optional>
+    <optional> lwres-tasks <replaceable>number</replaceable>; </optional>
+    <optional> lwres-clients <replaceable>number</replaceable>; </optional>
 };
 </programlisting>
 
@@ -3670,6 +3691,20 @@ badresp:1,adberr:0,findfail:0,valfail:0]
           的<command>ndots</command>语句等效。它指示在一个相对域名中的点的最小
           数目，将在追加查找路径元素之前作一个精确查找。
         </para>
+        <para>
+          <option>lwres-tasks</option>语句指定轻量级解析器用于服务客户端
+          的工作线程数目。缺省时这个数目与系统的CPU数目相同；在启动服务器
+          时，可以使用<option>-n</option>命令行选项来改变。
+        </para>
+        <para>
+          <option>lwres-clients</option>指定轻量级解析器应当创建并用于服务
+          客户端请求的每个线程中的客户端对象数目。
+          缺省时，如果轻量级解析器作为<command>named</command>的一部分运行，
+          每个任务创建256个客户端对象；如果作为<command>lwresd</command>
+          运行，每个线程创建1024个客户端对象。最大值是32768；更大的值将被
+          静默地忽略并使用最大值替代。
+          注意，设置一个太大的值可能过度消耗系统资源。
+        </para>
       </section>
       <section xml:id="masters_grammar"><info><title><command>masters</command>语句语法</title></info>
 
@@ -3702,6 +3737,10 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> hostname <replaceable>hostname_string</replaceable>; </optional>
     <optional> server-id <replaceable>server_id_string</replaceable>; </optional>
     <optional> directory <replaceable>path_name</replaceable>; </optional>
+    <optional> dnstap { <replaceable>message_type</replaceable>; ... }; </optional>
+    <optional> dnstap-output ( <literal>file</literal> | <literal>unix</literal> ) <replaceable>path_name</replaceable>; </optional>
+    <optional> dnstap-identity ( <replaceable>string</replaceable> | <literal>hostname</literal> | <literal>none</literal> ); </optional>
+    <optional> dnstap-version ( <replaceable>string</replaceable> | <literal>none</literal> ); </optional>
     <optional> geoip-directory <replaceable>path_name</replaceable>; </optional>
     <optional> key-directory <replaceable>path_name</replaceable>; </optional>
     <optional> managed-keys-directory <replaceable>path_name</replaceable>; </optional>
@@ -3713,6 +3752,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> cache-file <replaceable>path_name</replaceable>; </optional>
     <optional> dump-file <replaceable>path_name</replaceable>; </optional>
     <optional> bindkeys-file <replaceable>path_name</replaceable>; </optional>
+    <optional> lock-file <replaceable>path_name</replaceable>; </optional>
     <optional> secroots-file <replaceable>path_name</replaceable>; </optional>
     <optional> session-keyfile <replaceable>path_name</replaceable>; </optional>
     <optional> session-keyname <replaceable>key_name</replaceable>; </optional>
@@ -3727,6 +3767,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> statistics-file <replaceable>path_name</replaceable>; </optional>
     <optional> zone-statistics <replaceable>full</replaceable> | <replaceable>terse</replaceable> | <replaceable>none</replaceable>; </optional>
     <optional> auth-nxdomain <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> nxdomain-redirect <replaceable>string</replaceable>; </optional>
     <optional> deallocate-on-exit <replaceable>yes_or_no</replaceable>; </optional>
     <optional> dialup <replaceable>dialup_option</replaceable>; </optional>
     <optional> fake-iquery <replaceable>yes_or_no</replaceable>; </optional>
@@ -3735,10 +3776,16 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> has-old-clients <replaceable>yes_or_no</replaceable>; </optional>
     <optional> host-statistics <replaceable>yes_or_no</replaceable>; </optional>
     <optional> host-statistics-max <replaceable>number</replaceable>; </optional>
+    <optional> minimal-any <replaceable>yes_or_no</replaceable>; </optional>
     <optional> minimal-responses <replaceable>yes_or_no</replaceable>; </optional>
     <optional> multiple-cnames <replaceable>yes_or_no</replaceable>; </optional>
     <optional> notify <replaceable>yes_or_no</replaceable> | <replaceable>explicit</replaceable> | <replaceable>master-only</replaceable>; </optional>
     <optional> recursion <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> send-cookie <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> require-server-cookie <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> cookie-algorithm <replaceable>secret_string</replaceable>; </optional>
+    <optional> cookie-secret <replaceable>secret_string</replaceable>; </optional>
+    <optional> nocookie-udp-size <replaceable>number</replaceable> ; </optional>
     <optional> request-nsid <replaceable>yes_or_no</replaceable>; </optional>
     <optional> rfc2308-type1 <replaceable>yes_or_no</replaceable>; </optional>
     <optional> use-id-pool <replaceable>yes_or_no</replaceable>; </optional>
@@ -3779,6 +3826,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> allow-recursion-on { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> allow-update { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> allow-update-forwarding { <replaceable>address_match_list</replaceable> }; </optional>
+    <optional> automatic-interface-scan { <replaceable>yes_or_no</replaceable> }; </optional>
+    <optional> geoip-use-ecs <replaceable>yes_or_no</replaceable>;</optional>
     <optional> update-check-ksk <replaceable>yes_or_no</replaceable>; </optional>
     <optional> dnssec-update-mode ( <replaceable>maintain</replaceable> | <replaceable>no-resign</replaceable> ); </optional>
     <optional> dnssec-dnskey-kskonly <replaceable>yes_or_no</replaceable>; </optional>
@@ -3787,7 +3836,9 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> try-tcp-refresh <replaceable>yes_or_no</replaceable>; </optional>
     <optional> allow-v6-synthesis { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> blackhole { <replaceable>address_match_list</replaceable> }; </optional>
+    <optional> keep-response-order { <replaceable>address_match_list</replaceable> }; </optional>
     <optional> no-case-compress { <replaceable>address_match_list</replaceable> }; </optional>
+    <optional> message-compression <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> use-v4-udp-ports { <replaceable>port_list</replaceable> }; </optional>
     <optional> avoid-v4-udp-ports { <replaceable>port_list</replaceable> }; </optional>
     <optional> use-v6-udp-ports { <replaceable>port_list</replaceable> }; </optional>
@@ -3822,10 +3873,13 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> fetches-per-server <replaceable>number</replaceable> <optional><replaceable>(drop | fail)</replaceable></optional>; </optional>
     <optional> fetch-quota-params <replaceable>number fixedpoint fixedpoint fixedpoint</replaceable> ; </optional>
     <optional> fetches-per-zone <replaceable>number</replaceable> <optional><replaceable>(drop | fail)</replaceable></optional>; </optional>
+    <optional> notify-rate <replaceable>number</replaceable>; </optional>
+    <optional> startup-notify-rate <replaceable>number</replaceable>; </optional>
     <optional> serial-query-rate <replaceable>number</replaceable>; </optional>
     <optional> serial-queries <replaceable>number</replaceable>; </optional>
     <optional> tcp-listen-queue <replaceable>number</replaceable>; </optional>
     <optional> transfer-format <replaceable>( one-answer | many-answers )</replaceable>; </optional>
+    <optional> transfer-message-size  <replaceable>number</replaceable>; </optional>
     <optional> transfers-in  <replaceable>number</replaceable>; </optional>
     <optional> transfers-out <replaceable>number</replaceable>; </optional>
     <optional> transfers-per-ns <replaceable>number</replaceable>; </optional>
@@ -3858,6 +3912,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> max-cache-ttl <replaceable>number</replaceable>; </optional>
     <optional> max-zone-ttl ( <constant>unlimited</constant> | <replaceable>number</replaceable> ; </optional>
     <optional> serial-update-method <constant>increment</constant>|<constant>unixtime</constant>|<constant>date</constant>; </optional>
+    <optional> servfail-ttl <replaceable>number</replaceable>; </optional>
     <optional> sig-validity-interval <replaceable>number</replaceable> <optional><replaceable>number</replaceable></optional> ; </optional>
     <optional> sig-signing-nodes <replaceable>number</replaceable> ; </optional>
     <optional> sig-signing-signatures <replaceable>number</replaceable> ; </optional>
@@ -3866,17 +3921,20 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> use-ixfr <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> provide-ixfr <replaceable>yes_or_no</replaceable>; </optional>
     <optional> request-ixfr <replaceable>yes_or_no</replaceable>; </optional>
+    <optional> request-expire <replaceable>yes_or_no</replaceable>; </optional>
     <optional> treat-cr-as-space <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> min-refresh-time <replaceable>number</replaceable> ; </optional>
     <optional> max-refresh-time <replaceable>number</replaceable> ; </optional>
     <optional> min-retry-time <replaceable>number</replaceable> ; </optional>
     <optional> max-retry-time <replaceable>number</replaceable> ; </optional>
+    <optional> nta-lifetime <replaceable>duration</replaceable> ; </optional>
+    <optional> nta-recheck <replaceable>duration</replaceable> ; </optional>
     <optional> port <replaceable>ip_port</replaceable>; </optional>
     <optional> dscp <replaceable>ip_dscp</replaceable></optional> ;
     <optional> additional-from-auth <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> additional-from-cache <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> random-device <replaceable>path_name</replaceable> ; </optional>
-    <optional> max-cache-size <replaceable>size_spec</replaceable> ; </optional>
+    <optional> max-cache-size <replaceable>size_or_percent</replaceable> ; </optional>
     <optional> match-mapped-addresses <replaceable>yes_or_no</replaceable>; </optional>
     <optional> filter-aaaa-on-v4 ( <replaceable>yes_or_no</replaceable> | <replaceable>break-dnssec</replaceable> ); </optional>
     <optional> filter-aaaa-on-v6 ( <replaceable>yes_or_no</replaceable> | <replaceable>break-dnssec</replaceable> ); </optional>
@@ -3908,6 +3966,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> max-recursion-queries <replaceable>number</replaceable> ; </optional>
     <optional> masterfile-format
 	    (<constant>text</constant>|<constant>raw</constant>|<constant>map</constant>) ; </optional>
+    <optional> masterfile-style
+          (<constant>relative</constant>|<constant>full</constant>) ; </optional>
     <optional> empty-server <replaceable>name</replaceable> ; </optional>
     <optional> empty-contact <replaceable>name</replaceable> ; </optional>
     <optional> empty-zones-enable <replaceable>yes_or_no</replaceable> ; </optional>
@@ -3939,17 +3999,30 @@ badresp:1,adberr:0,findfail:0,valfail:0]
     <optional> response-policy {
 	zone <replaceable>zone_name</replaceable>
 	<optional> policy <replaceable>(given | disabled | passthru | drop |
-		  nxdomain | nodata | cname domain</replaceable>) </optional>
+                  tcp-only | nxdomain | nodata | cname domain</replaceable>) </optional>
 	<optional> recursive-only <replaceable>yes_or_no</replaceable> </optional>
+        <optional> log <replaceable>yes_or_no</replaceable> </optional>
 	<optional> max-policy-ttl <replaceable>number</replaceable> </optional>
 	; <optional>...</optional>
     } <optional> recursive-only <replaceable>yes_or_no</replaceable> </optional>
       <optional> max-policy-ttl <replaceable>number</replaceable> </optional>
       <optional> break-dnssec <replaceable>yes_or_no</replaceable> </optional>
       <optional> min-ns-dots <replaceable>number</replaceable> </optional>
+      <optional> nsip-wait-recurse <replaceable>yes_or_no</replaceable> </optional>
       <optional> qname-wait-recurse <replaceable>yes_or_no</replaceable> </optional>
       <optional> automatic-interface-scan <replaceable>yes_or_no</replaceable> </optional>
     ; </optional>
+    <optional> catalog-zones {
+        zone <replaceable>quoted_string</replaceable>
+            <optional> default-masters
+              <optional>port <replaceable>ip_port</replaceable></optional>
+              <optional>dscp <replaceable>ip_dscp</replaceable></optional>
+              { ( <replaceable>masters_list</replaceable> | <replaceable>ip_addr</replaceable> <optional>port <replaceable>ip_port</replaceable></optional> <optional>key <replaceable>key</replaceable></optional> ) ; <optional>...</optional> }</optional>
+        <optional>in-memory <replaceable>yes_or_no</replaceable></optional>
+        <optional>min-update-interval <replaceable>interval</replaceable></optional>
+      ; <optional>...</optional> };
+    ; </optional>
+    <optional>v6-bias <replaceable>number</replaceable> ; </optional>
 };
 </programlisting>
 
@@ -4063,6 +4136,117 @@ badresp:1,adberr:0,findfail:0,valfail:0]
           </varlistentry>
 
 	  <varlistentry>
+	    <term><command>dnstap</command></term>
+	    <listitem>
+	      <para>
+		<command>dnstap</command> is a fast, flexible method
+		<command>dnstap</command>是一个捕捉和记录DNS流量的快速、
+		灵活的方法。由Robert Edmonds at Farsight Security公司
+		所开发，并由多个DNS实现所支持，<command>dnstap</command>
+		使用<command>libfstrm</command>（一个轻量级高速框架库，
+		参见
+		<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://github.com/farsightsec/fstrm">https://github.com/farsightsec/fstrm</link>）
+		发送以协议缓冲（<command>libprotobuf-c</command>，一个
+		由Google公司所开发的序列化结构数据的机制；参见
+		<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://developers.google.com/protocol-buffers/">https://developers.google.com/protocol-buffers</link>）
+		编码的事件荷载。
+	      </para>
+	      <para>
+                要在编译时开启<command>dnstap</command>，
+                <command>fstrm</command>和<command>protobuf-c</command>
+                库必须是可用的，并且BIND必须在配置时使用
+                <option>--enable-dnstap</option>。
+	      </para>
+	      <para>
+		The <command>dnstap</command> option is a bracketed list
+		<command>dnstap</command>选项是一个带括号的、被记录消息
+		类型的列表。这些在每个视图中可以被设置为不同的值。支持的
+		类型是<literal>client</literal>，
+		<literal>auth</literal>，<literal>resolver</literal>和
+		<literal>forwarder</literal>。指定类型
+		<literal>all</literal>将使所有<command>dnstap</command>
+		消息被日志记录，而不考虑其类型。
+	      </para>
+	      <para>
+		每种类型可以接受一个额外的参数来指定是否记录
+		<literal>query</literal>消息或
+		<literal>response</literal>消息；如果未指定，则请求和响应都
+		记录。
+	      </para>
+	      <para>
+		Example: To log all authoritative queries and responses,
+		例如：要记录所有的权威请求和响应，递归客户端的响应和解析器
+		发出的上游请求，使用：
+<programlisting>dnstap {
+  auth;
+  client response;
+  resolver query;
+};
+</programlisting>
+	      </para>
+	      <para>
+		所记录的<command>dnstap</command>消息可以使用
+	        <command>dnstap-read</command>应用程序进行分析
+	        （参见<xref linkend="man.dnstap-read"/>获取详细信息）。
+	      </para>
+	      <para>
+		更多关于<command>dnstap</command>的信息，参见
+		<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://dnstap.info">http://dnstap.info</link>。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+          <varlistentry>
+            <term><command>dnstap-output</command></term>
+            <listitem>
+              <para>
+                如果<command>dnstap</command>在编译时开启并被激活，配置
+                <command>dnstap</command>frame流的发送路径。
+              </para>
+              <para>
+                第一个参数要么是<literal>file</literal>，要么是
+	        <literal>unix</literal>，指明目标是一个文件或UNIX域
+                套接字。第二个参数是一个文件或者一个UNIX域套接字。
+                （注意：当使用一个套接字时，<command>dnstap</command>
+                消息仅在另一个进程，例如<command>fstrm_capture</command>
+	        （由<command>libfstrm</command>提供），监听了这个套接字时
+	        才发送。）
+              </para>
+              <para>
+                <command>dnstap-output</command>只能在
+                <command>options</command>中全局设置。当前，它只能在
+                <command>named</command>运行时设置一次；一旦设置，不能通过
+                <command>rndc reload</command>或
+                <command>rndc reconfig</command>修改。
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term><command>dnstap-identity</command></term>
+            <listitem>
+              <para>
+                指定一个要在<command>dnstap</command>消息中发送的
+                <command>identity</command>字符串。
+                如果设置为<literal>hostname</literal>，这是缺省的，将发送
+                服务器主机名。如果设置为<literal>none</literal>，
+                不发送标识字符串。
+              </para>
+            </listitem>
+          </varlistentry>
+ 
+          <varlistentry>
+            <term><command>dnstap-version</command></term>
+            <listitem>
+              <para>
+                指定一个要在<command>dnstap</command>消息中发送的
+                 <command>version</command>字符串。缺省时BIND的版本号。
+                如果设置为<literal>none</literal>， 不发送版本字符串。
+              </para>
+            </listitem>
+          </varlistentry>
+
+	  <varlistentry>
 	    <term><command>geoip-directory</command></term>
 	    <listitem>
 	      <para>
@@ -4100,8 +4284,13 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 	      如果<command>named</command>被配置为没有使用视图，服务器的被管理
               密钥会保存在一个名为<filename>managed-keys.bind</filename>的文件
               中。否则，受管理密钥在不同的文件中被跟踪，每个视图一个文件；每个
-              文件名都是视图名SHA256 HASH的值，再加上
-              后缀<filename>.mkeys</filename>。
+	      文件名都是视图名（或者，如果其包含的字符不能用作文件名，就是视图
+	      名的SHA256 HASH值），再加上扩展<filename>.mkeys</filename>。
+              </para>
+              <para>
+		注意：在先前的版本中，视图的文件名总是使用视图名的SHA256 HASH值。
+		为确保对以后升级的兼容，如果发现存在一个使用旧名字格式的文件，
+		将会使用旧格式而不是使用新格式。）
               </para>
             </listitem>
           </varlistentry>
@@ -4208,6 +4397,26 @@ badresp:1,adberr:0,findfail:0,valfail:0]
               </para>
 	    </listitem>
 	  </varlistentry>
+
+          <varlistentry>
+            <term><command>lock-file</command></term>
+            <listitem>
+               <para>
+		  一个文件的路径名，<command>named</command>在第一次启动时试图
+		  获取其文件锁；如果不成功，服务器将会终止，是基于另一个服务器
+		  已经正在运行的假设上。如果未指定，缺省为
+                  <filename>/var/run/named/named.lock</filename>。
+                </para>
+               <para>
+		  指定<command>lock-file none</command>将关闭使用一个文件锁。
+		  如果<command>named</command>使用<option>-X</option>选项运行，
+		  <command>lock-file</command>将被忽略，因为选项覆盖了这个配置。
+		  如果<command>named</command>被重新装载或者被重新配置，对
+		  <command>lock-file</command>的改变将被忽略；它仅在服务器
+		  初次启动时有效。
+                </para>
+             </listitem>
+          </varlistentry>
 
           <varlistentry>
             <term><command>pid-file</command></term>
@@ -4610,10 +4819,67 @@ options {
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><command>nta-lifetime</command></term>
+	    <listitem>
+		<para>
+		  指定缺省的生命周期，单位为秒，用于由
+		  <command>rndc nta</command>所添加的不存在信任锚。
+		</para>
+		<para>
+		  一个不存在信任锚有选择地关闭由于错误配置而非攻击
+		  而众所周知验证失败的区的DNSSEC验证。当要验证的
+		  数据处于一个活动的NTA（且在任何其它已配置的信任锚
+		  之上）或之下，<command>named</command>将会中断
+		  DNSSEC验证过程并将数据认为是不安全的而非伪造的。
+		  这个将会持续到NTA的生命周期消失。
+		  <command>named</command>重启，NTA也会持续生效。
+		</para>
+		<para>
+		  为方便起见，TTL风格的时间单元后缀也可用于指定NTA
+		  生命周期，格式为秒、分和小时。
+		  <option>nta-lifetime</option>缺省为一小时。它不能
+		  超过一周。
+		</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><command>nta-recheck</command></term>
+	    <listitem>
+		<para>
+		  指定对由<command>rndc nta</command>添加的
+		  不存在信任锚是否仍然需要进行检查的频繁程度。
+		</para>
+		<para>
+		  一个不存在信任锚通常用于一个域由于操作错误而被停止
+		  验证；它暂时关闭对这个域的DNSSEC验证。
+		  为了确保DNSSEC验证能够尽快切换回来，
+		  <command>named</command>将周期性地发送一个请求
+		  给这个域，这时忽略不存在信任锚，以期发现其当时是否
+		  能够被验证。如果是，不存在信任锚可以允许尽早过期。
+		</para>
+		<para>
+		  通过使用<command>rndc nta -f</command>，可以对某个
+		  NTA关闭正确性检查，或者通过将
+		  <option>nta-recheck</option>设置为零而关闭所有NTA。
+		</para>
+		<para>
+		  为方便起见，TTL风格的时间单元后缀也可用于指定NTA
+		  重新检查的间隔时间，格式为秒、分和小时。缺省为五分钟。
+		  它不能比<option>nta-lifetime</option>（不能
+		  超过一周）更大。
+		</para>
+	    </listitem>
+	  </varlistentry>
+
+
+	  <varlistentry>
 	    <term><command>max-zone-ttl</command></term>
 	    <listitem>
 	      <para>
-		指定一个最大可能的TTL值。在使用一个
+                指定一个最大可能的TTL值，单位为秒。
+		为方便起见，TTL风格的时间单元后缀也可用于指定最大值。
+		在使用一个
                 <option>masterfile-format</option>为
                 <constant>text</constant>或者<constant>raw</constant>装载一个
                 区文件时，任何带有超过<option>max-zone-ttl</option>的TTL值的
@@ -4655,6 +4921,13 @@ options {
                     SOA序列号将被设置为UNIX纪元以来的秒数，除非序列号已经大于
                     或等于那个值，这时它只是简单的加一。
                   </para>
+	      <para>
+                当设置为
+		<command>serial-update-method date;</command>，
+		新的SOA序列号将会是当前日期，格式为“YYYYMMDD”，
+		后跟两个零，除非已存在的序列号大于或等于这个值，
+		这种情况下它只会增加一。
+	      </para>
                 </listitem>
               </varlistentry>
 
@@ -4713,8 +4986,7 @@ options {
               <listitem>
                 <para>
                   如果为<userinput>yes</userinput>，就可以在运行时通过
-		  <command>rndc addzone</command>添加区，或者通过
-		  <command>rndc delzone</command>删除区。
+		  <command>rndc addzone</command>添加区
 		  缺省为<userinput>no</userinput>。
                 </para>
               </listitem>
@@ -4988,6 +5260,19 @@ options {
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>geoip-use-ecs</command></term>
+	      <listitem>
+		<para>
+		  When BIND is compiled with GeoIP support and configured
+		  当BIND编译时带有GeoIP支持并且配置了“geoip”访问控制表元素，
+		  这个选项指示是否使用EDNS客户端子网选项，如果出现在一个
+		  请求中，来与GeoIP数据库进行比对。缺省是
+		  <command>geoip-use-ecs</command> <userinput>yes</userinput>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>has-old-clients</command></term>
               <listitem>
@@ -5026,6 +5311,20 @@ options {
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>message-compression</command></term> <listitem>
+		<para>
+		  如果为<userinput>yes</userinput>，DNS名字压缩将会用于
+		  普通请求（不包括AXFR或IXFR，这总是使用压缩）的响应中。
+		  将这个选项设置为<userinput>no</userinput>减少了服务器上
+		  的CPU用量而可能增加流量。然而，它增加了响应的大小，可能
+		  导致更多的请求通过使用TCP来处理；一个带有关闭压缩的
+		  服务器不兼容RFC 1123的6.1.3.2部份。缺省是
+		  <userinput>yes</userinput>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>minimal-responses</command></term>
               <listitem>
@@ -5037,6 +5336,27 @@ options {
                 </para>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>minimal-any</command></term>
+	      <listitem>
+		<para>
+		  If set to <userinput>yes</userinput>, then when
+		  如果设置为<userinput>yes</userinput>，在生成一个
+		  针对类型为ANY使用UDP的请求的肯定的响应时，服务器
+		  将会仅使用一个针对请求名的资源记录集，以及覆盖其的
+		  签名记录，如果有的话，来答复，而不是以这个名字的所有
+		  资源记录集来答复。类似地，类型为RRSIG的请求将使用覆盖
+		  一个类型的RRSIG记录答复。这可以降低某些攻击类型的影响，
+		  而不伤害合法的客户端。（注意，然而，返回的资源记录集
+		  是数据库中第一个被找到的；它不是必要地最小可用资源记录
+		  集。）
+		  另外，<option>minimal-responses</option>对这些请求是
+		  打开的，这样，没有多余的记录被添加到权威或附加部份。
+		  缺省是<userinput>no</userinput>。
+		</para>
+	    </listitem>
+	  </varlistentry>
 
             <varlistentry>
               <term><command>multiple-cnames</command></term>
@@ -5122,16 +5442,50 @@ options {
 	      <term><command>request-sit</command></term>
 	      <listitem>
 		<para>
-		  如果为<userinput>yes</userinput>，请求中会设置一个SIT
-                  （Source Identity Token，源特征符号）EDNS选项。如果解析器
-                  之前与服务器通信过，之前返回的SIT会被发送。这个用于让服务器
-                  判断这个解析器之前是否来访问过。
-                  一个发送正确SIT的解析器会被假设不是发送一个伪造源地址请求的
-                  off-path攻击者；这个请求就不太可能被当成一个反射/放大攻击，
-                  因此发送一个正确SIT选项的解析器就不会遭遇到
-                  响应率限制（RRL）。
-                  不发送一个正确SIT选项的解析器可能被通过
-                  <command>nosit-udp-size</command>选项限制成接收更小的响应。
+                  这个试验性选项已被废除。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>require-server-cookie</command></term>
+	      <listitem>
+		<para>
+		  在发送一个完整响应给一个来自cookie知晓客户端的UDP请求
+		  之前，要求一个正确的服务器cookie。
+		  如果存在一个错误的或不存在服务器cookie，将发送BADCOOKIE。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>send-cookie</command></term>
+	      <listitem>
+		<para>
+		  If <userinput>yes</userinput>, then a COOKIE EDNS
+		  如果设置为<userinput>yes</userinput>，伴随请求会发送
+		  一个COOKIE EDNS。如果解析器先前与服务器有过对话，
+		  先前交易中返回的COOKIE将被发送。
+		  这是服务器用于决定解析器是否曾与之对话。
+		  一个发送正确COOKIE的解析器会被假设不是发送伪造源地址
+		  请求的旁路攻击者；因而，请求不太可能是一个发射/放大
+		  攻击的一部分，所以发送一个正确COOKIE选项的解析器就
+		  不会遭遇响应率限制（RRL）。
+		  不发送一个正确COOKIE选项的解析器可能被服务器通过
+		  <command>nocookie-udp-size</command>
+		  选项限制成只收到更小的响应。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>nocookie-udp-size</command></term>
+	      <listitem>
+		<para>
+		  设置发送给不带合法服务器COOKIE的请求的最大UDP响应大小。
+		  小于128的值将被静默地提高到128.缺省值是4096，但是
+		  <command>max-udp-size</command>选项可以更多地限制响应
+		  大小。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -5152,8 +5506,29 @@ options {
 	      <term><command>sit-secret</command></term>
 	      <listitem>
 		<para>
-                  如果设置，这是一个用于在一个任意播集群内生成和验证
-                  源特征符号EDNS选项的共享秘钥。如果未设置，系统将在
+                  这个试验性选项已被废除。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>cookie-algorithm</command></term>
+	      <listitem>
+		<para>
+		  Set the algorithm to be used when generating the
+		  设置用于生成服务器cookie的算法。是“aes”，“sha1”或
+		  “sha256”之一。如果加密库支持，缺省是“aes”，否则是
+		  “sha256”。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>cookie-secret</command></term>
+	      <listitem>
+		<para>
+                  如果设置，这是一个用于在一个任播集群内生成和验证
+                  源标识符号EDNS选项的共享秘钥。如果未设置，系统将在
                   启动时生成一个随机秘钥。共享密钥被编码成一个十六进制
                   字符串，对AES128为128位，对SHA1为160位，对SHA256为
                   256位。
@@ -5218,6 +5593,16 @@ options {
                 </para>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>request-expire</command></term>
+	      <listitem>
+		<para>
+                  参见<xref linkend="server_statement_definition_and_usage"/>中
+                  对<command>request-expire</command>的描述。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>treat-cr-as-space</command></term>
@@ -5999,6 +6384,17 @@ options {
             </varlistentry>
 
 	    <varlistentry>
+	      <term><command>keep-response-order</command></term>
+	      <listitem>
+		<para>
+		  指定一个地址列表，服务器向这些地址发送响应给TCP请求
+		  时，将以与它们接收相同的顺序。这会关闭对TCP请求的
+		  并行处理。缺省是<userinput>none</userinput>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
 	      <term><command>no-case-compress</command></term> <listitem>
 		<para>
 		  指定一个地址列表，其中地址要求响应使用大小写无关的压缩。
@@ -6040,8 +6436,9 @@ options {
               <term><command>resolver-query-timeout</command></term>
               <listitem>
                 <para>
-                解析器在尝试解析一个递归请求时，在失败之前将花费的时间。缺省值
-                和最小值是<literal>10</literal>，最大值是<literal>30</literal>。
+                解析器在尝试解析一个递归请求时，在失败之前将花费的时间，
+		以秒计。缺省值和最小值是<literal>10</literal>，
+		最大值是<literal>30</literal>。
                 将其设置为<literal>0</literal>将会导致使用缺省值。
                 </para>
               </listitem>
@@ -6329,6 +6726,32 @@ avoid-v6-udp-ports {};
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>notify-rate</command></term>
+	      <listitem>
+		<para>
+		  在通常的区维护操作时，NOTIFY请求发送的速率。
+		  （由于初始区加载，NOTIFY请求受到一个单独的速率限制；
+		  参见以下）缺省是20每秒。
+		  可能的最低速率是一每秒；当设置为零时，将被静默地提升
+		  为一。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>startup-notify-rate</command></term>
+	      <listitem>
+		<para>
+		  当名字服务器第一次启动时，或者区被新添加到名字服务器时，
+		  NOTIFY请求发送的速率。
+		  缺省是20每秒。
+		  可能的最低速率是一每秒；当设置为零时，将被静默地提升
+		  为一。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>serial-query-rate</command></term>
               <listitem>
@@ -6339,11 +6762,6 @@ avoid-v6-udp-ports {};
                   <command>serial-query-rate</command>选项的值为一个整数，表示
                   每秒发送的最大请求数。缺省为20每秒。
                   可能的最低速率是1每秒；当设置为0时，它会被静默地提升为1。
-                </para>
-                <para>
-                  除了控制发出SOA刷新请求的速率，
-                  <command>serial-query-rate</command>还控制从主区和辅区发出的
-                  NOTIFY消息的速率。
                 </para>
               </listitem>
             </varlistentry>
@@ -6386,6 +6804,34 @@ avoid-v6-udp-ports {};
 
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>transfer-message-size</command></term>
+	      <listitem>
+		<para>
+		  这是用在通过TCP进行区传送的DNS消息在未压缩大小上的一个
+		  上限值。如果消息增长超过这个大小，附加的消息将会用于完
+		  成区传送。（注意，然而，这是一个示意，并非一个硬限制；
+		  如果一个包含单一资源记录的消息的RDATA超出了大小限制，将
+		  允许发送一个更大的消息以完成这个记录的传送。）
+		</para>
+		<para>
+		  Valid values are between 512 and 65535 octets, and any
+		  values outside that range will be adjusted to the nearest
+		  value within it.  The default is <literal>20480</literal>,
+		  which was selected to improve message compression:
+		  most DNS messages of this size will compress to less
+		  than 16536 bytes.  Larger messages cannot be compressed
+		  as effectively, because 16536 is the largest permissible
+		  compression offset pointer in a DNS message.
+		</para>
+		<para>
+		  This option is mainly intended for server testing;
+		  there is rarely any benefit in setting a value other
+		  than the default.
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>transfers-in</command></term>

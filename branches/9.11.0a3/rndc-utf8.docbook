@@ -456,14 +456,12 @@
             周期结束。
           </para>
           <para>
-            NTAs persist across restarts of the <command>named</command> server.
-            The NTAs for a view are saved in a file called
-            <filename><replaceable>name</replaceable>.nta</filename>,
-            where <replaceable>name</replaceable> is the
-            name of the view, or if it contains characters
-            that are incompatible with use as a file name, a
-            cryptographic hash generated from the name
-            of the view.
+            NTA持久跨越<command>named</command>服务器的重启。
+            视图的NTA被保存在一个名为
+            <filename><replaceable>name</replaceable>.nta</filename>
+            的文件中，其中，<replaceable>name</replaceable>
+            是视图的名字，或者如果它包含不能用于文件名的字符时，
+            是一个根据视图名生成的加密hash。
           </para>
           <para>
             一个现存的NTA可以通过使用<option>-remove</option>选项

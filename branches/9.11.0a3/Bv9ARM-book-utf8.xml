@@ -5264,7 +5264,6 @@ options {
 	      <term><command>geoip-use-ecs</command></term>
 	      <listitem>
 		<para>
-		  When BIND is compiled with GeoIP support and configured
 		  当BIND编译时带有GeoIP支持并且配置了“geoip”访问控制表元素，
 		  这个选项指示是否使用EDNS客户端子网选项，如果出现在一个
 		  请求中，来与GeoIP数据库进行比对。缺省是
@@ -6817,18 +6816,15 @@ avoid-v6-udp-ports {};
 		</para>
 		<para>
 		  Valid values are between 512 and 65535 octets, and any
-		  values outside that range will be adjusted to the nearest
-		  value within it.  The default is <literal>20480</literal>,
-		  which was selected to improve message compression:
-		  most DNS messages of this size will compress to less
-		  than 16536 bytes.  Larger messages cannot be compressed
-		  as effectively, because 16536 is the largest permissible
-		  compression offset pointer in a DNS message.
+		  有效值介于512和65535字节之间，任何在此范围之外的值都会
+		  被调整为最接近的范围内的值。缺省是<literal>20480</literal>，
+		  选择这个目的是增强消息压缩：大多数这个大小的DNS消息会被
+		  压缩到16536字节之内。更大的消息不能被有效地压缩，因为
+		  16536是一个DNS消息内最大允许的压缩偏移指针。
 		</para>
 		<para>
-		  This option is mainly intended for server testing;
-		  there is rarely any benefit in setting a value other
-		  than the default.
+		  这个选项主要目的是服务器测试；设置为非缺省值几乎
+		  很少有任何收益。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -7138,13 +7134,13 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   一个“硬限额“：当超过这个数目的客户端在等待时，新进入的请求
                   将不被接受，对每个新进入的请求，先前等待的请求将被丢弃。
                 </para>
-                  <para>
-                    也可以设置一个“软限额”。当这个更低的限额被超过时，新进入
-                    的请求被接受，但是对每个新进入的请求，一个等待的请求将被丢弃。
-                    如果<option>recursive-clients</option>大于1000，软限额被
-                    设置为<option>recursive-clients</option>减100；否则，它被
-                    设置为<option>recursive-clients</option>的90%。
-                  </para>
+                <para>
+                  也可以设置一个“软限额”。当这个更低的限额被超过时，新进入
+                  的请求被接受，但是对每个新进入的请求，一个等待的请求将被丢弃。
+                  如果<option>recursive-clients</option>大于1000，软限额被
+                  设置为<option>recursive-clients</option>减100；否则，它被
+                  设置为<option>recursive-clients</option>的90%。
+                </para>
               </listitem>
             </varlistentry>
 
@@ -7229,11 +7225,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   一个域的活跃解析数目下降为0，这个域的计数器将被删除，
                   下一次一个解析发到这个域，就会重建计数器并被设置为0.）
 		</para>
-		<para>
-                  （注意：这个选项仅在BIND使用
-                  <command>configure --enable-fetchlimit</command>
-                  构建时才可用。）
-		</para>
 	      </listitem>
 	    </varlistentry>
 
@@ -7269,11 +7260,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		  <command>fetch-quota-params</command>选项可以用来
                   调整这个计算的参数。
 		</para>
-		<para>
-                  （注意：这个选项仅在BIND使用
-                  <command>configure --enable-fetchlimit</command>
-                  构建时才可用。）
-		</para>
 	      </listitem>
 	    </varlistentry>
 
@@ -7299,11 +7285,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		  这些参数都是定点数，精度为1/100：小数点后至少2位是要
                   保留的。
 		</para>
-		<para>
-                  （注意：这个选项仅在BIND使用
-                  <command>configure --enable-fetchlimit</command>
-                  构建时才可用。）
-		</para>
 	      </listitem>
 	    </varlistentry>
 
@@ -7328,7 +7309,8 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <term><command>max-cache-size</command></term>
               <listitem>
                 <para>
-                  用于服务器缓存的最大内存量，以字节为单位。当缓存中的数据量达
+                  用于服务器缓存的最大内存量，以字节为单位，或者物理内存
+                  总数的百分比。当缓存中的数据量达
                   到这个限制时，服务器将使用一个基于LRU的策略使记录提前作废
 		  以免超过限制。
                   关键字<userinput>unlimited</userinput>，或值0，将使缓存大小
@@ -7336,7 +7318,12 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   记录将在TTL过期时才将其从缓存中清除。
                   任何小于2MB的正数都被忽略并重置为2MB。
                   在一个带多个视图的服务器上，这个限制分别应用到各个视图的缓
-                  存上。缺省为<userinput>unlimited</userinput>。
+                  存上。缺省为<userinput>90%</userinput>。
+		  在检测物理内存数量无法表示为百分比的系统上，这个值回退为
+		  unlimited。
+		  注意对物理内存的检测仅在系统初启时做一次，所以在运行期间
+		  如果物理内存发生变化，<command>named</command>不会调整
+		  缓存的大小。
                 </para>
               </listitem>
             </varlistentry>
@@ -7659,13 +7646,26 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   <literal>1800</literal>（30分钟）。
                 </para>
 
-              <para>
-                Lame-ttl也控制DNSSEC验证失败被缓存的时间。如果lame-ttl
-                被设置为小于30秒，则被应用到否定缓存条目的最小值为30秒。
-              </para>
-
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>servfail-ttl</command></term>
+	      <listitem>
+		<para>
+		  设置由于DNSSEC验证失败或者其他通用服务器失败时，缓存
+		  一个SERVFAIL响应的秒数。如果设置为
+		  <literal>0</literal>，SERVFAIL缓存将被关闭。
+		  如果一个请求设置了CD（检查关闭）位，不会查询
+		  SERVFAIL缓存；这就允许一个由于DNSSEC验证失败的请求
+		  能够重试而不需要等待SERVFAIL TTL过期。
+		</para>
+		<para>
+		  最大值是<literal>30</literal>秒；任何更大的值
+		  会被静默地减小。缺省值是<literal>1</literal>秒。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>max-ncache-ttl</command></term>
@@ -7685,9 +7685,10 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <term><command>max-cache-ttl</command></term>
               <listitem>
                 <para>
-		  设置服务器的缓存普通（正）响应的最大时间。缺省值是一周（7天）。
-                  值为0可能导致所有的请求都返回SERVFAIL，因为在解析过程中会丢失
-                  中间资源记录集（如NS和粘着AAAA/A记录）的缓存。
+                  设置服务器的缓存普通（肯定）响应的最大时间，以秒
+                  为单位。缺省值是604800（一周）。
+		  值为0可能导致所有的请求都返回SERVFAIL，因为在解析过程中
+		  会丢失中间资源记录集（如NS和粘着AAAA/A记录）的缓存。
                 </para>
               </listitem>
             </varlistentry>
@@ -7789,11 +7790,10 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   失败的传送时的行为。通常是使用区的SOA值，但是这些值是由主服务
                   器设置的，只给辅服务器管理员一点点对内容的控制权。
                 </para>
-
                 <para>
                   这些选项允许管理员针对每个区，每个视图或者全局设置一个最小和
-                  最大的刷新和重试时间。这些选项对辅区和存根区有效，将SOA的刷新
-                  和重试时间指定到特定的值上。
+		  最大的刷新和重试时间，以秒为单位。这些选项对辅区和存根区有效，
+		  将SOA的刷新和重试时间指定为特定值。
                 </para>
                 <para>
                   下列为相应的缺省值。<command>min-refresh-time</command>
@@ -7901,6 +7901,29 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	      </listitem>
 	    </varlistentry>
 
+	    <varlistentry>
+	      <term><command>masterfile-style</command></term>
+	      <listitem>
+		<para>
+		  当<option>masterfile-format</option>是
+		  <constant>text</constant>时，指定转储区文件的格式。
+		  （在任何其它<option>masterfile-format</option>时，
+		  这个选项被忽略。）
+		</para>
+		<para>
+		  当设置为<constant>relative</constant>时，记录以一个多行
+		  格式，属主名被表示成相对于一个共享原点的形式输出。
+		  当设置为<constant>full</constant>时，记录以一个单行格式，
+		  并以绝对属主名的形式输出。
+		  当一个区文件需要通过一个脚本自动处理时，
+		  <constant>full</constant>格式最适合。
+		  <constant>relative</constant>格式更适合人工阅读，在一个
+		  区需要被手工编辑时更适合。缺省是
+		  <constant>relative</constant>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
 	    <varlistentry xml:id="max-recursion-depth">
 	      <term><command>max-recursion-depth</command></term>
 	      <listitem>
@@ -7971,6 +7994,17 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   适宜TTL必须至少比触发TTL大六秒：如果不是这样，
                   <command>named</command>将静默地向大调整。
                   缺省的适宜TTL是<literal>9</literal>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>v6-bias</command></term>
+	      <listitem>
+		<para>
+		  When determining the next nameserver to try
+		  preference IPv6 nameservers by this many milliseconds.
+		  缺省是<literal>50</literal>毫秒。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -8055,14 +8089,15 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
         <section xml:id="empty"><info><title>内置空区</title></info>
 
 	  <para>
-	    named有一些内置空区（仅含有SOA和NS记录）。这是通常情况下只应在本地
+            <command>named</command>有一些内置空区（仅含有SOA和NS记录）。
+	    这是通常情况下只应在本地
 	    响应而不应该发到互联网的根服务器上的请求。覆盖这些名字空间的官方服
 	    务器会对这些请求响应NXDOMAIN。特别地，这些覆盖了来自于RFC 1918，
             RFC 4193，RFC 5737和RFC 6598。这些也包含IPv6本地地址（本地分配的）
             的反向名字空间，IPv6链路本地地址，IPv6环回地址和IPv6未知地址。
 	  </para>
 	  <para>
-	    named将试图决定是否一个内置区已经存在或者是激活的（被一个
+	    服务器将试图决定是否一个内置区已经存在或者是激活的（被一个
 	    forward-only的转发定义所覆盖），并且在此情况不会创建一个空区。
 	  </para>
 	  <para>
@@ -8523,12 +8558,27 @@ deny-answer-aliases { "example.net"; };
 		<term><command>RPZ-NSIP</command></term>
 		<listitem>
 		  <para>
-                    NSIP触发器被编码成类似IP触发器，除了作为
+                    NSIP触发器与权威服务器的IP地址比对。他们被编码成类似IP触发器，
+                    除了作为
                     <userinput>rpz-nsip</userinput>的子域名之外。
                     NSDNAME和NSIP触发器仅在名字至少带有
                     <command>min-ns-dots</command>个点时才被检查。
-                    对非顶级域，<command>min-ns-dots</command>的缺省值是1。
+		    <command>min-ns-dots</command>的缺省值是1，
+		    以排除顶级域。
 		  </para>
+                  <para>
+		    如果一个名字服务器的IP地址是未知的，在应用一条
+		    RPZ-NSIP规则之前，<command>named</command>会递归
+		    查找这个IP地址。这会导致处理延迟。为了以精确的
+		    成本加速处理过程，可以使用
+		    <command>nsip-wait-recurse</command>选项；当设置
+		    为<userinput>no</userinput>时，RPZ-NSIP规则只在一个
+		    名字服务器的IP地址已经被查找并缓存时才应用。如果
+		    一个服务器的IP地址不在缓存中，RPZ-NSIP将被忽略，
+		    但是将在后台查找这个地址，以备后续请求可以应用这个
+		    规则。缺省是<userinput>yes</userinput>，意谓RPZ-NSIP
+		    规则总会被应用，即使需要首先查找一个地址。
+                  </para>
 		</listitem>
 	      </varlistentry>
 	    </variablelist>
@@ -8742,7 +8792,8 @@ deny-answer-aliases { "example.net"; };
 	  <para>
 	    一个被RPZ策略所修改的记录的TTL根据策略区中相关记录的TTL来设置。
             它被限制为一个最大值。
-            <command>max-policy-ttl</command>子句从其缺省值5改变那个最大值。
+	    <command>max-policy-ttl</command>子句从其缺省值5改变那个最大值，
+	    以秒为单位。
 	  </para>
 
 	  <para>
@@ -8809,6 +8860,11 @@ example.com                 CNAME   rpz-tcp-only.
           <para>
             由RPZ所重写的响应在<command>RPZRewrites</command>统计中被计数。
           </para>
+
+	  <para>
+	    做为可选项，<command>log</command>字句可以用于对某一特定
+	    响应策略区关闭重写日志。缺省时，所有重写都记录日志。
+	  </para>
         </section>
 
 	<section xml:id="rrl"><info><title>响应比率限制</title></info>
@@ -8862,7 +8918,7 @@ example.com                 CNAME   rpz-tcp-only.
 	    对一个给定的有效域名的任何及所有未定义的子域的请求而产生的
             NXDOMAIN错误，不考虑请求类型，都是同一的。
 	    它们由<command>nxdomains-per-second</command>限制
-	    （缺省基于<command>responses-per-second</command>）。
+	    （缺省是<command>responses-per-second</command>）。
             这控制某些使用随机域名的攻击，但能够在期望许多合法NXDOMAIN响应
             的服务器上被放松或关闭（设置为0），例如来自反垃圾黑名单。
             指向或授权到一个给定域名的服务器都是同一的并可以被
@@ -8927,6 +8983,29 @@ example.com                 CNAME   rpz-tcp-only.
 	  </para>
 
 	  <para>
+	    可选的<command>domain</command>字句指定速率限制将会应用
+	    到的名字空间。通过指定多个<command>rate-limit</command>
+	    块和不同的<command>domain</command>子句，可以对不同的名字
+	    使用不同的速率限制。<command>rate-limit</command>语句的
+	    <command>domain</command>最接近匹配的请求名将会被应用
+	    到给定的请求。
+	  </para>
+
+	  <para>
+	    不同的名字空间的速率限制器维护独立的计数器：例如，如果
+	    “com”存在一个<command>rate-limit</command>语句，
+	    “example.com”存在另一个，与“example.com”匹配的请求将
+	    不会被记入“com”对应的速率限制器。
+	  </para>
+
+	  <para>
+	    如果一个<command>rate-limit</command>语句没有指定一个
+	    <command>domain</command>，它将应用到根域（“.”）上，因此影响
+	    整个DNS名字空间，除了那些被其它<command>rate-limit</command>
+	    语句覆盖的部分。
+	  </para>
+
+	  <para>
 	    DNS客户端社区可以给出其自身的参数，或完全没有比率限制，即将
             <command>rate-limit</command>语句放入<command>view</command>语句中
             而不是<command>option</command>中。
@@ -8955,7 +9034,7 @@ example.com                 CNAME   rpz-tcp-only.
             可能需要额外的NS，A，AAAA，MX，TXT和SPF记录。
 	    Web浏览器通常重复地解析在一页的HTML &lt;IMG&gt;标签中重复出现的
             同样名字。
-	    <command>All-per-second</command>类似于防火墙所提供的比率限制，
+	    <command>all-per-second</command>类似于防火墙所提供的比率限制，
             但通常不如后者。
 	    Attacks that justify ignoring the
 	    contents of DNS responses are likely to be attacks on the
@@ -8988,6 +9067,38 @@ example.com                 CNAME   rpz-tcp-only.
             <command>RespTruncated</command>统计中。
 	  </para>
 	</section>
+
+	<section title="NXDOMAIN Redirection"><info/>
+	  <para>
+	    Named通过两个方法支持NXDOMAIN重定向：
+	    <itemizedlist>
+	      <listitem>重定向区<xref linkend="zone_statement_grammar"/></listitem>
+	      <listitem>重定向名字空间</listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>
+	    在这两种方法中，named得到了一个NXDOMAIN响应时，它检查一个
+	    独立的名字空间以查看是否应该使用一个可替换的响应来替换
+	    NXDOMAIN响应。
+	  </para>
+	  <para>
+	    使用一个重定向区（<command>zone "." { type redirect; };</command>），
+	    用于替代NXDOMAIN的数据被保留在一个不是正常名字空间一部份
+	    的单一区中。所有重定向信息都包含在这个区中；其中没有授权。
+	  </para>
+	  <para>
+	    使用一个重定向名字空间（<command>option { nxdomain-redirect
+            &lt;suffix&gt; };</command>），用于替代NXDOMAIN的数据是正常
+            名字空间的一部份，并通过在原始请求名尾部添加一个特定的后缀来
+	    查找。这大致将处理NXDOMAIN响应所需的缓存数量翻倍，因为你
+	    拥有原始的NXDOMAIN响应和替代的数据，或者在没有替代时是一份
+	    NXDOMAIN指引。
+	  </para>
+	  <para>
+	    如果同时都配置了一个重定向区和一个重定向名字空间，
+	    首先试探重定向区。
+	  </para>
+	</section>
       </section>
 
       <section xml:id="server_statement_grammar"><info><title><command>server</command>语句语法</title></info>
@@ -8996,11 +9107,14 @@ example.com                 CNAME   rpz-tcp-only.
     <optional> bogus <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> provide-ixfr <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> request-ixfr <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> request-expire <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> request-nsid <replaceable>yes_or_no</replaceable> ; </optional>
-    <optional> request-sit <replaceable>yes_or_no</replaceable> ; </optional>
+    <optional> send-cookie <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> edns <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> edns-udp-size <replaceable>number</replaceable> ; </optional>
+    <optional> edns-version <replaceable>number</replaceable> ; </optional>
     <optional> max-udp-size <replaceable>number</replaceable> ; </optional>
+    <optional> tcp-only <replaceable>yes_or_no</replaceable> ; </optional>
     <optional> transfers <replaceable>number</replaceable> ; </optional>
     <optional> transfer-format <replaceable>( one-answer | many-answers )</replaceable> ; ]</optional>
     <optional> keys { <replaceable>key_id</replaceable> }; </optional>
@@ -9067,6 +9181,15 @@ example.com                 CNAME   rpz-tcp-only.
             一个服务器在使用IXFR时，有许多bug并宕掉或者数据损坏。
           </para>
 
+	  <para>
+	    <command>request-expire</command>子句决定本地服务器在作为
+	    一台辅服务器时是否请求EDNS EXPIRE值。EDNS EXPIRE值指示
+	    在区数据过期并需要被刷新之前的剩余时间。这个用于当一台
+	    辅服务器从另一台辅服务器传输一个区时；当从主服务器传输
+	    时，过期计数器是设置在SOA记录的EXPIRE字段中。
+	    缺省是<command>yes</command>。
+	  </para>
+
           <para>
             <command>edns</command>子句决定在与远程服务器通信时，
             是否企图使用EDNS。缺省是<command>yes</command>。
@@ -9088,12 +9211,28 @@ example.com                 CNAME   rpz-tcp-only.
             <command>options/view</command>的行为一致。）
 	  </para>
 
+	  <para>
+	    <command>edns-version</command>选项设置由解析器发送给
+	    服务器的最大EDNS VERSION。实际发出的EDNS版本仍然服从
+	    普通的DNS版本协商规则（参见RFC 6891），服务器支持的最大
+	    EDNS版本和任何其它试探的更低版本都应被发送。这个选项
+	    是用于当一个远程服务器对一个给定的EDNS版本或更高的版本
+	    做出错误反应的时候；它应该被设置为所了解的远程服务器支持
+	    的最大版本。有效值是0到255；更大的值将被静默地调整。
+	    这个选项是不需要的，除非使用了大于0的EDNS版本。
+	  </para>
+
           <para>
 	    <command>max-udp-size</command>选项设置<command>named</command>发出
 	    的EDNS UDP消息的最大大小。有效值是从512到4096字节（在这个范围之外的
 	    值将被静默地调整）。这个选项是用于当你知道有防火墙阻止来自
 	    <command>named</command>的大回复包时。
 	  </para>
+
+          <para>
+	    <command>tcp-only</command>选项设置传输协议为TCP。缺省是
+	    使用UDP进行传输，并在收到一个截断响应时回退到TCP。
+          </para>
 
           <para>
             服务器支持两种区传送方法。第一种，<command>one-answer</command>，
@@ -9159,10 +9298,10 @@ example.com                 CNAME   rpz-tcp-only.
 	  </para>
 
 	  <para>
-	    <command>request-sit</command>子句决定本地服务器在发送到其它服务器
-            的请求中是否要添加一个SIT EDNS选项。这覆盖视图或全局选项中的
-            <command>request-sit</command>设置。named可能决定SIT不被远程服务器
-            支持并且不在请求中添加一个SIT EDNS选项。
+	    <command>send-cookie</command>子句决定本地服务器在发送到其它服务器
+            的请求中是否要添加一个COOKIE EDNS选项。这覆盖视图或全局选项中的
+	    <command>send-cookie</command>设置。<command>named</command>服务器
+	    可能决定COOKIE不被远程服务器支持并且不在请求中添加一个COOKIE EDNS选项。
 	  </para>
 	</section>
 
@@ -9254,7 +9393,9 @@ example.com                 CNAME   rpz-tcp-only.
           <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/mem">http://127.0.0.1:8888/xml/v3/mem</link>
 	  （内存管理统计），
           <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/tasks">http://127.0.0.1:8888/xml/v3/tasks</link>
-	  （任务管理统计）。
+	  （任务管理统计）和
+	  <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/traffic">http://127.0.0.1:8888/xml/v3/traffic</link>
+	  （流量大小）。
 	</para>
 
 	<para>
@@ -9272,7 +9413,9 @@ example.com                 CNAME   rpz-tcp-only.
           <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/mem">http://127.0.0.1:8888/json/v1/mem</link>
 	  （内存管理统计），
           <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/tasks">http://127.0.0.1:8888/json/v1/tasks</link>
-	  （任务管理统计）。
+	  （任务管理统计）和
+	  <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/traffic">http://127.0.0.1:8888/json/v1/traffic</link>
+	  （流量大小）。
 	</para>
       </section>
 
@@ -9312,6 +9455,10 @@ example.com                 CNAME   rpz-tcp-only.
 	    它在两个地方都被设置了，它们都会被添加：在顶级定义的密钥
 	    被所有的视图所继承，但是在一个视图内部定义的密钥只能用于
 	    那个视图。
+	  </para>
+	  <para>
+            验证下面所指定的名字可以使用<command>rndc nta</command>
+	    暂时关闭。
 	  </para>
 	</section>
 
@@ -9580,7 +9727,7 @@ view "external" {
     <optional> auto-dnssec <constant>allow</constant>|<constant>maintain</constant>|<constant>off</constant>; </optional>
     <optional> inline-signing <replaceable>yes_or_no</replaceable>; </optional>
     <optional> zero-no-soa-ttl <replaceable>yes_or_no</replaceable> ; </optional>
-    <optional> serial-update-method <constant>increment</constant>|<constant>unixtime</constant>; </optional>
+    <optional> serial-update-method <constant>increment</constant>|<constant>unixtime</constant>|<constant>date</constant>; </optional>
     <optional> max-zone-ttl <replaceable>number</replaceable> ; </optional>
 };
 
@@ -9729,7 +9876,6 @@ zone <replaceable>zone_name</replaceable> <optional><replaceable>class</replacea
         <section xml:id="zone_statement"><info><title><command>zone</command>语句定义和用法</title></info>
 
           <section xml:id="zone_types"><info><title>区类型</title></info>
-
             <para>
               <command>zone</command>配置要求<command>type</command>关键字，
               除非它时一个<command>in-view</command>配置。可以接受的值包括：
@@ -13604,6 +13750,32 @@ HOST-127.EXAMPLE. MX 0 .
 		  </row>
 		  <row rowsep="0">
 		    <entry colname="1">
+		      <para><command>QryNXRedir</command></para>
+		    </entry>
+		    <entry colname="2">
+		      <para><command/></para>
+		    </entry>
+		    <entry colname="3">
+		      <para>
+			导致NXDOMAIN被重定向的请求数。
+		      </para>
+		    </entry>
+		  </row>
+		  <row rowsep="0">
+		    <entry colname="1">
+		      <para><command>QryNXRedirRLookup</command></para>
+		    </entry>
+		    <entry colname="2">
+		      <para><command/></para>
+		    </entry>
+		    <entry colname="3">
+		      <para>
+			导致NXDOMAIN被重定向和导致一个成功远程查询的请求数。
+		      </para>
+		    </entry>
+		  </row>
+		  <row rowsep="0">
+		    <entry colname="1">
 		      <para><command>XfrReqDone</command></para>
 		    </entry>
 		    <entry colname="2">
@@ -14482,8 +14654,9 @@ HOST-127.EXAMPLE. MX 0 .
           访问控制表（Access Control Lists，ACL）是地址匹配表，你可以建立并
           命名，以备以后用于<command>allow-notify</command>，
           <command>allow-query</command>，<command>allow-query-on</command>，
-          <command>allow-recursion</command>，<command>allow-recursion-on</command>，
-          <command>blackhole</command>，<command>allow-transfer</command>
+          <command>allow-recursion</command>，
+	  <command>blackhole</command>，<command>allow-transfer</command>，
+	  <command>match-clients</command>
           等语句中。
         </para>
         <para>
@@ -14496,7 +14669,13 @@ HOST-127.EXAMPLE. MX 0 .
           攻击。
         </para>
         <para>
-          这是一个如何正确应用ACL的例子：
+          访问控制表根据三个特征来匹配客户端：
+	  1) 客户端的IP地址； 2) 用于签名请求的TSIG或SIG(0)密钥，如果
+	  有的话；和 3) 编码在一个EDNS客户端子网选项中的一个地址前缀，
+	  如果有的话。
+        </para>
+        <para>
+          这是一个基于ACL的客户端地址的例子：
         </para>
 
 <programlisting>
@@ -14528,15 +14707,126 @@ zone "example.com" {
 };
 </programlisting>
 
-        <para>
-          这将允许外部对服务器进行递归查询，除非在之前递归被禁止。
-        </para>
+	<para>
+	  这将允许来自任何地址对“example.com”的权威请求，但是只有指定
+	  的网络“our-nets”才能进行递归请求，并且指定网络“bogusnets”中
+	  的任何请求都被禁止。
+	</para>
+	<para>
+	  除了与DNS请求中的源地址匹配的网络地址和前缀之外，ACL也可
+	  包含<option>key</option>元素，这是指定一个TSIG或者SIG(0)
+	  密钥的名字，或者<option>ecs</option>元素，这是指定一个网络前缀，
+	  但仅在这个前缀与请求中包含的一个EDNS客户端子网选项匹配时
+	  才进行匹配。
+	</para>
+	<para>
+	  The EDNS Client Subnet (ECS) option is used by a recursive
+	  EDNS客户端子网(ECS)选项用于一个递归解析器通知一个权威服务器
+	  网络地址块，来自这个地址块的请求 option is used by a recursive
+	  resolver to inform an authoritative name server of the network
+	  address block from which the original query was received, enabling
+	  使权威服务器能够对同一解析器但是带有不同解析器客户端给出不同
+	  的回答。一个包含形如
+	  <command>ecs <replaceable>prefix</replaceable></command>
+	  的元素的ACL将会匹配成功，如果如果一个到来的请求中包括一个
+	  ECS选项，其中编码了在这个前缀中的一个地址。
+	  如果请求没有ECS选项，“ecs”元素被简单地忽略。
+	  ACL中的地址如果不以“ecs”为前缀，就只针对源地址进行匹配。
+	</para>
+	<para>
+	  当<acronym>BIND</acronym> 9构建时带有GeoIP支持，ACL也可
+	  用于地理访问限制。这是通过指定一个如下形式的ACL元素完成
+	  的：
+	  <command>geoip <optional>db <replaceable>database</replaceable></optional> <replaceable>field</replaceable> <replaceable>value</replaceable></command>
+	</para>
+	<para>
+	  <replaceable>field</replaceable>指定在一个匹配中搜索
+	  哪个字段。可用的字段是“country”，“region”，“city”，
+	  “continent”，“postal”（邮政编码），“metro”（城区编码），
+	  “area”（区域编码），“tz”（时区），“isp”，“org”，
+	  “asnum”，“domain”和“netspeed”。
+	</para>
+	<para>
+	  <replaceable>value</replaceable>是要在数据库中搜索的值，
+	  字符串需要用引号引上，如果其中包含空格或其它特殊字符。
+	  如果这是一个“asnum”搜索，可以使用前导的“ASNNNN”字符串，
+	  否则必须使用完整的描述
+	  （例如，"ASNNNN Example Company Name"）。
+	  如果这是一个“country”搜索并且字符串是两个字符，就必须
+	  使用标准的ISO-3166-1双字符国家码，如果它是三个字符，就
+	  必须是一个ISO-3166-1三字符国家码；否则就必须是国家的
+	  完整名字。类似的，如果这是一个“region”搜索并且字符串是
+	  两个字符，它必须是一个标准的双字符州或省得缩写；否则
+	  它就是完整的州或省得名字。
+	</para>
+	<para>
+	  <replaceable>database</replaceable>字段指定在一个匹配中
+	  搜索哪个GeoIP数据库。大多数情况下，这不是必须的，因为大多数
+	  搜索字段仅能在一个数据库中找到。然而，对国家的搜索可以从
+	  “city”，“region”或“country”数据库中得到回答，对地区的搜索
+	  （即，州或省）可以从“city”或“region”数据库得到回答。对于
+	  这些搜索类型，指定一个<replaceable>database</replaceable>
+          将强制请求只从那个数据库，而不能是其它的数据库，得到回答。
+	  如果未指定<replaceable>database</replaceable>，这些请求就将
+	  按顺序从“city”数据库，或者从“region”数据库，或者从“country”
+	  数据库得到回答，如果它们中一个或多个被安装了。
+	</para>
+	<para>
+	  缺省时，如果一个请求包含一个EDNS客户端子网（ECS）选项，并且
+	  其中编码了一个非零地址前缀，GeoIP ACL将与这个地址前缀进行匹配。
+	  否则它们会与请求的源地址进行匹配。要想阻止GeoIP ACL同ECS选项
+	  进行匹配，将<command>geoip-use-ecs</command>设置为
+	  <literal>no</literal>。
+	</para>
+	<para>
+	  一些GeoIP ACL的例子：
+	</para>
+	<programlisting>geoip country US;
+geoip country JAP;
+geoip db country country Canada;
+geoip db region region WA;
+geoip city "San Francisco";
+geoip region Oklahoma;
+geoip postal 95062;
+geoip tz "America/Los_Angeles";
+geoip org "Internet Systems Consortium";
+</programlisting>
+
+	<para>
+	  ACL使用一个“首先匹配”逻辑，而不是“最佳匹配”：
+	  如果一个地址前缀与一个ACL元素匹配，则这个ACL就被认为匹配
+	  成立，即使一个稍后的元素将会匹配得更准确。例如，ACL
+	  <command> { 10/8; !10.0.0.1; }</command>实际将会匹配来自
+	  10.0.0.1的请求，因为第一个元素表明请求应该被接受，
+	  第二个元素就被忽略。
+	</para>
+	<para>
+	  当使用“嵌套”ACL时（即，ACL包含或者被包含于其它ACL），一个
+	  嵌套ACL的否定匹配将导致外部ACL继续查找以成功匹配。
+	  这使得可以构造复杂的ACL，在其中，多个客户端特性可以被同时
+	  检查。例如，要构造一个允许仅来自一个特定网络
+	  <emphasis>并且</emphasis>仅当其被一个特定密钥签名的请求的
+	  ACL，使用：
+	</para>
+	<programlisting>
+allow-query { !{ !10/8; any; }; key example; };
+</programlisting>
+	<para>
+	  在嵌套ACL中，任何<emphasis>不是</emphasis>在10/8网络前缀
+	  中的地址都会被拒绝，这会终止ACL的处理过程。任何
+	  <emphasis>在</emphasis> 10/8网络前缀中的地址会被接受，但是
+	  这导致此嵌套ACL的一个否定匹配，所以外部ACL继续处理。
+	  如果请求被密钥“example”签名，它将被接受，否则将被拒绝。
+	  这样，这个ACL就会仅匹配，仅当<emphasis>两个</emphasis>条件
+	  都为真时。
+	</para>
       </section>
+
       <section xml:id="chroot_and_setuid"><info><title><command>Chroot</command>和<command>Setuid</command></title></info>
 
         <para>
           在UNIX服务器上，可以通过为<command>named</command>
-	  设定“<option>-t</option>”选项
+	  设定<option>-t</option>选项
           <acronym>BIND</acronym>运行在<emphasis>chroot</emphasis>的环境中
           （使用<command>chroot()</command>函数）。这可以帮助增进系统的安全性，
           它通过将<acronym>BIND</acronym>放入一个“沙箱”，后者将在服务器遇到危
@@ -15008,7 +15298,7 @@ zone "example.com" {
                 <abbrev>RFC1535</abbrev>
                 <author><personname><surname>Gavron</surname><firstname>E.</firstname></personname></author>
                 <citetitle>A Security Problem and Proposed Correction With Widely
-                  Deployed <acronym>DNS</acronym> Software.</citetitle>
+                  Deployed <acronym>DNS</acronym> Software</citetitle>
                 <pubdate>October 1993</pubdate>
               </biblioentry>
               <biblioentry>
@@ -15097,7 +15387,7 @@ zone "example.com" {
                 </authorgroup>
                 <citetitle>A <acronym>DNS</acronym> RR for Specifying the
                   Location of
-                  Services.</citetitle>
+                  Services</citetitle>
                 <pubdate>October 1996</pubdate>
               </biblioentry>
               <biblioentry>
@@ -15253,7 +15543,7 @@ zone "example.com" {
               <biblioentry>
                 <abbrev>RFC1033</abbrev>
                 <author><personname><surname>Lottor</surname><firstname>M.</firstname></personname></author>
-                <citetitle>Domain administrators operations guide.</citetitle>
+                <citetitle>Domain administrators operations guide</citetitle>
                 <pubdate>November 1987</pubdate>
               </biblioentry>
               <biblioentry>
@@ -15276,7 +15566,7 @@ zone "example.com" {
                   <author><personname><surname>Manning</surname><firstname>B.</firstname></personname></author>
                   <author><personname><firstname>P.</firstname><surname>Vixie</surname></personname></author>
                 </authorgroup>
-                <citetitle>Operational Criteria for Root Name Servers.</citetitle>
+                <citetitle>Operational Criteria for Root Name Servers</citetitle>
                 <pubdate>October 1996</pubdate>
               </biblioentry>
               <biblioentry>
@@ -15286,7 +15576,7 @@ zone "example.com" {
                   <author><personname><firstname>R.</firstname><surname>Wright</surname></personname></author>
                 </authorgroup>
                 <citetitle>Use of <acronym>DNS</acronym> Aliases for
-                  Network Services.</citetitle>
+                  Network Services</citetitle>
                 <pubdate>October 1997</pubdate>
               </biblioentry>
             </bibliodiv>
@@ -15589,11 +15879,11 @@ zone "example.com" {
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-settime-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-signzone-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-verify-utf8.docbook"/>
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkconf-utf8.docbook"/>
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkzone-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lwresd-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named.conf-utf8.docbook"/>
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lwresd-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkconf-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkzone-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-journalprint-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-rrchecker-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="nsupdate-utf8.docbook"/>
@@ -15602,6 +15892,7 @@ zone "example.com" {
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="rndc-confgen-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ddns-confgen-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="arpaname-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnstap-read-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="genrandom-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="isc-hmac-fixup-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="nsec3hash-utf8.docbook"/>

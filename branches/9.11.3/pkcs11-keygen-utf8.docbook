@@ -1,0 +1,193 @@
+<!--
+ - Copyright (C) 2009, 2014-2017  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.pkcs11-keygen">
+  <info>
+    <date>2014-01-15</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>pkcs11-keygen</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>pkcs11-keygen</application></refname>
+    <refpurpose>generate keys on a PKCS#11 device</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2009</year>
+      <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
+      <year>2017</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>pkcs11-keygen</command>
+      <arg choice="req" rep="norepeat">-a <replaceable class="parameter">algorithm</replaceable></arg>
+      <arg choice="opt" rep="norepeat"><option>-b <replaceable class="parameter">keysize</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-e</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-i <replaceable class="parameter">id</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-m <replaceable class="parameter">module</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-P</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-p <replaceable class="parameter">PIN</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-q</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-S</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-s <replaceable class="parameter">slot</replaceable></option></arg>
+      <arg choice="req" rep="norepeat">label</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>DESCRIPTION</title></info>
+
+    <para>
+      <command>pkcs11-keygen</command>使PKCS#11设备用给定的
+      <option>label</option>（必须唯一）和<option>keysize</option>位素数
+      生成一个新的密钥对。
+    </para>
+  </refsection>
+
+  <refsection><info><title>ARGUMENTS</title></info>
+
+    <variablelist>
+      <varlistentry>
+        <term>-a <replaceable class="parameter">algorithm</replaceable></term>
+        <listitem>
+          <para>
+            指定密钥的算法类：支持的类是RSA，DSA，DH，ECC和ECX。
+            除了这些字符串，<option>algorithm</option>也可被指定为
+            一个DNSSEC签名算法；例如，NSEC3RSASHA1映射到RSA，
+            ECDSAP256SHA256到ECC，ED25519到ECX。缺省类是“RSA”。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-b <replaceable class="parameter">keysize</replaceable></term>
+        <listitem>
+          <para>
+            使用<option>keysize</option>位的素数建立密钥对。对ECC密钥，
+            仅有的有效值是256和384，缺省是256。对ECX密钥，仅有的有效值
+            是256和456，缺省是256。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-e</term>
+        <listitem>
+          <para>
+            仅对RSA密钥，使用一个大的指数。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-i <replaceable class="parameter">id</replaceable></term>
+        <listitem>
+          <para>
+            使用id创建密钥对象。id是一个无符号2字节整数或一个无符号4
+            字节整数之一。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-m <replaceable class="parameter">module</replaceable></term>
+        <listitem>
+          <para>
+            指定PKCS#11提供者模块。这必须是为设备实现PKCS#11 API的一个
+            共享库对象的完整路径。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-P</term>
+        <listitem>
+          <para>
+            设置新的私钥为不敏感和可提取的。
+            这允许私钥数据可以被PKCS#11设备读取。缺省对私钥是敏感和不可
+            提取的。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable class="parameter">PIN</replaceable></term>
+        <listitem>
+          <para>
+            为设备指定PIN。如果在命令行没有提供PIN，
+            <command>pkcs11-keygen</command>将会提示输入。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-q</term>
+        <listitem>
+          <para>
+            安静模式：阻止不必要的输出。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-S</term>
+        <listitem>
+          <para>
+            仅对Diffie-Hellman (DH)密钥，使用一个特定的768位，1024位
+            或者1536位素数和基数（也称为生成器）2。
+            如果未指定，缺省大小为1024位。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable class="parameter">slot</replaceable></term>
+        <listitem>
+          <para>
+            使用给定的PKCS#11槽打开会话。缺省是槽0。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>SEE ALSO</title></info>
+
+    <para>
+      <citerefentry>
+        <refentrytitle>pkcs11-destroy</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>pkcs11-list</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>pkcs11-tokens</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-keyfromlabel</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>
+    </para>
+  </refsection>
+
+</refentry>

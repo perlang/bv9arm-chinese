@@ -1,0 +1,346 @@
+<!DOCTYPE book [
+<!ENTITY Scaron "&#x160;">
+<!ENTITY ccaron "&#x10D;">
+<!ENTITY aacute "&#x0E1;">
+<!ENTITY mdash "&#8212;">
+<!ENTITY ouml "&#xf6;">]>
+<!--
+ - Copyright (C) 2014-2018  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<section xmlns:db="http://docbook.org/ns/docbook" version="5.0"><info/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion-utf8.xml"/>
+  <section xml:id="relnotes_intro"><info><title>Introduction</title></info>
+    <para>
+      本文档总结了自从BIND 9.11分支上上一个产品发布版以来的变化。
+      请参考<filename>CHANGES</filename>文件以获取关于漏洞修补和
+      其它变化的更多清单。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_download"><info><title>Download</title></info>
+    <para>
+      最新版的BIND 9软件总是可以在
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/downloads/">http://www.isc.org/downloads/</link>找到。
+      在那里，你会发现每个版本的附加信息，源码和为微软Windows操作系统
+      预编译的版本。
+    </para>
+  </section>
+
+  <section xml:id="root_key"><info><title>New DNSSEC Root Key</title></info>
+    <para>
+      ICANN is in the process of introducing a new Key Signing Key (KSK) for
+      the global root zone. BIND has multiple methods for managing DNSSEC
+      trust anchors, with somewhat different behaviors. If the root
+      key is configured using the <command>managed-keys</command>
+      statement, or if the pre-configured root key is enabled by using
+      <command>dnssec-validation auto</command>, then BIND can keep keys up
+      to date automatically. Servers configured in this way should have
+      begun the process of rolling to the new key when it was published in
+      the root zone in July 2017. However, keys configured using the
+      <command>trusted-keys</command> statement are not automatically
+      maintained. If your server is performing DNSSEC validation and is
+      configured using <command>trusted-keys</command>, you are advised to
+      change your configuration before the root zone begins signing with
+      the new KSK. This is currently scheduled for October 11, 2017.
+    </para>
+    <para>
+      This release includes an updated version of the
+      <filename>bind.keys</filename> file containing the new root
+      key. This file can also be downloaded from
+      <link xmlns:xlink="http://www.w3.org/1999/xlink"
+	xlink:href="https://www.isc.org/bind-keys">
+	https://www.isc.org/bind-keys
+      </link>.
+    </para>
+  </section>
+
+  <section xml:id="relnotes_license"><info><title>License Change</title></info>
+    <para>
+      With the release of BIND 9.11.0, ISC changed to the open
+      source license for BIND from the ISC license to the Mozilla
+      Public License (MPL 2.0).
+    </para>
+    <para>
+      The MPL-2.0 license requires that if you make changes to
+      licensed software (e.g. BIND) and distribute them outside
+      your organization, that you publish those changes under that
+      same license. It does not require that you publish or disclose
+      anything other than the changes you made to our software.
+    </para>
+    <para>
+      This requirement will not affect anyone who is using BIND, with
+      or without modifications, without redistributing it, nor anyone
+      redistributing it without changes. Therefore, this change will be
+      without consequence for most individuals and organizations who are
+      using BIND.
+    </para>
+    <para>
+      Those unsure whether or not the license change affects their
+      use of BIND, or who wish to discuss how to comply with the
+      license may contact ISC at <link
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xlink:href="https://www.isc.org/mission/contact/">
+      https://www.isc.org/mission/contact/</link>.
+    </para>
+  </section>
+
+  <section xml:id="win_support"><info><title>Legacy Windows No Longer Supported</title></info>
+    <para>
+      As of BIND 9.11.2, Windows XP and Windows 2003 are no longer supported
+      platforms for BIND; "XP" binaries are no longer available for download
+      from ISC.
+    </para>
+  </section>
+
+  <section xml:id="relnotes_security"><info><title>安全修补</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  TSIG处理中的一个错误会允许未授权的区传送和区更新。这些
+	  缺陷在CVE-2017-3142和CVE-2017-3143中公开。 [RT #45383]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The BIND installer on Windows used an unquoted service path,
+	  which can enable privilege escalation. This flaw is disclosed
+	  in CVE-2017-3141. [RT #45229]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  With certain RPZ configurations, a response with TTL 0
+	  could cause <command>named</command> to go into an infinite
+	  query loop. This flaw is disclosed in CVE-2017-3140.
+	  [RT #45181]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Addresses could be referenced after being freed during resolver
+	  processing, causing an assertion failure. The chances of this
+	  happening were remote, but the introduction of a delay in
+	  resolution increased them. This bug is disclosed in
+	  CVE-2017-3145. [RT #46839]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  update-policy rules that otherwise ignore the name field now
+	  require that it be set to "." to ensure that any type list
+	  present is properly interpreted.  If the name field was omitted
+	  from the rule declaration and a type list was present it wouldn't
+	  be interpreted as expected.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_removed"><info><title>Removed Features</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The ISC DNSSEC Lookaside Validation (DLV) service has
+	  been shut down; all DLV records in the dlv.isc.org zone
+	  have been removed.  References to the service have been
+	  removed from BIND documentation.  Lookaside validation
+	  is no longer used by default by <command>delv</command>.
+	  The DLV key has been removed from <filename>bind.keys</filename>.
+	  Setting <command>dnssec-lookaside</command> to
+	  <command>auto</command> or to use dlv.isc.org as a trust
+	  anchor results in a warning being issued.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <command>named</command> will now log a warning if the old
+	  root DNSSEC key is explicitly configured and has not been updated.
+	  [RT #43670]
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="proto_changes"><info><title>协议变更</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  BIND can now use the Ed25519 and Ed448 Edwards Curve DNSSEC
+	  BIND现在可以使用在RFC 8080中描述的Ed25519和Ed448爱德华兹曲线
+	  DNSSEC签名算法；注意，这些算法必须在OpenSSL中被支持；
+	  当前它们仅在OpenSSL的开发分支中可用，在
+	  <link xmlns:xlink="http://www.w3.org/1999/xlink"
+	    xlink:href="https://github.com/openssl/openssl">
+	    https://github.com/openssl/openssl</link>。
+	  [RT #44696]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  在分析DNS消息时，检查EDNS KEY TAG选项以保持正确。
+	  当输出消息时（例如，在<command>dig</command>中），
+	  EDNS KEY TAG选项以可读格式输出。
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_changes"><info><title>Feature Changes</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <command>named</command> will no longer start or accept
+	  reconfiguration if <command>managed-keys</command> or
+	  <command>dnssec-validation auto</command> are in use and
+	  the managed-keys directory (specified by
+	  <command>managed-keys-directory</command>, and defaulting
+	  to the working directory if not specified),
+	  is not writable by the effective user ID. [RT #46077]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Previously, <command>update-policy local;</command> accepted
+	  updates from any source so long as they were signed by the
+	  locally-generated session key. This has been further restricted;
+	  updates are now only accepted from locally configured addresses.
+	  [RT #45492]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <command>dig +ednsopt</command> now accepts the names
+	  for EDNS options in addition to numeric values. For example,
+	  an EDNS Client-Subnet option could be sent using
+	  <command>dig +ednsopt=ecs:...</command>. Thanks to
+	  John Worley of Secure64 for the contribution. [RT #44461]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Threads in <command>named</command> are now set to human-readable
+	  names to assist debugging on operating systems that support that.
+	  Threads will have names such as "isc-timer", "isc-sockmgr",
+	  "isc-worker0001", and so on. This will affect the reporting of
+	  subsidiary thread names in <command>ps</command> and
+	  <command>top</command>, but not the main thread. [RT #43234]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  DiG now warns about .local queries which are reserved for
+	  Multicast DNS. [RT #44783]
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Attempting to validate improperly unsigned CNAME responses
+	  from secure zones could cause a validator loop. This caused
+	  a delay in returning SERVFAIL and also increased the chances
+	  of encountering the crash bug described in CVE-2017-3145.
+	  [RT #46839]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  When <command>named</command> was reconfigured, failure of some
+	  zones to load correctly could leave the system in an inconsistent
+	  state; while generally harmless, this could lead to a crash later
+	  when using <command>rndc addzone</command>.  Reconfiguration changes
+	  are now fully rolled back in the event of failure. [RT #45841]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  修正了一个早期开发版本中引入的一个漏洞，它会导致多包AXFR和IXFR
+	  验证失败，如果不是所有包都都有TSIG记录；这将带来与某些其它DNS
+	  实现的互操作性问题。 [RT #45509]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  重新加载（reload）或重新配置（reconfig）
+	  <command>named</command>可能在某些使用了LMDB的平台上
+	  失败。 [RT #45203]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Due to some incorrectly deleted code, when BIND was
+	  built with LMDB, zones that were deleted via
+	  <command>rndc delzone</command> were removed from the
+	  running server but were not removed from the new zone
+	  database, so that deletion did not persist after a
+	  server restart. This has been corrected. [RT #45185]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Semicolons are no longer escaped when printing CAA and
+	  URI records.  This may break applications that depend on the
+	  presence of the backslash before the semicolon. [RT #45216]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  在回答和权威部份没有记录出现的被截断响应中可以设置AD位。
+	  [RT #45140]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Some header files included &lt;isc/util.h&gt; incorrectly as
+	  it pollutes with namespace with non ISC_ macros and this should
+	  only be done by explicitly including &lt;isc/util.h&gt;.  This
+	  has been corrected.  Some code may depend on &lt;isc/util.h&gt;
+	  being implicitly included via other header files.  Such
+	  code should explicitly include &lt;isc/util.h&gt;.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Zones created with <command>rndc addzone</command> could
+	  temporarily fail to inherit the <command>allow-transfer</command>
+	  ACL set in the <command>options</command> section of
+	  <filename>named.conf</filename>. [RT #46603]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <command>named</command> failed to properly determine whether
+	  there were active KSK and ZSK keys for an algorithm when
+	  <command>update-check-ksk</command> was true (which is the
+	  default setting). This could leave records unsigned
+	  when rolling keys. [RT #46743] [RT #46754] [RT #46774]
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="end_of_life"><info><title>End of Life</title></info>
+    <para>
+      BIND 9.11的终止日期还未决定，但是不会早于BIND 9.13.0发布
+      后六个月。
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>
+    </para>
+  </section>
+  <section xml:id="relnotes_thanks"><info><title>Thank You</title></info>
+
+    <para>
+      感谢每一个帮助我们的您，使得本版本得以发布。
+      如果您愿意对ISC有所贡献，以帮助我们继续改进开源软件，请访问我们的
+      捐助网页
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/donate/">http://www.isc.org/donate/</link>。
+    </para>
+  </section>
+</section>

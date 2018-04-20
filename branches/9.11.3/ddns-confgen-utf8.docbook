@@ -1,0 +1,206 @@
+<!--
+ - Copyright (C) 2009, 2014-2016  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.ddns-confgen">
+  <info>
+    <date>2014-03-06</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>ddns-confgen</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>ddns-confgen</application></refname>
+    <refpurpose>ddns密钥生成工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2009</year>
+      <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>tsig-keygen</command>
+      <arg choice="opt" rep="norepeat"><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat">name</arg>
+    </cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
+      <command>ddns-confgen</command>
+      <arg choice="opt" rep="norepeat"><option>-a <replaceable class="parameter">algorithm</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-k <replaceable class="parameter">keyname</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-q</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-r <replaceable class="parameter">randomfile</replaceable></option></arg>
+      <group choice="opt" rep="norepeat">
+        <arg choice="plain" rep="norepeat">-s <replaceable class="parameter">name</replaceable></arg>
+        <arg choice="plain" rep="norepeat">-z <replaceable class="parameter">zone</replaceable></arg>
+      </group>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+    <para>
+      <command>tsig-keygen</command>和<command>ddns-confgen</command>
+      是一个应用程序的调用方法，它为使用TSIG签名生成密钥。例如，作为
+      结果的密钥可以被用于加固对一个区的动态DNS更新或者用于
+      <command>rndc</command>命令通道。
+    </para>
+
+    <para>
+      当作为<command>tsig-keygen</command>运行时，可以在命令行指定一个
+      域名，它将被用作所生成密钥的名字。如果未指定名字，缺省为
+      <constant>tsig-key</constant>。
+    </para>
+
+    <para>
+      当作为<command>ddns-confgen</command>运行时，所生成的密钥伴随有
+      设置动态DNS时用于<command>nsupdate</command>和
+      <command>named</command>的配置文件和指令，包括一个
+      <command>update-policy</command>语句的例子。（这个用法类似于用
+      <command>rndc-confgen</command>命令设置命令通道的安全。）
+    </para>
+
+    <para>
+      注意<command>named</command>自己可以配置一个本地DDNS密钥，
+      并用于<command>nsupdate -l</command>：
+      它在区被配置为<command>update-policy local;</command>时才这样做。
+      <command>ddns-confgen</command>只在更复杂的配置才需要：
+      例如，如果<command>nsupdate</command>用于来自一个远程系统。
+    </para>
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+
+    <variablelist>
+      <varlistentry>
+	<term>-a <replaceable class="parameter">algorithm</replaceable></term>
+	<listitem>
+	  <para>
+            指定用于TSIG密钥的算法。可用的选择为：hmac-md5，hmac-sha1，
+            hmac-sha224，hmac-sha256，hmac-sha384和hmac-sha512。缺省为
+            hmac-sha256。
+            选项是大小写无关的，前缀"hmac-"可以被忽略。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-h</term>
+	<listitem>
+	  <para>
+            打印选项和参数的一个简短摘要。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-k <replaceable class="parameter">keyname</replaceable></term>
+	<listitem>
+	  <para>
+	    指定DDNS认证密钥的密钥名。当既没有指定
+	    <option>-s</option>，也没有指定<option>-z</option>选项时，
+	    缺省是<constant>ddns-key</constant>；否则，缺省将
+	    <constant>ddns-key</constant>作为一个独立的标记，后跟选项的
+	    参数，例如，<constant>ddns-key.example.com.</constant>。
+	    密钥名必须是合法的域名，由字母，数字，连字符和点组成。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-q</term>
+	<listitem>
+	  <para>
+	    （只对<command>ddns-confgen</command>。）安静模式：只打印密钥，
+            没有解释的文本或用法举例；
+            这对<command>tsig-keygen</command>基本相同。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-r <replaceable class="parameter">randomfile</replaceable></term>
+	<listitem>
+	  <para>
+            指定生成授权的随机数据的源。如果操作系统不提供
+            <filename>/dev/random</filename>或等效的设备，缺省的随机性的源为
+            键盘输入。<filename>randomdev</filename>指定一个字符设备名或包含
+            随机数据的文件名，用来替代缺省值。特定值
+            <filename>keyboard</filename>指示使用键盘输入。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-s <replaceable class="parameter">name</replaceable></term>
+	<listitem>
+	  <para>
+	    （只对<command>ddns-confgen</command>。）
+            给一个允许动态更新的单一主机名生成配置例子。
+            例子<command>named.conf</command>文本显示了
+            如何使用“name”名字类型为指定的
+            <replaceable class="parameter">name</replaceable>设置一个
+            更新策略。
+            缺省的密钥名字是
+            ddns-key.<replaceable class="parameter">name</replaceable>。
+            注意“self”名字类型不再使用，因为要被更新的名字可能
+            与密钥名不同。
+	    这个选项不能与<option>-z</option>选项同时使用。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-z <replaceable class="parameter">zone</replaceable></term>
+	<listitem>
+	  <para>
+	    （只对<command>ddns-confgen</command>。）
+            给一个允许动态更新的区生成配置例子。
+            例子<command>named.conf</command>文本展示了如何使用
+            "zonesub"名字类型为所指定的
+            <replaceable class="parameter">zone</replaceable>
+	    设置一个更新策略，允许更新
+	    <replaceable class="parameter">zone</replaceable>内所有子域。
+	    这个选项不能与<option>-s</option>选项同时使用。
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+    <para><citerefentry>
+	<refentrytitle>nsupdate</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+	<refentrytitle>named.conf</refentrytitle><manvolnum>5</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+	<refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>.
+    </para>
+  </refsection>
+
+</refentry>

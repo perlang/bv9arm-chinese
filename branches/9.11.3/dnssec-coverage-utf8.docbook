@@ -1,0 +1,241 @@
+<!--
+ - Copyright (C) 2013-2016  Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnssec-coverage">
+  <info>
+    <date>2014-01-11</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-coverage</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-coverage</application></refname>
+    <refpurpose>检查一个区DNSKEY将来的覆盖范围</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2013</year>
+      <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>dnssec-coverage</command>
+      <arg choice="opt" rep="norepeat"><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-l <replaceable class="parameter">length</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-f <replaceable class="parameter">file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-d <replaceable class="parameter">DNSKEY TTL</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-m <replaceable class="parameter">max TTL</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-r <replaceable class="parameter">interval</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">compilezone path</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-k</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-z</option></arg>
+      <arg choice="opt" rep="repeat">zone</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+
+    <para><command>dnssec-coverage</command>
+      验证一个给定的区或一个区集合的DNSSEC密钥是正确设置了定时元数据以确保
+      将来没有DNSSEC覆盖的间隔。
+    </para>
+    <para>
+      如果指定了<option>zone</option>，在密钥仓库中与这个区匹配的密钥都会被
+      扫描，并为那个密钥生成一个事件日程的顺序列表（如，发布，激活，失效，
+      删除）。事件列表以发生顺序遍历。 
+      如果任何事件在进行时，可能导致区进入一个可能发生验证失败的状态时，会
+      生成一个警告。例如，如果一个对给定算法，其发布或激活的密钥数下降到零，
+      或者如果一个密钥在一个新密钥轮转后从其区中被太快地删除，由前一个密钥
+      签名的缓存数据还没时间从解析器的缓存中过期。 
+    </para>
+    <para>
+      如果未指定<option>zone</option>，在密钥仓库中的所有密钥都会被扫描，
+      所有带密钥的区都会被分析。（注意：这个报告方法只在所有带有给定仓库中
+      密钥的区共享同样的TTL参数时才是精确的。）
+    </para>
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+
+    <variablelist>
+      <varlistentry>
+        <term>-K <replaceable class="parameter">directory</replaceable></term>
+        <listitem>
+          <para>
+            设置能够找到密钥的目录。缺省为当前工作目录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-f <replaceable class="parameter">file</replaceable></term>
+        <listitem>
+          <para>
+            如果指定了一个<option>file</option>，区就从那个文件读取；最大
+            TTL和DNSKEY TTL就直接从区数据决定，就不需要在命令行指定
+            <option>-m</option>和<option>-d</option>选项。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-l <replaceable class="parameter">duration</replaceable></term>
+        <listitem>
+          <para>
+            检查DNSSEC覆盖的时间长度。计划在超过<option>duration</option>的
+            将来的密钥事件将被忽略，并假设为正确的。
+          </para>
+          <para>
+            <option>duration</option>的值可以按秒设置，或通过增加一个后缀设为
+            更大的时间单位：
+            'mi'表示分钟，'h'表示小时，'d'表示天，'w'表示周，
+            'mo'表示月，'y'表示年。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-m <replaceable class="parameter">maximum TTL</replaceable></term>
+        <listitem>
+          <para>
+            在决定是否存在一个验证失败的可能性时，为一个或多个被分析的区设置
+            最大TTL值。
+            当一个区签名密钥失效时，在密钥被剔除出DNSKEY资源记录集之前，必须
+            有足够的时间，让区中最大TTL的记录在解析器的缓存中过期。
+            如果这个条件不满足，将会产生一个警告。
+          </para>
+          <para>
+            TTL长度可以按秒设置，或通过增加一个后缀设为更大的时间单位：
+            'mi'表示分钟，'h'表示小时，'d'表示天，'w'表示周，
+            'mo'表示月，'y'表示年。
+          </para>
+          <para>
+            如果使用<option>-f</option>指定了一个区文件，这个选项是不必要的。
+            如果指定了<option>-f</option>，仍然可以使用这个选项；它将覆盖
+            在文件中发现的值。
+          </para>
+          <para>
+            如果没有使用这个选项并且不能从一个区文件提取到最大TTL，将生成一个
+            警告，并使用1周作为缺省值。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-d <replaceable class="parameter">DNSKEY TTL</replaceable></term>
+        <listitem>
+          <para>
+            在决定是否存在一个验证失败的可能性时，为一个或多个被分析的区设置
+            用作DNSKEY TTL的值。
+            当一个密钥被轮转时（即被一个新密钥替代），在新密钥被激活并开始
+            生成签名之前，必须有足够的时间让旧的DNSKEY资源记录集在解析器
+            缓存中过期。
+            如果这个条件不满足，将会产生一个警告。
+          </para>
+          <para>
+            TTL长度可以按秒设置，或通过增加一个后缀设为更大的时间单位：
+            'mi'表示分钟，'h'表示小时，'d'表示天，'w'表示周，
+            'mo'表示月，'y'表示年。
+          </para>
+          <para>
+            如果使用<option>-f</option>指定了一个区文件来读入DNSKEY资源记录集
+            的TTL，或者使用<command>dnssec-keygen</command>的
+            <option>-L</option>设定一个缺省的密钥TTL，这个选项是不必要的。
+            如果上述一项是真，仍然可以使用这个选项；它将覆盖在区文件或
+            密钥文件中发现的值。
+          </para>
+          <para>
+            如果没有使用这个选项并且不能从区文件或密钥文件提取到密钥TTL，将
+            生成一个警告，并使用1天作为缺省值。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-r <replaceable class="parameter">resign interval</replaceable></term>
+        <listitem>
+          <para>
+            在决定是否存在一个验证失败的可能性时，为一个或多个被分析的区设置
+            用作放弃间隔（resign interval）的值。
+            这个值缺省为22.5天，也是<command>named</command>中的缺省值。
+            然而，如果在<filename>named.conf</filename>使用
+            <option>sig-validity-interval</option>选项修改了，它应该在这里被
+            修改。
+          </para>
+          <para>
+            TTL长度可以按秒设置，或通过增加一个后缀设为更大的时间单位：
+            'mi'表示分钟，'h'表示小时，'d'表示天，'w'表示周，
+            'mo'表示月，'y'表示年。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k</term>
+        <listitem>
+          <para>
+	    只检查KSK覆盖；忽略ZSK事件。不能与<option>-z</option>一起使用。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-z</term>
+        <listitem>
+          <para>
+	    只检查ZSK覆盖；忽略KSK事件。不能与<option>-k</option>一起使用。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">compilezone path</replaceable></term>
+        <listitem>
+          <para>
+            指定一个<command>named-compilezone</command>二进制文件的路径。
+            用于测试。
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+
+    <para>
+      <citerefentry>
+        <refentrytitle>dnssec-checkds</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-dsfromkey</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>
+    </para>
+  </refsection>
+
+</refentry>

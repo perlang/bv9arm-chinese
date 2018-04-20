@@ -227,10 +227,8 @@ this can be used when responses from a domain
       </listitem>
       <listitem>
         <para>
-          The EDNS EXPIRE option has been implemented on the client
-          side, allowing a slave server to set the expiration timer
-          correctly when transferring zone data from another slave
-          server.
+	  EDNS EXPIRE选项在客户端被实现，允许一个辅服务器在从另一个
+	  辅服务器进行区传送时，正确设置过期计数器。
         </para>
       </listitem>
       <listitem>
@@ -243,14 +241,14 @@ this can be used when responses from a domain
       </listitem>
       <listitem>
         <para>
-          <command>dig +ednsopt</command> can now be used to set
-          arbitrary EDNS options in DNS requests.
+          <command>dig +ednsopt</command>现在可以用于在DNS请求
+          中设置任意的EDNS选项。
         </para>
       </listitem>
       <listitem>
         <para>
-          <command>dig +ednsflags</command> can now be used to set
-          yet-to-be-defined EDNS flags in DNS requests.
+	  <command>dig +ednsflags</command>现在可以用于在DNS
+	  请求中设置待定义的EDNS标志。
         </para>
       </listitem>
       <listitem>
@@ -287,8 +285,8 @@ this can be used when responses from a domain
       </listitem>
       <listitem>
         <para>
-          <command>dig +mapped</command> can now be used to determine
-          if mapped IPv4 addresses can be used.
+	  <command>dig +mapped</command>现在可以用于决定
+	  映射IPv4地址是否可用。
         </para>
       </listitem>
       <listitem>
@@ -691,14 +689,13 @@ this can be used when responses from a domain
       </listitem>
       <listitem>
         <para>
-          Zone transfers now use smaller message sizes to improve
-          message compression. This results in reduced network usage.
+	  区传送现在使用更小的消息大小以提高消息压缩。这会导致
+	  减少网络用量。
         </para>
       </listitem>
       <listitem>
         <para>
-          Added support for the AVC resource record type (Application
-          Visibility and Control).
+          添加了对AVC资源记录类型（应用可见性和控制）的支持。
         </para>
         <para>
           Changed <command>rndc reconfig</command> behaviour so that newly
@@ -709,29 +706,28 @@ this can be used when responses from a domain
     </itemizedlist>
   </section>
 
-  <section xml:id="relnotes_port"><info><title>Porting Changes</title></info>
+  <section xml:id="relnotes_port"><info><title>移植变化</title></info>
     <itemizedlist>
       <listitem>
         <para>
-          None.
+          无。
         </para>
       </listitem>
     </itemizedlist>
   </section>
 
-  <section xml:id="relnotes_bugs"><info><title>Bug Fixes</title></info>
+  <section xml:id="relnotes_bugs"><info><title>修正的漏洞</title></info>
     <itemizedlist>
       <listitem>
         <para>
-          Fixed a crash when calling <command>rndc stats</command> on some
-          Windows builds: some Visual Studio compilers generate code that
-          crashes when the "%z" printf() format specifier is used. [RT #42380]
+	  修订一个在某些Windows构建中，调用<command>rndc stats</command>
+	  时的崩溃：某些Visual Studio编译器会生成导致崩溃的代码，在使用了
+	  "%z" printf()格式指定符的情况下。 [RT #42380]
         </para>
       </listitem>
       <listitem>
         <para>
-          Windows installs were failing due to triggering UAC without
-          the installation binary being signed.
+          没有按照签名库，Windows安装由于触发UAC而失败。
         </para>
       </listitem>
       <listitem>
@@ -746,20 +742,20 @@ this can be used when responses from a domain
     </itemizedlist>
   </section>
 
-  <section xml:id="end_of_life"><info><title>End of Life</title></info>
+  <section xml:id="end_of_life"><info><title>生命周期终止</title></info>
     <para>
-      The end of life for BIND 9.11 is yet to be determined but
-      will not be before BIND 9.13.0 has been released for 6 months.
+      BIND 9.11的终止日期还未决定，但是不会早于BIND 9.13.0发布
+      后六个月。
       <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>
     </para>
   </section>
-  <section xml:id="relnotes_thanks"><info><title>Thank You</title></info>
+  <section xml:id="relnotes_thanks"><info><title>致谢</title></info>
 
     <para>
-      Thank you to everyone who assisted us in making this release possible.
-      If you would like to contribute to ISC to assist us in continuing to
-      make quality open source software, please visit our donations page at
-      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/donate/">http://www.isc.org/donate/</link>.
+      感谢每一个帮助我们的您，是您使本版本得以发布。
+      如果您愿意对ISC有所贡献，以帮助我们继续改进开源软件，请访问我们的
+      捐助网页
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/donate/">http://www.isc.org/donate/</link>。
     </para>
   </section>
 </section>

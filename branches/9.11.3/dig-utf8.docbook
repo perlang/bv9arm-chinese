@@ -899,7 +899,7 @@
             <para>
               将资源记录中较长的hex-或base64-格式的字段分割为
               <parameter>W</parameter>个字符的块（<parameter>W</parameter>
-              被离散到距其最近的4的倍数上）。
+              被向上取整到距其最近的4的倍数上）。
               <parameter>+nosplit</parameter>或
               <parameter>+split=0</parameter>导致字段完全不被分割。缺省为56个
               字符，或者在多行模式时为44个字符。
@@ -924,10 +924,11 @@
               发送（不发送）一个EDNS客户端子网选项，带有指定的IP地址或网络前缀。
 	    </para>
             <para>
-                <command>dig +subnet=0.0.0.0/0</command>，或简写为
-                <command>dig +subnet=0</command>，发送一个EDNS CLIENT-SUBNET选项，
-                附带一个空地址和一个源前缀为0，它一个解析器在解析这个请求时，
-                必须<emphasis>不能</emphasis>使用客户端的地址信息。
+              <command>dig +subnet=0.0.0.0/0</command>，或简写为
+              <command>dig +subnet=0</command>，发送一个
+              EDNS client-subnet选项，附带一个空地址和一个为0的源前缀，
+              它发信号给一个解析器，在解析这个请求时，
+              必须<emphasis>不能</emphasis>使用客户端的地址信息。
             </para>
 	  </listitem>
 	</varlistentry>

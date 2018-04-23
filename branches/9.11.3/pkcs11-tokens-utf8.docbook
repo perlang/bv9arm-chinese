@@ -47,9 +47,8 @@
   <refsection><info><title>DESCRIPTION</title></info>
 
     <para>
-      <command>pkcs11-tokens</command>
-      lists the PKCS#11 available tokens with defaults from the slot/token
-      scan performed at application initialization.
+      <command>pkcs11-tokens</command>列出PKCS#11可用符号，缺省来自
+      应用初始化时所执行的槽/符号扫描。
     </para>
   </refsection>
 

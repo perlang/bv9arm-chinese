@@ -31,69 +31,61 @@
     </para>
   </section>
 
-  <section xml:id="root_key"><info><title>New DNSSEC Root Key</title></info>
+  <section xml:id="root_key"><info><title>新的DNSSEC根密钥</title></info>
     <para>
-      ICANN is in the process of introducing a new Key Signing Key (KSK) for
-      the global root zone. BIND has multiple methods for managing DNSSEC
-      trust anchors, with somewhat different behaviors. If the root
-      key is configured using the <command>managed-keys</command>
-      statement, or if the pre-configured root key is enabled by using
-      <command>dnssec-validation auto</command>, then BIND can keep keys up
-      to date automatically. Servers configured in this way should have
-      begun the process of rolling to the new key when it was published in
-      the root zone in July 2017. However, keys configured using the
-      <command>trusted-keys</command> statement are not automatically
-      maintained. If your server is performing DNSSEC validation and is
-      configured using <command>trusted-keys</command>, you are advised to
-      change your configuration before the root zone begins signing with
-      the new KSK. This is currently scheduled for October 11, 2017.
+      ICANN正在为全球根区引入一个新的密钥签名密钥（KSK）的进程中。
+      BIND有多种方法管理DNSSEC信任锚，各有一些不同。
+      如果根密钥是使用<command>managed-keys</command>语句配置，或者
+      如果使用<command>dnssec-validation auto</command>打开预配置
+      根密钥，BIND可以自动保持密钥更新。
+      以这种方式配置的服务器应该已经开始新密钥的轮转进程，自从2017年
+      7月新密钥在根区中发布之后。
+      然而，使用<command>trusted-keys</command>语句配置的密钥不会
+      被自动维护。
+      如果你的服务器正在执行DNSSEC验证并且使用
+      <command>trusted-keys</command>配置，建议你在根区开始使用
+      新的KSK签名之前修改你的配置。
+      当前，这个计划是2017年10月11日。
     </para>
     <para>
-      This release includes an updated version of the
-      <filename>bind.keys</filename> file containing the new root
-      key. This file can also be downloaded from
+      本版本包括一个更新版本的<filename>bind.keys</filename>文件，
+      它包含新的根密钥。这个文件也可从
       <link xmlns:xlink="http://www.w3.org/1999/xlink"
 	xlink:href="https://www.isc.org/bind-keys">
 	https://www.isc.org/bind-keys
-      </link>.
+      </link>下载。
     </para>
   </section>
 
   <section xml:id="relnotes_license"><info><title>License Change</title></info>
     <para>
-      With the release of BIND 9.11.0, ISC changed to the open
-      source license for BIND from the ISC license to the Mozilla
-      Public License (MPL 2.0).
+      从BIND 9.11.0，ISC改变了BIND的开源许可证，从ISC许可证变为
+      Mozilla公共许可证（MPL 2.0）。
     </para>
     <para>
-      The MPL-2.0 license requires that if you make changes to
-      licensed software (e.g. BIND) and distribute them outside
-      your organization, that you publish those changes under that
-      same license. It does not require that you publish or disclose
-      anything other than the changes you made to our software.
+      MPL-2.0许可证要求，如果你修改了使用这个许可证的软件
+      （例如BIND），并在你的组织之外发布它们，你要在同样许可证下
+      公开这些修改。它不要求你发布或公开对我们的软件的修改之外的
+      部份。
     </para>
     <para>
-      This requirement will not affect anyone who is using BIND, with
-      or without modifications, without redistributing it, nor anyone
-      redistributing it without changes. Therefore, this change will be
-      without consequence for most individuals and organizations who are
-      using BIND.
+      这个要求不影响任何使用而不重分发的人，无论是否修改，也不影响
+      任何重分发它但不修改的人。所以，这个变化对大多数使用BIND的
+      个人和组织没有影响。
     </para>
     <para>
-      Those unsure whether or not the license change affects their
-      use of BIND, or who wish to discuss how to comply with the
-      license may contact ISC at <link
+      对那些不确定许可证变化是否会影响到他们使用BIND的人，或者
+      想讨论如何遵守许可证的人可以在<link
       xmlns:xlink="http://www.w3.org/1999/xlink"
       xlink:href="https://www.isc.org/mission/contact/">
-      https://www.isc.org/mission/contact/</link>.
+      https://www.isc.org/mission/contact/</link>联系ISC。
     </para>
   </section>
 
-  <section xml:id="win_support"><info><title>Legacy Windows No Longer Supported</title></info>
+  <section xml:id="win_support"><info><title>早期Windows不再支持</title></info>
     <para>
-      As of BIND 9.11.2, Windows XP and Windows 2003 are no longer supported
-      platforms for BIND; "XP" binaries are no longer available for download
-      from ISC.
+      自BIND 9.11.2起，Windows XP和Windows 2003不再是BIND支持的平台；“XP”
+      二进制不再能够从ISC下载。
     </para>
   </section>
 
@@ -108,16 +100,15 @@
       <listitem>
 	<para>
 	  The BIND installer on Windows used an unquoted service path,
-	  which can enable privilege escalation. This flaw is disclosed
-	  in CVE-2017-3141. [RT #45229]
+	  Windows上的BIND安装器使用一个未引用的服务路径，后者可能
+	  开启特权提升。这个漏洞在CVE-2017-3141被公开。 [RT #45229]
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  With certain RPZ configurations, a response with TTL 0
-	  could cause <command>named</command> to go into an infinite
-	  query loop. This flaw is disclosed in CVE-2017-3140.
-	  [RT #45181]
+	  在某些RPZ配置下，一个带有TTL为0的响应可能导致
+	  <command>named</command>进入一个无限请求循环。
+	  这个漏洞在CVE-2017-3140被公开。 [RT #45181]
 	</para>
       </listitem>
       <listitem>
@@ -214,11 +205,11 @@
       </listitem>
       <listitem>
 	<para>
-	  <command>dig +ednsopt</command> now accepts the names
-	  for EDNS options in addition to numeric values. For example,
-	  an EDNS Client-Subnet option could be sent using
-	  <command>dig +ednsopt=ecs:...</command>. Thanks to
-	  John Worley of Secure64 for the contribution. [RT #44461]
+	  除了数字值，<command>dig +ednsopt</command>现在也接受名字
+	  作为EDNS选项。例如，可以使用
+	  <command>dig +ednsopt=ecs:...</command>发送一个EDNS
+	  Client-Subnet选项。感谢Secure64的John Worley
+	  的贡献。 [RT #44461]
 	</para>
       </listitem>
       <listitem>
@@ -244,11 +235,9 @@
     <itemizedlist>
       <listitem>
 	<para>
-	  Attempting to validate improperly unsigned CNAME responses
-	  from secure zones could cause a validator loop. This caused
-	  a delay in returning SERVFAIL and also increased the chances
-	  of encountering the crash bug described in CVE-2017-3145.
-	  [RT #46839]
+	  试图验证来自安全区的不正确的未签名CNAME响应可能导致一个
+	  验证器循环。这导致返回SERVFAIL的延迟，也增加了遇到在
+	  CVE-2017-3145中描述的崩溃漏洞的可能。 [RT #46839]
 	</para>
       </listitem>
       <listitem>
@@ -302,9 +291,10 @@
 	  Some header files included &lt;isc/util.h&gt; incorrectly as
 	  it pollutes with namespace with non ISC_ macros and this should
 	  only be done by explicitly including &lt;isc/util.h&gt;.  This
-	  has been corrected.  Some code may depend on &lt;isc/util.h&gt;
-	  being implicitly included via other header files.  Such
-	  code should explicitly include &lt;isc/util.h&gt;.
+	  has been corrected.  
+	  Some code may depend on &lt;isc/util.h&gt;
+	  being implicitly included via other header files. 
+	  这样的代码应当显式包含&lt;isc/util.h&gt;。
 	</para>
       </listitem>
       <listitem>
@@ -320,8 +310,8 @@
 	  <command>named</command> failed to properly determine whether
 	  there were active KSK and ZSK keys for an algorithm when
 	  <command>update-check-ksk</command> was true (which is the
-	  default setting). This could leave records unsigned
-	  when rolling keys. [RT #46743] [RT #46754] [RT #46774]
+	  default setting).
+	  这会在轮转密钥是留下未签名的记录。 [RT #46743] [RT #46754] [RT #46774]
 	</para>
       </listitem>
     </itemizedlist>

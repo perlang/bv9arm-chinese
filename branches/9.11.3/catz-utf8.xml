@@ -51,47 +51,42 @@
       <itemizedlist>
         <listitem>
           <para>
-	    Set up the the member zone to be served on the master as normal.
-	    This could be done by editing <filename>named.conf</filename>,
-	    or by running <command>rndc addzone</command>.
+	    和通常一样在主服务器上建立用于服务的成员区。
+	    这可以通过编辑<filename>named.conf</filename>或运行
+	    <command>rndc addzone</command>来完成。
           </para>
         </listitem>
         <listitem>
           <para>
-            Add an entry to the catalog zone for the new member zone.
-	    This could be done by editing the catalog zone's master file
-	    and running <command>rndc reload</command>, or by updating
-	    the zone using <command>nsupdate</command>.
+	    在目录区中为新的成员区增加一个条目。
+	    这可以通过编辑目录区的主服务器文件并运行
+	    <command>rndc reload</command>，或者使用
+	    <command>nsupdate</command>更新这个区来完成。
           </para>
         </listitem>
       </itemizedlist>
-      The change to the catalog zone will be propagated from the master to all
-      slaves using the normal AXFR/IXFR mechanism.  When the slave receives the
-      update to the catalog zone, it will detect the entry for the new member
-      zone, create an instance of of that zone on the slave server, and point
-      that instance to the <option>masters</option> specified in the catalog
-      zone data. The newly created member zone is a normal slave zone, so
-      BIND will immediately initiate a transfer of zone contents from the
-      master.  Once complete, the slave will start serving the member zone.
+      对目录区的修改将使用普通的AXFR/IXFR机制从主服务器扩散到所有的辅服务器。
+      当辅服务器收到对目录区的更新，它会检查新成员区条目，在辅服务器上创建
+      区的实例，并将实例指向目录区数据所指定的<option>masters</option>。
+      新创建的成员区是一个普通的辅区，所以BIND会立即发起一个从主区的区内容
+      的传送。一旦完成，辅服务器将开始服务于这个成员区。
     </para>
     <para>
-      Removing a member zone from a slave server requires nothing more than
-      deleting the member zone's entry in the catalog zone. The change to the
-      catalog zone is propagated to the slave server using the normal AXFR/IXFR
-      transfer mechanism.  The slave server, on processing the update, will
-      notice that the member zone has been removed.  It will stop serving the
-      zone and remove it from its list of configured zones.  (Removing the
-      member zone from the master server has to be done in the normal way,
-      by editing the configuration file or running
-      <command>rndc delzone</command>.)
+      从一个辅服务器删除一个成员区只是在目录区中删除成员区条目，
+      不会有更多的要求。
+      对目录区的修改使用普通的AXFR/IXFR传送机制扩散到辅服务器。
+      辅服务器在更新过程中会注意到成员区已被删除。
+      它将停止这个区的服务并将其从已配置区的清单中删去。
+      （从主服务器删除成员区必须先以普通的方式完成，即通过编辑
+      配置文件或运行<command>rndc delzone</command>。）
     </para>
   </section>
 
-  <section><info><title>Configuring Catalog Zones</title></info>
+  <section><info><title>配置目录区</title></info>
     <para>
-      Catalog zones are configured with a <command>catalog-zones</command>
-      statement in the <literal>options</literal> or <literal>view</literal>
-      section of <filename>named.conf</filename>. For example,
+      目录区是在<filename>named.conf</filename>中的
+      <literal>options</literal>或<literal>view</literal>部份中使用一条
+      <command>catalog-zones</command>语句来配置的。例如：
     </para>
 <screen>
 catalog-zones {
@@ -107,59 +102,54 @@ catalog-zones {
       这个区必须正确地配置在同一个视图中。在大多数配置中，它是一个辅区。
     </para>
     <para>
-      The options following the zone name are not required, and may be
-      specified in any order:
+      区名后面的选项不是必须的，可以以任何顺序指定：
     </para>
     <para>
-      The <option>default-masters</option> option defines the default masters
-      for member zones listed in a catalog zone. This can be overridden by
-      options within a catalog zone. If no such options are included, then
-      member zones will transfer their contents from the servers listed in
-      this option.
+      <option>default-masters</option>选项定义一个目录区中成员区的缺省主
+      服务器。这可以被一个目录区内的选项所覆盖。如果未包含这样的选项，成
+      员区将从这个选项中所列的服务器传输它们的内容。
     </para>
     <para>
-      The <option>in-memory</option> option, if set to <literal>yes</literal>,
-      causes member zones to be stored only in memory. This is functionally
-      equivalent to configuring a slave zone without a <option>file</option>.
-      option.  The default is <literal>no</literal>; member zones' content
-      will be stored locally in a file whose name is automatically generated
-      from the view name, catalog zone name, and member zone name.
+      <option>in-memory</option>选项，如果设置为<literal>yes</literal>，
+      将使成员区仅存放于内存。这在功能上等效于配置一个辅区而不使用
+      一个<option>file</option>选项。
+      缺省是<literal>no</literal>；成员区的内容将会保存在一个本地的
+      文件中，其名字有视图名、目录区名和成员区名自动生成。
     </para>
     <para>
-      The <option>zone-directory</option> option causes local copies of
-      member zones' master files (if <option>in-memory</option> is not set
-      to <literal>yes</literal>) to be stored in the specified directory.
-      The default is to store zone files in the server's working directory.
-      A non-absolute pathname in <option>zone-directory</option> is
-      assumed to be relative to the working directory.
+      <option>zone-directory</option>选项使得成员区主文件的本地拷贝
+      （如果<option>in-memory</option>未被设置为
+      <literal>yes</literal>）被存放在一个指定的目录中。
+      缺省是将区文件存放在服务器的工作目录。
+      在<option>zone-directory</option>中一个非绝对路径被假设为
+      相对于工作目录。
     </para>
     <para>
-      The <option>min-update-interval</option> option sets the minimum
-      interval between processing of updates to catalog zones, in seconds.
-      If an update to a catalog zone (for example, via IXFR) happens less
-      than <option>min-update-interval</option> seconds after the most
-      recent update, then the changes will not be carried out until this
-      interval has elapsed.  The default is <literal>5</literal> seconds.
+      <option>min-update-interval</option>选项设置处理目录区更新的
+      最小间隔，以秒计。
+      如果一个目录区的更新（例如，通过IXFR）发生于最近的更新后不到
+      <option>min-update-interval</option>秒，则变化不会被执行，直到
+      这个间隔时间过去之后。
+      缺省是<literal>5</literal>秒。
     </para>
     <para>
-      Catalog zones are defined on a per-view basis. Configuring a non-empty
-      <option>catalog-zones</option> statement in a view will automatically
-      turn on <option>allow-new-zones</option> for that view. (Note: this
-      means <command>rndc addzone</command> and <command>rndc delzone</command>
-      will also work in any view that supports catalog zones.)
+      目录区的定义基于每个视图。在一个视图中配置一个非空的
+      <option>catalog-zones</option>语句将会自动对这个视图打开
+      <option>allow-new-zones</option>。
+      （注意：这意谓着在支持目录区的任何视图上，
+      <command>rndc addzone</command>和<command>rndc delzone</command>
+      也可以工作。）
     </para>
   </section>
 
-  <section><info><title>Catalog Zone format</title></info>
+  <section><info><title>目录区格式</title></info>
     <para>
-      A catalog zone is a regular DNS zone; therefore, it has to have a
-      single <literal>SOA</literal> and at least one <literal>NS</literal>
-      record.
+      目录区是一个普通的DNS区；所以，它必须拥有一个<literal>SOA</literal>
+      和至少一个<literal>NS</literal>记录。
     </para>
     <para>
-      A record stating the version of the catalog zone format is
-      also required. If the version number listed is not supported by
-      the server, then a catalog zone may not be used by that server.
+      一个声明目录区格式的版本的记录也是必须的。
+      如果所列的版本号是服务器不支持的，目录区不能被用于那台服务器。
     </para>
 <screen>
 catalog.example.    IN SOA . . 2016022901 900 600 86400 1
@@ -167,16 +157,15 @@ catalog.example.    IN NS nsexample.
 version.catalog.example.    IN TXT "1"
 </screen>
     <para>
-      Note that this record must have the domain name
-      version.<replaceable>catalog-zone-name</replaceable>.  This illustrates
+      注意这个记录必须有域名
+      version.<replaceable>catalog-zone-name</replaceable>。
+      This illustrates
       how the meaning of data stored in a catalog zone is indicated by the
       the domain name label immediately before the catalog zone domain.
     </para>
     <para>
-      Catalog zone options can be set either globally for the whole catalog
-      zone or for a single member zone. Global options override the settings
-      in the configuration file and member zone options override global
-      options.
+      目录区选项可以全局为所有目录区设置，也可为一个单独的成员区设置。
+      全局选项覆盖配置文件中的设置，而成员区选项覆盖全局选项。
     </para>
     <para>
       全局选项设置在目录区的顶点，例如：
@@ -203,9 +192,9 @@ version.catalog.example.    IN TXT "1"
          label.masters.catalog.example.	    IN TXT "tsig_key_name"
         </screen>
         <para>
-         This option defines a master server for the member zone with a TSIG
-         key set. The TSIG key must be configured in the configuration file.
-         <option>label</option> can be any valid DNS label.
+	 这个选项使用一个TSIG密钥设置为成员区定义一个主服务器。
+	 TSIG密钥必须配置在配置文件中。
+	 <option>label</option>可以是如何有效的DNS标记。
         </para>
       </listitem>
       <listitem>
@@ -225,20 +214,18 @@ version.catalog.example.    IN TXT "1"
       </listitem>
     </itemizedlist>
     <para>
-      A member zone is added by including a <literal>PTR</literal>
-      resource record in the <literal>zones</literal> sub-domain of the
-      catalog zone. The record label is a <literal>SHA-1</literal> hash
-      of the member zone name in wire format. The target of the PTR
-      record is the member zone name. For example, to add the member
-      zone <literal>domain.example</literal>:
+      通过在目录区的<literal>zones</literal>子域中包含一条
+      <literal>PTR</literal>记录增加一个成员区。
+      记录标记是成员区显示格式的一个<literal>SHA-1</literal>hash。
+      PTR记录的目标是成员区名。例如，要添加成员区
+      <literal>domain.example</literal>：
     </para>
 <screen>
 5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN PTR domain.example.
 </screen>
     <para>
-      The hash is necessary to identify options for a specific member
-      zone. The member zone-specific options are defined the same way as
-      global options, but in the member zone subdomain:
+      hash需要用来为一个特定成员区标识选项。成员区特定选项是与
+      全局选项同样的方式定义的，但是是在成员区子域中：
     </para>
 <screen>
 masters.5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN A 192.0.2.2
@@ -247,10 +234,9 @@ label.masters.5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN
 allow-query.5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN APL 1:10.0.0.0/24
 </screen>
     <para>
-      As would be expected, options defined for a specific zone override
-      the global options defined in the catalog zone. These in turn override
-      the global options defined in the <literal>catalog-zones</literal>
-      statement in the configuration file.
+      正如预料的一样，为一个特定区定义的选项覆盖在目录区中定义的全局
+      选项。这些相应地覆盖配置文件的<literal>catalog-zones</literal>
+      语句中定义的全局选项。
     </para>
     <para>
       (Note that none of the global records an option will be inherited if

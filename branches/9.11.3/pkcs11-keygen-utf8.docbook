@@ -24,7 +24,7 @@
 
   <refnamediv>
     <refname><application>pkcs11-keygen</application></refname>
-    <refpurpose>generate keys on a PKCS#11 device</refpurpose>
+    <refpurpose>在一个PKCS#11设备上生成密钥</refpurpose>
   </refnamediv>
 
   <docinfo>
@@ -55,7 +55,7 @@
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsection><info><title>DESCRIPTION</title></info>
+  <refsection><info><title>描述</title></info>
 
     <para>
       <command>pkcs11-keygen</command>使PKCS#11设备用给定的
@@ -64,7 +64,7 @@
     </para>
   </refsection>
 
-  <refsection><info><title>ARGUMENTS</title></info>
+  <refsection><info><title>参数</title></info>
 
     <variablelist>
       <varlistentry>
@@ -172,7 +172,7 @@
     </variablelist>
   </refsection>
 
-  <refsection><info><title>SEE ALSO</title></info>
+  <refsection><info><title>参见</title></info>
 
     <para>
       <citerefentry>

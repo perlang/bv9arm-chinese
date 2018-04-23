@@ -15057,8 +15057,7 @@ allow-query { !{ !10/8; any; }; key example; };
     </appendix>
 
     <appendix xml:id="Bv9ARM-gbk.ch12"><info><title>BIND 9 DNS库支持</title></info>
-      <!--xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="libdns-utf8.xml"/-->
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="notes-utf8.xml"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="libdns-utf8.xml"/>
     </appendix>
 
     <reference xml:id="Bv9ARM-gbk.ch13"><info><title>手册页</title></info>

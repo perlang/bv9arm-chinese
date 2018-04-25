@@ -7,36 +7,34 @@
 -->
 
 <!-- Converted by db4-upgrade version 1.0 -->
-<section xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="dyndb-info"><info><title>DynDB (Dynamic Database)</title></info>
+<section xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="dyndb-info"><info><title>DynDB（动态数据库）</title></info>
 
   <para>
-    DynDB is an extension to BIND 9 which, like DLZ
-    (see <xref linkend="dlz-info"/>), allows zone data to be
-    retrieved from an external database.  Unlike DLZ, a DynDB module
-    provides a full-featured BIND zone database interface.  Where
-    DLZ translates DNS queries into real-time database lookups,
-    resulting in relatively poor query performance, and is unable
-    to handle DNSSEC-signed data due to its limited API, a DynDB
-    module can pre-load an in-memory database from the external
-    data source, providing the same performance and functionality
-    as zones served natively by BIND.
+    DynDB是一个对BIND 9的扩展，如同DLZ
+    （参见<xref linkend="dlz-info"/>）一样，它允许从一个外部
+    数据库中提取区数据。与DLZ不一样的是，一个DynDB模块提供了
+    一个全功能的BIND区数据库接口。
+    DLZ将DNS请求翻译成实时数据库查找，导致相对低下的请求性能，
+    并且由于其有限的API而无法处理DNSSEC签名数据，而一个DynDB
+    模块可以从外部数据源中预装载到一个内存数据库，可以提供
+    由原生BIND服务的区一样的性能和功能。
   </para>
   <para>
-    A DynDB module supporting LDAP has been created by Red Hat
-    and is available from
-    <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://fedorahosted.org/bind-dyndb-ldap/">https://fedorahosted.org/bind-dyndb-ldap/</link>.
+    红帽建立了一个支持LDAP的DynDB模块，可以在
+    <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://fedorahosted.org/bind-dyndb-ldap/">https://fedorahosted.org/bind-dyndb-ldap/</link>
+    找到。
   </para>
   <para>
-    A sample DynDB module for testing and developer guidance
-    is included with the BIND source code, in the directory
-    <filename>bin/tests/system/dyndb/driver</filename>.
+    一个用于测试和开发者指导的样例DynDB模块被包含在BIND
+    源代码中，在目录
+    <filename>bin/tests/system/dyndb/driver</filename>中。
   </para>
 
-  <section><info><title>Configuring DynDB</title></info>
+  <section><info><title>配置DynDB</title></info>
 
     <para>
-      A DynDB database is configured with a <command>dyndb</command>
-      statement in <filename>named.conf</filename>:
+      一个DynDB数据库是在<filename>named.conf</filename>中使用一个
+      <command>dyndb</command>语句来配置：
     </para>
     <screen>
     dyndb example "driver.so" {
@@ -44,39 +42,36 @@
     };
     </screen>
     <para>
-      The file <filename>driver.so</filename> is a DynDB module which
-      implements the full DNS database API.  Multiple
-      <command>dyndb</command> statements can be specified, to load
-      different drivers or multiple instances of the same driver.
-      Zones provided by a DynDB module are added to the view's zone
-      table, and are treated as normal authoritative zones when BIND
-      is responding to queries.  Zone configuration is handled internally
-      by the DynDB module.
+      文件<filename>driver.so</filename>是一个DynDB模块，它实现了全部
+      DNS数据库API。
+      可以指定多条<command>dyndb</command>语句，以装载不同的驱动或者
+      同一个驱动的多个实例。
+      由一个DynDB模块提供的区被添加到视图的区表中，并且在BIND响应请求
+      时被当成一个普通的权威区。
+      区配置由DynDB模块内部进行处理。
     </para>
     <para>
-      The <replaceable>parameters</replaceable> are passed as an opaque
-      string to the DynDB module's initialization routine. Configuration
-      syntax will differ depending on the driver.
+      <replaceable>parameters</replaceable>被作为一个不透明的字符串
+      传递给DynDB模块的初始化程序。
+      配置语法依赖于驱动的不同而有所差别。
     </para>
   </section>
-  <section><info><title>Sample DynDB Module</title></info>
+  <section><info><title>样例DynDB模块</title></info>
 
     <para>
-      For guidance in implementation of DynDB modules, the directory
-      <filename>bin/tests/system/dyndb/driver</filename>.
-      contains a basic DynDB module.
-      The example sets up two zones, whose names are passed
-      to the module as arguments in the <command>dyndb</command>
-      statement:
+      为指导DynDB模块的实现，目录
+      <filename>bin/tests/system/dyndb/driver</filename>
+      含有一个基本的DynDB模块。
+      这个例子建立两个区，其名字被<command>dyndb</command>语句中的
+      参数传送给模块，
     </para>
     <screen>
     dyndb sample "sample.so" { example.nil. arpa. };
     </screen>
     <para>
-      In the above example, the module is configured to create a zone
-      "example.nil", which can answer queries and AXFR requests, and
-      accept DDNS updates.  At runtime, prior to any updates, the zone
-      contains an SOA, NS, and a single A record at the apex:
+      在上述的例子中，模块被配置以建立一个区“example.nil”，它可以响应
+      查询请求和AXFR请求，并接受DDNS更新。
+      运行时，在任何更新之前，区的顶点包含一个SOA、NS和一个A记录。
     </para>
     <screen>
  example.nil.  86400    IN      SOA     example.nil. example.nil. (
@@ -86,11 +81,9 @@
  example.nil.  86400    IN      A       127.0.0.1
     </screen>
     <para>
-      When the zone is updated dynamically, the DynDB module will determine
-      whether the updated RR is an address (i.e., type A or AAAA) and if
-      so, it will automatically update the corresponding PTR record in a
-      reverse zone.  (Updates are not stored permanently; all updates are
-      lost when the server is restarted.)
+      当区被动态更新时，DynDB模块将决定被更新的资源记录是否是一个地址
+      （如，类型A或者AAAA），如果是，它将自动更新一个反向区中对应的PTR记录。
+      （更新不会永久保存；所有的更新在服务器重启时会丢失。）
     </para>
   </section>
 </section>

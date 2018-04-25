@@ -18,62 +18,82 @@
   <section><info><title>验证解析器</title></info>
 
     <!-- TODO: command tag is overloaded for configuration and executables -->
-    <para>为了配置一个验证解析器，使其用RFC 5011来维护一个信任锚点，
-    需要使用一个<command>managed-keys</command>语句来配置信任锚点。
-    关于这个的信息可以在<xref linkend="managed-keys"/>中找到。</para>
+    <para>
+      为了配置一个验证解析器，使其用RFC 5011来维护一个信任锚点，
+      需要使用一个<command>managed-keys</command>语句来配置信任锚点。
+      关于这个的信息可以在<xref linkend="managed-keys"/>中找到。
+    </para>
     <!-- TODO: managed-keys examples
 also in DNSSEC section above here in ARM -->
   </section>
   <section><info><title>权威服务器</title></info>
 
-    <para>为设置一个使用RFC 5011信任锚点维护的权威区，需要为区生成两个
-    （或更多）的密钥签名密钥（KSK）。使用其中一个对区签名；这个密钥
-    就是“活动的“KSK。所有不对区签名的KSK都是”备用“密钥。</para>
-    <para>任何配置成将活跃KSK用作一个RFC 5011所管理的信任锚点的
-    验证解析器都会留意到区的DNSKEY资源记录集中的后备密钥，并将其存储
-    以备将来参考。
-    解析器将会周期性地重新检查区，并在30天之后，如果新密钥仍然存在，
-    这个密钥将会作为这个区的一个有效信任锚点被解析器所接受。
-    在这个30天的接受计时器结束后的任何时间，活跃的KSK可以被撤销，而
-    区可以被“轮转”到新的所接受的密钥。</para>
-    <para>将一个备用密钥放入一个区的最简单的方法是使用
-    <command>dnssec-keygen</command>和
-    <command>dnssec-signzone</command>的“智能签名”特征。
-    如果一个密钥的发布日期在过去，而激活日期未设置或是在未来，
-    “<command>dnssec-signzone -S</command>”将会把DNSKEY记录包含
-    到区中，但是不会使用它签名：</para>
+    <para>
+      为设置一个使用RFC 5011信任锚点维护的权威区，需要为区生成两个
+      （或更多）的密钥签名密钥（KSK）。使用其中一个对区签名；这个
+      密钥就是“活跃的“KSK。所有不对区签名的KSK都是”备用“密钥。
+    </para>
+    <para>
+      任何配置成将活跃KSK用作一个RFC 5011所管理的信任锚点的
+      验证解析器都会留意到区的DNSKEY资源记录集中的后备密钥，并将其
+      存储以备将来参考。
+      解析器将会定期重新检查区，并在30天之后，如果新密钥仍然存在，
+      这个密钥将会作为这个区的一个有效信任锚点被解析器所接受。
+      在这个30天的接受计时器结束后的任何时间，活跃的KSK可以被撤销，
+      而区可以被“轮转”到新的所接受的密钥。
+    </para>
+    <para>
+      将一个备用密钥放入一个区的最简单的方法是使用
+      <command>dnssec-keygen</command>和
+      <command>dnssec-signzone</command>的“智能签名”特征。
+      如果一个密钥的发布日期在过去，而激活日期未设置或是在未来，
+      “<command>dnssec-signzone -S</command>”将会把DNSKEY记录包含
+      到区中，但是不会使用它签名：
+    </para>
     <screen>
 $ <userinput>dnssec-keygen -K keys -f KSK -P now -A now+2y example.net</userinput>
 $ <userinput>dnssec-signzone -S -K keys example.net</userinput>
 </screen>
-    <para>为撤销一个密钥，增加了新的命令<command>dnssec-revoke</command>。
-    这个命令增加密钥标志的REVOKED位，并重新生成
-    <filename>K*.key</filename>和<filename>K*.private</filename>文件。
+    <para>
+      为撤销一个密钥，增加了新的命令<command>dnssec-revoke</command>。
+      这个命令增加密钥标志的REVOKED位，并重新生成
+      <filename>K*.key</filename>和<filename>K*.private</filename>文件。
     </para>
-    <para>在撤销一个活动的密钥之后，必须使用被撤销的KSK和新的活动的KSK
-    对区签名。（智能签名自动完成这个工作。）
+    <para>
+      在撤销一个活动的密钥之后，必须使用被撤销的KSK和新的活动的KSK
+      对区签名。（智能签名自动完成这个工作。）
     </para>
-    <para>一旦一个密钥被撤销并用于对其所在的DNSKEY资源记录集
-    签名，这个密钥就再也不能被解析器接受为一个有效的信任锚点。
-    然而，可以使用新的活动密钥（这个新密钥在作为备用密钥时已经
-    被解析器所接受）进行验证。</para>
-    <para>关于密钥轮换场景的更详细信息，参见RFC 5011。
+    <para>
+      一旦一个密钥被撤销并用于对其所在的DNSKEY资源记录集
+      签名，这个密钥就再也不能被解析器接受为一个有效的信任锚点。
+      然而，可以使用新的活动密钥（这个新密钥在作为备用密钥时已经
+      被解析器所接受）进行验证。
     </para>
-    <para>当一个密钥被撤销时，其密钥ID会变化，即增加128，并在
-    超过65535时轮转。所以，例如，密钥
-    “<filename>Kexample.com.+005+10000</filename>”变成了
-    “<filename>Kexample.com.+005+10128</filename>”。
+    <para>
+      关于密钥轮换场景的更详细信息，参见RFC 5011。
     </para>
-    <para>如果两个密钥的ID刚好相差128，并且在其中一个被撤销时，两个
-    密钥ID发生了碰撞，就会带来一些问题。为避免这种情况，如果出现的
-    另一个密钥可能发生碰撞，<command>dnssec-keygen</command>将不会
-    生成一个新的密钥。
-    这个检查仅仅发生在当新密钥被写到存放区的所有其它在用密钥的
-    同一个目录的时候。</para>
-    <para>旧版本的BIND 9没有这个预防措施。
-    如果在用密钥撤销碰到先前版本所生成的密钥，或者在用密钥存储
-    在多个目录或多个服务器上，将会行使警告。</para>
-    <para>预料将来发布的BIND 9将会以一个不同的方式应对这个问题，
-    即通过将已撤销的密钥和其原始未撤销密钥的ID一起存储。</para>
+    <para>
+      当一个密钥被撤销时，其密钥ID会变化，即增加128，并在
+      超过65535时轮转。所以，例如，密钥
+      “<filename>Kexample.com.+005+10000</filename>”变成了
+      “<filename>Kexample.com.+005+10128</filename>”。
+    </para>
+    <para>
+      如果两个密钥的ID刚好相差128，并且在其中一个被撤销时，两个
+      密钥ID发生了碰撞，就会带来一些问题。为避免这种情况，如果出现的
+      另一个密钥可能发生碰撞，<command>dnssec-keygen</command>将不会
+      生成一个新的密钥。
+      这个检查仅仅发生在当新密钥被写到存放区的所有其它在用密钥的
+      同一个目录的时候。
+    </para>
+    <para>
+      旧版本的BIND 9没有这个预防措施。
+      如果在用密钥撤销碰到先前版本所生成的密钥，或者在用密钥存储
+      在多个目录或多个服务器上，将会行使警告。
+    </para>
+    <para>
+      预料将来发布的BIND 9将会以一个不同的方式应对这个问题，
+      即通过将已撤销的密钥和其原始未撤销密钥的ID一起存储。
+    </para>
   </section>
 </section>

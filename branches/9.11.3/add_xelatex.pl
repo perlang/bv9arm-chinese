@@ -12,12 +12,14 @@ while(<>) {
 \\setCJKmainfont[BoldFont={文泉驿微米黑},ItalicFont={AR PL UKai CN}]{AR PL UMing CN}
 \\setCJKsansfont{文泉驿微米黑}
 
-\\setCJKfamilyfont{zhsong}{AR PL UMing CN}
-\\setCJKfamilyfont{zhhei}{Source Han Sans CN}
-\\setCJKfamilyfont{zhkai}{AR PL UKai CN}
+\\setCJKfamilyfont{zhsong}{NSimSun}
+\\setCJKfamilyfont{zhhei}{WenQuanYi Zen Hei}
+\\setCJKfamilyfont{zhkai}{STKaiti}
+    
 
 \\newcommand*{\\songti}{\\CJKfamily{zhsong}} % 宋体
 \\newcommand*{\\heiti}{\\CJKfamily{zhhei}}   % 黑体
+\\newcommand*{\\kaiti}{\\CJKfamily{zhkai}}   % 楷体
 
 EOF
 	}

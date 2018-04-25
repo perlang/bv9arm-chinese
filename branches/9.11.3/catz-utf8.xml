@@ -240,10 +240,9 @@ allow-query.5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN A
     </para>
     <para>
       (Note that none of the global records an option will be inherited if
-      any records are defined for that option for the specific zone.  For
-      example, if the zone had a <literal>masters</literal> record of type
-      A but not AAAA, then it would <emphasis>not</emphasis> inherit the
-      type AAAA record from the global option.)
+      any records are defined for that option for the specific zone.
+      例如，如果区有一个类型A而不是AAAA的<literal>masters</literal>记录，
+      它<emphasis>不能</emphasis>从全局选项继承类型AAAA记录。）
     </para>
   </section>
 </section>

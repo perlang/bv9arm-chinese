@@ -222,7 +222,6 @@
           <acronym>BIND</acronym> 9软件分发包中包括一个名字服务器，
           <command>named</command>，和一个解析器库，
 	  <command>liblwres</command>。
-	  ISC得到。
         </para>
 
         </section>
@@ -230,7 +229,7 @@
 
         <para>
           存储在 DNS 中的数据以<emphasis>域名</emphasis>来标识，并根据类别或
-          行政区被组织成一颗树。树中的每个节点由一个标记表示，被成为一个
+          行政区被组织成一颗树。树中的每个节点由一个标记表示，被称为一个
           <emphasis>域</emphasis>。节点的域名就是将从这个节点到<emphasis>根
           </emphasis>节点的路径所经过的所有标记串接而成。它被表示成的书面格式
           是从右至左以点分隔的标记串。 一个标记在其父域之内是唯一的。
@@ -313,7 +312,7 @@
 
         <para>
           权威服务器的应答的数据包中包括“权威回答”（AA）位。
-          这在使用象<command>dig</command>
+          这在使用像<command>dig</command>
           （<xref linkend="diagnostic_tools"/>）
           这样的工具来调试DNS配置时容易鉴别。
         </para>
@@ -343,7 +342,7 @@
             本身也可以充当一个二级辅服务器的主服务器。
           </para>
           <para>
-            辅服务器必须周期性发出一个刷新请求来决定区内容是否需要更新。
+            辅服务器必须定期发出一个刷新请求来决定区内容是否需要更新。
             这是通过请求这个区的SOA记录并检查SERIAL字段是否被更新了来完成
             的；如果已更新，就发起一个新的区传送请求。这些刷新请求的时间
             是由SOA的REFRESH和RETRY字段控制的，但是可以被
@@ -353,8 +352,8 @@
             <command>min-retry-time</command>选项覆盖。
           </para>
           <para>
-            如果区数据不能再SOA的EXPIRE选项（最大到硬编码的24周）所指定的
-            时间内更新，辅服务器将会过期并不在响应请求。
+            如果区数据不能在SOA的EXPIRE选项（最大到硬编码的24周）所指定的
+            时间内更新，辅服务器将会过期并不再响应请求。
           </para>
         </section>
 
@@ -395,7 +394,7 @@
 	  -->
 
         <para>
-          由大多数操作系统所提供的解析库叫做<emphasis>存根解析器</emphasis>，
+          由大多数操作系统所提供的解析器库叫做<emphasis>存根解析器</emphasis>，
           意思是它们没有能够通过直接与权威服务器通信而执行完全的域名解析过程的
           能力。作为代替，它们依赖一个本地名字服务器来为它们执行解析。这样的
           服务器称为<emphasis>递归的</emphasis>名字服务器；它为本地客户端执行
@@ -503,7 +502,7 @@
         的二级内部名字服务器请求一个主名字服务器，后者有足够的内存来建立一个
         巨大的缓存。这个方法最大限度减少了外部名字查找所用到的带宽。第二种是
         设置内部的二级服务器来各自独立进行查询。在这个配置中，不需要某台主机
-        有象第一种方法那样需要巨大的内存和CPU能力，但是这个方法的缺点是需要
+        有像第一种方法那样需要巨大的内存和CPU能力，但是这个方法的缺点是需要
         更多的外部查询，因为所有的名字服务器都不共享它们缓存的数据。
       </para>
     </section>
@@ -530,7 +529,8 @@
       <section xml:id="cache_only_sample"><info><title>一个只缓存名字服务器</title></info>
 
         <para>
-          下列配置样例合适用于一个只缓存名字服务器，用于一个公司的内部客户端。
+	  下列配置样例合适用于一个只缓存名字服务器，由一个公司的内部客户端
+	  所使用。
           通过使用<command>allow-query</command>选项，所有外来客户端的请求都被
           拒绝。另外一个选择是，使用合适的防火墙规则也可以取得同样的效果。
         </para>
@@ -618,7 +618,7 @@ zone "eng.example.com" {
 
       <para>
         例如，如果你有3 台WWW 服务器分别使用10.0.0.1，10.0.0.2和10.0.0.3
-        的网络地址，象以下这个记录集就意味着客户端将会分别对每台机器有
+        的网络地址，像以下这个记录集就意味着客户端将会分别对每台机器有
         三分之一的连接时间：
       </para>
 
@@ -953,7 +953,7 @@ zone "eng.example.com" {
                   更好的保密方式。<command>rndc</command>配置文件的缺省路
                   径是<filename>/etc/rndc.conf</filename>，但也可以使用
                   <option>-c</option>选项来指定一个其它的路径。如果
-                  <command>rndc</command>没有找到找到配置文件，它将会查找
+                  <command>rndc</command>没有找到配置文件，它将会查找
                   <filename>/etc/rndc.key</filename>（或者是
                   <acronym>BIND</acronym>构建时的由
                   <varname>sysconfdir</varname>所定义的其它目录）。
@@ -1056,7 +1056,7 @@ controls {
 </programlisting>
 
                 <para>
-                  并且它有一个对应于<literal>rndc_key</literal>的key 语句。
+                  并且它有一个对应于<literal>rndc_key</literal>的key语句的话。
                 </para>
 
                 <para>
@@ -1078,8 +1078,8 @@ controls {
 
       <section xml:id="signals"><info><title>信号</title></info>
         <para>
-          某些UNIX信号将使名字服务器进行特定的动作，如下表所列。
-		  这些信号可以由<command>kill</command>命令发出。
+          某些UNIX信号将使名字服务器执行特定的动作，如下表所列。
+	  这些信号可以由<command>kill</command>命令发出。
         </para>
         <informaltable frame="all">
           <tgroup cols="2">
@@ -1129,7 +1129,7 @@ controls {
       <para>
         <acronym>DNS</acronym> NOTIFY是一个让主服务器通知其辅服务器某个区数据
         发生了变化的机制。作为对来自主服务器的<command>NOTIFY</command>的相应，
-        辅服务器会检查其区的版本是否当前版本，如果不是，就发起区传送。
+        辅服务器会检查其区的版本是否是当前版本，如果不是，就发起区传送。
       </para>
 
       <para>
@@ -1141,8 +1141,8 @@ controls {
       </para>
 
       <note><simpara>
-	一个辅服务器也可以成为其它辅服务器的主服务器，<command>named</command>
-	在缺省情况下会
+	一个辅服务器也可以成为其它辅服务器的主服务器，
+	<command>named</command>在缺省情况下会
         对其所载入的每个区发出<command>NOTIFY</command>消息。
         指定<command>notify master-only;</command>将使<command>named</command>
         只对其所载入区的主服务器发出<command>NOTIFY</command>。
@@ -1153,8 +1153,8 @@ controls {
     <section xml:id="dynamic_update"><info><title>动态更新（Dynamic Update）</title></info>
 
       <para>
-        动态更新是一个通过给主服务器发送一个特殊格式的DNS 消息来增加、替换和
-        删除其上的记录的方法。这些消息的格式和含义由RFC 2136指定。
+        动态更新是一个通过给主服务器发送一个特殊格式的DNS消息来增加、
+        替换和删除其上记录的方法。这些消息的格式和含义由RFC 2136指定。
       </para>
 
       <para>
@@ -1196,10 +1196,10 @@ controls {
         </para>
 
         <para>
-          服务器会时常将更新后的区的完整内容写到（“dump”）其区文件中。这个
-          操作不是每次动态更新后立即执行，因为如果这样，一个大的区在频繁更新时
-          将会导致服务器变得太慢。代替的方法是，转储（dump）操作延迟15 分钟，
-          以允许其它更新。
+          服务器会时常将更新后的区的完整内容转储到（“dump”）其区文件中。
+	  这个操作不是每次动态更新后立即执行，因为如果这样，一个大的区
+	  在频繁更新时将会导致服务器变得太慢。代替的方法是，转储操作延迟
+	  15分钟，以允许其它更新。
           在转储过程中，将会创建以<filename>.jnw</filename>和
           <filename>.jbk</filename>为后缀的瞬时文件；在普通情况下，这些
           文件将在转储完成后被删除掉，忽略它们也是安全的。
@@ -1215,7 +1215,7 @@ controls {
         </para>
 
         <para>
-          动态更新区的区文件不能象通常那样进行手工编辑，因为没法保证包含最近的
+          动态更新区的区文件不能像通常那样进行手工编辑，因为没法保证包含最近的
           动态变化 — 这些变化只存在于日志文件中。保持动态更新区的区文件最新的
           唯一方法是执行<command>rndc stop</command>。
         </para>
@@ -1521,11 +1521,13 @@ nameserver 172.16.72.4
     <section xml:id="tsig"><info><title>TSIG</title></info>
 
       <para>
-        TSIG（Transaction SIGnatures，事务签名）是一个认证DNS消息的机制，最早
-        在RFC 2845中规定。它允许DNS消息被使用一个共享密钥加密签名。TSIG可以
-        被用于任何DNS事务，可以作为一种限制授权的客户端对某个服务器功能访问
-        （例如，递归请求）的方法，这时基于IP的访问控制已无法满足需求或者需要
-        被覆盖，或者作为一种确保消息认证的方法，这时其对服务器完整性非常关键，
+        TSIG（Transaction SIGnatures，事务签名）是一个认证DNS消息
+	的机制，最早在RFC 2845中规定。
+	它允许使用一个共享密钥对DNS消息加密签名。
+	TSIG可以被用于任何DNS事务，可以作为一种限制授权的客户端对
+	某个服务器功能访问（例如，递归请求）的方法，这时基于IP的
+	访问控制已无法满足需求或者需要被覆盖，或者作为一种确保
+	消息认证的方法，这时其对服务器完整性非常关键，
         例如配合动态更新消息或者从一个主服务器到一个辅服务器的区传送。
       </para>
       <para>
@@ -1583,7 +1585,7 @@ nameserver 172.16.72.4
         </para>
       </section>
 
-      <section><info><title>Loading A New Key</title></info>
+      <section><info><title>装载一个新密钥</title></info>
         <para>
           如果一个密钥在服务器<emphasis>host1</emphasis>和
           <emphasis>host2</emphasis>之间共享，每个服务器的
@@ -1610,18 +1612,18 @@ key "host1-host2." {
           验证签名。如果签名有效，响应将会使用同一个密钥签名。
         </para>
         <para>
-          一个服务器所知的TSIG密钥可以使用命令<command>rndc tsig-list</command>
-          列出。
+          为一台服务器所知的TSIG密钥可以使用命令
+	  <command>rndc tsig-list</command>列出。
         </para>
       </section>
 
-      <section><info><title>Instructing the Server to Use a Key</title></info>
+      <section><info><title>指示服务器使用一个密钥</title></info>
         <para>
           一个向其它服务器发送请求的服务器必须被告知是否使用一个密钥，
           以及如果使用，使用那个密钥。
         </para>
         <para>
-          例如，必须位一个辅区定义中的<command>masters</command>语句中
+          例如，必须为一个辅区定义中的<command>masters</command>语句中
           的每一个服务器指定一个密钥；在这种情况下，所有SOA请求消息，
           NOTIFY消息和区传送请求（AXFR或IXFR）都将使用指定密钥签名。密钥
           也可在一个主区或辅区中的<command>also-notify</command>语句中
@@ -1649,8 +1651,9 @@ server 10.1.2.3 {
           配置文件中有一个类似的<command>server</command>指令。
         </para>
         <para>
-         无论何时，任何服务器发出了一个TSIG签名的DNS请求，它将会期待响应被
-         同一个密钥签名。如果响应未被签名，或者签名无效，响应将会被拒绝。
+         无论何时，任何服务器只要发出了一个TSIG签名的DNS请求，
+	 它将会期待响应被同一个密钥签名。如果响应未被签名，或者
+	 签名无效，响应将会被拒绝。
         </para>
       </section>
 
@@ -1808,7 +1811,7 @@ allow-update { !{ !localnets; any; }; key host1-host2. ;};
           <filename>Kchild.example.+005+12345.private</filename>
           （12345是密钥标记的一个例子）。密钥文件名包含密钥名（
           <filename>child.example.</filename>），算法（3表示DSA，1表示RSAMD5，
-          5表示RSASH1，等等），和密钥标记（在本例中为12345）。私钥
+          5表示RSASHA1，等等），和密钥标记（在本例中为12345）。私钥
           （在<filename>.private</filename>文件中）用于生成签名，公钥
           （在<filename>.key</filename>文件中）用于验证签名。
         </para>
@@ -1825,7 +1828,7 @@ allow-update { !{ !localnets; any; }; key host1-host2. ;};
         </para>
 
         <para>
-          公钥应该使用<command>$INCLUDE</command>语句来包含
+          公钥应该通过使用<command>$INCLUDE</command>语句来包含
           <filename>.key</filename>文件的方式插入到区文件中。
         </para>
 
@@ -1873,7 +1876,7 @@ allow-update { !{ !localnets; any; }; key host1-host2. ;};
       <section xml:id="dnssec_config"><info><title>配置服务器</title></info>
 
 	<para>
-	  为了使<command>named</command>正确响应知道DNSSEC的客户端所发出的
+	  为了使<command>named</command>正确响应感知DNSSEC的客户端所发出的
 	  DNS请求，必须将<command>dnssec-enable</command>设置为yes。
 	  （这是缺省设置。）
         </para>
@@ -1983,8 +1986,9 @@ options {
 	</simpara></note>
 
 	<para>
-	  当DNSSEC验证被打开并正确地配置后，解析器将会拒绝来自签名的
-	  安全区的未通过验证的响应，并返回SERVFAIL给客户端。
+	  当DNSSEC验证被打开并正确地配置后，解析器将会拒绝来自
+	  已签名的、安全的区中未通过验证的响应，并返回SERVFAIL
+	  给客户端。
 	</para>
 
 	<para>
@@ -2684,7 +2688,7 @@ and perl</programlisting>
 
           <warning>
             <para>
-              你不能象在区文件中一样，使用分号（‘;’）字符来开始一个注释。分号
+              你不能像在区文件中一样，使用分号（‘;’）字符来开始一个注释。分号
               表示一个配置语句的结束。
             </para>
           </warning>
@@ -3193,7 +3197,7 @@ and perl</programlisting>
             在Windows机器上，syslog消息直接定向到事件查看器（EventViewer）。
 	  </para>
           <para>
-            <command>severity</command>子句工作起来象<command>syslog</command>
+            <command>severity</command>子句工作起来像<command>syslog</command>
             的“优先级”，只有一点不同，就是如果你直接写到文件而不是使用
             <command>syslog</command>时，也可以使用它们。至少达到所使用的
             严重级别的消息将才会送到此通道；大于严重级别的消息会被接受。
@@ -3540,7 +3544,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
           <para>
             在3或更高的调试级别时，记录那些与在调试级别1相同的消息，
             但只对其它错误，而不记录SERVFAIL。
-            注意，在这里，象NXDOMAIN这样的否定响应并不被当作错误。
+            注意，在这里，像NXDOMAIN这样的否定响应并不被当作错误。
           </para>
           <para>
             在4或更高的调试级别时，记录那些与在调试级别2相同的消息，
@@ -4424,7 +4428,7 @@ options {
             <listitem>
                 <para>
                   当一个区配置了<command>auto-dnssec maintain;</command>，
-                  它的密钥仓库必须周期性检查，以查看是否有密钥被添加或者
+                  它的密钥仓库必须定期检查，以查看是否有密钥被添加或者
                   任何现有的密钥的时间元数据被修改（参见
                   <xref linkend="man.dnssec-keygen"/>和
                   <xref linkend="man.dnssec-settime"/>）。
@@ -5680,7 +5684,7 @@ options {
               <listitem>
                 <para>
                    当一个区配置有<command>auto-dnssec maintain;</command>时，
-                   将会周期性地检查其密钥库，以查看是否有新的密钥添加或者任何
+                   将会定期检查其密钥库，以查看是否有新的密钥添加或者任何
                    现存密钥的计时元数据被修改（参见
                    <xref linkend="man.dnssec-keygen"/>和
                    <xref linkend="man.dnssec-settime"/>）。
@@ -6075,7 +6079,7 @@ listen-on port 1234 { !1.2.3.4; 1.2/16; };
             当指定<programlisting>{ any; }</programlisting>
             作为<command>listen-on-v6</command>选项的
             <varname>address_match_list</varname>时，如果操作系统对IPv6有足够
-	    的API支持，服务器不会象对IPv4地址一样将一个单独的套接字绑定到其
+	    的API支持，服务器不会像对IPv4地址一样将一个单独的套接字绑定到其
 	    每个IPv6接口地址上（特别是在其遵从RFC 3493和RFC 3542时）。作为
 	    替代，它会监听在IPv6的通配地址上。如果系统仅仅对IPv6有不完全的
 	    API支持，其行为就与IPv4一样。
@@ -6319,7 +6323,7 @@ avoid-v6-udp-ports {};
               <term><command>serial-query-rate</command></term>
               <listitem>
                 <para>
-                  辅服务器将会周期性地请求主服务器以发现区的序列号是否改变。每
+                  辅服务器将会定期请求主服务器以发现区的序列号是否改变。每
                   个这样的请求占用一定量的辅服务器网络带宽。为限制所使用的带宽
                   数量，BIND 9限制请求发送的速率。
                   <command>serial-query-rate</command>选项的值为一个整数，表示
@@ -6919,7 +6923,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		  <command>cleaning-interval</command>分钟清理一次
                   缓存，从中删除过期的资源记录。
 		  <acronym>BIND</acronym> 9现在以一个更复杂的方式管理
-		  缓存，并不再依赖于周期性地清理。
+		  缓存，并不再依赖于定期清理。
 		  因此指定这个选项对服务器的行为没有任何影响。
                 </para>
               </listitem>
@@ -7347,7 +7351,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   重试 ，如果重试成功，它就会得出这个服务器不支持EDNS的结论。
                   在使用EDNS时足够的失败和使用普通DNS时足够的成功之后，
                   <command>named</command>在将来同这台服务器通信时缺省使用普通
-                  DNS。（<command>named</command>将会周期性地发送EDNS请求来查看
+                  DNS。（<command>named</command>将会定期发送EDNS请求来查看
                   情况是否有改善。）
 		</para>
 		<para>
@@ -7780,7 +7784,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
           <para>
             附加部份缓存对附加部份中的资源记录集的顺序也有一点点影响。没有
             <command>acache</command>的情况下，<command>cyclic</command>顺序对
-            附加部份也有效，就象其对答案和权威部份一样。然而，附加部份缓存将会
+            附加部份也有效，就像其对答案和权威部份一样。然而，附加部份缓存将会
             在它第一次缓存一个资源记录集时固定其顺序，在后续的响应中将保持同样
             的顺序，而忽略<command>rrset-order</command>的设置。这样做的影响应
             该较小，另外，由于附加部份的一个资源记录集典型情况下只包含很小数目
@@ -9153,7 +9157,7 @@ view "external" {
                       </para>
                       <para>
                       由于数据是静态配置的，对于一个静态存根区来说，不会发生
-                      区维护动作。例如，没有周期性的刷新，收到的通知消息将会
+                      区维护动作。例如，没有定期刷新，收到的通知消息将会
                       被拒绝，并带有一个NOTAUTH的响应码（rcode）。
                       </para>
                       <para>
@@ -12083,7 +12087,7 @@ WWW.EXAMPLE.COM. CNAME MAIN-SERVER.EXAMPLE.COM.
               <optional> <replaceable>comment</replaceable> </optional>
             </para>
             <para>
-              读入并处理文件<filename>filename</filename>，就象它在这一点包含此
+              读入并处理文件<filename>filename</filename>，就像它在这一点包含此
               文件进来。如果设定了<command>origin</command>，文件就使用
               <command>$ORIGIN</command>所设定的值被处理，否则，使用当前
               <command>$ORIGIN</command>。
@@ -14050,7 +14054,7 @@ allow-query { !{ !10/8; any; }; key example; };
             <filename>/var/named</filename>）中正常工作，你需要设置一个环境，使
             其包含<acronym>BIND</acronym>运行所需的所有东西。从
             <acronym>BIND</acronym>的视角，<filename>/var/named</filename>是文
-            件系统的根。你需要通过调整象<command>directory</command>和
+            件系统的根。你需要通过调整像<command>directory</command>和
             <command>pid-file</command>这样的选项的值来满足这个需求。
           </para>
           <para>
@@ -14101,7 +14105,7 @@ allow-query { !{ !10/8; any; }; key example; };
 
         <para>
           一些站点选择将所有的动态更新的DNS数据保存到一个子域并将子域授权到一个
-          单独的区。在这种方法中，包含象公共web和邮件服务器的IP地址这样的关键数
+          单独的区。在这种方法中，包含像公共web和邮件服务器的IP地址这样的关键数
           据的顶级区就完全不允许对其进行动态更新。
         </para>
 
@@ -14260,7 +14264,7 @@ allow-query { !{ !10/8; any; }; key example; };
           <para>
             全局路由前缀有上层提供者或ISP提供，并且（大致地）与IPv4地址范围
             的<emphasis>网络</emphasis>部份相对应。子网标识符标识局域子网，
-            就象在IPv4的/16网络中划分出/24的子网。接口标识符是一个给定网络上
+            就像在IPv4的/16网络中划分出/24的子网。接口标识符是一个给定网络上
             的单个地址；在IPv6中，地址属于接口而不属于主机。
           </para>
           <para>
@@ -14270,7 +14274,7 @@ allow-query { !{ !10/8; any; }; key example; };
           </para>
           <para>
             接口标识符必须在局部连接上是唯一的，并且通常由IPv6实现自动生成，
-            虽然在需要时，通常可以翻盖缺省设置。一个典型的IPv6地址可能是
+            虽然在需要时，通常可以覆盖缺省设置。一个典型的IPv6地址可能是
             这样的：
             <command>2001:db8:201:9:a00:20ff:fe81:2b32</command>
 	  </para>

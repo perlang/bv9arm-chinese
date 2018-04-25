@@ -184,7 +184,7 @@
             的日志，除非设定<command>querylog</command>选项。
           </para>
           <para>
-            请求日志条目首先以@0x&lt;hexadecimal-number&gt;格式报告
+            请求日志条目首先以@0x&lt;十六进制数字&gt;格式报告
 	    一个客户端对象标识符。接下来，它报告客户端的IP地址和端口，
 	    请求的名字，类和类型。
 	    接下来，它报告是否设置了期望递归（Recursion Desired）
@@ -289,7 +289,7 @@
 	</entry>
 	<entry colname="2">
 	  <para>
-	    记录named所收到的trust-anchor-telemetry请求。
+	    记录named所收到的信任锚遥测（trust-anchor-telemetry）请求。
 	  </para>
 	</entry>
       </row>

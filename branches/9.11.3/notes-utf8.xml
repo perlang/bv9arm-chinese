@@ -57,7 +57,7 @@
     </para>
   </section>
 
-  <section xml:id="relnotes_license"><info><title>License Change</title></info>
+  <section xml:id="relnotes_license"><info><title>许可证变化</title></info>
     <para>
       从BIND 9.11.0，ISC改变了BIND的开源许可证，从ISC许可证变为
       Mozilla公共许可证（MPL 2.0）。
@@ -99,7 +99,6 @@
       </listitem>
       <listitem>
 	<para>
-	  The BIND installer on Windows used an unquoted service path,
 	  Windows上的BIND安装器使用一个未引用的服务路径，后者可能
 	  开启特权提升。这个漏洞在CVE-2017-3141被公开。 [RT #45229]
 	</para>
@@ -122,29 +121,27 @@
       </listitem>
       <listitem>
 	<para>
-	  update-policy rules that otherwise ignore the name field now
-	  require that it be set to "." to ensure that any type list
-	  present is properly interpreted.  If the name field was omitted
-	  from the rule declaration and a type list was present it wouldn't
-	  be interpreted as expected.
+	  update-policy规则原来忽略名字字段，现在要求它被设置为“.”，
+	  以确保出现的任何类型清单能被正确解释。
+	  如果名字字段在规则定义中被省略并且出现一个类型清单，它不能
+	  如期望那样被解释。
 	</para>
       </listitem>
     </itemizedlist>
   </section>
 
-  <section xml:id="relnotes_removed"><info><title>Removed Features</title></info>
+  <section xml:id="relnotes_removed"><info><title>去掉的特性</title></info>
     <itemizedlist>
       <listitem>
 	<para>
-	  The ISC DNSSEC Lookaside Validation (DLV) service has
-	  been shut down; all DLV records in the dlv.isc.org zone
-	  have been removed.  References to the service have been
-	  removed from BIND documentation.  Lookaside validation
-	  is no longer used by default by <command>delv</command>.
-	  The DLV key has been removed from <filename>bind.keys</filename>.
-	  Setting <command>dnssec-lookaside</command> to
-	  <command>auto</command> or to use dlv.isc.org as a trust
-	  anchor results in a warning being issued.
+	  ISC DNSSEC后备验证（DLV）服务已被关闭；dlv.isc.org区中
+	  的所有记录已被删除。
+	  关于这个服务的参考也已从BIND文档中删除。
+	  后备验证不再被<command>delv</command>缺省使用。
+	  DLV密钥已从<filename>bind.keys</filename>中删除。
+	  设置<command>dnssec-lookaside</command>为
+	  <command>auto</command>或者将dlv.isc.org用作一个信任锚
+	  将导致发出一个告警。
 	</para>
       </listitem>
       <listitem>
@@ -181,17 +178,15 @@
     </itemizedlist>
   </section>
 
-  <section xml:id="relnotes_changes"><info><title>Feature Changes</title></info>
+  <section xml:id="relnotes_changes"><info><title>特性变化</title></info>
     <itemizedlist>
       <listitem>
 	<para>
-	  <command>named</command> will no longer start or accept
-	  reconfiguration if <command>managed-keys</command> or
-	  <command>dnssec-validation auto</command> are in use and
-	  the managed-keys directory (specified by
-	  <command>managed-keys-directory</command>, and defaulting
-	  to the working directory if not specified),
-	  is not writable by the effective user ID. [RT #46077]
+	  如果<command>managed-keys</command>或者
+	  <command>dnssec-validation auto</command>在使用中，并且
+	  受管理密钥目录（由<command>managed-keys-directory</command>
+	  指定，如果未指定，缺省是工作目录）不能被有效用户ID写，
+	  <command>named</command>将不能确定或接受重新配置。 [RT #46077]
 	</para>
       </listitem>
       <listitem>

@@ -23,13 +23,29 @@ s/(\\tableofcontents)/\n\n\\begin\{center\}Copyright \\copyright\{\} 2008-2018 �
 # handle char 0xd8(216, \330) at A.1.1, "Oivind Kure"
 s/\xd8ivind Kure/\{\\O\}ivind Kure/;
 
+# handle reference to xxx Section
+s/Section\~(\\ref\{[\d\w\_\-]+})/第$1节/g;
+
 # expand bookmark for Appendix B
 s/\\section\K\*\{(?!(Name|\\docbook))/\{/g;
 s/\\section\*\{\KName/名字/g;
 s/\\subsection\*\{\KSynopsis/概要/g;
 
+# replace \emph{<string_with_chinese_character>} with
+#   {\kaiti <string_with_chinese_character>}
+# <string_with_chinese_character> is 3 bytes UTF-8 1110xxxx 10xxxxxx 10xxxxxx
+# TODO: it is needed to handle more than 3bytes character.
+#
+#s/\\emph\{((([\xe0-\xef][\x80-\xbf]{2})|[\w\d .\-_\n])+)}/\{\\kaiti $1}/mg;
+#s/\\emph\{((([\xe0-\xef][\x80-\xbf]{2})|[\w\d .\\\#\-_\n\{\}\(\)])+)}/\{\\kaiti $1}/mg;
+s/\\emph\{((([\xe0-\xef][\x80-\xbf]{2})|[\w\d .\\\#\-_\n\()])+)}/\{\\kaiti $1}/mg;
+# need to handle 
+#  \emph{PKCS\#11 URI方案 (draft-{}pechanec-{}pkcs11uri-{}13)}。
+
 # handle NOTE/WARNING box
 s/\{Note\}/\{注意\}/g;
 s/\{Warning\}/\{警告\}/g;
+s/\{SEE ALSO\}/\{参见\}/g;
+s/\{DESCRIPTION\}/\{描述\}/g;
 
 print "$_";

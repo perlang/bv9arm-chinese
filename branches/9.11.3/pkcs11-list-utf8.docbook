@@ -98,7 +98,6 @@
         <term>-i <replaceable class="parameter">ID</replaceable></term>
         <listitem>
           <para>
-            List only key objects with the given object ID.
             仅列出带有给定对象ID的密钥对象。
           </para>
         </listitem>

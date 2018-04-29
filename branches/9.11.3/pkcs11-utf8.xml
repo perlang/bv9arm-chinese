@@ -16,23 +16,24 @@
    密码支持设备定义了一个平台独立的API。
   </para>
   <para>
-    BIND 9可以支持三种HSM：AEP Keyper，在Debian Linux，Solaris x86和
-    Windows Server 2003上测试通过；Thales nShield，在Debian Linux上测试通过；
-    以及Sun SCA 6000密码加速板，在Solaris x86上测试通过。
-    另外，BIND可以与所有当前版本的SoftHSM，一种基于软件的由OpenDNSSEC项目产出
-    的HSM模拟器，一块工作。
+    BIND 9可以支持三种HSM：AEP Keyper，在Debian Linux，Solaris x86
+    和Windows Server 2003上测试通过；Thales nShield，在Debian Linux
+    上测试通过；以及Sun SCA 6000密码加速板，在Solaris x86上测试通过。
+    另外，BIND可以与所有当前版本的SoftHSM，一种基于软件的
+    由OpenDNSSEC项目产出的HSM模拟器，一块工作。
   </para>
   <para>
-    PKCS#11利用了一个“提供者库（provider library）”：一个动态加载库，它提供
-    一个低级PKCS#11接口来驱动HSM硬件。PKCS#11提供者库来自HSM厂商，它针对于
-    由其控制的特定HSM有效。
+    PKCS#11利用了一个“提供者库（provider library）”：一个动态加载库，
+    它提供一个低级PKCS#11接口来驱动HSM硬件。PKCS#11提供者库来自HSM厂商，
+    它针对于由其控制的特定HSM有效。
   </para>
   <para>
     BIND 9中存在两种可用的对PKCS#11支持的机制：基于OpenSSL的PKCS#11和
-    原生PKCS#11。在使用第一种机制时，BIND使用一个OpenSSL的修改版本，后者加载
-    提供者库并间接操作HSM；任何HSM不支持的加密操作都替代成由OpenSSL执行。
-    第二种机制让BIND完全绕过OpenSSL；BIND自己加载提供者库，并使用PKCS#11 API
-    直接驱动HSM。
+    原生PKCS#11。在使用第一种机制时，BIND使用一个OpenSSL的修改版本，
+    后者加载提供者库并间接操作HSM；任何HSM不支持的加密操作都替代成
+    由OpenSSL执行。
+    第二种机制让BIND完全绕过OpenSSL；BIND自己加载提供者库，并使用
+    PKCS#11 API直接驱动HSM。
   </para>
   <section><info><title>先决条件</title></info>
 
@@ -44,15 +45,15 @@
   <section><info><title>原生PKCS#11</title></info>
 
     <para>
-      原生PKCS#11模式仅能与一个能够执行<emphasis>每个</emphasis>BIND 9可能
-      需要的加密操作的HSM一块工作。
-      HSM的提供者库必须带有一个PKCS#11 API的完全实现，因此所有这些函数都是
-      可以访问的。
+      原生PKCS#11模式仅能与一个能够执行<emphasis>每个</emphasis>
+      BIND 9可能需要的加密操作的HSM一块工作。
+      HSM的提供者库必须带有一个PKCS#11 API的完全实现，因此所有
+      这些函数都是可以访问的。
       在写作本文档时，仅有Thales nShield HSM和SoftHSMv2可以被用于这个功能。
       对其它HSM，包括AEP Keyper，Sun SCA 6000和旧版本的SoftHSM，使用
       基于OpenSSL的PKCS#11。
-      （注意：最终，当更多HSM支持原生PKCS#11，可以预料基于OpenSSL的PKCS#11将被
-      废弃。）
+      （注意：最终，当更多HSM支持原生PKCS#11，可以预料基于OpenSSL
+      的PKCS#11将被废弃。）
     </para>
     <para>
       要使用原生PKCS#11构建BIND，按如下配置：
@@ -81,19 +82,19 @@ $ <userinput>./configure --enable-native-pkcs11 \
 	（<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.opendnssec.org">
 	  http://www.opendnssec.org
 	</link>），
-        它提供了一个虚拟HSM的PKCS#11接口，以一个在本地文件系统上的SQLite3
-        数据库的形式实现。
-        它提供的安全性较一个真正的HSM较少，但是它允许你在没有可用的HSM时试验
-        原生的PKCS#11。
-        SoftHSMv2可以被配置成使用OpenSSL或者Botan库来执行加密功能，但当其用于
-        在BIND中的原生PKCS#11时，必须使用OpenSSL。
+	它提供了一个虚拟HSM的PKCS#11接口，以一个在本地文件系统上的
+	SQLite3数据库的形式实现。
+	它提供的安全性较一个真正的HSM较少，但是它允许你在没有可用的
+	HSM时试验原生的PKCS#11。
+	SoftHSMv2可以被配置成使用OpenSSL或者Botan库来执行加密功能，
+	但当其用于在BIND中的原生PKCS#11时，必须使用OpenSSL。
       </para>
       <para>
         缺省时，SoftHSMv2配置文件是
 	<replaceable>prefix</replaceable>/etc/softhsm2.conf（这里的
 	<replaceable>prefix</replaceable>是在编译时配置的）。
-        这个位置可以被SOFTHSM2_CONF环境变量覆盖。SoftHSMv2加密存储必须在与
-        BIND一起使用之前被安装和初始化。
+	这个位置可以被SOFTHSM2_CONF环境变量覆盖。SoftHSMv2加密存储
+	必须在与BIND一起使用之前被安装和初始化。
       </para>
       <screen>
 $ <userinput> cd SoftHSMv2 </userinput>
@@ -113,7 +114,7 @@ $ <userinput> /opt/pkcs11/usr/bin/softhsm-util --init-token 0 --slot 0 --label s
       （译注：key-by-reference）等新特性。
     </para>
     <para>
-      打过补丁的OpenSSL提供了两种PKCS#11新“美味”，其中一种
+      打过补丁的OpenSSL提供了两种PKCS#11新“特点”，其中一种
       必须在配置时选择。正确的选择依赖于HSM硬件：
     </para>
     <itemizedlist>
@@ -133,10 +134,11 @@ $ <userinput> /opt/pkcs11/usr/bin/softhsm-util --init-token 0 --slot 0 --label s
         </para>
       </listitem>
     </itemizedlist>
-    <para>修改的OpenSSL代码包含在BIND 9发行版中，以针对最新OpenSSL版本的带上下
-        文的diff结果的形式。OpenSSL 0.9.8，1.0.0，1.0.1和1.0.2都被支持；
-        分别有各自版本的diff文件。在后面的例子中，我们使用了OpenSSL 0.9.8，
-        但是同样的方法也适用于OpenSSL 1.0.0到1.0.2。
+    <para>
+      修改的OpenSSL代码包含在BIND 9发行版中，以针对最新OpenSSL版本的
+      带上下文的diff结果的形式。OpenSSL 0.9.8，1.0.0，1.0.1和1.0.2都
+      被支持；分别有各自版本的diff文件。在后面的例子中，我们使用了
+      OpenSSL 0.9.8，但是同样的方法也适用于OpenSSL 1.0.0到1.0.2。
     </para>
     <note><simpara>
       这篇文档（2016年1月）的最新OpenSSL版本是0.9.8zh，1.0.0t，1.0.1q和1.0.2f。
@@ -238,14 +240,15 @@ $ <userinput>./Configure solaris64-x86_64-cc \
         (<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.opendnssec.org">
           http://www.opendnssec.org
         </link>)
-        所提供的软件库，它提供了一个虚拟HSM的PKCS#11接口，以一个在本地文件系统
-        上的SQLite3数据库的形式实现。
+	所提供的软件库，它提供了一个虚拟HSM的PKCS#11接口，以一个
+	在本地文件系统上的SQLite3数据库的形式实现。
         SoftHSM使用Botan库执行加密功能。
-        虽然比一个真正的HSM更不安全，但是它允许你在没有可用的HSM时试验腜KCS#11。
+	虽然比一个真正的HSM更不安全，但是它允许你在没有可用的HSM时
+	试验PKCS#11。
       </para>
       <para>
-        在与OpenSSL一起使用SoftHSM之前，必须安装和初始化SoftHSM加密存储，
-        并且SOFTHSM_CONF环境变量必须总是指向SoftHSM配置文件：
+        在与OpenSSL一起使用SoftHSM之前，必须安装和初始化SoftHSM加密
+	存储，并且SOFTHSM_CONF环境变量必须总是指向SoftHSM配置文件：
       </para>
       <screen>
 $ <userinput> cd softhsm-1.3.7 </userinput>
@@ -399,7 +402,7 @@ $ <userinput>export KEYPER_LIBRARY_PATH=/opt/Keyper/PKCS11Provider</userinput>
       <command>named</command>。
     </para>
     <para>
-      现在我们可以再HSM中创建和使用密钥。在这个例子中，我们将创建
+      现在我们可以在HSM中创建和使用密钥。在这个例子中，我们将创建
       一个2048位的密钥并赋予其一个标记"sample-ksk"：
     </para>
     <screen>
@@ -448,11 +451,13 @@ $ <userinput>dnssec-keyfromlabel -l sample-zsk example.net</userinput>
 $ <userinput>dnssec-keygen example.net</userinput>
 </screen>
     <para>
-      这比一个HSM密钥提供更弱的安全性，但是由于安全的原因，HSM可能更
-      慢或者使用不方便，保留HSM并将其用于更小频率的密钥签名操作可能更为有效。
-      如果你想，区签名密钥可以轮转更为频繁，以补偿密钥安全性的降低。
-      （注意：在使用原生PKCS#11时，使用硬盘上的密钥没有速度优势，因为加密操作
-      是由HSM完成，并不使用硬盘上的密钥。）
+      这比一个HSM密钥提供更弱的安全性，但是由于安全的原因，
+      HSM可能更慢或者使用不方便，保留HSM并将其用于更小频率的
+      密钥签名操作可能更为有效。
+      如果你愿意，区签名密钥可以轮转更为频繁，以补偿密钥安全性
+      的降低。
+      （注意：在使用原生PKCS#11时，与使用硬盘上的密钥相比没有
+      速度优势，因为加密操作无论如何将由HSM完成。）
     </para>
     <para>
       现在你可以对区签名了。（注意：如果不给
@@ -504,7 +509,7 @@ $ <userinput>dnssec-signzone -E '' -S example.net</userinput>
       <filename>/opt/pkcs11/usr/ssl/openssl.cnf</filename>）。
     </para>
     <para>
-      openssl.cnf文件的位置可以再运行named之前通过设置OPENSSL_CONF
+      openssl.cnf文件的位置可以在运行named之前通过设置OPENSSL_CONF
       环境变量进行覆盖。
     </para>
     <para>openssl.cnf例子：</para>
@@ -518,19 +523,21 @@ $ <userinput>dnssec-signzone -E '' -S example.net</userinput>
         PIN = <replaceable>&lt;PLACE PIN HERE&gt;</replaceable>
 </programlisting>
     <para>
-      这也将允许dnssec-*工具无需PIN进入权限就能够访问HSM。（pkcs11-*工具
-      直接访问HSM，不经过OpenSSL，所以仍然需要一个PIN来使用它们。）
+      这也将允许dnssec-*工具无需PIN入口码就能够访问HSM。
+      （pkcs11-*工具直接访问HSM，不经过OpenSSL，所以仍然需要
+      一个PIN来使用它们。）
     </para>
     <para>
-      在原生PKCS#11模式，PIN可以在一个作为密钥标记的一个属性所指定的文件中提供。
-      例如，如果一个密钥有一个标记
+      在原生PKCS#11模式，PIN可以在一个作为密钥标记的一个属性所指定
+      的文件中提供。例如，如果一个密钥有一个标记
       <userinput>pkcs11:object=local-zsk;pin-source=/etc/hsmpin</userinput>，
       就可以从文件<filename>/etc/hsmpin</filename>中读到PIN。
     </para>
     <warning>
       <para>
-        在这个方式中，将HSM的PIN放在一个文本文件中可能减少使用一个HSM的
-        安全优势。在以这种方式配置系统之前，确认这就是你想要的方式。
+        在这个方式中，将HSM的PIN放在一个文本文件中可能减少
+	使用一个HSM的安全优势。
+	在以这种方式配置系统之前，确认这就是你想要的方式。
       </para>
     </warning>
   </section>

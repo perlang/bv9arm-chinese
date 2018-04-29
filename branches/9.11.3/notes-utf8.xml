@@ -112,8 +112,8 @@
       </listitem>
       <listitem>
 	<para>
-	  Addresses could be referenced after being freed during resolver
-	  processing, causing an assertion failure. The chances of this
+          在解析器处理期间，地址被释放了还能被引用，导致一个断言失败。
+	  The chances of this
 	  happening were remote, but the introduction of a delay in
 	  resolution increased them. This bug is disclosed in
 	  CVE-2017-3145. [RT #46839]
@@ -146,9 +146,8 @@
       </listitem>
       <listitem>
 	<para>
-	  <command>named</command> will now log a warning if the old
-	  root DNSSEC key is explicitly configured and has not been updated.
-	  [RT #43670]
+	  <command>named</command>现在将记录一个告警日志，如果旧的
+	  根DNSSEC密钥被显式配置且未被更新。 [RT #43670]
 	</para>
       </listitem>
     </itemizedlist>
@@ -158,7 +157,6 @@
     <itemizedlist>
       <listitem>
 	<para>
-	  BIND can now use the Ed25519 and Ed448 Edwards Curve DNSSEC
 	  BIND现在可以使用在RFC 8080中描述的Ed25519和Ed448爱德华兹曲线
 	  DNSSEC签名算法；注意，这些算法必须在OpenSSL中被支持；
 	  当前它们仅在OpenSSL的开发分支中可用，在
@@ -193,8 +191,8 @@
 	<para>
 	  Previously, <command>update-policy local;</command> accepted
 	  updates from any source so long as they were signed by the
-	  locally-generated session key. This has been further restricted;
-	  updates are now only accepted from locally configured addresses.
+	  locally-generated session key.
+	  这个有了更多的限制，仅仅是来自本地配置地址的更新才被接受。
 	  [RT #45492]
 	</para>
       </listitem>
@@ -209,18 +207,18 @@
       </listitem>
       <listitem>
 	<para>
-	  Threads in <command>named</command> are now set to human-readable
-	  names to assist debugging on operating systems that support that.
-	  Threads will have names such as "isc-timer", "isc-sockmgr",
-	  "isc-worker0001", and so on. This will affect the reporting of
+	  <command>named</command>中的线程现在被设置为人可读，以帮助在
+	  支持线程的操作系统上辅助调试。
+	  线程将具有诸如“isc-timer”，“isc-sockmgr”，“isc-worker0001”此类
+	  的名字。
+	  This will affect the reporting of
 	  subsidiary thread names in <command>ps</command> and
 	  <command>top</command>, but not the main thread. [RT #43234]
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  DiG now warns about .local queries which are reserved for
-	  Multicast DNS. [RT #44783]
+	  DiG现在对.local请求告警，这些事为多播DNS保留的。 [RT #44783]
 	</para>
       </listitem>
     </itemizedlist>
@@ -237,11 +235,10 @@
       </listitem>
       <listitem>
 	<para>
-	  When <command>named</command> was reconfigured, failure of some
-	  zones to load correctly could leave the system in an inconsistent
-	  state; while generally harmless, this could lead to a crash later
-	  when using <command>rndc addzone</command>.  Reconfiguration changes
-	  are now fully rolled back in the event of failure. [RT #45841]
+          当<command>named</command>被重配置时，某些区不正确地装载可能导致
+	  系统处于一个不一致的状态；通常是无害的，在之后使用
+	  <command>rndc addzone</command>时可能导致崩溃。
+	  重配置变化在失败事件时，现在全部回滚。 [RT #45841]
 	</para>
       </listitem>
       <listitem>
@@ -260,19 +257,17 @@
       </listitem>
       <listitem>
 	<para>
-	  Due to some incorrectly deleted code, when BIND was
-	  built with LMDB, zones that were deleted via
-	  <command>rndc delzone</command> were removed from the
-	  running server but were not removed from the new zone
-	  database, so that deletion did not persist after a
-	  server restart. This has been corrected. [RT #45185]
+	  由于一些被错误删除的代码，当BIND是带LMDB构建的，通过
+	  <command>rndc delzone</command>删除的区将从运行的
+	  服务器中删除，但是不会从新区数据库中删除，所以这个
+	  删除在服务器重启之后不会持久。这个已经被纠正。
+	  [RT #45185]
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  Semicolons are no longer escaped when printing CAA and
-	  URI records.  This may break applications that depend on the
-	  presence of the backslash before the semicolon. [RT #45216]
+	  在输出CAA和URI记录时，分号不再被转义。
+	  这可能破坏依赖在分号之前出现反斜杠字符的应用。 [RT #45216]
 	</para>
       </listitem>
       <listitem>
@@ -294,19 +289,19 @@
       </listitem>
       <listitem>
 	<para>
-	  Zones created with <command>rndc addzone</command> could
-	  temporarily fail to inherit the <command>allow-transfer</command>
-	  ACL set in the <command>options</command> section of
-	  <filename>named.conf</filename>. [RT #46603]
+	  使用<command>rndc addzone</command>建立的区在继承
+	  <filename>named.conf</filename>的
+	  <command>options</command>部份中的
+	  <command>allow-transfer</command> ACL集时可能暂时失败。
+	  [RT #46603]
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  <command>named</command> failed to properly determine whether
-	  there were active KSK and ZSK keys for an algorithm when
-	  <command>update-check-ksk</command> was true (which is the
-	  default setting).
-	  这会在轮转密钥是留下未签名的记录。 [RT #46743] [RT #46754] [RT #46774]
+	  当<command>update-check-ksk</command>为真时（这是缺省设置），
+	  <command>named</command>不能正确决定对一个算法是否存在
+	  活跃的KSK和ZSK密钥。
+	  这会在轮转密钥时留下未签名的记录。 [RT #46743] [RT #46754] [RT #46774]
 	</para>
       </listitem>
     </itemizedlist>

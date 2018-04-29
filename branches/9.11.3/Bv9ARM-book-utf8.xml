@@ -2151,6 +2151,11 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 	<filename>named.conf</filename>中使用<command>lwres</command>语句而
 	被配置成充当一个轻量级解析器后台进程。
       </para>
+      <para>
+        <command>lwresd</command>后台进程能够服务的客户端请求数量
+	可以在配置文件中使用<option>lwres-tasks</option>和
+	<option>lwres-clients</option>语句设置。
+      </para>
     </section>
   </chapter>
 
@@ -2187,7 +2192,7 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
               </entry>
               <entry colname="2">
                 <para>
-                  由<command>acl</command>语句所定义的一个地址匹配表
+                  由<command>acl</command>语句所定义的一个
                   <varname>address_match_list</varname>的名字。
                 </para>
               </entry>
@@ -2316,8 +2321,8 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 	      </entry>
 	      <entry colname="2">
 		<para>
-		  一个介于0到63之间的<varname>number</varname>，用于给去往
-                  支持差分服务代码点（DSCP）的操作系统的流量选择一个DSCP值。
+		  一个介于0到63之间的<varname>number</varname>，用于给支持
+		  差分服务代码点（DSCP）的操作系统的出向流量选择一个DSCP值。
 		</para>
 	      </entry>
 	    </row>
@@ -2454,7 +2459,7 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
               </entry>
               <entry colname="2">
                 <para>
-                  一个64位无符号整数、关键词<userinput>unlimited</userinput>，
+                  一个64位无符号整数、关键词<userinput>unlimited</userinput>
                   或<userinput>default</userinput>。
                 </para>
 		<para>
@@ -10111,7 +10116,7 @@ example.com. NS ns2.example.net.
             </para>
             <para>
               对名字类型<varname>krb5-self</varname>，
-              <varname>ms-self</varname>，<varname>krb5-subdomain</varname>，
+              <varname>ms-self</varname>，<varname>krb5-subdomain</varname>
               和<varname>ms-subdomain</varname>，
               <replaceable>identity</replaceable>字段指定机器所属的Windows或
               Kerberos域。
@@ -13910,11 +13915,8 @@ zone "example.com" {
 	  才进行匹配。
 	</para>
 	<para>
-	  The EDNS Client Subnet (ECS) option is used by a recursive
 	  EDNS客户端子网(ECS)选项用于一个递归解析器通知一个权威服务器
-	  网络地址块，来自这个地址块的请求 option is used by a recursive
-	  resolver to inform an authoritative name server of the network
-	  address block from which the original query was received, enabling
+	  所收到的原始请求来自的网络地址块，
 	  使权威服务器能够对同一解析器但是带有不同解析器客户端给出不同
 	  的回答。一个包含形如
 	  <command>ecs <replaceable>prefix</replaceable></command>

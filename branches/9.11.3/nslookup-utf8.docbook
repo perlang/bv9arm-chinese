@@ -52,7 +52,7 @@
 
   <refnamediv>
     <refname>nslookup</refname>
-    <refpurpose>query Internet name servers interactively</refpurpose>
+    <refpurpose>交互式请求互联网名字服务器</refpurpose>
   </refnamediv>
 
   <docinfo>
@@ -82,47 +82,43 @@
 
   <refsection><info><title>DESCRIPTION</title></info>
 
-    <para><command>Nslookup</command>
-      is a program to query Internet domain name servers.  <command>Nslookup</command>
-      has two modes: interactive and non-interactive.  Interactive mode allows
-      the user to query name servers for information about various hosts and
-      domains or to print a list of hosts in a domain.  Non-interactive mode
-      is
-      used to print just the name and requested information for a host or
-      domain.
+    <para>
+      <command>Nslookup</command>是一个请求互联网域名服务器的程序。
+      <command>Nslookup</command>有两种模式：交互式和非交互式。
+      交互式模式允许用户请求名字服务器以获取关于不同主机和域的信息，
+      或者输出一个域中的一个主机列表。
+      非交互模式只是用于输出一个主机或域名的名字和所请求的信息。
     </para>
   </refsection>
 
-  <refsection><info><title>ARGUMENTS</title></info>
+  <refsection><info><title>参数</title></info>
 
     <para>
-      Interactive mode is entered in the following cases:
+      在下列情况将会进入交互模式：
       <orderedlist numeration="loweralpha" inheritnum="ignore" continuation="restarts">
         <listitem>
           <para>
-            when no arguments are given (the default name server will be used)
+            当没有给出参数时（将使用缺省名字服务器）
           </para>
         </listitem>
         <listitem>
           <para>
-            when the first argument is a hyphen (-) and the second argument is
-            the host name or Internet address of a name server.
+            当第一个参数是一个连字符（-）并且第二个参数是主机名或者一个
+            名字服务器的互联网地址时。
           </para>
         </listitem>
       </orderedlist>
     </para>
 
     <para>
-      Non-interactive mode is used when the name or Internet address of the
-      host to be looked up is given as the first argument. The optional second
-      argument specifies the host name or address of a name server.
+      当被查找主机的名字或者互联网地址作为第一个参数给出时，就使用
+      非交互模式。可选的第二个参数指定一个名字服务器的主机名或者地址。
     </para>
 
     <para>
-      Options can also be specified on the command line if they precede the
-      arguments and are prefixed with a hyphen.  For example, to
-      change the default query type to host information, and the initial
-      timeout to 10 seconds, type:
+      选项也可以在命令行中指定，如果它们在参数之前，并且以一个连字符
+      做前缀。例如，要将缺省的请求类型改为主机信息，以及要将初始的
+      超时设置为10秒，敲入：
       <!-- <informalexample> produces bad nroff. -->
         <programlisting>
 nslookup -query=hinfo  -timeout=10
@@ -130,30 +126,28 @@ nslookup -query=hinfo  -timeout=10
       <!-- </informalexample> -->
     </para>
     <para>
-      The <option>-version</option> option causes
-      <command>nslookup</command> to print the version
-      number and immediately exits.
+      <option>-version</option>选项使得
+      <command>nslookup</command>输出版本号并立即退出。
     </para>
 
   </refsection>
 
-  <refsection><info><title>INTERACTIVE COMMANDS</title></info>
+  <refsection><info><title>交互命令</title></info>
 
     <variablelist>
       <varlistentry>
         <term><constant>host</constant> <optional>server</optional></term>
         <listitem>
           <para>
-            Look up information for host using the current default server or
-            using server, if specified.  If host is an Internet address and
-            the query type is A or PTR, the name of the host is returned.
-            If host is a name and does not have a trailing period, the
-            search list is used to qualify the name.
+            使用当前缺省的服务器或者，如果设置了，指定的服务器查找主机的
+            信息。如果主机是一个互联网地址并且请求类型是A或者PTR，就返回
+            主机的名字。如果主机是一个名字，并且没有结尾的点，就使用
+            搜索列表来使名字合格（译注：使用搜索列表中的名字作为后缀，
+            将要查找的名字补充为一个完整域名）。
           </para>
 
           <para>
-            To look up a host not in the current domain, append a period to
-            the name.
+            要在当前域外查找一台主机，在名字之后添加一个点。
           </para>
         </listitem>
       </varlistentry>
@@ -168,11 +162,12 @@ nslookup -query=hinfo  -timeout=10
         <term><constant>lserver</constant> <replaceable class="parameter">domain</replaceable></term>
         <listitem>
           <para>
-            Change the default server to <replaceable>domain</replaceable>; <constant>lserver</constant> uses the initial
-            server to look up information about <replaceable>domain</replaceable>, while <constant>server</constant> uses
-            the current default server.  If an authoritative answer can't be
-            found, the names of servers that might have the answer are
-            returned.
+            将缺省服务器设置为<replaceable>domain</replaceable>；
+            <constant>lserver</constant>使用最初的服务器来查找关于
+            <replaceable>domain</replaceable>的信息，而
+            <constant>server</constant>则使用当前缺省的服务器。
+            如果不能发现一个权威的答复，则返回可能具有答复的服务器
+            的名字。
           </para>
         </listitem>
       </varlistentry>
@@ -181,7 +176,7 @@ nslookup -query=hinfo  -timeout=10
         <term><constant>root</constant></term>
         <listitem>
           <para>
-            not implemented
+            未实现
           </para>
         </listitem>
       </varlistentry>
@@ -190,7 +185,7 @@ nslookup -query=hinfo  -timeout=10
         <term><constant>finger</constant></term>
         <listitem>
           <para>
-            not implemented
+            未实现
           </para>
         </listitem>
       </varlistentry>
@@ -199,7 +194,7 @@ nslookup -query=hinfo  -timeout=10
         <term><constant>ls</constant></term>
         <listitem>
           <para>
-            not implemented
+            未实现
           </para>
         </listitem>
       </varlistentry>
@@ -208,7 +203,7 @@ nslookup -query=hinfo  -timeout=10
         <term><constant>view</constant></term>
         <listitem>
           <para>
-            not implemented
+            未实现
           </para>
         </listitem>
       </varlistentry>
@@ -217,7 +212,7 @@ nslookup -query=hinfo  -timeout=10
         <term><constant>help</constant></term>
         <listitem>
           <para>
-            not implemented
+            未实现
           </para>
         </listitem>
       </varlistentry>
@@ -226,7 +221,7 @@ nslookup -query=hinfo  -timeout=10
         <term><constant>?</constant></term>
         <listitem>
           <para>
-            not implemented
+            未实现
           </para>
         </listitem>
       </varlistentry>
@@ -235,7 +230,7 @@ nslookup -query=hinfo  -timeout=10
         <term><constant>exit</constant></term>
         <listitem>
           <para>
-            Exits the program.
+            退出程序
           </para>
         </listitem>
       </varlistentry>
@@ -245,17 +240,14 @@ nslookup -query=hinfo  -timeout=10
           <replaceable>keyword<optional>=value</optional></replaceable></term>
         <listitem>
           <para>
-            This command is used to change state information that affects
-            the lookups.  Valid keywords are:
+            这个命令用于改变影响查找的状态信息。有效关键字是：
             <variablelist>
               <varlistentry>
                 <term><constant>all</constant></term>
                 <listitem>
                   <para>
-                    Prints the current values of the frequently used
-                    options to <command>set</command>.
-                    Information about the  current default
-                    server and host is also printed.
+                    输出<command>set</command>频繁使用的选项的当前值。
+                    关于当前缺省服务器和主机的信息也会被输出。
                   </para>
                 </listitem>
               </varlistentry>
@@ -264,13 +256,13 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant>class=</constant><replaceable>value</replaceable></term>
                 <listitem>
                   <para>
-                    Change the query class to one of:
+                    改变请求类为下列之一：
                     <variablelist>
                       <varlistentry>
                         <term><constant>IN</constant></term>
                         <listitem>
                           <para>
-                            the Internet class
+                            Internet类
                           </para>
                         </listitem>
                       </varlistentry>
@@ -278,7 +270,7 @@ nslookup -query=hinfo  -timeout=10
                         <term><constant>CH</constant></term>
                         <listitem>
                           <para>
-                            the Chaos class
+                            Chaos类
                           </para>
                         </listitem>
                       </varlistentry>
@@ -286,7 +278,7 @@ nslookup -query=hinfo  -timeout=10
                         <term><constant>HS</constant></term>
                         <listitem>
                           <para>
-                            the Hesiod class
+                            Hesiod类
                           </para>
                         </listitem>
                       </varlistentry>
@@ -294,16 +286,16 @@ nslookup -query=hinfo  -timeout=10
                         <term><constant>ANY</constant></term>
                         <listitem>
                           <para>
-                            wildcard
+                            通配符
                           </para>
                         </listitem>
                       </varlistentry>
                     </variablelist>
-                    The class specifies the protocol group of the information.
+                    类指定信息的协议组。
 
                   </para>
 		  <para>
-                    (Default = IN; abbreviation = cl)
+                    (缺省 = IN; 缩写 = cl)
                   </para>
                 </listitem>
               </varlistentry>
@@ -312,11 +304,10 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant><replaceable><optional>no</optional></replaceable>debug</constant></term>
                 <listitem>
                   <para>
-		    Turn on or off the display of the full response packet and
-		    any intermediate response packets when searching.
+		    打开或者关闭在搜索时对完整响应包和任何中间响应包的显示。
                   </para>
 		  <para>
-                    (Default = nodebug; abbreviation = <optional>no</optional>deb)
+                    (缺省 = nodebug; 缩写 = <optional>no</optional>deb)
                   </para>
                 </listitem>
               </varlistentry>
@@ -347,10 +338,8 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant><replaceable><optional>no</optional></replaceable>search</constant></term>
                 <listitem>
                   <para>
-                    If the lookup request contains at least one period but
-                    doesn't end with a trailing period, append the domain
-                    names in the domain search list to the request until an
-                    answer is received.
+                    如果查询请求包含至少一个点但是不以点结尾，就在请求的
+                    尾部添加域名搜索列表中的域名，直到收到一个回答。
                   </para>
 		  <para>
                     (Default = search)
@@ -362,10 +351,10 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant>port=</constant><replaceable>value</replaceable></term>
                 <listitem>
                   <para>
-                    Change the default TCP/UDP name server port to <replaceable>value</replaceable>.
+                    改变缺省的TCP/UDP名字服务器端口为<replaceable>value</replaceable>。
                   </para>
 		  <para>
-                    (Default = 53; abbreviation = po)
+                    (缺省 = 53; 缩写 = po)
                   </para>
                 </listitem>
               </varlistentry>
@@ -381,10 +370,10 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant>type=</constant><replaceable>value</replaceable></term>
                 <listitem>
                   <para>
-                    Change the type of the information query.
+                    改变信息请求的类型。
                   </para>
 		  <para>
-                    (Default = A; abbreviations = q, ty)
+                    (缺省 = A; 缩写 = q, ty)
                   </para>
                 </listitem>
               </varlistentry>
@@ -393,12 +382,10 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant><replaceable><optional>no</optional></replaceable>recurse</constant></term>
                 <listitem>
                   <para>
-                    Tell the name server to query other servers if it does not
-                    have the
-                    information.
+                    告诉名字服务器请求其它服务器，如果它没有信息。
                   </para>
 		  <para>
-                    (Default = recurse; abbreviation = [no]rec)
+                    (缺省 = recurse; 缩写 = [no]rec)
                   </para>
                 </listitem>
               </varlistentry>
@@ -407,9 +394,8 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant>ndots=</constant><replaceable>number</replaceable></term>
                 <listitem>
                   <para>
-		    Set the number of dots (label separators) in a domain
-		    that will disable searching.  Absolute names always
-		    stop searching.
+		    设置在一个被禁止搜索的域名中的点（标记分隔符）的数量。
+                    绝对名字总是停止搜索。
                   </para>
                 </listitem>
               </varlistentry>
@@ -418,7 +404,7 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant>retry=</constant><replaceable>number</replaceable></term>
                 <listitem>
                   <para>
-                    Set the number of retries to number.
+                    设置重试次数为指定的数值。
                   </para>
                 </listitem>
               </varlistentry>
@@ -427,8 +413,7 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant>timeout=</constant><replaceable>number</replaceable></term>
                 <listitem>
                   <para>
-                    Change the initial timeout interval for waiting for a
-                    reply to number seconds.
+                    改变初始的为等待一个回复的超时间隔为所指定的秒数。
                   </para>
                 </listitem>
               </varlistentry>
@@ -437,11 +422,11 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant><replaceable><optional>no</optional></replaceable>vc</constant></term>
                 <listitem>
                   <para>
-                    Always use a virtual circuit when sending requests to the
-                    server.
+                    在发送请求给服务器时总是使用一个虚电路（译注：virtual circuit，
+                    指TCP）。
                   </para>
 		  <para>
-                    (Default = novc)
+                    (缺省 = novc)
                   </para>
                 </listitem>
               </varlistentry>
@@ -450,12 +435,12 @@ nslookup -query=hinfo  -timeout=10
                 <term><constant><replaceable><optional>no</optional></replaceable>fail</constant></term>
                 <listitem>
                   <para>
-		    Try the next nameserver if a nameserver responds with
-		    SERVFAIL or a referral (nofail) or terminate query
-		    (fail) on such a response.
+		    如果一个服务器的响应为SERVFAIL，或者是一个指引
+                    （nofail），或者是这样一个响应上的中止请求（fail），
+                    则试探一个名字服务器。
 		  </para>
 		  <para>
-                    (Default = nofail)
+                    (缺省 = nofail)
                   </para>
 	        </listitem>
 	      </varlistentry>

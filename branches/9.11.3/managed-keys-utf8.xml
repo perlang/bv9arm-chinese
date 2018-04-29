@@ -60,13 +60,13 @@ $ <userinput>dnssec-signzone -S -K keys example.net</userinput>
       <filename>K*.key</filename>和<filename>K*.private</filename>文件。
     </para>
     <para>
-      在撤销一个活动的密钥之后，必须使用被撤销的KSK和新的活动的KSK
+      在撤销一个活跃的密钥之后，必须使用被撤销的KSK和新的活跃的KSK
       对区签名。（智能签名自动完成这个工作。）
     </para>
     <para>
       一旦一个密钥被撤销并用于对其所在的DNSKEY资源记录集
       签名，这个密钥就再也不能被解析器接受为一个有效的信任锚点。
-      然而，可以使用新的活动密钥（这个新密钥在作为备用密钥时已经
+      然而，可以使用新的活跃密钥（这个新密钥在作为备用密钥时已经
       被解析器所接受）进行验证。
     </para>
     <para>
@@ -89,7 +89,7 @@ $ <userinput>dnssec-signzone -S -K keys example.net</userinput>
     <para>
       旧版本的BIND 9没有这个预防措施。
       如果在用密钥撤销碰到先前版本所生成的密钥，或者在用密钥存储
-      在多个目录或多个服务器上，将会行使警告。
+      在多个目录或多个服务器上，将会发出警告。
     </para>
     <para>
       预料将来发布的BIND 9将会以一个不同的方式应对这个问题，

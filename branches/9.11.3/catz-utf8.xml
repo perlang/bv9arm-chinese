@@ -9,6 +9,7 @@
 <section xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="catz-info"><info><title>目录区</title></info>
 
   <para>
+    一个“目录区”是一个特定的DNS区，它包含一个
     用于服务的区的列表，以及这些区的配置参数。
     在目录区中列出的区被称为“member zones”（成员区）。
     当一个目录区被装载或传送给一个支持这个功能的辅服务器时，辅服务器
@@ -35,7 +36,7 @@
       一个目录区是一种减小这个管理负担的方法。它是一个列出应在辅服务器上
       提供服务的成员区的DNS区。
       当一个辅服务器收到一个对目录区的更新，它基于所收到的数据增加、删除
-      或者重新成员区。
+      或者重新配置成员区。
     </para>
     <para>
       要使用一个目录区，首先必须在主服务器上作为一个普通区设置好，并在
@@ -114,7 +115,7 @@ catalog-zones {
       将使成员区仅存放于内存。这在功能上等效于配置一个辅区而不使用
       一个<option>file</option>选项。
       缺省是<literal>no</literal>；成员区的内容将会保存在一个本地的
-      文件中，其名字有视图名、目录区名和成员区名自动生成。
+      文件中，其名字由视图名、目录区名和成员区名自动生成。
     </para>
     <para>
       <option>zone-directory</option>选项使得成员区主文件的本地拷贝
@@ -194,7 +195,7 @@ version.catalog.example.    IN TXT "1"
         <para>
 	 这个选项使用一个TSIG密钥设置为成员区定义一个主服务器。
 	 TSIG密钥必须配置在配置文件中。
-	 <option>label</option>可以是如何有效的DNS标记。
+	 <option>label</option>可以是任何有效的DNS标记。
         </para>
       </listitem>
       <listitem>
@@ -224,8 +225,8 @@ version.catalog.example.    IN TXT "1"
 5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN PTR domain.example.
 </screen>
     <para>
-      hash需要用来为一个特定成员区标识选项。成员区特定选项是与
-      全局选项同样的方式定义的，但是是在成员区子域中：
+      这个hash是必须的，用以为一个特殊的成员区识别选项。
+      成员区特殊的选项是与全局选项同样的方式定义的，只是在成员区子域中：
     </para>
 <screen>
 masters.5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN A 192.0.2.2
@@ -235,7 +236,7 @@ allow-query.5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN A
 </screen>
     <para>
       正如预料的一样，为一个特定区定义的选项覆盖在目录区中定义的全局
-      选项。这些相应地覆盖配置文件的<literal>catalog-zones</literal>
+      选项。这进而覆盖配置文件的<literal>catalog-zones</literal>
       语句中定义的全局选项。
     </para>
     <para>

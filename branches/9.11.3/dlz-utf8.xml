@@ -11,24 +11,24 @@
 <section xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="dlz-info"><info><title>DLZ (Dynamically Loadable Zones，动态加载区)</title></info>
 
   <para>
-    DLZ (Dynamically Loadable Zones，动态加载区)是一项BIND 9扩展，它允许直接从
-    一个外部数据库中提取区数据。它对格式或模式没有要求。已经存在对应几种不同的
-    数据库后端包括PostgreSQL，MySQL和LDAP的DLZ驱动，也可以写其它驱动。
+    DLZ (Dynamically Loadable Zones，动态加载区)是一项BIND 9扩展，
+    它允许直接从一个外部数据库中提取区数据。它对格式或模式没有要求。
+    已经存在对应几种不同的数据库后端包括PostgreSQL，MySQL和LDAP的
+    DLZ驱动，也可以写其它驱动。
   </para>
   <para>
-    早期，DLZ驱动是静态链接到<command>named</command>二进制代码的，并通过
-    编译时的配置选项打开（例如，
-    <userinput>"configure --with-dlz-ldap"</userinput>）。现在，驱动在
-    BIND 9源码包中提供，在<filename>contrib/dlz/drivers</filename>中，仍然以
-    同样方式链接。
-    way.
+    早期，DLZ驱动是静态链接到<command>named</command>二进制代码的，
+    并通过编译时的配置选项打开（例如，
+    <userinput>"configure --with-dlz-ldap"</userinput>）。
+    现在，驱动在BIND 9源码包中提供，在
+    <filename>contrib/dlz/drivers</filename>中，仍然以这种方式链接。
   </para>
   <para>
-    在BIND 9.8或更高版本，可以通过DLZ "dlopen"驱动，它充当了一个通用中间层封装
-    了一个实现DLZ API的共享对象，在运行时动态链接某些DLZ模块。"dlopen"驱动缺省
-    链接到<command>named</command>，在使用这些动态可链接的驱动时就不再需要
-    配置选项了，但是使用<filename>contrib/dlz/drivers</filename>下面的
-    旧驱动时仍然需要。
+    在BIND 9.8或更高版本，可以通过DLZ "dlopen"驱动，它充当了一个
+    通用中间层封装了一个实现DLZ API的共享对象，在运行时动态链接
+    某些DLZ模块。"dlopen"驱动缺省链接到<command>named</command>，
+    在使用这些动态可链接的驱动时就不再需要配置选项了，但是使用
+    <filename>contrib/dlz/drivers</filename>下面的旧驱动时仍然需要。
   </para>
 
   <para>
@@ -82,7 +82,7 @@
     };
     </screen>
   </section>
-  <section><info><title>样板DLZ驱动</title></info>
+  <section><info><title>样例DLZ驱动</title></info>
 
     <para>
       为指导实现DLZ模块，目录<filename>contrib/dlz/example</filename>包含了
@@ -109,10 +109,10 @@
  example.nil.  1800    IN      A       10.53.0.1
     </screen>
     <para>
-      样板驱动能够提取关于请求客户端的信息，并基于这个信息修改它的响应。
+      样例驱动能够提取关于请求客户端的信息，并基于这个信息修改它的响应。
       为演示这个特性，例子驱动用请求的源地址响应对
       "source-addr.<option>zonename</option>&gt;/TXT"的请求。
-      注意，这个记录将 *不会* 被包含到AXFR或ANY响应中。
+      注意，这个记录将<emphasis>不会</emphasis>被包含到AXFR或ANY响应中。
       通常，这个特性用于以一些其它的方式修改响应。
       例如，根据请求来自的不同网络而对同一个特定名字提供不同的地址记录。
     </para>

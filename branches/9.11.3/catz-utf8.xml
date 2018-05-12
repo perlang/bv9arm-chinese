@@ -160,9 +160,8 @@ version.catalog.example.    IN TXT "1"
     <para>
       注意这个记录必须有域名
       version.<replaceable>catalog-zone-name</replaceable>。
-      This illustrates
-      how the meaning of data stored in a catalog zone is indicated by the
-      the domain name label immediately before the catalog zone domain.
+      这说明了存储在一个目录区的数据的含义是如何由紧接在目录区域名
+      之前的域名标记来指明的。
     </para>
     <para>
       目录区选项可以全局为所有目录区设置，也可为一个单独的成员区设置。
@@ -240,9 +239,9 @@ allow-query.5960775ba382e7a4e09263fc06e7c00569b6a05c.zones.catalog.example. IN A
       语句中定义的全局选项。
     </para>
     <para>
-      (Note that none of the global records an option will be inherited if
-      any records are defined for that option for the specific zone.
-      例如，如果区有一个类型A而不是AAAA的<literal>masters</literal>记录，
+      （注意，如果特定区为这个选项定义了任何记录，就不会从全球记录继承
+      选项。
+      例如，如果区有一个类型A而没有AAAA的<literal>masters</literal>记录，
       它<emphasis>不能</emphasis>从全局选项继承类型AAAA记录。）
     </para>
   </section>

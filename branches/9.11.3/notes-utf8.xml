@@ -14,7 +14,7 @@
 
 <section xmlns:db="http://docbook.org/ns/docbook" version="5.0"><info/>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion-utf8.xml"/>
-  <section xml:id="relnotes_intro"><info><title>Introduction</title></info>
+  <section xml:id="relnotes_intro"><info><title>介绍</title></info>
     <para>
       本文档总结了自从BIND 9.11分支上上一个产品发布版以来的变化。
       请参考<filename>CHANGES</filename>文件以获取关于漏洞修补和
@@ -22,7 +22,7 @@
     </para>
   </section>
 
-  <section xml:id="relnotes_download"><info><title>Download</title></info>
+  <section xml:id="relnotes_download"><info><title>下载</title></info>
     <para>
       最新版的BIND 9软件总是可以在
       <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/downloads/">http://www.isc.org/downloads/</link>找到。
@@ -113,10 +113,9 @@
       <listitem>
 	<para>
           在解析器处理期间，地址被释放了还能被引用，导致一个断言失败。
-	  The chances of this
-	  happening were remote, but the introduction of a delay in
-	  resolution increased them. This bug is disclosed in
-	  CVE-2017-3145. [RT #46839]
+	  发生这个的机会比较少，但是在解析中引入一个延迟增加了这个
+	  几率。
+	  这个漏洞在CVE-2017-3145中公开。 [RT #46839]
 	</para>
       </listitem>
       <listitem>
@@ -189,9 +188,8 @@
       </listitem>
       <listitem>
 	<para>
-	  Previously, <command>update-policy local;</command> accepted
-	  updates from any source so long as they were signed by the
-	  locally-generated session key.
+	  先前，<command>update-policy local;</command>接受来自任何源
+	  的更新，只要它们被本地生成的会话密钥所签名。
 	  这个有了更多的限制，仅仅是来自本地配置地址的更新才被接受。
 	  [RT #45492]
 	</para>
@@ -211,14 +209,13 @@
 	  支持线程的操作系统上辅助调试。
 	  线程将具有诸如“isc-timer”，“isc-sockmgr”，“isc-worker0001”此类
 	  的名字。
-	  This will affect the reporting of
-	  subsidiary thread names in <command>ps</command> and
-	  <command>top</command>, but not the main thread. [RT #43234]
+	  这会影响在<command>ps</command>和<command>top</command>中
+	  对子线程名的报告，但不影响主线程。 [RT #43234]
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  DiG现在对.local请求告警，这些事为多播DNS保留的。 [RT #44783]
+	  DiG现在对.local请求告警，这些是为多播DNS保留的。 [RT #44783]
 	</para>
       </listitem>
     </itemizedlist>
@@ -278,12 +275,11 @@
       </listitem>
       <listitem>
 	<para>
-	  Some header files included &lt;isc/util.h&gt; incorrectly as
-	  it pollutes with namespace with non ISC_ macros and this should
-	  only be done by explicitly including &lt;isc/util.h&gt;.  This
-	  has been corrected.  
-	  Some code may depend on &lt;isc/util.h&gt;
-	  being implicitly included via other header files. 
+	  一些头文件不正确地包含了&lt;isc/util.h&gt;，由于它使用非ISC_宏
+	  污染了名字空间，而这只能使用显式包含&lt;isc/util.h&gt;。
+	  这个已被纠正。
+	  一些代码可能依赖&lt;isc/util.h&gt;，后者通过其它头文件被
+	  隐含包含。
 	  这样的代码应当显式包含&lt;isc/util.h&gt;。
 	</para>
       </listitem>
@@ -307,14 +303,14 @@
     </itemizedlist>
   </section>
 
-  <section xml:id="end_of_life"><info><title>End of Life</title></info>
+  <section xml:id="end_of_life"><info><title>生命周期结束</title></info>
     <para>
       BIND 9.11的终止日期还未决定，但是不会早于BIND 9.13.0发布
       后六个月。
       <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>
     </para>
   </section>
-  <section xml:id="relnotes_thanks"><info><title>Thank You</title></info>
+  <section xml:id="relnotes_thanks"><info><title>谢谢您</title></info>
 
     <para>
       感谢每一个帮助我们的您，使得本版本得以发布。

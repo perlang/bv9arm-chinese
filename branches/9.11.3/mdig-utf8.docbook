@@ -106,25 +106,23 @@
     </para>
 
     <para>
-      Each query option is identified by a keyword preceded by a plus
-      sign (<literal>+</literal>).  Some keywords set or reset an
-      option.  These may be preceded by the string <literal>no</literal>
-      to negate the meaning of that keyword.  Other keywords assign
-      values to options like the timeout interval.  They have the
-      form <option>+keyword=value</option>.
+      每个请求选项由一个带一个前导加号（<literal>+</literal>）的
+      关键字来标识。某些关键字设置或者重置一个选项。这些可以由
+      字符串<literal>no</literal>来否定关键字的含义。其它关键字
+      给选项赋值，例如超时间隔。他们具有如
+      <option>+keyword=value</option>的形式。
     </para>
   </refsection>
 
   <refsection><info><title>任意位置选项</title></info>
 
-
     <para>
-      The <option>-f</option> option makes <command>mdig</command>
-      operate in batch mode by reading a list of lookup requests to
-      process from the file <parameter>filename</parameter>.  The file
-      contains a number of queries, one per line.  Each entry in the
-      file should be organized in the same way they would be presented
-      as queries to <command>mdig</command> using the command-line interface.
+      <option>-f</option>选项使<command>mdig</command>运行在
+      批处理模式，通过从文件<parameter>filename</parameter>读入
+      一个要查找的请求的列表进行处理。
+      这个文件包含一些请求，每行一个。
+      文件中的每个条目应当以它们被作为请求提交给
+      <command>mdig</command>使用命令行接口同样的方式组织。
     </para>
 
     <para>
@@ -152,11 +150,10 @@
     </para>
 
     <para>
-      The <option>-b</option> option sets the source IP address of the
-      query to <parameter>address</parameter>.  This must be a valid
-      address on one of the host's network interfaces or "0.0.0.0" or
-      "::".  An optional port may be specified by appending
-      "#&lt;port&gt;"
+      <option>-b</option>选项设置请求的源IP地址为
+      <parameter>address</parameter>。
+      这必须是主机网络的一个接口上的一个有效地址，或者“0.0.0.0”，
+      或者“::”。可以在其后添加“#&lt;port&gt;”指定一个可选的端口。
     </para>
 
     <para>
@@ -164,13 +161,11 @@
     </para>
 
     <para>
-      The <option>-p</option> option is used when a non-standard port
-      number is to be queried.
-      <parameter>port#</parameter> is the port number
-      that <command>mdig</command> will send its queries instead of
-      the standard DNS port number 53.  This option would be used to
-      test a name server that has been configured to listen for
-      queries on a non-standard port number.
+      <option>-p</option>选项用于请求一个非标准端口。
+      <parameter>port#</parameter>是<command>mdig</command>以其作为
+      替代标准的DNS端口53发送请求的端口号。
+      这个选项是用于测试一个配置成在一个非标准端口监听请求的
+      名字服务器
     </para>
 
     <para>
@@ -253,14 +248,13 @@
           <term><option>+[no]crypto</option></term>
           <listitem>
             <para>
-              Toggle the display of cryptographic fields in DNSSEC
-              records.  The contents of these field are unnecessary
-              to debug most DNSSEC validation failures and removing
-              them makes it easier to see the common failures.  The
-              default is to display the fields.  When omitted they
-              are replaced by the string "[omitted]" or in the
-              DNSKEY case the key id is displayed as the replacement,
-              e.g. "[ key id = value ]".
+              切换DNSSEC记录中加密字段的显示。
+              在调试大多数DNSSEC验证失败时这些字段的内容不是必须的，
+              删除它们更容易查看通常的失败。
+              缺省是显示这些字段。
+              当省略时，它们被字符串“[omitted]”替代，或者在DNSKEY
+              的情况下，显示密钥id作为替代，例如，
+              “[ key id = value ]”。
             </para>
           </listitem>
         </varlistentry>
@@ -268,9 +262,9 @@
         <varlistentry>
           <term><option>+dscp[=value]</option></term> <listitem>
             <para>
-              Set the DSCP code point to be used when sending the
-              query.  Valid DSCP code points are in the range
-              [0..63].  By default no code point is explicitly set.
+              设置发送请求时用到的DSCP码点。
+              有效的DSCP码点范围是[0..63]。
+              缺省没有显式设置码点。
             </para>
           </listitem>
         </varlistentry>
@@ -343,8 +337,7 @@
           <term><option>+[no]ttlid</option></term>
           <listitem>
             <para>
-              Display [do not display] the TTL when printing the
-              record.
+              输出记录时显示[不显示]TTL。
             </para>
           </listitem>
         </varlistentry>
@@ -376,7 +369,7 @@
     </para>
   </refsection>
 
-  <refsection><info><title>LOCAL OPTIONS</title></info>
+  <refsection><info><title>本地选项</title></info>
 
 
     <para>
@@ -386,11 +379,11 @@
     </para>
 
     <para>
-      The <option>-t</option> option sets the query type to
-      <parameter>type</parameter>.  It can be any valid query type
-      which is supported in BIND 9.  The default query type is "A",
-      unless the <option>-x</option> option is supplied to indicate
-      a reverse lookup with the "PTR" query type.
+      <option>-t</option>选项设置请求类型为
+      <parameter>type</parameter>。它可以是BIND 9支持的任何有效
+      请求类型。
+      缺省请求类型是“A”，除非提供了<option>-x</option>选项，指定
+      带有“PTR”请求类型的一个反向查找。
     </para>
 
     <para>
@@ -398,20 +391,19 @@
     </para>
 
     <para>
-      Reverse lookups &mdash; mapping addresses to names &mdash; are
-      simplified by the <option>-x</option> option.
-      <parameter>addr</parameter> is an IPv4
-      address in dotted-decimal notation, or a colon-delimited IPv6 address.
-      <command>mdig</command> automatically performs a lookup for a
-      query name like <literal>11.12.13.10.in-addr.arpa</literal> and
-      sets the query type and class to PTR and IN respectively.
-      By default, IPv6 addresses are looked up using nibble format
-      under the IP6.ARPA domain.  To use the older RFC1886 method
-      using the IP6.INT domain specify the <option>-i</option> option.
+      反向查找 &mdash; 将地址映射到名字 &mdash; 是由
+      <option>-x</option>选项简化。
+      <parameter>addr</parameter>是一个点分十进制形式的IPv4地址，或者
+      是一个冒号分隔的IPv6地址。
+      <command>mdig</command>自动执行一个请求名类似
+      <literal>11.12.13.10.in-addr.arpa</literal>的查找，并
+      将请求类型和类分别设置为PTR和IN。
+      缺省时，IPv6地址使用IP6.ARPA域下的半字节格式查找。
+      要使用旧的RFC1886方法，指定<option>-i</option>选项使用IP6.INT域。
     </para>
 
     <para>
-      The local query options are:
+      本地请求选项是：
       <variablelist>
 
         <varlistentry>

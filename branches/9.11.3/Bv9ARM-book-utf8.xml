@@ -2754,7 +2754,7 @@ and perl</programlisting>
               </entry>
               <entry colname="2">
                 <para>
-                  指定在使用TSIG时，用于的认证和授权的密钥信息。
+                  指定在使用TSIG时，用于认证和授权的密钥信息。
                 </para>
               </entry>
             </row>
@@ -3139,9 +3139,9 @@ and perl</programlisting>
           </para>
 
           <para>
-            <command>file</command>目标子句将定向到一个磁盘文件。它可以包括两个
-            指标的限制，一个是允许多大的文件，一个是在文件打开时允许多少个版本
-            的文件存在。
+            <command>file</command>目标子句将通道定向到一个磁盘文件。
+	    它可以包括两个指标的限制，一个是允许多大的文件，另一个是在每次
+	    打开文件时允许多少个版本的文件存在。
           </para>
 
           <para>
@@ -5382,27 +5382,24 @@ options {
                   命令时更新密钥和重签整个区。
                 </para>
                 <para>
-                  <command>auto-dnssec maintain;</command> includes the
-                  above, but also automatically adjusts the zone's DNSSEC
-                  keys on schedule, according to the keys' timing metadata
-                  (see <xref linkend="man.dnssec-keygen"/> and
-                  <xref linkend="man.dnssec-settime"/>).  The command
+                  <command>auto-dnssec maintain;</command>包含上述功能，
+		  但也根据密钥时间元数据，按时自动调整区的DNSSEC密钥。
+                  （参见<xref linkend="man.dnssec-keygen"/>和
+                  <xref linkend="man.dnssec-settime"/>）。
                   命令<command>rndc sign
                   <replaceable>zonename</replaceable></command>使得
-                  <command>named</command> to load keys from the key
-                  repository and sign the zone with all keys that are
-                  active.
+                  <command>named</command>从密钥仓库加载密钥并使用所有
+		  活跃密钥对区签名。
                   <command>rndc loadkeys
-                  <replaceable>zonename</replaceable></command> causes
-                  <command>named</command> to load keys from the key
-                  repository and schedule key maintenance events to occur
-                  in the future, but it does not sign the full zone
-                  immediately.  Note: once keys have been loaded for a
-                  zone the first time, the repository will be searched
-                  for changes periodically, regardless of whether
-                  <command>rndc loadkeys</command> is used.  The recheck
-                  interval is defined by
-                  <command>dnssec-loadkeys-interval</command>.)
+                  <replaceable>zonename</replaceable></command>使得
+                  <command>named</command>从密钥仓库加载密钥并调度未来
+		  发生的密钥维护事件，但它不会立即对整个区签名。
+		  注意：一旦密钥首次从一个区加载，就会定期搜索仓库以
+		  查找变化，而不考虑是否使用了
+		  <command>rndc loadkeys</command>。
+		  重新检查的间隔由
+		  <command>dnssec-loadkeys-interval</command>.
+		  定义。
                 </para>
                 <para>
                   缺省设置为<command>auto-dnssec off</command>。

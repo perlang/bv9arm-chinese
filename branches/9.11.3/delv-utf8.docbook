@@ -139,7 +139,6 @@
               或<option>-6</option>选项，则只有相关传输协议的地址才会被试探。
               如果没有发现可用的地址，<command>delv</command>将向本地地址（对
               IPv4为127.0.0.1，对IPv6为::1）发送请求。
-	      ::1 for IPv6).
 	    </para>
 	  </listitem>
 	</varlistentry>

@@ -463,50 +463,45 @@
             周期结束。
           </para>
           <para>
-            NTAs persist across restarts of the <command>named</command> server.
-            The NTAs for a view are saved in a file called
-            <filename><replaceable>name</replaceable>.nta</filename>,
-            where <replaceable>name</replaceable> is the
-            name of the view, or if it contains characters
-            that are incompatible with use as a file name, a
-            cryptographic hash generated from the name
-            of the view.
+            NTA持久化能够跨越<command>named</command>服务器重启。
+            一个视图的NTA被保存在一个名为
+            <filename><replaceable>name</replaceable>.nta</filename>的文件中，
+            其中的<replaceable>name</replaceable>是视图的名字，或者当视图名中
+            含有不能用于文件名的字符时，是根据视图名生成的加密hash。
           </para>
           <para>
             一个现存的NTA可以通过使用<option>-remove</option>选项
             删除。
           </para>
           <para>
-            An NTA's lifetime can be specified with the
-            <option>-lifetime</option> option.  TTL-style
-            suffixes can be used to specify the lifetime in
-            seconds, minutes, or hours.  If the specified NTA
-            already exists, its lifetime will be updated to the
-            new value.  Setting <option>lifetime</option> to zero
-            is equivalent to <option>-remove</option>.
+            一个NTA的生命周期可以使用<option>-lifetime</option>
+            选项指定。TTL风格的后缀可以用于指定生命周期，以
+            秒，分或小时的格式。
+            如果指定的NTA已经存在，它的生命周期会被更新为新的值。
+            将<option>lifetime</option>设置为零等效于
+            设置为<option>-remove</option>。
           </para>
           <para>
-            If <option>-dump</option> is used, any other arguments
-            are ignored, and a list of existing NTAs is printed
-            (note that this may include NTAs that are expired but
-            have not yet been cleaned up).
+            如果使用了<option>-dump</option>，任何其它参数都被忽略，
+            打印出现存NTA的列表（注意这会包含已经过期但还未被清理
+            的NTA）。
           </para>
           <para>
-            Normally, <command>named</command> will periodically
-            test to see whether data below an NTA can now be
-            validated (see the <option>nta-recheck</option> option
-            in the Administrator Reference Manual for details).
+            通常，<command>named</command>会周期性测试以检查一个
+            NTA之下的数据现在是否可以被验证（参考管理员参考手册中
+            的<option>nta-recheck</option>选项获取详细信息）。
             If data can be validated, then the NTA is regarded as
             no longer necessary, and will be allowed to expire
-            early.  The <option>-force</option> overrides this
-            behavior and forces an NTA to persist for its entire
-            lifetime, regardless of whether data could be
-            validated if the NTA were not present.
+            early. 
+            如果数据可以被验证，这个NTA就被认为不再需要，允许提前
+            过期。
+            <option>-force</option>覆盖这个特性并强制一个NTA持久到
+            其完整的生命周期，不考虑在NTA不存在时数据是否可以被验证。
           </para>
           <para>
-            All of these options can be shortened, i.e., to
-            <option>-l</option>, <option>-r</option>, <option>-d</option>,
-            and <option>-f</option>.
+            所有这些选项都可以被简化，如，简化成
+            <option>-l</option>，<option>-r</option>，<option>-d</option>和
+            <option>-f</option>。
           </para>
         </listitem>
       </varlistentry>
@@ -565,59 +560,82 @@
          </listitem>
        </varlistentry>
 
-       <varlistentry>
-         <term><userinput>reload</userinput></term>
-         <listitem>
-           <para>
-             重新载入配置文件和区文件。
-           </para>
-         </listitem>
-       </varlistentry>
+      <varlistentry>
+        <term><userinput>reload</userinput></term>
+        <listitem>
+          <para>
+            重新载入配置文件和区文件。
+          </para>
+        </listitem>
+      </varlistentry>
 
-       <varlistentry>
-         <term><userinput>reload <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
-         <listitem>
-           <para>
-             重新载入指定的区文件。
-           </para>
-         </listitem>
-       </varlistentry>
+      <varlistentry>
+        <term><userinput>reload <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+        <listitem>
+          <para>
+            重新载入指定的区文件。
+          </para>
+        </listitem>
+      </varlistentry>
 
-       <varlistentry>
-         <term><userinput>retransfer <replaceable>zone</replaceable>
-           <optional><replaceable>class</replaceable>
-           <optional><replaceable>view</replaceable></optional></optional></userinput></term>
-         <listitem>
-           <para>
-             重新从主服务器传送指定的区文件。
-           </para>
-           <para>
-             如果使用<command>inline-signing</command>配置区，区的签名版本将被
-             丢弃；在重新传送非签名版本完成后，将使用所有新签名重新生成签名版本。
-           </para>
-         </listitem>
-       </varlistentry>
+      <varlistentry>
+        <term><userinput>retransfer <replaceable>zone</replaceable>
+          <optional><replaceable>class</replaceable>
+          <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+        <listitem>
+          <para>
+            重新从主服务器传送指定的区文件。
+          </para>
+          <para>
+            如果使用<command>inline-signing</command>配置区，区的签名版本将被
+            丢弃；在重新传送非签名版本完成后，将使用所有新签名重新生成签名版本。
+          </para>
+        </listitem>
+      </varlistentry>
 
-       <varlistentry>
-         <term><userinput>scan</userinput></term>
-         <listitem>
-           <para>
-             扫描可用网络接口列表以查看变化，不执行完全的
-             <command>reconfig</command>，也不等待
-             <command>interface-interval</command>计时器。
-           </para>
-         </listitem>
-       </varlistentry>
+      <varlistentry>
+        <term><userinput>scan</userinput></term>
+        <listitem>
+          <para>
+            扫描可用网络接口列表以查看变化，不执行完全的
+            <command>reconfig</command>，也不等待
+            <command>interface-interval</command>计时器。
+          </para>
+        </listitem>
+      </varlistentry>
 
-       <varlistentry>
-         <term><userinput>secroots <optional><replaceable>view ...</replaceable></optional></userinput></term>
-         <listitem>
-           <para>
-             转储服务器的安全根到指定视图的secroots文件中。如果
-             没有指定视图，就转储所有视图的安全根。
-           </para>
-         </listitem>
-       </varlistentry>
+      <varlistentry>
+        <term><userinput>secroots <optional>-</optional> <optional><replaceable>view ...</replaceable></optional></userinput></term>
+        <listitem>
+          <para>
+            为指定视图转储服务器的安全根和否定信任锚。
+            如果没有指定视图，就转储所有视图。
+          </para>
+	  <para>
+	    如果第一个参数是“-”，通过<command>rndc</command>响应通道
+            返回输出，并输出到标准输出。
+            否则，将返回写到安全根转储文件，缺省是
+            <filename>named.secroots</filename>，但可以在
+            <filename>named.conf</filename>中通过
+            <option>secroots-file</option>选项覆盖。
+	  </para>
+	  <para>
+	    参见<command>rndc managed-keys</command>。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><userinput>showzone <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> </userinput></term>
+	<listitem>
+	  <para>
+	    输出一个运行区的配置。
+	  </para>
+	  <para>
+	    参见<command>rndc zonestatus</command>。
+	  </para>
+	</listitem>
+      </varlistentry>
 
        <varlistentry>
          <term><userinput>sign <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
@@ -642,7 +660,7 @@
        </varlistentry>
 
       <varlistentry>
-        <term><userinput>signing <optional>( -list | -clear <replaceable>keyid/algorithm</replaceable> | -clear <literal>all</literal> | -nsec3param ( <replaceable>parameters</replaceable> | <literal>none</literal> ) ) </optional> <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> </userinput></term>
+        <term><userinput>signing <optional>( -list | -clear <replaceable>keyid/algorithm</replaceable> | -clear <literal>all</literal> | -nsec3param ( <replaceable>parameters</replaceable> | <literal>none</literal> ) | -serial <replaceable>value</replaceable> ) </optional> <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> </userinput></term>
         <listitem>
           <para>
             列出，编辑或删除指定区的DNSSEC签名状态记录。正在进行的DNSSEC操作
@@ -685,6 +703,14 @@
             <command>rndc signing -nsec3param none</command>
             删除一个现存的NSEC3链并使用NSEC替代它。
           </para>
+	  <para>
+	    <command>rndc signing -serial value</command>设置区的序列号
+            为指定值。如果这个值将会使序列号后退，它将被拒绝。
+            主要用途是在联机签名区中设置序列号。
+	  </para>
+	  <para>
+	    参见<command>rndc showzone</command>。
+	  </para>
         </listitem>
       </varlistentry>
 

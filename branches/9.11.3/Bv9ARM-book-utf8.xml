@@ -108,7 +108,7 @@
               </entry>
               <entry colname="2">
                 <para>
-                  <filename>Fixed width 固定宽度</filename>
+                  <filename>Fixed width</filename>
                 </para>
               </entry>
             </row>
@@ -1506,7 +1506,7 @@ zone "site2.example.com" {
 </programlisting>
 
       <para>
-        堡垒主机上的<filename>resolv.conf</filename>（或等效的)文件：
+        堡垒主机上的<filename>resolv.conf</filename>（或等效的）文件：
       </para>
 
 <programlisting>
@@ -1557,7 +1557,7 @@ nameserver 172.16.72.4
           TSIG密钥可以使用<command>tsig-keygen</command>命令生成；命令的输出是
           一个适合放入<filename>named.conf</filename>的
           <command>key</command>指令。密钥名，算法名和大小可以由命令行参数指定；
-          缺省分别是“tsig-key“，HMAC-SHA256和256位。
+          缺省分别是“tsig-key”，HMAC-SHA256和256位。
         </para>
         <para>
           任意一个有效DNS名字都可以用作一个密钥名，例如，在服务器
@@ -1731,7 +1731,7 @@ allow-update { !{ !localnets; any; }; key host1-host2. ;};
       <para>
         TKEY协商的密钥可以使用<command>rndc tsig-delete</command>从一个
         服务器删除。这也可以经由TKEY协议自身，通过发送一个认证的TKEY请求
-        指定“key deletion“模式来完成。
+        指定“key deletion”模式来完成。
       </para>
 
     </section>
@@ -2014,7 +2014,6 @@ options {
 	  </para>
 	</note>
       </section>
-
     </section>
 
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-utf8.xml"/>
@@ -2487,6 +2486,24 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
                 </para>
               </entry>
             </row>
+	    <row rowsep="0">
+	      <entry colname="1">
+		<para>
+		  <varname>size_or_percent</varname>
+		</para>
+	      </entry>
+	      <entry colname="2">
+		<para>
+		  <varname>size_spec</varname>或者整数值后跟
+		  表示百分比的'%'。
+		</para>
+		<para>
+		  这个特性与<varname>size_spec</varname>完全相同，
+		  但是<varname>size_or_percent</varname>也允许指定
+		  一个正整数后跟一个表示百分比的'%'符号。
+		</para>
+	      </entry>
+	    </row>
             <row rowsep="0">
               <entry colname="1">
                 <para>
@@ -2602,8 +2619,9 @@ $ORIGIN 0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
 	    <command>allow-query-cache-on</command>，
 	    <command>allow-transfer</command>，
 	    <command>allow-update</command>，
-	    <command>allow-update-forwarding</command>和
-	    <command>blackhole</command>都使用地址匹配表。类似地，
+	    <command>allow-update-forwarding</command>，
+	    <command>blackhole</command>和
+	    <command>keep-response-order</command>都使用地址匹配表。类似地，
 	    <command>listen-on</command>选项
 	    将使服务器拒绝任何发到不与列表匹配的机器地址的请求。
 	  </para>
@@ -2993,10 +3011,21 @@ and perl</programlisting>
           <xref linkend="admin_tools"/>中的<xref linkend="rndc"/>。
         </para>
 
+	<para>
+	  如果<command>read-only</command>子句开启，控制通道被限制在
+	  下列只读命令集中：
+	  <command>nta -dump</command>，
+	  <command>null</command>，<command>status</command>，
+	  <command>showzone</command>，<command>testgen</command>和
+	  <command>zonestatus</command>。
+	  缺省地，<command>read-only</command>未开启，控制通道允许
+	  读写访问。
+	</para>
+
         <para>
           如果没有提供<command>controls</command>语句，<command>named</command>
-          将设置一个缺省的控制通道，监听在环回地址127.0.0.1及其IPv6的对应者::1
-          上。在这样的情况下，当有<command>controls</command>语句但是没有提供一
+	  将设置一个缺省的控制通道，监听在环回地址127.0.0.1及其IPv6的对应者::1上。
+	  在这样的情况下，当有<command>controls</command>语句但是没有提供一
           个<command>keys</command>子句时，<command>named</command>将试图从
           <filename>/etc</filename>（或者是<acronym>BIND</acronym>编译时
           <varname>sysconfdir</varname>所指定的目录）下的
@@ -3017,7 +3046,7 @@ and perl</programlisting>
 
         <para>
           由于<filename>rndc.key</filename>特性只是想要允许向后兼容
-          <acronym>BIND</acronym> 8配置文件的用法，这个特征没有高度的配置能力。
+          <acronym>BIND</acronym> 8配置文件的用法，这个特性没有高程度的配置能力。
           你不能很容易地改变密钥名或秘密的大小，所以，如果你希望更改这些东西，
           你应该用你自己的密钥建立一个<filename>rndc.conf</filename>。
           <filename>rndc.key</filename>文件有其自身的权限设置，以使其只能由其所
@@ -3076,7 +3105,7 @@ and perl</programlisting>
 
 	<para>
 	  <replaceable>algorithm_id</replaceable>是一个指定安全/认证算法的字符
-	  串。named支持<literal>hmac-md5</literal>，
+	  串。<command>named</command>服务器支持<literal>hmac-md5</literal>，
 	  <literal>hmac-sha1</literal>，<literal>hmac-sha224</literal>，
 	  <literal>hmac-sha256</literal>，<literal>hmac-sha384</literal>和
 	  <literal>hmac-sha512</literal> TSIG认证。通过在尾部增加一个以减号开始
@@ -3110,12 +3139,24 @@ and perl</programlisting>
 };
 </programlisting>
 
+	<para>
+	  如果<command>named</command>启动时带有
+	  <option>-L</option>选项，它将日志记录到启动时指定的文件，
+	  而不是使用系统日志。在这个情况，日志配置将会是：
+	</para>
+
+<programlisting>logging {
+     category default { default_logfile; default_debug; };
+     category unmatched { null; };
+};
+</programlisting>
+
         <para>
           在<acronym>BIND</acronym> 9中，日志配置只是在全部的配置文件被分析完成
           之后才建立。在<acronym>BIND</acronym> 8中，日志配置是在
           <command>logging</command>语句被分析时建立的。在服务器启动时，所有关
           于配置文件中语法错误的日志消息都被写到缺省通道，或者在指定
-          “<option>-g</option>”选项时被写到标准错误中。
+          <option>-g</option>选项时被写到标准错误中。
         </para>
 
         <section xml:id="channel"><info><title><command>channel</command>短语</title></info>
@@ -3154,7 +3195,7 @@ and perl</programlisting>
             <filename>lamers.log.1</filename>，<filename>lamers.log</filename>
             被更名为<filename>lamers.log.0</filename>。你可以设置
             <command>versions unlimited</command>不限制版本数。如果将
-            <command>size</command>选项附加到日志文件，只有在被打开的文件超过了
+            <command>size</command>选项关联到日志文件，只有在被打开的文件超过了
             所指定的大小时才会更名。缺省情况下，没有备份版本；所有现存的日志文
             件只是简单地追加。
           </para>
@@ -3262,9 +3303,19 @@ and perl</programlisting>
             <computeroutput>28-Feb-2000 15:05:32.863 general: notice: running</computeroutput>
           </para>
 
+	  <para>
+	    如果打开了<command>buffered</command>，到文件的输出不会在每次
+	    日志进入时都刷新。
+	    缺省是所有日志消息都被刷新。
+	  </para>
+
           <para>
             有四个预定义的通道供<command>named</command>缺省日志使用，
-            具体如下：如何使用它们在<xref linkend="the_category_phrase"/>描述。
+	    具体如下。
+	    如果<command>named</command>启动时带有
+	    <option>-L</option>选项，就会添加第五个通道
+	    <command>default_logfile</command>。
+            如何使用它们在<xref linkend="the_category_phrase"/>描述。
           </para>
 
 <programlisting>channel default_syslog {
@@ -3277,7 +3328,7 @@ and perl</programlisting>
 channel default_debug {
     // write to named.run in the working directory
     // Note: stderr is used instead of "named.run" if
-    // the server is started with the '-f' option.
+    // the server is started with the '-g' option.
     file "named.run";
     // log at the server's current debug level
     severity dynamic;
@@ -3294,6 +3345,15 @@ channel null {
    // toss anything sent to this channel
    null;
 };
+
+channel default_logfile {
+    // this channel is only present if named is
+    // started with the -L option, whose argument
+    // provides the file name
+    file "...";
+    // log at the server's current debug level
+    severity dynamic;
+};
 </programlisting>
 
           <para>
@@ -3303,12 +3363,13 @@ channel null {
           </para>
 
           <para>
-            由于安全原因，当使用了“<option>-u</option>”命令行选项时，
+            由于安全原因，当使用了<option>-u</option>命令行选项时，
             <filename>named.run</filename>文件只在<command>named</command>改变
             为新的UID之后才被创建，并且在<command>named</command>启动过程中还以
             root运行时所产生的调试输出都被丢弃。如果你需要捕捉这些输出，你必须
-            使用“<option>-g</option>”选项运行服务器并将标准错误重定向到一个文
-            件。
+	    在运行服务器时使用<option>-L</option>选项指定一个缺省的日志文件，
+	    或者使用<option>-g</option>选项记录到标准错误，你可以重定向它到
+	    一个文件。
           </para>
 
           <para>
@@ -3327,6 +3388,14 @@ channel null {
           </para>
 
 <programlisting>category default { default_syslog; default_debug; };
+</programlisting>
+
+	  <para>
+	    如果你启动<command>named</command>时带有
+	    <option>-L</option>选项，缺省类别是：
+	  </para>
+
+<programlisting>category default { default_logfile; default_debug; };
 </programlisting>
 
           <para>
@@ -3359,7 +3428,6 @@ category notify { null; };
           <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="logging-categories-utf8.xml"/>
         </section>
 	<section xml:id="query_errors"><info><title><command>query-errors</command>类别</title></info>
-
 	  <para>
 	    <command>query-errors</command>类别是专门用于调试目的：
 	    是为了标识特定的请求为什么以及怎样导致错误响应。
@@ -3396,9 +3464,9 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 	  </para>
 	  <para>
 	    在冒号之前的第一部份表示一个对www.example.com的AAAA记录
-	    的递归解析在30.000183内完成并最终结果导致一个SERVFAIL，
-	    它是在源文件<filename>resolver.c</filename>的第2970行
-	    找到的。
+	    的递归解析在30.000183秒内完成并最终结果导致一个SERVFAIL，
+	    它是由源文件<filename>resolver.c</filename>的第2970行
+	    决定的。
 	  </para>
 	  <para>
 	    接下来的部份显示了所检测到的最终结果和DNSSEC验证的
@@ -3477,7 +3545,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 		      跛服务器数目。
 		      一个服务器被检测为跛服务器，要么是因为一个
 		      不正确的响应，要么是在BIND9的地址数据库（ADB）
-		      中的查找结果，前者缓存了跛服务器。
+		      中的查找结果，这个数据库缓存了跛服务器。
 		    </para>
 		  </entry>
 		</row>
@@ -3612,6 +3680,25 @@ badresp:1,adberr:0,findfail:0,valfail:0]
           的<command>ndots</command>语句等效。它指示在一个相对域名中的点的最小
           数目，将在追加查找路径元素之前作一个精确查找。
         </para>
+	<para>
+	  <option>lwres-tasks</option>语句指定专用于服务客户端的轻量级解析器
+	  的工作线程数目。
+	  缺省时这个数目与系统上的CPU数目相同；
+	  这个可以通过在启动服务器时使用<option>-n</option>命令行覆盖。
+	</para>
+	<para>
+	  <option>lwres-clients</option>指定轻量级解析器为服务客户端请求
+	  而为每个线程建立的客户端对象的数目。
+	  缺省时，如果轻量级解析器作为<command>named</command>的一部份
+	  运行，可为每个任务建立256个客户端对象；如果以
+	  <command>lwresd</command>运行，每个线程创建1024个客户端对象。
+	  最大值是32768；更大的值将被静默地忽略并使用最大值替代。
+	  注意设置太大的值可能过度耗费系统资源。
+	</para>
+	<para>
+	  轻量级解析器在任一时间可以处理的最大客户端请求等于
+	  <option>lwres-tasks</option>乘以<option>lwres-clients</option>。
+	</para>
       </section>
       <section xml:id="masters_grammar"><info><title><command>masters</command>语句语法</title></info>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="masters.grammar.xml"/>
@@ -3748,9 +3835,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 	    <term><command>dnstap</command></term>
 	    <listitem>
 	      <para>
-		<command>dnstap</command> is a fast, flexible method
 		<command>dnstap</command>是一个捕捉和记录DNS流量的快速、
-		灵活的方法。由Robert Edmonds at Farsight Security公司
+		灵活的方法。由Farsight Security公司的Robert Edmonds
 		所开发，并由多个DNS实现所支持，<command>dnstap</command>
 		使用<command>libfstrm</command>（一个轻量级高速框架库，
 		参见
@@ -3767,7 +3853,6 @@ badresp:1,adberr:0,findfail:0,valfail:0]
                 <option>--enable-dnstap</option>。
 	      </para>
 	      <para>
-		The <command>dnstap</command> option is a bracketed list
 		<command>dnstap</command>选项是一个带括号的、被记录消息
 		类型的列表。这些在每个视图中可以被设置为不同的值。支持的
 		类型是<literal>client</literal>，
@@ -3783,7 +3868,6 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 		记录。
 	      </para>
 	      <para>
-		Example: To log all authoritative queries and responses,
 		例如：要记录所有的权威请求和响应，递归客户端的响应和解析器
 		发出的上游请求，使用：
 <programlisting>dnstap {
@@ -3988,6 +4072,12 @@ badresp:1,adberr:0,findfail:0,valfail:0]
               文件名都是视图名SHA256 HASH的值，再加上
               后缀<filename>.mkeys</filename>。
               </para>
+	      <para>
+		（注意：在先前的版本中，视图对应的文件名总是使用视图名的SHA256
+		hash。
+		为确保以后升级的兼容性，如果发现存在一个使用旧名字格式的文件，
+		将使用而不是新格式。）
+	      </para>
             </listitem>
           </varlistentry>
 
@@ -4091,6 +4181,28 @@ badresp:1,adberr:0,findfail:0,valfail:0]
                 服务器在退出时，将内存统计写到的文件路径。如果没有指定，
 		缺省是<filename>named.memstats</filename>。
               </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><command>lock-file</command></term>
+	    <listitem>
+	      <para>
+		<command>named</command>首次启动时试图在其中获取一个文件锁的
+		一个文件的路径名；如果不成功，服务器将会终止，这是假设另一个
+		服务器已经正在运行中。
+		如果未指定，缺省是
+		<filename>/var/run/named/named.lock</filename>。
+	      </para>
+	      <para>
+		指定<command>lock-file none</command>关闭使用一个锁文件。
+	        如果<command>named</command>使用<option>-X</option>选项
+		运行，<command>lock-file</command>将被忽略，它被这个选项
+		所覆盖。
+		如果<command>named</command>被重新加载或者重新配置，对
+		<command>lock-file</command>的修改将被忽略；它仅在服务器
+		初次启动时有效。
+	      </para>
 	    </listitem>
 	  </varlistentry>
 
@@ -4440,7 +4552,7 @@ options {
                   <command>dnssec-loadkeys-interval</command>选项仓库自动
                   检查的频率，以分钟计。缺省是<literal>60</literal>（1小时），
                   最小是<literal>1</literal>（1分钟），最大是
-                  <literal>1440</literal>（24小时）；任何更大的值将被默默地
+                  <literal>1440</literal>（24小时）；任何更大的值将被静默地
                   减小。
                 </para>
             </listitem>
@@ -4475,11 +4587,69 @@ options {
 	  </varlistentry>
 
 	  <varlistentry>
+	    <term><command>nta-lifetime</command></term>
+	    <listitem>
+		<para>
+		  指定以秒计的缺省生命周期，将用于由
+		  <command>rndc nta</command>所添加的否定信任锚。
+		</para>
+		<para>
+		  一个否定信任锚选择性关闭对已知将会因为错误配置而非
+		  攻击导致验证失败的区的DNSSEC验证。
+		  当将要被验证的数据处于一个活跃的NTA（及其之上任何
+		  其它已配置的信任锚）或之下，
+		  <command>named</command>将终止DNSSEC验证过程并将
+		  数据作为非安全的（insecure）而不是伪造的（bogus）。
+		  这会持续直到NTA的生命周期结束。
+		  NTA的持久化会跨越<command>named</command>的重启。
+		</para>
+		<para>
+		  为方便起见，TTL风格的时间单位后缀可以用于指定以秒，
+		  分钟或小时为单位的NTA生命周期。
+		  <option>nta-lifetime</option>缺省是一小时。
+		  它不能超过一周。
+		</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><command>nta-recheck</command></term>
+	    <listitem>
+		<para>
+		  指定检查由<command>rndc nta</command>所添加的否定信任
+		  锚是否仍然需要的频繁程度。
+		</para>
+		<para>
+		  一个否定信任锚通常用在一个域由于操作错误而停止验证；
+		  它暂时关闭对这个域的DNSSEC验证。
+		  为了确保DNSSEC验证尽快恢复，
+		  <command>named</command>将周期性发送一个请求到这个域，
+		  忽略否定信任锚，以风险其是否可以被验证。
+		  如果可以，允许否定信任锚提前过期。
+		</para>
+		<para>
+		  对某个NTA的正确性检查可以通过使用
+		  <command>rndc nta -f</command>关闭，或者将
+		  <option>nta-recheck</option>设置为零关闭所有NTA。
+		</para>
+		<para>
+		  为方便起见，TTL风格的时间单位后缀可以用于指定以秒，
+		  分钟或小时为单位的NTA重检查间隔。
+		  缺省是五分钟。
+		  它不能超过<option>nta-lifetime</option>（后者不能
+		  超过一周）。
+		</para>
+	    </listitem>
+	  </varlistentry>
+
+
+	  <varlistentry>
 	    <term><command>max-zone-ttl</command></term>
 	    <listitem>
 	      <para>
-		指定一个最大可能的TTL值。在使用一个
-                <option>masterfile-format</option>为
+                指定一个最大可能的以秒计的TTL值。
+		为方便起见，TTL风格的时间单位后缀可以用于指定最大值。
+                在使用一个<option>masterfile-format</option>为
                 <constant>text</constant>或者<constant>raw</constant>装载一个
                 区文件时，任何带有超过<option>max-zone-ttl</option>的TTL值的
                 记录都将导致区被拒绝。
@@ -4502,24 +4672,31 @@ options {
 	    </listitem>
 	  </varlistentry>
 
-              <varlistentry>
-                <term><command>serial-update-method</command></term>
-                <listitem>
-                  <para>
-                    被配置为动态DNS的区可以使用这个选项设置用于更新SOA记录中区
-                    序列号的更新方法。
-                  </para>
-                  <para>
-                    使用缺省的设置
-                    <command>serial-update-method increment;</command>，
-                    SOA序列号将会在每次区被更新时加一。
-                  </para>
-                  <para>
-                    当设置为
-                    <command>serial-update-method unixtime;</command>时，
-                    SOA序列号将被设置为UNIX纪元以来的秒数，除非序列号已经大于
-                    或等于那个值，这时它只是简单的加一。
-                  </para>
+          <varlistentry>
+            <term><command>serial-update-method</command></term>
+            <listitem>
+              <para>
+                被配置为动态DNS的区可以使用这个选项设置用于更新SOA记录中区
+                序列号的更新方法。
+              </para>
+              <para>
+                使用缺省的设置
+                <command>serial-update-method increment;</command>，
+                SOA序列号将会在每次区被更新时加一。
+              </para>
+              <para>
+                当设置为
+                <command>serial-update-method unixtime;</command>时，
+                SOA序列号将被设置为UNIX纪元以来的秒数，除非序列号已经大于
+                或等于那个值，这时它只是简单的加一。
+              </para>
+	      <para>
+                当设置为
+		<command>serial-update-method date;</command>时，
+		新的SOA序列号将是“YYYYMMDD”格式的当前日期，后跟
+		两个零，除非已存在的序列号已经大于或等于那个值，
+		这时它只是加一。
+	      </para>
                 </listitem>
               </varlistentry>
 
@@ -4578,8 +4755,7 @@ options {
               <listitem>
                 <para>
                   如果为<userinput>yes</userinput>，就可以在运行时通过
-		  <command>rndc addzone</command>添加区，或者通过
-		  <command>rndc delzone</command>删除区。
+		  <command>rndc addzone</command>添加区。
 		  缺省为<userinput>no</userinput>。
                 </para>
 		<para>
@@ -4873,6 +5049,19 @@ options {
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>geoip-use-ecs</command></term>
+	      <listitem>
+		<para>
+		  当BIND带有GeoIP支持编译并配置了“geoip”ACL元素，选项指示
+		  EDNS客户端子网选项，如果在一个请求中出现，是否应该被
+		  用于GeoIP数据库匹配。
+		  缺省是
+		  <command>geoip-use-ecs</command> <userinput>yes</userinput>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>has-old-clients</command></term>
               <listitem>
@@ -4911,6 +5100,21 @@ options {
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>message-compression</command></term> <listitem>
+		<para>
+		  如果为<userinput>yes</userinput>，DNS名字压缩被用在给
+		  普通请求（不包含AXFR或IXFR，这两个总是使用压缩）的响应中。
+		  设置这个选项为<userinput>no</userinput>能减少服务器上
+		  的CPU使用并可能提高吞吐量。
+		  但是，它增加了响应的大小，这可能导致更多的请求使用
+		  TCP处理；一个关闭压缩的服务器是与RFC 1123的6.1.3.2.节
+		  不兼容的。
+		  缺省是<userinput>yes</userinput>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>minimal-responses</command></term>
               <listitem>
@@ -4922,7 +5126,6 @@ options {
                   <userinput>no</userinput>。
                 </para>
 		<para>
-		  When set to <userinput>no-auth</userinput>, the
 		  当设置为<userinput>no-auth</userinput>，服务器将
 		  省略来自权威部份的记录，除非其被请求，但是它可能
 		  仍然添加记录到附加部份。当设置为
@@ -4934,6 +5137,26 @@ options {
 		</para>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>minimal-any</command></term>
+	      <listitem>
+		<para>
+		  如果设置为<userinput>yes</userinput>，当生成一个针对
+		  ANY类型且通过UDP传输的请求的肯定响应时，服务器将会
+		  仅仅回复一个请求名的资源记录集，以及它的覆盖RRSIG记录，
+		  如果存在RRSIG记录，而不是回复这个名字的所有已知RRSIG。
+		  类似地，对类型RRSIG的请求将使用覆盖仅一个类型的RRSIG
+		  记录响应。
+		  这能够减少某些类型攻击流量的影响，而不伤害合法的客户端。
+		  （注意，然而，返回的资源记录集是在数据库中首先找到的；
+		  它不需要是最小可用的资源记录集。）
+		  此外，<option>minimal-responses</option>对这些请求是
+		  打开的，这样不必要的记录就不会被添加到权威或附加部份。
+		  缺省是<userinput>no</userinput>。
+		</para>
+	    </listitem>
+	  </varlistentry>
 
             <varlistentry>
               <term><command>multiple-cnames</command></term>
@@ -5039,7 +5262,6 @@ options {
 	      <term><command>send-cookie</command></term>
 	      <listitem>
 		<para>
-		  If <userinput>yes</userinput>, then a COOKIE EDNS
 		  如果设置为<userinput>yes</userinput>，伴随请求会发送
 		  一个COOKIE EDNS。如果解析器先前与服务器有过对话，
 		  先前交易中返回的COOKIE将被发送。
@@ -5060,7 +5282,7 @@ options {
 	      <listitem>
 		<para>
 		  设置发送给不带合法服务器COOKIE的请求的最大UDP响应大小。
-		  小于128的值将被静默地提高到128.缺省值是4096，但是
+		  小于128的值将被静默地提高到128。缺省值是4096，但是
 		  <command>max-udp-size</command>选项可以更多地限制响应
 		  大小。
 		</para>
@@ -5080,7 +5302,6 @@ options {
 	      <term><command>cookie-algorithm</command></term>
 	      <listitem>
 		<para>
-		  Set the algorithm to be used when generating the
 		  设置用于生成服务器cookie的算法。是“aes”，“sha1”或
 		  “sha256”之一。如果加密库支持，缺省是“aes”，否则是
 		  “sha256”。
@@ -5134,7 +5355,7 @@ options {
 		</para>
 		<para>
 		  通过监控这些请求，区操作员能够发现哪些解析器被更新
-		  以信任一个新密钥；这会标准他们决定何时能够安全地
+		  以信任一个新密钥；这会帮助他们决定何时能够安全地
 		  删除一个旧密钥。
 		</para>
 		<para>
@@ -5185,6 +5406,16 @@ options {
                 </para>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>request-expire</command></term>
+	      <listitem>
+		<para>
+		  参见<xref linkend="server_statement_definition_and_usage"/>中
+		  对<command>request-expire</command>的描述。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>treat-cr-as-space</command></term>
@@ -5449,15 +5680,14 @@ options {
 		  下载。
 		</para>
 		<para>
-		  To prevent problems if <filename>bind.keys</filename> is
 		  为防止因<filename>bind.keys</filename>未找到而带来的
 		  问题，当前信任锚也被编译进<command>named</command>。
 		  不推荐依赖这个，无论如何，因为这在根密钥过期时，要求
-		  带一个新密钥重新编译<command>named</command>。）
+		  带一个新密钥重新编译<command>named</command>。
 		</para>
                 <note>
 		  <para>
-		    <command>named</command> <emphasis>only</emphasis>
+		    <command>named</command> <emphasis>只</emphasis>
 		    从<filename>bind.keys</filename>中装载根密钥。
 		    这个文件不能用于存放其它区的密钥。
 		    如果未使用<command>dnssec-validation auto</command>，
@@ -5991,6 +6221,18 @@ options {
             </varlistentry>
 
 	    <varlistentry>
+	      <term><command>keep-response-order</command></term>
+	      <listitem>
+		<para>
+		  指定一个地址清单，服务器向这些地址的TCP请求发送
+		  响应时将会以接收它们时同样的顺序。
+		  这关闭了对TCP请求的并行处理。
+		  缺省是<userinput>none</userinput>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
 	      <term><command>no-case-compress</command></term> <listitem>
 		<para>
 		  指定一个地址列表，其中地址要求响应使用大小写无关的压缩。
@@ -6032,8 +6274,9 @@ options {
               <term><command>resolver-query-timeout</command></term>
               <listitem>
                 <para>
-                解析器在尝试解析一个递归请求时，在失败之前将花费的时间。缺省值
-                和最小值是<literal>10</literal>，最大值是<literal>30</literal>。
+		解析器在尝试解析一个递归请求时，在失败之前将花费的以秒计
+		的时间。缺省值和最小值是<literal>10</literal>，最大值是
+		<literal>30</literal>。
                 将其设置为<literal>0</literal>将会导致使用缺省值。
                 </para>
               </listitem>
@@ -6285,7 +6528,7 @@ avoid-v6-udp-ports {};
               <term><command>max-transfer-time-in</command></term>
               <listitem>
                 <para>
-                  进来数据的区传送如果超过这么多分钟将被终止。缺省为120分钟
+                  入向区传送如果运行超过这个分钟数将被终止。缺省为120分钟
                   （2小时）。最大值为28天（40320分钟）。
                 </para>
               </listitem>
@@ -6295,7 +6538,7 @@ avoid-v6-udp-ports {};
               <term><command>max-transfer-idle-in</command></term>
               <listitem>
                 <para>
-                  进来数据的区传送在这么多分钟之内没有进展将被终止。缺省为60
+                  入向区传送在这个分钟数之内没有进展将被终止。缺省为60
                   分钟（1小时）。最大值为28天（40320分钟）。
                 </para>
               </listitem>
@@ -6305,7 +6548,7 @@ avoid-v6-udp-ports {};
               <term><command>max-transfer-time-out</command></term>
               <listitem>
                 <para>
-                  出去数据的区传送如果超过这么多分钟将被终止。缺省为120分钟
+                  出向区传送如果运行超过这个分钟数将被终止。缺省为120分钟
                   （2小时）。最大值为28天（40320分钟）。
                 </para>
               </listitem>
@@ -6315,11 +6558,35 @@ avoid-v6-udp-ports {};
               <term><command>max-transfer-idle-out</command></term>
               <listitem>
                 <para>
-                  出去数据的区传送在这么多分钟之内没有进展将被终止。缺省为60
+                  出向区传送在这个分钟数之内没有进展将被终止。缺省为60
                   分钟（1小时）。最大值为28天（40320分钟）。
                 </para>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>notify-rate</command></term>
+	      <listitem>
+		<para>
+		  在通常的区维护操作中，NOTIFY请求被发送的频率。
+		  （NOTIFY请求由于初始化区加载而受限于一个独立的
+		  速率限制；参见以下。）缺省是每秒20。
+                  可能的最低速率是1每秒；当设置为0时，它会被静默地提升为1。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>startup-notify-rate</command></term>
+	      <listitem>
+		<para>
+		  当名字服务器初次启动，或者当区是新增到名字服务器中时，
+		  NOTIFY请求被发送的频率。
+		  缺省是每秒20。
+                  可能的最低速率是1每秒；当设置为0时，它会被静默地提升为1。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>serial-query-rate</command></term>
@@ -6331,11 +6598,6 @@ avoid-v6-udp-ports {};
                   <command>serial-query-rate</command>选项的值为一个整数，表示
                   每秒发送的最大请求数。缺省为20每秒。
                   可能的最低速率是1每秒；当设置为0时，它会被静默地提升为1。
-                </para>
-                <para>
-                  除了控制发出SOA刷新请求的速率，
-                  <command>serial-query-rate</command>还控制从主区和辅区发出的
-                  NOTIFY消息的速率。
                 </para>
               </listitem>
             </varlistentry>
@@ -6379,11 +6641,36 @@ avoid-v6-udp-ports {};
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>transfer-message-size</command></term>
+	      <listitem>
+		<para>
+		  这是一个用于使用TCP进行区传送的DNS消息的未压缩大小的
+		  上限。如果一个 消息增长超过这个大小，会增加额外的消息
+		  以完成区传送。（注意，无论如何，这是一个提示，不是一个
+		  硬限制；如果一个消息包含单一资源记录并且其RDATA超过了
+		  这个大小限制，将允许一个更大的消息以完成这个记录的传送。）
+		</para>
+		<para>
+		  有效值介于512和65535字节之间，任何超过这个范围的值将被
+		  调整为范围内最接近的值。缺省是<literal>20480</literal>，
+		  选择这个值是为了提高消息压缩：
+		  大多数这个大小的DNS消息将被压缩到16536字节以内。
+		  更大的消息不能被有效地压缩，因为16536是一个DNS消息内
+		  最大允许压缩偏移量指针。
+		</para>
+		<para>
+		  这个选项主要用于服务器测试；
+		  设置为缺省值之外的值几乎没有收益。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>transfers-in</command></term>
               <listitem>
                 <para>
-                  可以同时运行的进入的区传送的最大数目。缺省值是
+                  可以同时运行的入向区传送的最大数目。缺省值是
                   <literal>10</literal>。增加<command>transfers-in</command>可
                   以加速辅区的同步，但是它也会增加本地系统的负载。
                 </para>
@@ -6394,7 +6681,7 @@ avoid-v6-udp-ports {};
               <term><command>transfers-out</command></term>
               <listitem>
                 <para>
-                  可以同时运行的出去的区传送的最大数目。超过限制的区传送请求将
+                  可以同时运行的出向区传送的最大数目。超过限制的区传送请求将
                   会被拒绝。缺省值是<literal>10</literal>。
                 </para>
               </listitem>
@@ -6404,7 +6691,7 @@ avoid-v6-udp-ports {};
               <term><command>transfers-per-ns</command></term>
               <listitem>
                 <para>
-                  可以同时运行的来自某个给定远程名字服务器的进入的区传送的最大
+                  可以同时运行的来自某个给定远程名字服务器的入向区传送的最大
                   数目。缺省值是<literal>2</literal>。增加
                   <command>transfers-per-ns</command>可以加速辅区的同步，但是它
                   也会增加远程名字服务器的负载。通过在<command>server</command>
@@ -6690,7 +6977,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                 </para>
                 <para>
                   <option>recursive-clients</option>为等待的递归客户端定义
-                  一个“硬限额“：当超过这个数目的客户端在等待时，新进入的请求
+                  一个“硬限额”：当超过这个数目的客户端在等待时，新进入的请求
                   将不被接受，对每个新进入的请求，先前等待的请求将被丢弃。
                 </para>
                   <para>
@@ -6784,11 +7071,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   一个域的活跃解析数目下降为0，这个域的计数器将被删除，
                   下一次一个解析发到这个域，就会重建计数器并被设置为0.）
 		</para>
-		<para>
-                  （注意：这个选项仅在BIND使用
-                  <command>configure --enable-fetchlimit</command>
-                  构建时才可用。）
-		</para>
 	      </listitem>
 	    </varlistentry>
 
@@ -6824,11 +7106,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		  <command>fetch-quota-params</command>选项可以用来
                   调整这个计算的参数。
 		</para>
-		<para>
-                  （注意：这个选项仅在BIND使用
-                  <command>configure --enable-fetchlimit</command>
-                  构建时才可用。）
-		</para>
 	      </listitem>
 	    </varlistentry>
 
@@ -6854,11 +7131,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		  这些参数都是定点数，精度为1/100：小数点后至少2位是要
                   保留的。
 		</para>
-		<para>
-                  （注意：这个选项仅在BIND使用
-                  <command>configure --enable-fetchlimit</command>
-                  构建时才可用。）
-		</para>
 	      </listitem>
 	    </varlistentry>
 
@@ -6868,7 +7140,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                 <para>
                   为TCP，标准输入输出等保留的文件描述符个数。这个数需要足够
                   大，以覆盖<command>named</command>监听的接口数，以及用于提供
-		  向外TCP请求和进入的区传送的<command>tcp-clients</command>。
+		  向外TCP请求和入向区传送的<command>tcp-clients</command>。
 		  缺省是<literal>512</literal>。最小值是
 		  <literal>128</literal>，最大值是maxsockets (-S)减
                   <literal>128</literal>。这个选项在将来可能被去掉。
@@ -6883,15 +7155,18 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <term><command>max-cache-size</command></term>
               <listitem>
                 <para>
-                  用于服务器缓存的最大内存量，以字节为单位。当缓存中的数据量达
-                  到这个限制时，服务器将使用一个基于LRU的策略使记录提前作废
-		  以免超过限制。
+		  用于服务器缓存的最大内存量，以字节或物理内存总量的百分比%计。
+		  当缓存中的数据量达到这个限制时，服务器将使用一个基于LRU的策略
+		  使记录提前作废以免超过限制。
                   关键字<userinput>unlimited</userinput>，或值0，将使缓存大小
                   没有限制；
                   记录将在TTL过期时才将其从缓存中清除。
                   任何小于2MB的正数都被忽略并重置为2MB。
                   在一个带多个视图的服务器上，这个限制分别应用到各个视图的缓
-                  存上。缺省为<userinput>unlimited</userinput>。
+                  存上。缺省为<userinput>90%</userinput>。
+                  在不支持检测物理内存的系统上，以%表示的值回退为无限制。
+		  注意对物理内存的检测仅在启动时做一次，所以如果运行时发生
+		  物理内存数量变化，<command>named</command>将不会调整缓存大小。
                 </para>
               </listitem>
             </varlistentry>
@@ -7184,11 +7459,24 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   <literal>1800</literal>（30分钟）。
                 </para>
 
-              <para>
-                Lame-ttl也控制DNSSEC验证失败被缓存的时间。如果lame-ttl
-                被设置为小于30秒，则被应用到否定缓存条目的最小值为30秒。
-              </para>
+              </listitem>
+            </varlistentry>
 
+	    <varlistentry>
+	      <term><command>servfail-ttl</command></term>
+	      <listitem>
+		<para>
+		  设置由于DNSSEC验证失败或者其它通用的服务器失败而导致
+		  SERVFAIL响应被缓存的秒数。
+		  如果设置为<literal>0</literal>，关闭SERVFAIL缓存。
+		  如果一个请求带有CD（Checking Disabled）位，SERVFAIL
+		  缓存不被查询；这允许由于DNSSEC验证而失败的请求能够
+		  重试，而不是等待SERVFAIL的TTL过期。
+		</para>
+		<para>
+		  最大值是<literal>30</literal>秒；更高的值将被
+		  静默地减小。缺省是<literal>1</literal>秒。
+		</para>
               </listitem>
             </varlistentry>
 
@@ -7210,7 +7498,8 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <term><command>max-cache-ttl</command></term>
               <listitem>
                 <para>
-		  设置服务器的缓存普通（正）响应的最大时间。缺省值是一周（7天）。
+		  设置以秒计的服务器的缓存普通（肯定）响应的最大时间。
+		  缺省值是604800（一周）。
                   值为0可能导致所有的请求都返回SERVFAIL，因为在解析过程中会丢失
                   中间资源记录集（如NS和粘着AAAA/A记录）的缓存。
                 </para>
@@ -7251,7 +7540,6 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		<para>
 		  <command>sig-validity-interval</command>应该至少是SOA过期
 		  间隔的几倍，以允许在不同计时器和过期日期之间合理的互操作。
-		  The <command>sig-validity-interval</command>
 		</para>
               </listitem>
             </varlistentry>
@@ -7315,11 +7603,11 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		  24周的过期值。然而，这些值是由主服务器设置的，只给辅服务器管
 		  理员一点点对内容的控制权。
                 </para>
-
                 <para>
-                  这些选项允许管理员针对每个区，每个视图或者全局设置一个最小和
-                  最大的刷新和重试时间。这些选项对辅区和存根区有效，将SOA的刷新
-                  和重试时间指定到特定的值上。
+		  这些选项允许管理员针对每个区，每个视图或者全局设置一个以秒计
+		  的最小和最大的刷新和重试时间。
+		  这些选项对辅区和存根区有效，将SOA的刷新和重试时间指定到
+		  特定的值上。
                 </para>
                 <para>
                   下列为相应的缺省值。<command>min-refresh-time</command>
@@ -7390,7 +7678,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   （<command>edns-udp-size</command>）。
 		</para>
 		<para>
-		  这个值设置得越小，就将得到越多的到名字服务器的TCP流量。
+		  这个值设置得越小，就会鼓励越多的TCP流量到达名字服务器。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -7424,6 +7712,28 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	          <command>masterfile-format</command>语句而被覆盖成以每个服务
 	          器为基础。
 	        </para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>masterfile-style</command></term>
+	      <listitem>
+		<para>
+		  当<option>masterfile-format</option>为
+		  <constant>text</constant>，在导出时指定区文件的格式。
+		  （在带有任何其它<option>masterfile-format</option>
+		  时，这个选项被忽略。）
+		</para>
+		<para>
+		  当设置为<constant>relative</constant>时，记录以多行格式
+		  输出，其属主名被表示成相对于一个共享的起点。
+		  当设置为<constant>full</constant>，记录以单行格式输出，
+		  并带有绝对的属主名。
+		  当一个区文件需要被一个脚本自动化处理时，
+		  <constant>full</constant>格式是最适合的。
+		  <constant>relative</constant>格式更适合阅读，更适合
+		  手工编辑一个区。缺省是<constant>relative</constant>。
+		</para>
 	      </listitem>
 	    </varlistentry>
 
@@ -7497,6 +7807,16 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   适宜TTL必须至少比触发TTL大六秒：如果不是这样，
                   <command>named</command>将静默地向大调整。
                   缺省的适宜TTL是<literal>9</literal>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>v6-bias</command></term>
+	      <listitem>
+		<para>
+		  在决定要试探的下一个名字服务器时，优先IPv6的名字服务器
+		  这个毫秒数。缺省是<literal>50</literal>毫秒。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -7581,14 +7901,15 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
         <section xml:id="empty"><info><title>内置空区</title></info>
 
 	  <para>
-	    named有一些内置空区（仅含有SOA和NS记录）。这是通常情况下只应在本地
+            <command>named</command>服务器有一些内置空区（仅含有SOA和NS记录）。
+            这是通常情况下只应在本地
 	    响应而不应该发到互联网的根服务器上的请求。覆盖这些名字空间的官方服
 	    务器会对这些请求响应NXDOMAIN。特别地，这些覆盖了来自于RFC 1918，
             RFC 4193，RFC 5737和RFC 6598。这些也包含IPv6本地地址（本地分配的）
             的反向名字空间，IPv6链路本地地址，IPv6环回地址和IPv6未知地址。
 	  </para>
 	  <para>
-	    named将试图决定是否一个内置区已经存在或者是激活的（被一个
+	    服务器将试图决定是否一个内置区已经存在或者是激活的（被一个
 	    forward-only的转发定义所覆盖），并且在此情况不会创建一个空区。
 	  </para>
 	  <para>
@@ -7871,7 +8192,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 	    <varname>address_match_list</varname>中，只有
 	    <varname>ip_addr</varname>和
 	    <varname>ip_prefix</varname>有意义；任何
-	    <varname>key_id</varname>将会被默默地忽略。
+	    <varname>key_id</varname>将会被静默地忽略。
 	  </para>
 
 	  <para>
@@ -8049,11 +8370,28 @@ deny-answer-aliases { "example.net"; };
 		<term><command>RPZ-NSIP</command></term>
 		<listitem>
 		  <para>
-                    NSIP触发器被编码成类似IP触发器，除了作为
+		    NSIP触发器匹配权威服务器的IP地址。
+		    他们被编码成类似IP触发器，除了作为
                     <userinput>rpz-nsip</userinput>的子域名之外。
                     NSDNAME和NSIP触发器仅在名字至少带有
                     <command>min-ns-dots</command>个点时才被检查。
-                    对非顶级域，<command>min-ns-dots</command>的缺省值是1。
+                    <command>min-ns-dots</command>的缺省值是1，以排除顶级域。
+		  </para>
+		  <para>
+		    如果一个名字服务器的IP地址还是未知，
+		    <command>named</command>将在应用一条RPZ-NSIP规则
+		    之前递归查找这个IP地址。
+		    这会导致处理延迟。
+		    要以精确的成本来加速处理，可以使用
+		    <command>nsip-wait-recurse</command>选项：
+		    当设置为<userinput>no</userinput>时，RPZ-NSIP规则
+		    仅应用在一个名字服务器的IP地址已经被查找并缓存的
+		    情况。
+		    如果一个名字服务器的IP地址不在缓存中，RPZ-NSIP规则
+		    将被忽略，但地址将在后台被查找，这条规则将应用到
+		    后续的请求上。
+		    缺省是<userinput>yes</userinput>，表示RPZ-NSIP规则
+		    应该总是应用，即使一个地址需要先查找。
 		  </para>
 		</listitem>
 	      </varlistentry>
@@ -8268,7 +8606,7 @@ deny-answer-aliases { "example.net"; };
 	  <para>
 	    一个被RPZ策略所修改的记录的TTL根据策略区中相关记录的TTL来设置。
             它被限制为一个最大值。
-            <command>max-policy-ttl</command>子句从其缺省值5改变那个最大值。
+            <command>max-policy-ttl</command>子句从其缺省值5改变最大值秒数。
 	  </para>
 
 	  <para>
@@ -8335,6 +8673,11 @@ example.com                 CNAME   rpz-tcp-only.
           <para>
             由RPZ所重写的响应在<command>RPZRewrites</command>统计中被计数。
           </para>
+
+	  <para>
+	    可以使用<command>log</command>子句来选择性关闭对某个特定响应策略区
+	    的重写日志。缺省时，所有重写都被记录到日志。
+	  </para>
         </section>
 
 	<section xml:id="rrl"><info><title>响应比率限制</title></info>
@@ -8388,7 +8731,7 @@ example.com                 CNAME   rpz-tcp-only.
 	    对一个给定的有效域名的任何及所有未定义的子域的请求而产生的
             NXDOMAIN错误，不考虑请求类型，都是同一的。
 	    它们由<command>nxdomains-per-second</command>限制
-	    （缺省基于<command>responses-per-second</command>）。
+	    （缺省是<command>responses-per-second</command>）。
             这控制某些使用随机域名的攻击，但能够在期望许多合法NXDOMAIN响应
             的服务器上被放松或关闭（设置为0），例如来自反垃圾黑名单。
             指向或授权到一个给定域名的服务器都是同一的并可以被
@@ -8398,7 +8741,7 @@ example.com                 CNAME   rpz-tcp-only.
 
 	  <para>
 	    由本地通配符产生的响应被计数并限制，如同对于其父域名一样。
-            这个用于控制random.wild.example.com（译注：随机通配符域名）的泛洪。
+            这使用random.wild.example.com控制泛洪。
 	  </para>
 
 	  <para>
@@ -8434,7 +8777,7 @@ example.com                 CNAME   rpz-tcp-only.
             操作者而言是使用DNSSEC签名自己的区，对递归服务器的操作者而言是验证
             响应。当这不是一个可选项时，对更关心响应完整性而不是缓解泛洪攻击的
             操作者，可以考虑设置<command>slip</command>为1，将使所有比率限制
-            响应都被截断而不是被丢弃。这就减小了针对反射攻击的比率限制的效果。)
+            响应都被截断而不是被丢弃。这就减小了针对反射攻击的比率限制的效果。）
 	  </para>
 
 	  <para>
@@ -8497,9 +8840,10 @@ example.com                 CNAME   rpz-tcp-only.
             同样名字。
 	    <command>All-per-second</command>类似于防火墙所提供的比率限制，
             但通常不如后者。
+	    忽略DNS响应内容的攻击更像是对服务器本身的攻击（原文：
 	    Attacks that justify ignoring the
 	    contents of DNS responses are likely to be attacks on the
-	    DNS server itself.
+	    DNS server itself.）
 	    它们通常应该在DNS服务器花费资源建立TCP连接或分析DNS请求之前被
             丢弃，但是比率限制必须在DNS服务器见到请求之前完成。
 	  </para>
@@ -8526,6 +8870,40 @@ example.com                 CNAME   rpz-tcp-only.
             <command>QryDropped</command>统计中。
 	    被比率限制所截断的响应被包含在<command>RateSlipped</command>和
             <command>RespTruncated</command>统计中。
+	  </para>
+	</section>
+
+	<section title="NXDOMAIN Redirection"><info/>
+	  <para>
+	    Named通过两个方法支持NXDOMAIN重定向：
+	    <itemizedlist>
+	      <listitem>重定向区<xref linkend="zone_statement_grammar"/></listitem>
+	      <listitem>重定向名字空间</listitem>
+	    </itemizedlist>
+	  </para>
+	  <para>
+	    在这两种方法中，当named收到一条NXDOMAIN响应，它检查一个
+	    独立的名字空间查看NXDOMAIN响应是否应该被替换为可供选择
+	    的响应。
+	  </para>
+	  <para>
+	    在一个重定向区（<command>zone "." { type redirect; };</command>），
+	    用于替换NXDOMAIN的数据保存在一个单独的区中，它不是通常的
+	    名字空间的一部分。
+	    所有重定向信息都存放在这个区中；其中没有授权。
+	  </para>
+	  <para>
+            在一个重定向名字空间
+	    （<command>option { nxdomain-redirect &lt;suffix&gt; };</command>），
+	    用于替换NXDOMAIN的数据是普通名字空间的一部份，通过在
+	    原始请求名后添加指定的后缀来查找。
+	    这大致使所需的缓存增加一倍，以处理NXDOMAIN响应，因为你
+	    具有原始的NXDOMAIN响应和替代数据或者一个NXDOMAIN指示不存在
+	    替代者。
+	  </para>
+	  <para>
+	    如果一个重定向区和一个重定向名字空间都被配置了，
+	    首先是要重定向区。
 	  </para>
 	</section>
       </section>
@@ -8581,6 +8959,17 @@ example.com                 CNAME   rpz-tcp-only.
             一个服务器在使用IXFR时，有许多bug并宕掉或者数据损坏。
           </para>
 
+	  <para>
+	    <command>request-expire</command>子句决定本地服务器在
+	    作为辅服务器时，是否请求EDNS EXPIRE值。
+	    EDNS EXPIRE指示在区数据将要过期并需要被刷新之前剩余的
+	    时间。
+	    这用于一个辅服务器从另一个辅服务器传送一个区；当从
+	    主服务器传送时，过期计数器是使用SOA记录中的EXPIRE字段
+	    来设置。
+	    缺省是<command>yes</command>。
+	  </para>
+
           <para>
             <command>edns</command>子句决定在与远程服务器通信时，
             是否企图使用EDNS。缺省是<command>yes</command>。
@@ -8602,11 +8991,29 @@ example.com                 CNAME   rpz-tcp-only.
             <command>options/view</command>的行为一致。）
 	  </para>
 
+	  <para>
+	    <command>edns-version</command>选项设置解析器能够发送
+	    给服务器的最大EDNS VERSION。实际发送的EDNS版本仍然服从
+	    通常的EDNS版本协商规则（参见RFC 6891），服务器所支持的
+	    最大EDNS版本，以及其它线索指示的一个更低版本应被发送。
+	    这个选项的意图是用于一个远程服务器对一个给定的EDNS版本
+	    或更高版本反应错误时；它应该被设置为远程服务器为外界
+	    所知的能够支持的最高版本。
+	    有效值是0到255；更大的值将被静默地调整。
+	    这个选项在比0更高的EDNS版本被使用之前将不需要。
+	  </para>
+
           <para>
 	    <command>max-udp-size</command>选项设置<command>named</command>发出
 	    的EDNS UDP消息的最大大小。有效值是从512到4096字节（在这个范围之外的
 	    值将被静默地调整）。这个选项是用于当你知道有防火墙阻止来自
 	    <command>named</command>的大回复包时。
+	  </para>
+
+	  <para>
+	    The <command>tcp-only</command> option sets the transport
+	    <command>tcp-only</command>选项设置传输协议为TCP。缺省是
+	    使用UDP传输，并仅在收到一个截断响应时回退到TCP。
 	  </para>
 
           <para>
@@ -8673,10 +9080,12 @@ example.com                 CNAME   rpz-tcp-only.
 	  </para>
 
 	  <para>
-	    <command>request-sit</command>子句决定本地服务器在发送到其它服务器
-            的请求中是否要添加一个SIT EDNS选项。这覆盖视图或全局选项中的
-            <command>request-sit</command>设置。named可能决定SIT不被远程服务器
-            支持并且不在请求中添加一个SIT EDNS选项。
+	    <command>send-cookie</command>子句决定本地服务器在发送到
+	    其它服务器的请求中是否要添加一个COOKIE EDNS选项。
+	    这覆盖视图或全局选项中的
+	    <command>request-cookie</command>设置。
+	    <command>named</command>服务器可以决定远程服务器不支持COOKIE
+            并且不在请求中添加一个COOKIE EDNS选项。
 	  </para>
 	</section>
 
@@ -8762,7 +9171,9 @@ example.com                 CNAME   rpz-tcp-only.
           <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/mem">http://127.0.0.1:8888/xml/v3/mem</link>
 	  （内存管理统计），
           <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/tasks">http://127.0.0.1:8888/xml/v3/tasks</link>
-	  （任务管理统计）。
+	  （任务管理统计）和
+	  <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/xml/v3/traffic">http://127.0.0.1:8888/xml/v3/traffic</link>
+	  （流量大小）。
 	</para>
 
 	<para>
@@ -8780,7 +9191,9 @@ example.com                 CNAME   rpz-tcp-only.
           <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/mem">http://127.0.0.1:8888/json/v1/mem</link>
 	  （内存管理统计），
           <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/tasks">http://127.0.0.1:8888/json/v1/tasks</link>
-	  （任务管理统计）。
+	  （任务管理统计）和
+	  <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://127.0.0.1:8888/json/v1/traffic">http://127.0.0.1:8888/json/v1/traffic</link>
+	  （流量大小）。
 	</para>
       </section>
 
@@ -8815,9 +9228,13 @@ example.com                 CNAME   rpz-tcp-only.
 	    被所有的视图所继承，但是在一个视图内部定义的密钥只能用于
 	    那个视图。
 	  </para>
+	  <para>
+	    在指定名字之下的验证可以使用<command>rndc nta</command>暂时
+	    关闭。
+	  </para>
 	</section>
 
-        <section xml:id="managed_keys"><info><title><command>managed-keys</command> Statement Grammar</title></info>
+        <section xml:id="managed_keys"><info><title><command>managed-keys</command>语句语法</title></info>
         <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="managed-keys.grammar.xml"/>
         </section>
 	<section xml:id="managed-keys"><info><title><command>managed-keys</command>语句定义和用法</title></info>
@@ -9040,7 +9457,6 @@ view "external" {
         <section xml:id="zone_statement"><info><title><command>zone</command>语句定义和用法</title></info>
 
           <section xml:id="zone_types"><info><title>区类型</title></info>
-
             <para>
               <command>zone</command>配置要求<command>type</command>关键字，
               除非它时一个<command>in-view</command>配置。可以接受的值包括：
@@ -12646,7 +13062,7 @@ HOST-127.EXAMPLE. MX 0 .
 		    </entry>
 		    <entry colname="3">
 		      <para>
-			收到的带有不正确(TSIG或SIG(0))签名的请求。
+			收到的带有不正确（TSIG或SIG(0)）签名的请求。
 		      </para>
 		    </entry>
 		  </row>
@@ -12964,6 +13380,32 @@ HOST-127.EXAMPLE. MX 0 .
 			<command>AuthQryRej</command>和
 			<command>RecQryRej</command>也落在这个计数器范围中，
 			所以在实际中，这个计数器的意义不大。
+		      </para>
+		    </entry>
+		  </row>
+		  <row rowsep="0">
+		    <entry colname="1">
+		      <para><command>QryNXRedir</command></para>
+		    </entry>
+		    <entry colname="2">
+		      <para><command/></para>
+		    </entry>
+		    <entry colname="3">
+		      <para>
+                        导致NXDOMAIN而被重定向的请求。
+		      </para>
+		    </entry>
+		  </row>
+		  <row rowsep="0">
+		    <entry colname="1">
+		      <para><command>QryNXRedirRLookup</command></para>
+		    </entry>
+		    <entry colname="2">
+		      <para><command/></para>
+		    </entry>
+		    <entry colname="3">
+		      <para>
+                        导致NXDOMAIN而被重定向并且结果是一个成功的远程查询的请求。
 		      </para>
 		    </entry>
 		  </row>
@@ -13643,7 +14085,7 @@ HOST-127.EXAMPLE. MX 0 .
 	      <command>UDP6</command> （UDP/IPv6），
 	      <command>TCP4</command> （TCP/IPv4），
 	      <command>TCP6</command> （TCP/IPv6），
-	      <command>Unix</command> （Unix Domain)和
+	      <command>Unix</command> （Unix Domain）和
 	      <command>FDwatch</command> （朝套接字模块外打开的套接字）。
 	      在下面的表中<command>&lt;TYPE&gt;</command>
 	      表示一个套接字类型。
@@ -13847,8 +14289,9 @@ HOST-127.EXAMPLE. MX 0 .
           访问控制表（Access Control Lists，ACL）是地址匹配表，你可以建立并
           命名，以备以后用于<command>allow-notify</command>，
           <command>allow-query</command>，<command>allow-query-on</command>，
-          <command>allow-recursion</command>，<command>allow-recursion-on</command>，
-          <command>blackhole</command>，<command>allow-transfer</command>
+          <command>allow-recursion</command>，
+	  <command>blackhole</command>，<command>allow-transfer</command>，
+	  <command>match-clients</command>
           等语句中。
         </para>
         <para>
@@ -13867,7 +14310,7 @@ HOST-127.EXAMPLE. MX 0 .
           如果有的话。
         </para>
         <para>
-          这是一个如何正确应用ACL的例子：
+	  这是一个基于客户端地址的ACL的例子：
         </para>
 
 <programlisting>
@@ -14024,7 +14467,7 @@ allow-query { !{ !10/8; any; }; key example; };
 
         <para>
           在UNIX服务器上，可以通过为<command>named</command>
-	  设定“<option>-t</option>”选项
+	  设定<option>-t</option>选项
           <acronym>BIND</acronym>运行在<emphasis>chroot</emphasis>的环境中
           （使用<command>chroot()</command>函数）。这可以帮助增进系统的安全性，
           它通过将<acronym>BIND</acronym>放入一个“沙箱”，后者将在服务器遇到危
@@ -14496,7 +14939,7 @@ allow-query { !{ !10/8; any; }; key example; };
                 <abbrev>RFC1535</abbrev>
                 <author><personname><surname>Gavron</surname><firstname>E.</firstname></personname></author>
                 <citetitle>A Security Problem and Proposed Correction With Widely
-                  Deployed <acronym>DNS</acronym> Software.</citetitle>
+                  Deployed <acronym>DNS</acronym> Software</citetitle>
                 <pubdate>October 1993</pubdate>
               </biblioentry>
               <biblioentry>
@@ -14585,7 +15028,7 @@ allow-query { !{ !10/8; any; }; key example; };
                 </authorgroup>
                 <citetitle>A <acronym>DNS</acronym> RR for Specifying the
                   Location of
-                  Services.</citetitle>
+                  Services</citetitle>
                 <pubdate>October 1996</pubdate>
               </biblioentry>
               <biblioentry>
@@ -14741,7 +15184,7 @@ allow-query { !{ !10/8; any; }; key example; };
               <biblioentry>
                 <abbrev>RFC1033</abbrev>
                 <author><personname><surname>Lottor</surname><firstname>M.</firstname></personname></author>
-                <citetitle>Domain administrators operations guide.</citetitle>
+                <citetitle>Domain administrators operations guide</citetitle>
                 <pubdate>November 1987</pubdate>
               </biblioentry>
               <biblioentry>
@@ -14764,7 +15207,7 @@ allow-query { !{ !10/8; any; }; key example; };
                   <author><personname><surname>Manning</surname><firstname>B.</firstname></personname></author>
                   <author><personname><firstname>P.</firstname><surname>Vixie</surname></personname></author>
                 </authorgroup>
-                <citetitle>Operational Criteria for Root Name Servers.</citetitle>
+                <citetitle>Operational Criteria for Root Name Servers</citetitle>
                 <pubdate>October 1996</pubdate>
               </biblioentry>
               <biblioentry>
@@ -14774,7 +15217,7 @@ allow-query { !{ !10/8; any; }; key example; };
                   <author><personname><firstname>R.</firstname><surname>Wright</surname></personname></author>
                 </authorgroup>
                 <citetitle>Use of <acronym>DNS</acronym> Aliases for
-                  Network Services.</citetitle>
+                  Network Services</citetitle>
                 <pubdate>October 1997</pubdate>
               </biblioentry>
             </bibliodiv>
@@ -15080,11 +15523,11 @@ allow-query { !{ !10/8; any; }; key example; };
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-settime-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-signzone-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dnssec-verify-utf8.docbook"/>
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkconf-utf8.docbook"/>
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkzone-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lwresd-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named.conf-utf8.docbook"/>
-      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lwresd-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkconf-utf8.docbook"/>
+      <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-checkzone-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-journalprint-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-nzd2nzf-utf8.docbook"/>
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="named-rrchecker-utf8.docbook"/>

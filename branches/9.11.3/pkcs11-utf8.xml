@@ -347,7 +347,7 @@ $ <userinput>./configure --enable-threads \
       "<command>make install</command>"。
     </para>
     <para>
-      （注意：如果“make test“在“pkcs11“系统测试中失败，你可能是忘记设置
+      （注意：如果“make test”在“pkcs11”系统测试中失败，你可能是忘记设置
       SOFTHSM_CONF环境变量了。）
     </para>
   </section>
@@ -503,14 +503,15 @@ $ <userinput>dnssec-signzone -E '' -S example.net</userinput>
 
     <para>
       如果你想要<command>named</command>使用HSM密钥动态重签区，
-      和/或签名通过nsupdate插入的新记录，named必须能够访问HSM的PIN。
+      和/或签名通过nsupdate插入的新记录，<command>named</command>
+      必须能够访问HSM的PIN。
       在基于OpenSSL的PKCS#11中，这是通过将PIN放在openssl.cnf文件中
       来达到（在上面的例子中，
       <filename>/opt/pkcs11/usr/ssl/openssl.cnf</filename>）。
     </para>
     <para>
-      openssl.cnf文件的位置可以在运行named之前通过设置OPENSSL_CONF
-      环境变量进行覆盖。
+      openssl.cnf文件的位置可以在运行<command>named</command>之前
+      通过设置OPENSSL_CONF环境变量进行覆盖。
     </para>
     <para>openssl.cnf例子：</para>
     <programlisting>

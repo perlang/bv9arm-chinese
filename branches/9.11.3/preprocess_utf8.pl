@@ -38,7 +38,8 @@ s/\\subsection\*\{\KSynopsis/概要/g;
 #
 #s/\\emph\{((([\xe0-\xef][\x80-\xbf]{2})|[\w\d .\-_\n])+)}/\{\\heiti $1}/mg;
 #s/\\emph\{((([\xe0-\xef][\x80-\xbf]{2})|[\w\d .\\\#\-_\n\{\}\(\)])+)}/\{\\heiti $1}/mg;
-s/\\emph\{((([\xe0-\xef][\x80-\xbf]{2})|[\w\d .\\\#\-_\n\()])+)}/\{\\heiti $1}/mg;
+#s/\\emph\{((([\xe0-\xef][\x80-\xbf]{2})|[\w\d .\\\#\-_\n\()])+)}/\{\\heiti $1}/mg;
+s/\\emph\{((([\xe0-\xef][\x80-\xbf]{2})|[\w\d .\\\#\-_\n\()]|(\{\}))+)}/\{\\heiti $1}/mg;
 # need to handle 
 #  \emph{PKCS\#11 URI方案 (draft-{}pechanec-{}pkcs11uri-{}13)}。
 

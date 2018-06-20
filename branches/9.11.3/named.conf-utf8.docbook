@@ -57,12 +57,12 @@
 
   <refsection><info><title>描述</title></info>
 
-    <para><filename>named.conf</filename> is the configuration file
-      for
-      <command>named</command>.  Statements are enclosed
-      in braces and terminated with a semi-colon.  Clauses in
-      the statements are also semi-colon terminated.  The usual
-      comment styles are supported:
+    <para>
+      <filename>named.conf</filename>是
+      <command>named</command>的配置文件。
+      语句放在花括号之间，并以一个分号结束。
+      语句中的子句也以一个分号结束。
+      通常的注释格式都支持：
     </para>
     <para>
       C style: /* */
@@ -968,7 +968,7 @@ zone <replaceable>string</replaceable> [ <replaceable>class</replaceable> ] {
 </literallayout>
   </refsection>
 
-  <refsection><info><title>FILES</title></info>
+  <refsection><info><title>文件</title></info>
 
     <para><filename>/etc/named.conf</filename>
     </para>
@@ -991,7 +991,7 @@ zone <replaceable>string</replaceable> [ <replaceable>class</replaceable> ] {
       <citerefentry>
 	<refentrytitle>rndc-confgen</refentrytitle><manvolnum>8</manvolnum>
       </citerefentry>,
-      <citetitle>BIND 9 Administrator Reference Manual</citetitle>.
+      <citetitle>BIND 9 管理员参考手册</citetitle>.
     </para>
   </refsection>
 

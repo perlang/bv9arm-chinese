@@ -2,6 +2,8 @@
 
 # preprocess.pl
 
+use FileHandle;
+
 undef($/);
 
 $_ = <>;
@@ -12,8 +14,9 @@ s/(\\newif\\ifpdf)\n(\\ifx\\pdfoutput\\undefined)\n(\\pdffalse % we are not runn
 # add "CJKbookmarks" parameter to command usepackage{hyperref}
 s/(\\ifpdf)\n(\\usepackage\[pdftex,bookmarksnumbered,colorlinks,backref,bookmarks,breaklinks,linktocpage,plainpages=false,pdfstartview=FitH\]\{hyperref\})\n(\\else)\n(\\usepackage\[bookmarksnumbered,colorlinks,backref,bookmarks,breaklinks,linktocpage,plainpages=false,\]\{hyperref\})\n(\\fi)\n/$1\n\\usepackage\[pdftex,CJKbookmarks,bookmarksnumbered,colorlinks,backref,bookmarks,breaklinks,linktocpage,plainpages=false,pdfstartview=FitH\]\{hyperref\}\n$3\n$4\n$5\n/;
 
+my($commitdate) = readfile('version');
 # add "Copyright" for chinese version
-s/(\\tableofcontents)/\n\n\\begin\{center\}Copyright \\copyright\{\} 2008-2018 本文档中文版权归sunguonian\@gmail.com所有\\end\{center\}\n\\begin\{center\}\n\n允许任何个人、任何组织以任何目的、任何形式付费或免费使用，拷贝，修改和分发\n本文档，前提是需要在所有拷贝中出现上述的版权声明和本许可声明。\n\\end\{center\}\n\n$1/;
+s/(\\tableofcontents)/\n\n\\begin\{center\}Copyright \\copyright\{\} 2008-2018 本文档中文版权归sunguonian\@gmail.com所有\\end\{center\}\n\\begin\{center\}\n\n允许任何个人、任何组织以任何目的、任何形式付费或免费使用，拷贝，修改和分发\n本文档，前提是需要在所有拷贝中出现上述的版权声明和本许可声明。\n\n本版本提交时间：$commitdate\\end\{center\}\n\n$1/;
 
 # replace 10pt font with 11pt font. line 19/21 in Bv9ARM-gbk.tex
 # for ASCII characters, 11pt is too large
@@ -50,3 +53,12 @@ s/\{SEE ALSO\}/\{参见\}/g;
 s/\{DESCRIPTION\}/\{描述\}/g;
 
 print "$_";
+
+sub readfile {
+	my($file) = @_;
+	my($fh) = FileHandle->new("<$file");
+	my($ver) = <$fh>;
+	chomp($ver);
+	$fh->close();
+	return($ver);
+}

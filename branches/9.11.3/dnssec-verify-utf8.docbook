@@ -178,7 +178,7 @@
       <citerefentry>
         <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
       </citerefentry>,
-      <citetitle>BIND 9 Administrator Reference Manual</citetitle>,
+      <citetitle>BIND 9 管理员参考手册</citetitle>,
       <citetitle>RFC 4033</citetitle>.
     </para>
   </refsection>

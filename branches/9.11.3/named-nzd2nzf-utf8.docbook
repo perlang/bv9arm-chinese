@@ -23,7 +23,7 @@
   <refnamediv>
     <refname><application>named-nzd2nzf</application></refname>
     <refpurpose>
-      Convert an NZD database to NZF text format
+      转换一个NZD数据库到NZF文本格式
     </refpurpose>
   </refnamediv>
 
@@ -44,25 +44,22 @@
   <refsect1>
     <title>DESCRIPTION</title>
     <para>
-      <command>named-nzd2nzf</command> converts an NZD database to NZF
-      format and prints it to standard output.  This can be used to
-      review the configuration of zones that were added to
-      <command>named</command> via <command>rndc addzone</command>.
-      It can also be used to restore the old file format
-      when rolling back from a newer version
-      of BIND to an older version.
+      <command>named-nzd2nzf</command>转换一个NZD数据库到NZF格式
+      并输出到标准输出。
+      这可以用于复查由<command>rndc addzone</command>添加到
+      <command>named</command>中的区的配置。
+      也可用于在从一个新版本的BIND回滚到一个旧版本时恢复旧文件格式。
     </para>
   </refsect1>
 
   <refsect1>
-    <title>ARGUMENTS</title>
+    <title>参数</title>
     <variablelist>
       <varlistentry>
         <term>filename</term>
         <listitem>
           <para>
-            The name of the <filename>.nzd</filename> file whose contents
-            should be printed.
+            将要输出其内容的<filename>.nzd</filename>文件的名字。
           </para>
         </listitem>
       </varlistentry>
@@ -72,12 +69,12 @@
   <refsect1>
     <title>SEE ALSO</title>
     <para>
-      <citetitle>BIND 9 Administrator Reference Manual</citetitle>
+      <citetitle>BIND 9 管理员参考手册</citetitle>
     </para>
   </refsect1>
 
   <refsect1>
-    <title>AUTHOR</title>
+    <title>作者</title>
     <para><corpauthor>Internet Systems Consortium</corpauthor>
     </para>
   </refsect1>

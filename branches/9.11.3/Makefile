@@ -377,7 +377,7 @@ Bv9ARM-book-utf8.unicode.tex.01: Bv9ARM-book-utf8.unicode.tex
 Bv9ARM-book-utf8.utf8.tex: Bv9ARM-book-utf8.unicode.tex.01
 	./unicode2utf8.pl $< > $@
 
-Bv9ARM-book-utf8.utf8.tex.01: Bv9ARM-book-utf8.utf8.tex
+Bv9ARM-book-utf8.utf8.tex.01: Bv9ARM-book-utf8.utf8.tex version
 	./preprocess_utf8.pl $< > $@
 
 Bv9ARM-zh_CN.tex: Bv9ARM-book-utf8.utf8.tex.01

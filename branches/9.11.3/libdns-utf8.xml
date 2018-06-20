@@ -415,7 +415,7 @@ $ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dy
     </section>
     <section>
       <info>
-        <title>nsprobe: domain/name server checker in terms of RFC 4074</title>
+	      <title>nsprobe: 遵循RFC 4074的域/名字服务器检查器</title>
       </info>
       <para>
         检查一个域名集合，按照RFC 4074的描述查看域名的名字服务器的行为
@@ -426,7 +426,7 @@ $ <userinput>sample-update -a sample-update -k Kxxx.+nnn+mmmm.key delete "foo.dy
         Usage: nsprobe [-d] [-v [-v...]] [-c cache_address] [input_file]
       </para>
       <para>
-        Options
+        选项
       </para>
       <variablelist>
         <varlistentry>

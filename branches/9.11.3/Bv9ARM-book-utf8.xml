@@ -14095,7 +14095,10 @@ HOST-127.EXAMPLE. MX 0 .
 
 	    <informaltable colsep="0" rowsep="0">
               <tgroup cols="2" colsep="0" rowsep="0" tgroupstyle="4Level-table">
-		<colspec colname="1" colnum="1" colsep="0" colwidth="1.150in"/>
+		<colspec colname="1" colnum="1" colsep="0" colwidth="1.750in"/>
+		<!-- Since in chinese version, there are some overlap between
+                colname1 and colname2, so the colwidth of colname1 was adjust
+                from 1.150in to 1.75in -->
 		<colspec colname="2" colnum="2" colsep="0" colwidth="3.350in"/>
 		<tbody>
 		  <row>

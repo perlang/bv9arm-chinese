@@ -8767,8 +8767,8 @@ example.com                 CNAME   rpz-tcp-only.
             值为0表示不“slip”：因比率限制而不发出被截断的响应，所有响应都不丢弃。
             值为1使每个响应都slip；
             值为2到10之间使每N个响应slip一次。
-            一些错误响应包括REFUSE和SERVFAIL不能被替代成截断的响应，
-            and are instead leaked 以<command>slip</command>比率。
+            一些错误响应，包括REFUSE和SERVFAIL，不能被替代成截断的响应，
+	    而是以<command>slip</command>比率返回响应。
 	  </para>
 
 	  <para>

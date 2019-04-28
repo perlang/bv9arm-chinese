@@ -1,0 +1,90 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"
+	       [<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<refentry id="man.named-nzd2nzf">
+  <refentryinfo>
+    <date>May 5, 2016</date>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>named-nzd2nzf</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>named-nzd2nzf</application></refname>
+    <refpurpose>
+      转换一个NZD数据库到NZF文本格式
+    </refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2016</year>
+      <year>2018</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>named-nzd2nzf</command>
+      <arg choice="req">filename</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>DESCRIPTION</title>
+    <para>
+      <command>named-nzd2nzf</command>转换一个NZD数据库到NZF格式
+      并输出到标准输出。
+      这可以用于复查由<command>rndc addzone</command>添加到
+      <command>named</command>中的区的配置。
+      也可用于在从一个新版本的BIND回滚到一个旧版本时恢复旧文件格式。
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>参数</title>
+    <variablelist>
+      <varlistentry>
+        <term>filename</term>
+        <listitem>
+          <para>
+            将要输出其内容的<filename>.nzd</filename>文件的名字。
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>SEE ALSO</title>
+    <para>
+      <citetitle>BIND 9 管理员参考手册</citetitle>
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>作者</title>
+    <para><corpauthor>Internet Systems Consortium</corpauthor>
+    </para>
+  </refsect1>
+
+</refentry><!--
+ - Local variables:
+ - mode: sgml
+ - End:
+-->

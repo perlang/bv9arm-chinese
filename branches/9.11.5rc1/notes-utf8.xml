@@ -1,0 +1,209 @@
+<!DOCTYPE book [
+<!ENTITY Scaron "&#x160;">
+<!ENTITY ccaron "&#x10D;">
+<!ENTITY aacute "&#x0E1;">
+<!ENTITY mdash "&#8212;">
+<!ENTITY ouml "&#xf6;">]>
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xmlns:db="http://docbook.org/ns/docbook" version="5.0"><info/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion-utf8.xml"/>
+  <section xml:id="relnotes_intro"><info><title>介绍</title></info>
+    <para>
+      本文档总结了自从BIND 9.11（延长支持版）分支上一个产品发布版以来的变化。
+      请参考<filename>CHANGES</filename>文件以获取关于漏洞修补和
+      其它变化的更多清单。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_download"><info><title>下载</title></info>
+    <para>
+      最新版的BIND 9软件总是可以在
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/downloads/">http://www.isc.org/downloads/</link>找到。
+      在那里，你会发现每个版本的附加信息，源码和为微软Windows操作系统
+      预编译的版本。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_license"><info><title>许可证变化</title></info>
+    <para>
+      从BIND 9.11.0，ISC改变了BIND的开源许可证，从ISC许可证变为
+      Mozilla公共许可证（MPL 2.0）。
+    </para>
+    <para>
+      MPL-2.0许可证要求，如果你修改了使用这个许可证的软件
+      （例如BIND），并在你的组织之外发布它们，你要在同样许可证下
+      公开这些修改。它不要求你发布或公开对我们的软件的修改之外的
+      部份。
+    </para>
+    <para>
+      这个要求不影响任何使用而不重分发的人，无论是否修改，也不影响
+      任何重分发它但不修改的人。所以，这个变化对大多数使用BIND的
+      个人和组织没有影响。
+    </para>
+    <para>
+      对那些不确定许可证变化是否会影响到他们使用BIND的人，或者
+      想讨论如何遵守许可证的人可以在<link
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xlink:href="https://www.isc.org/mission/contact/">
+      https://www.isc.org/mission/contact/</link>联系ISC。
+    </para>
+  </section>
+
+  <section xml:id="win_support"><info><title>早期Windows不再支持</title></info>
+    <para>
+      自BIND 9.11.2起，Windows XP和Windows 2003不再是BIND支持的平台；“XP”
+      二进制不再能够从ISC下载。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_security"><info><title>安全修补</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  当使用了<command>deny-answer-aliases</command>时，在递归处理
+	  DNAME记录时，<command>named</command>可能崩溃。
+	  这个缺陷在CVE-2018-5740中公开。 [GL #387]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  当开启递归但是没有指定<command>allow-recursion</command>和
+	  <command>allow-query-cache</command>访问控制表时，它们应限于本地
+	  网络，但它们被非故意地设置匹配缺省的<command>allow-query</command>，
+	  这就导致允许远程查询。
+	  这个缺陷在CVE-2018-5738中公开。 [GL #309]
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_features"><info><title>新特性</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <command>named</command>现在支持“root key sentinel”机制。
+	  这使验证解析器能够指示哪个信任锚是根使用的，这样可以搜集
+	  关于根密钥轮转的信息。要关闭这个特性，添加
+	  <command>root-key-sentinel no;</command>到
+	  <filename>named.conf</filename>。
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  增加了不返回DNS COOKIE选项的能力，当一个DNS COOKIE选项出现
+	  在请求中时。
+	  要阻止返回一个cookie，添加<command>answer-cookie no;</command>
+	  到<filename>named.conf</filename>。 [GL #173]
+	</para>
+        <para>
+          <command>answer-cookie no</command>的目的仅仅是作为一个
+          临时测量手段，用于<command>named</command>与还不
+          支持DNS COOKIE的其它服务器共享一个IP地址时。
+          监听在同一个地址上的服务器不一致不会导致运行问题，
+          但是出于更加谨慎，还是提供了一个关闭COOKIE响应的
+          选项以使所有的服务器有同样的行为表现。
+          DNS COOKIE是一个重要的安全机制，不应该被关闭，除非
+          绝对必要。
+        </para>
+      </listitem>
+      <listitem>
+	<para>
+	  增加了两个新的更新策略规则类型，
+	  <command>krb5-selfsub</command>和<command>ms-selfsub</command>，
+	  允许带有Kerberos标识的机器更新位于或在机器名之下的名字空间，
+	  机器名分别由标识名（principal）所标识。
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_removed"><info><title>去掉的特性</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  如果旧版本的BIND现在能够与libidn2库编译以增加对IDNA2008的
+	  支持，<command>named</command>将会在日志中记录一条警告信息。
+	  先前的BIND仅支持IDNA2003，使用（现在已经废弃的）idnkit-1库。
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_changes"><info><title>特性变化</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  当BIND编译进了IDN支持时，<command>dig +noidnin</command>
+	  可以用于关闭对输入域名的IDN处理。
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  当前支持多个<command>cookie-secret</command>子句。
+	  在<filename>named.conf</filename>中的第一个
+	  <command>cookie-secret</command>用于生成新的服务器cookie。
+	  任何其它的用于接受旧的服务器cookie或者或者那些由其它服务器
+	  使用匹配的<command>cookie-secret</command>所生成的。
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <command>rndc nta</command>不能区分同名不同类的视图；这个通过
+          增加一个<command>-class</command>选项改正了。 [GL #105]
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  当使用<command>rndc nta</command>向多个视图添加了一个否定
+	  信任锚时，经由<command>rndc</command>返回的文本在第一行
+	  之后被错误地截断，显得只有一个NTA被添加。这个已被修补。 [GL #105]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <command>named</command>现在拒绝超大的增量（IXFR）区传送
+	  以防止可能的日志文件损坏而导致<command>named</command>
+	  在装载区时异常终止。 [GL #339]
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  如果一个<command>rndc reload</command>命令已经完成，但是对应的区
+	  装载动作还未完成，这时激活的下一个<command>rndc reload</command>
+	  可能导致<command>named</command>泄漏内存。 [RT #47076]
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="end_of_life"><info><title>生命周期结束</title></info>
+    <para>
+      BIND 9.11 （延长支持版）至少将会被支持到2021年12月。
+      参见<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>以获取ISC的软件支持策略的详细信息。
+    </para>
+  </section>
+  <section xml:id="relnotes_thanks"><info><title>谢谢您</title></info>
+
+    <para>
+      感谢每一个帮助我们的您，使得本版本得以发布。
+      如果您愿意对ISC有所贡献，以帮助我们继续改进开源软件，请访问我们的
+      捐助网页
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/donate/">http://www.isc.org/donate/</link>。
+    </para>
+  </section>
+</section>

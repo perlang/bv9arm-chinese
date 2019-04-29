@@ -1,0 +1,1187 @@
+<!DOCTYPE book [
+<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dig">
+  <info>
+    <date>2014-02-19</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>dig</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>dig</refname>
+    <refpurpose>DNS查找工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <year>2002</year>
+      <year>2003</year>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2006</year>
+      <year>2007</year>
+      <year>2008</year>
+      <year>2009</year>
+      <year>2010</year>
+      <year>2011</year>
+      <year>2013</year>
+      <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
+      <year>2017</year>
+      <year>2018</year>
+      <year>2019</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>dig</command>
+      <arg choice="opt" rep="norepeat">@server</arg>
+      <arg choice="opt" rep="norepeat"><option>-b <replaceable class="parameter">address</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-f <replaceable class="parameter">filename</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-k <replaceable class="parameter">filename</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-m</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-p <replaceable class="parameter">port#</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-q <replaceable class="parameter">name</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-t <replaceable class="parameter">type</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-x <replaceable class="parameter">addr</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-y <replaceable class="parameter"><optional>hmac:</optional>name:key</replaceable></option></arg>
+      <group choice="opt" rep="norepeat">
+      <arg choice="opt" rep="norepeat"><option>-4</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-6</option></arg>
+      </group>
+      <arg choice="opt" rep="norepeat">name</arg>
+      <arg choice="opt" rep="norepeat">type</arg>
+      <arg choice="opt" rep="norepeat">class</arg>
+      <arg choice="opt" rep="repeat">queryopt</arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis sepchar=" ">
+      <command>dig</command>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis sepchar=" ">
+      <command>dig</command>
+      <arg choice="opt" rep="repeat">global-queryopt</arg>
+      <arg choice="opt" rep="repeat">query</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+
+    <para>
+      <command>dig</command>是一个查
+      询DNS名字服务器的灵活工具。它执行DNS查找并显示从所查找的名字服务器所返回
+      的答案。由于其灵活性，容易使用和整洁的输出，大多数DNS管理员使用
+      <command>dig</command>来排除DNS问题。<command>dig</command>趋向于比其它查
+      找工具提供更多的功能。
+    </para>
+
+    <para>
+      虽然<command>dig</command>通常使用命令行参数，它也具有批处理模式的操作，
+      从一个文件读入查找请求。在使用<option>-h</option>选项时，会打印出其命令行
+      参数的一个简要总结。与早期的版本不同，<command>dig</command>的BIND 9实现
+      允许从命令行发出多个查找。
+    </para>
+
+    <para>
+      <command>dig</command>将会试探<filename>/etc/resolv.conf</filename>中服务
+      器列表中的每台机器，除非让它查找一个指定的名字服务器。如果没有找到可用的
+      服务器地址，<command>dig</command>将会把请求发给本地主机。
+    </para>
+
+    <para>
+      在没有给出命令行参数或选项时，将会执行一个对“.”（根）的NS请求。
+    </para>
+
+    <para>
+      通过<filename>${HOME}/.digrc</filename>文件，可以为每个用户设置
+      <command>dig</command>的缺省参数。这个文件将被读入并在命令行参数之前应用
+      其中的所有参数。
+    </para>
+
+    <para>
+      IN和CH类名覆盖IN和CH顶级域名。使用<option>-t</option>和
+      <option>-c</option>选项指定类型和类，或者使用<option>-q</option>指定域名
+      或者在查找这些顶级域时使用“IN”和“CH”。
+      <option>-r</option>选项为那些需要可预测结果的脚本关闭这个特性。
+    </para>
+
+  </refsection>
+
+  <refsection><info><title>简单用法</title></info>
+
+    <para>
+      典型的<command>dig</command>调用看起来是这样的：
+      <programlisting> dig @server name type </programlisting>
+      在这里：
+
+      <variablelist>
+
+        <varlistentry>
+          <term><constant>server</constant></term>
+          <listitem>
+            <para>
+              是请求发往的名字服务器的名字或者IP地址。可以是点分十进制格式的
+              IPv4地址或者冒号分隔形式的IPv6地址。当所提供的
+              <parameter>server</parameter>参数是一个主机名，
+              <command>dig</command>在请求这个名字服务器之前先解析其名字。
+            </para>
+            <para>
+              如果没有提供<parameter>server</parameter>参数，
+              <command>dig</command>查找<filename>/etc/resolv.conf</filename>；
+              如果在其中发现一个地址，它就请求这个地址上的名字服务器。如果
+              使用了<option>-4</option>或<option>-6</option>选项，就只会试探
+              相关的传输层。如果没有找到可用的地址，<command>dig</command>
+              就会把请求发到本地主机。显示从名字服务器返回的响应信息。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><constant>name</constant></term>
+          <listitem>
+            <para>
+              是要查找的资源记录的名字。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><constant>type</constant></term>
+          <listitem>
+            <para>
+              指明所要的请求类型 &mdash; ANY，A，MX，SIG，等等。
+              <parameter>type</parameter>可以是任何有效的请求类型。如果没有提供
+              <parameter>type</parameter>参数，<command>dig</command>将会执行对
+              A记录的查找。
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+    </para>
+
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+
+    <variablelist>
+      <varlistentry>
+        <term>-4</term>
+        <listitem>
+        <para>
+          仅使用IPv4。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-6</term>
+        <listitem>
+        <para>
+          仅使用IPv6。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-b <replaceable class="parameter">address<optional>#port</optional></replaceable></term>
+        <listitem>
+        <para>
+          设置请求的源IP地址。<parameter>address</parameter>
+          必须是主机的一个网络接口上的有效地址，或者为“0.0.0.0”，或者为“::”。
+          可以通过附加“#&lt;port&gt;”指定一个可选的端口。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">class</replaceable></term>
+        <listitem>
+        <para>
+          设置请求类。缺省<parameter>class</parameter>是IN；
+          其它类是HS，表示Hesiod记录，或CH，表示CHAOSNET记录。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-f <replaceable class="parameter">file</replaceable></term>
+        <listitem>
+        <para>
+          批处理模式：<command>dig</command>从文件
+          <parameter>filename</parameter>中读入要查找请求的列表，并进行处理。
+          文件中的每一行应该组织成与使用命令行提供请求给
+          <command>dig</command>的同样方式。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-i</term>
+        <listitem>
+        <para>
+          使用废弃的RFC 1886 IP6.INT域做反向IPv6查找，这已不再使用。
+          废弃的位串标记请求（RFC 2874）不再被尝试。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-k <replaceable class="parameter">keyfile</replaceable></term>
+        <listitem>
+        <para>
+          使用TSIG签名请求，TSIG使用一个从给定的文件中读到的一个密钥。
+          密钥文件可以使用
+          <citerefentry>
+            <refentrytitle>tsig-keygen</refentrytitle><manvolnum>8</manvolnum>
+          </citerefentry>
+          生成。
+          在与<command>dig</command>之间使用TSIG认证时，被请求的名字服务器
+          需要知道所使用的密钥和算法。在BIND中，通过在
+          <filename>named.conf</filename>中指定合适的<command>key</command>
+          和<command>server</command>语句来完成。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-m</term>
+        <listitem>
+        <para>
+          打开内存使用调试。
+          <!-- 它打开 ISC_MEM_DEBUGTRACE 和 ISC_MEM_DEBUGRECORD
+               文档在 include/isc/mem.h 中 -->
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p <replaceable class="parameter">port</replaceable></term>
+        <listitem>
+        <para>
+          发送请求到服务器的一个非标准端口，而不是缺省的53端口。
+          这个选项可以用于测试一个名字服务器，将其配置成在一个
+          非标准端口上监听请求。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-q <replaceable class="parameter">name</replaceable></term>
+        <listitem>
+        <para>
+          要查询的域名。这个用于区别<parameter>name</parameter>和其它参数。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-r</term>
+      <listitem>
+        <para>
+          不从<filename>${HOME}/.digrc</filename>读取选项。
+          这对需要可预测结果的脚本非常有用。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-t <replaceable class="parameter">type</replaceable></term>
+        <listitem>
+        <para>
+          请求的资源记录类型。它可以是任何有效的请求类型。
+          如果它是BIND 9中所支持的资源记录类型，它可以通过类型助记符
+          （如‘NS’或‘AAAA’）给出。
+          缺省请求类型为“A”，除非设定<option>-x</option>选项，它指定一个反向查找。
+          可以通过指定AXFR的类型的请求进行区传送。当请求一个增量区传送（IXFR）时，
+          <parameter>type</parameter>被设为<literal>ixfr=N</literal>。增量区传送
+          将包含区的变化，区的SOA记录中的序列号为<parameter>N</parameter>。
+        </para>
+        <para>
+          所有的资源记录类型都可以表示为“TYPEnn”，这里nn是类型编号。
+          如果资源类型是BIND 9中所不支持的，结果将会以RFC 3597中描述的方式显示。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-u</term>
+	<listitem>
+	  <para>
+            输出以微秒为单位而不是以毫秒为单位的请求时间。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v</term>
+        <listitem>
+        <para>
+          打印出版本号并退出。
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-x <replaceable class="parameter">addr</replaceable></term>
+        <listitem>
+        <para>
+          简化的反向查找，用于从地址映射到名字。
+          <parameter>addr</parameter>是一个点分十进制形式的IPv4地址，
+          或者一个以冒号分隔的IPv6地址。
+          当使用<option>-x</option>时，不需要提供<parameter>name</parameter>，
+          <parameter>class</parameter>和<parameter>type</parameter>参数。
+          <command>dig</command>自动执行一个类似
+          <literal>94.2.0.192.in-addr.arpa</literal>的查找，并将请求类型和类
+          分别设置为PTR和IN。
+          IPv6地址使用半字节格式在IP6.ARPA域名下面查找。（参见
+          <option>-i</option>选项。）
+        </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-y <replaceable class="parameter"><optional>hmac:</optional>keyname:secret</replaceable></term>
+        <listitem>
+        <para>
+          使用TSIG并所给定的认证密钥签名请求。<parameter>keyname</parameter>
+          是密钥的名字，<parameter>secret</parameter>是base64编码的共享密码，
+          <parameter>hmac</parameter>是密钥算法的名字；有效的选择是
+          <literal>hmac-md5</literal>，<literal>hmac-sha1</literal>，
+          <literal>hmac-sha224</literal>，<literal>hmac-sha256</literal>，
+          <literal>hmac-sha384</literal>或<literal>hmac-sha512</literal>。
+          如果未指定<parameter>hmac</parameter>，缺省为
+          <literal>hmac-md5</literal>或者如果MD5被禁止，则为
+          <literal>hmac-sha256</literal>。
+        </para>
+        <para>
+          注意：你应该使用<option>-k</option>选项并避免
+          <option>-y</option>选项，因为随着<option>-y</option>被提供的
+          共享密码是以明文形式被用作一个命令行参数中。这在
+          <citerefentry>
+              <refentrytitle>ps</refentrytitle><manvolnum>1</manvolnum>
+          </citerefentry>
+          的输出中，或在用户的shell中维护的一个历史文件中是可见的。
+        </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>请求选项</title></info>
+
+    <para>
+      <command>dig</command>提供许多查询选项，可以影响生成查询和显示结果的方式。
+      其中一些选项设置或清空请求头部的标志位，一些决定打印回答中的哪些部份，其
+      它的决定超时和重试策略。
+    </para>
+
+    <para>
+      每个请求选项由一个前导加号（<literal>+</literal>）和一个关键字标识。一些
+      关键字设置或清空一个选项。这些可能由前导字符串<literal>no</literal>来否定
+      关键字的含义。其它关键字给选项赋值，就像超时间隔。他们具有
+      <option>+keyword=value</option>的形式。
+      关键字可以是缩写，前提是缩写是无歧义的；例如<literal>+cd</literal>等效于
+      <literal>+cdflag</literal>。
+      请求选项是：
+
+      <variablelist>
+
+        <varlistentry>
+          <term><option>+[no]aaflag</option></term>
+          <listitem>
+            <para>
+              <parameter>+[no]aaonly</parameter>的同义词。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]aaonly</option></term>
+          <listitem>
+            <para>
+              在请求中设置“aa”标志。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]additional</option></term>
+          <listitem>
+            <para>
+              显示[不显示]回复的附加部份。缺省是显示。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]adflag</option></term>
+          <listitem>
+            <para>
+              设置[不设置]请求中的AD（可靠的数据）位。它要求服务器返回
+	      回答和权威部份的所有记录是否都已按照服务器的安全策略验证。AD=1
+	      指示所有记录都已被验证为安全并且回答不是来自于一个OPT-OUT范围。
+	      AD=0指示回答中的某些部份是不安全的或者没有验证的。这个位缺省是
+              置位的。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]all</option></term>
+          <listitem>
+            <para>
+              设置或清除所有显示标志。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]answer</option></term>
+          <listitem>
+            <para>
+              显示[不显示]回复的回答部份。缺省是显示。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]authority</option></term>
+          <listitem>
+            <para>
+              显示[不显示]回复的权威部份。缺省是显示。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]badcookie</option></term>
+          <listitem>
+            <para>
+              如果收到一个BADCOOKIE响应，使用新的服务器
+              cookie重试查找。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]besteffort</option></term>
+          <listitem>
+            <para>
+              试图显示坏包消息的内容。缺省是不显示坏包回答。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+bufsize=B</option></term>
+          <listitem>
+            <para>
+              设置使用EDNS0公告的UDP消息缓冲大小为<parameter>B</parameter>字节。
+              这个缓冲的最大值和最小值分别为65535和0。在这个范围之外的值会被适
+              当地调整到高或低。0之外的值将会发送出一个EDNS请求。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]cdflag</option></term>
+          <listitem>
+            <para>
+              设置[不设置]请求中的CD（关闭检查）位。这请求服务器不对响应执行
+              DNSSEC验证。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]class</option></term>
+          <listitem>
+            <para>
+              打印记录时显示[不显示]类。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]cmd</option></term>
+          <listitem>
+            <para>
+              翻转打印在输出中标识<command>dig</command>版本和所应用的请求选项
+              的初始注释的状态。这个注释缺省是要打印的。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]comments</option></term>
+          <listitem>
+            <para>
+              翻转在输出中显示注释行的状态。缺省是打印注释。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]cookie<optional>=####</optional></option></term>
+          <listitem>
+            <para>
+              带可选值发送一个COOKIE EDNS选项。从先前的响应重放一个
+              COOKIE将允许服务器标识一个先前的客户端。缺省值是
+              <option>+cookie</option>。
+            </para>
+            <para>
+              当设置了+trace时，也设置<command>+cookie</command>，这样
+              能更好地模拟来自一个名字服务器的缺省请求。
+            </para>
+          </listitem>
+        </varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]crypto</option></term>
+	  <listitem>
+	    <para>
+	      翻转对DNSSEC记录中加密字段的显示。这些字段在诊断大多数
+              DNSSEC验证失败时不是必须的，去掉它们使得查看普通失败更
+              容易。缺省是显示这些字段。当被省略时，它们被字符串
+              "[omitted]"替代，或者在DNSKEY情况，显示密钥标识号作为
+              替代，例如"[ key id = value ]"。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]defname</option></term>
+          <listitem>
+            <para>
+              废弃，作为<parameter>+[no]search</parameter>的同义词对待。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]dnssec</option></term>
+          <listitem>
+            <para>
+              通过在请求的附加部份放置OPT记录，并设置DNSSEC OK位（DO）来请求发
+              送DNSSEC记录。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+domain=somename</option></term>
+          <listitem>
+            <para>
+              设置搜索列表使包含唯一域名<parameter>somename</parameter>，就像在
+              <filename>/etc/resolv.conf</filename>中<command>domain</command>
+              命令中指定一样，如果给出<parameter>+search</parameter>选项，就打
+              开搜索列表处理。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+dscp=value</option></term> <listitem>
+            <para>
+              在发送请求时，设置使用的DSCP码点。有效的DSCP码点在
+              [0..63]的范围。缺省时不显式设定码点。
+            </para>
+          </listitem>
+        </varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]edns=#</option></term>
+	  <listitem>
+	    <para>
+	       指定请求所带的EDNS的版本。有效值为0到255。设置EDNS版本会导致发出
+	       一个EDNS请求。<option>+noedns</option>清除所记住的EDNS版本。缺省
+               时EDNS被设置为0。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ednsflags[=#]</option></term>
+          <listitem>
+            <para>
+              设置必须为0的EDNS标志位（Z位）为指定的值。十进制，十六进制和
+              八进制都是可以的。设置一个命名标志（例如 DO）将被静默地忽略。
+              缺省时，不设置Z位。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ednsnegotiation</option></term>
+          <listitem>
+            <para>
+              打开/关闭EDNS版本协商。缺省时EDNS版本协商为打开。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ednsopt[=code[:value]]</option></term>
+          <listitem>
+            <para>
+              使用码点<option>code</option>和可选荷载<option>value</option>
+              指定EDNS选项为一个十六进制字符串。<option>code</option>
+              可以为一个EDNS选项名（例如，
+              <literal>NSID</literal>或<literal>ECS</literal>）或
+              一个任意数字值这两者之一。<option>+noednsopt</option>
+              清除将发送的EDNS选项。
+            </para>
+          </listitem>
+        </varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]expire</option></term>
+	  <listitem>
+	    <para>
+	      发送一个EDNS过期选项。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]fail</option></term>
+          <listitem>
+            <para>
+              如果收到了一个SERVFAIL不会重试下一个服务器。缺省是不重试下一个服
+              务器，这与普通的存根解析器行为相反。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]header-only</option></term>
+          <listitem>
+            <para>
+              发送一个带有DNS头部但不带问题部分的请求。
+              缺省是要添加一个问题部分。当设置这个选项时，请求类型和
+              请求名被忽略。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]identify</option></term>
+          <listitem>
+            <para>
+              在<parameter>+short</parameter>选项打开时，显示[不显示]用于补充回
+              答的IP地址和端口号。如果要求短格式回答，缺省是不显示提供回答的服
+              务器的源地址和端口号。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]idnin</option></term>
+          <listitem>
+            <para>
+              处理[不处理]输入中的IDN域名。
+              这个要求在编译时打开IDN SUPPORT。
+            </para>
+            <para>
+              当标准输出是一个tty时，缺省是要处理IDN输入。
+              当dig输出被重定向到文件，管道以及其它非tty文件描述符时，
+              对IDN处理是被禁止的。
+            </para>
+          </listitem>
+        </varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]idnout</option></term>
+	  <listitem>
+	    <para>
+	      转换[不转换]输出上的puny code。
+              这要求在编译时打开IDN支持。
+            </para>
+            <para>
+              当标准输出是一个tty时，缺省是要处理输出的 puny code。
+              当dig输出被重定向到文件，管道以及其它非tty文件描述符时，
+              对输出的 puny code 处理是被禁止的。
+            </para>
+	  </listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ignore</option></term>
+          <listitem>
+            <para>
+              忽略UDP响应中的截断而不用TCP重试。缺省情况要用TCP重试。
+            </para>
+          </listitem>
+        </varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]keepopen</option></term>
+	  <listitem>
+	    <para>
+              在两次或多次请求之间保持TCP套接字打开，这样可以重用而不是
+              每次查找时都建立一个新的TCP套接字。缺省是
+              <option>+nokeepopen</option>。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]mapped</option></term>
+          <listitem>
+            <para>
+              允许使用映射IPv4到IPv6地址。
+              缺省是<option>+mapped</option>.
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]multiline</option></term>
+          <listitem>
+            <para>
+              以详细的多行格式并附带人所易读的注释打印如SOA这样的记录。缺省是将
+              每个记录打印在一行中，以适应机器分析<command>dig</command>的输出。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+ndots=D</option></term>
+          <listitem>
+            <para>
+              设置在name中必须出现的点的个数为D，<parameter>name</parameter>被
+              当成绝对名字。缺省值是在<filename>/etc/resolv.conf</filename>中用
+              ndots语句定义的值，或者为1，如果没有使用ndots语句。少于这个数目的
+              点的名字会被解释为相对名字，如果设置了<option>+search</option>，
+              就会在<filename>/etc/resolv.conf</filename>中的
+              <option>search</option>或<option>domain</option>指令所列的域名中
+              搜索。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]nsid</option></term>
+          <listitem>
+            <para>
+	      在发送一个请求时包含一个EDNS名字服务器ID请求。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]nssearch</option></term>
+          <listitem>
+            <para>
+              在设置了这个选项时，<command>dig</command>试图找到包含所查找名字
+              的区的权威名字服务器并显示这个区的每个名字服务器都有的SOA记录。
+            </para>
+	    <para>
+              <filename>resolv.conf</filename>中的'ndots'（缺省是1），它可以被
+              <parameter>+ndots</parameter>覆盖，决定了名字是否被作为相对名字
+              对待，以及因此是否最终执行一个搜索。
+	    </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]onesoa</option></term>
+          <listitem>
+            <para>
+              在执行一个AXFR时，仅打印一个（开始的）SOA记录。缺省是打印开始的和
+              结尾的SOA记录。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]opcode=value</option></term>
+          <listitem>
+            <para>
+              设置[恢复]DNS消息操作码为指定值。缺省值是QUERY（0）。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]qr</option></term>
+          <listitem>
+            <para>
+              打印[不打印]所发出的请求，缺省是不打印请求。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]question</option></term>
+          <listitem>
+            <para>
+              当一个回答返回时，打印[不打印]请求的问题部份。缺省是将问题部份作
+              为一个注释打印。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]rdflag</option></term>
+          <listitem>
+            <para>
+              一个<parameter>+[no]recurse</parameter>的近义词。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]recurse</option></term>
+          <listitem>
+            <para>
+              翻转请求中的RD（期望递归）位设置。这个位缺省是置位的，意谓着
+              <command>dig</command>普通情况是发送递归的请求。在使用了
+              <parameter>+nssearch</parameter>或者<parameter>+trace</parameter>
+              选项时，递归是自动关闭的。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+retry=T</option></term>
+          <listitem>
+            <para>
+              设置向服务器重新进行UDP请求的次数为<parameter>T</parameter>次，
+              取代缺省的2次。与<parameter>+tries</parameter>不同，这个不包括初
+              始请求。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]rrcomments</option></term>
+          <listitem>
+            <para>
+              翻转在输出中显示每记录注释的状态（例如，便于人阅读的关于DNSKEY
+              记录的密钥信息）。缺省是不打印记录注释，除非多行模式被激活。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]search</option></term>
+          <listitem>
+            <para>
+              使用[不使用]在<filename>resolv.conf</filename>（如果存在）中
+              searchlist或者domain命令所定义的搜索列表。缺省是不使用搜索列表。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]short</option></term>
+          <listitem>
+            <para>
+              提供一个简洁的回答。缺省是以冗长形式打印回答。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]showsearch</option></term>
+          <listitem>
+            <para>
+              执行[不执行]立即显示结果的搜索。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]sigchase</option></term>
+          <listitem>
+            <para>
+              追随DNSSEC签名链。要求dig编译时带-DDIG_SIGCHASE。
+              这个特性被放弃了。使用<command>delv</command>替代。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+split=W</option></term>
+          <listitem>
+            <para>
+              将资源记录中较长的hex-或base64-格式的字段分割为
+              <parameter>W</parameter>个字符的块（<parameter>W</parameter>
+              被向上取整到距其最近的4的倍数上）。
+              <parameter>+nosplit</parameter>或
+              <parameter>+split=0</parameter>导致字段完全不被分割。缺省为56个
+              字符，或者在多行模式时为44个字符。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]stats</option></term>
+          <listitem>
+            <para>
+              这个请求选项翻转打印统计的选项：生成请求的时间，响应的大小等等。
+              缺省行为是打印统计。
+            </para>
+          </listitem>
+        </varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]subnet=addr[/prefix-length]</option></term>
+	  <listitem>
+	    <para>
+              发送（不发送）一个EDNS客户端子网选项，带有指定的IP地址或网络前缀。
+	    </para>
+            <para>
+              <command>dig +subnet=0.0.0.0/0</command>，或简写为
+              <command>dig +subnet=0</command>，发送一个
+              EDNS client-subnet选项，附带一个空地址和一个为0的源前缀，
+              它发信号给一个解析器，在解析这个请求时，
+              必须<emphasis>不能</emphasis>使用客户端的地址信息。
+            </para>
+	  </listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]tcp</option></term>
+          <listitem>
+            <para>
+              在请求名字服务器时使用[不使用]TCP。缺省行为是使用UDP，除非一
+              个类型<literal>any</literal>或者<literal>ixfr=N</literal>的
+              查询被请求，这种情况下缺省是TCP。AXFR请求总是使用TCP。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+timeout=T</option></term>
+          <listitem>
+            <para>
+              设置一个请求的超时为<parameter>T</parameter>秒。缺省超时是5秒。试
+              图将<parameter>T</parameter>设置成小于1将会得到请求超时为1秒的结
+              果。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]topdown</option></term>
+          <listitem>
+            <para>
+              在追随DNSSEC签名链时执行至上而下的验证。要求dig编译时带
+              -DDIG_SIGCHASE。
+              这个特性被放弃了。使用<command>delv</command>替代。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]trace</option></term>
+          <listitem>
+            <para>
+              翻转对从根名字服务器到要查找名字的授权路径的跟踪状态。缺省是关闭
+              跟踪的。当打开跟踪时，<command>dig</command>迭代发送请求来解析要
+              查找的名字。它会跟随自根服务器起所给出的参考信息，显示出来自每个
+              解析用到的服务器的回答。
+            </para>
+            <para>
+              如果指定了@server，它仅影响根区名字服务区的初始请求。
+            </para>
+            <para>
+              当设置了+trace时，也会设置<command>+dnssec</command>，来更好地
+              模仿来自某个名字服务器的缺省请求。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+tries=T</option></term>
+          <listitem>
+            <para>
+              设置向服务器进行UDP请求的重试次数为<parameter>T</parameter>次，
+              取代缺省的3次。如果<parameter>T</parameter>小于或等于0，重试次数
+              就静默地回归为1。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+trusted-key=####</option></term>
+          <listitem>
+            <para>
+              指定一个文件，其包含用于<option>+sigchase</option>的信任密钥。每
+              个DNSKEY必须在其本身行。
+            </para>
+	    <para>
+	      如果没有指定，<command>dig</command>会查找
+	      <filename>/etc/trusted-key.key</filename>，然后在当前目录中查找
+	      <filename>trusted-key.key</filename>。
+	    </para>
+	    <para>
+              要求dig编译时带-DDIG_SIGCHASE。
+              这个特性被放弃了。使用<command>delv</command>替代。
+	    </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ttlid</option></term>
+          <listitem>
+            <para>
+              在打印记录时显示[不显示]TTL。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]ttlunits</option></term>
+          <listitem>
+            <para>
+              显示[不显示]TTL，以友好地人可读时间单位“s”，“m”，“h”，“d”
+              和“w”，分别代表秒，分，小时，天和周。隐含为+ttlid。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]unknownformat</option></term>
+          <listitem>
+            <para>
+              以未知RR类型表示格式（RFC 3597）打印所有RDATA。缺省是
+              以类型的表示格式打印已知类型的RDATA。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]vc</option></term>
+          <listitem>
+            <para>
+              在请求名字服务器时使用[不使用]TCP。这是为
+              <parameter>+[no]tcp</parameter>提供向后兼容性而使用的替换语法。
+              “vc”表示“virtual circuit”。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]zflag</option></term>
+          <listitem>
+            <para>
+              设置[不设置]一个DNS请求中最后未赋值的DNS头部标志。
+              这个标志缺省是关闭。
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+
+    </para>
+  </refsection>
+
+  <refsection><info><title>多个请求</title></info>
+
+    <para>
+      BIND 9的<command>dig </command>实现支持在命令行（另外还支持
+      <option>-f</option>批文件选项）指定多个请求。每个这样的请求可以带有自己的
+      标志、选项和请求选项集合。
+    </para>
+
+    <para>
+      在这种情况下，每个<parameter>query</parameter>参数代表一个上述命令行语法
+      中的单独请求。每个都是由标准选项和标志，待查找名字，可选的请求类型和类以
+      及任何应该应用于这个请求的请求选项所组成。
+    </para>
+
+    <para>
+      也可以采用一个请求选项的全局集，它将应用到所有请求上。这些全局请求选项必
+      须在命令行中先于第一个名字、类、类型、选项、标志和请求选项的元组之前。任
+      何全局请求选项（<option>+[no]cmd</option>选项除外）都可以被某个请求专用的
+      请求选项所覆盖。例如：
+      <programlisting>
+dig +qr www.isc.org any -x 127.0.0.1 isc.org ns +noqr
+</programlisting>
+      显示怎样在命令行使用<command>dig</command>完成三个查找：一个对
+      <literal>www.isc.org</literal>的ANY的查找，一个对127.0.0.1的反向查找和一
+      个对<literal>isc.org</literal>的NS记录的查找。应用了一个全局请求选项
+      <parameter>+qr</parameter>，这样<command>dig</command>显示它所进行的每个
+      查找的初始请求。最终的请求有一个局部请求选项<parameter>+noqr</parameter>，
+      表示<command>dig</command>不会打印它在查找<literal>isc.org</literal>的NS
+      记录时的初始请求。
+    </para>
+
+  </refsection>
+
+  <refsection><info> <title>IDN支持</title></info>
+    <para>
+      如果编译<command>dig</command>时带有IDN（internationalized domain name，
+      国际化域名）支持，它可以接受和显示非ASCII域名。<command>dig</command>会在
+      发送一个请求到DNS服务器或显示一个来自服务器的回复之前正确地转换域名的字符
+      编码。如果由于某种原因你想关闭IDN支持，使用参数
+      <parameter>+noidnin</parameter>和<parameter>+noidnout</parameter>。
+    </para>
+  </refsection>
+
+  <refsection><info><title>文件</title></info>
+    <para><filename>/etc/resolv.conf</filename>
+    </para>
+    <para><filename>${HOME}/.digrc</filename>
+    </para>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+    <para><citerefentry>
+      <refentrytitle>delv</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+      <refentrytitle>host</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+      <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+      <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>RFC 1035</citetitle>.
+    </para>
+  </refsection>
+
+  <refsection><info><title>BUGS</title></info>
+
+    <para>
+      具有可能是太多的请求选项。
+    </para>
+  </refsection>
+
+</refentry>

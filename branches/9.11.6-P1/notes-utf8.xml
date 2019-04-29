@@ -1,0 +1,126 @@
+<!DOCTYPE book [
+<!ENTITY Scaron "&#x160;">
+<!ENTITY ccaron "&#x10D;">
+<!ENTITY aacute "&#x0E1;">
+<!ENTITY mdash "&#8212;">
+<!ENTITY ouml "&#xf6;">]>
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xmlns:db="http://docbook.org/ns/docbook" version="5.0"><info/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion-utf8.xml"/>
+  <section xml:id="relnotes_intro"><info><title>介绍</title></info>
+    <para>
+      本文档总结了自从BIND 9.11（延长支持版）分支上一个产品发布版以来的变化。
+      请参考<filename>CHANGES</filename>文件以获取关于漏洞修补和
+      其它变化的更多清单。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_download"><info><title>下载</title></info>
+    <para>
+      最新版的BIND 9软件总是可以在
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/downloads/">http://www.isc.org/downloads/</link>找到。
+      在那里，你会发现每个版本的附加信息，源码和为微软Windows操作系统
+      预编译的版本。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_license"><info><title>许可证变化</title></info>
+    <para>
+      从BIND 9.11.0，ISC改变了BIND的开源许可证，从ISC许可证变为
+      Mozilla公共许可证（MPL 2.0）。
+    </para>
+    <para>
+      MPL-2.0许可证要求，如果你修改了使用这个许可证的软件
+      （例如BIND），并在你的组织之外发布它们，你要在同样许可证下
+      公开这些修改。它不要求你发布或公开对我们的软件的修改之外的
+      部份。
+    </para>
+    <para>
+      这个要求不影响任何使用而不重分发的人，无论是否修改，也不影响
+      任何重分发它但不修改的人。所以，这个变化对大多数使用BIND的
+      个人和组织没有影响。
+    </para>
+    <para>
+      对那些不确定许可证变化是否会影响到他们使用BIND的人，或者
+      想讨论如何遵守许可证的人可以在<link
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xlink:href="https://www.isc.org/mission/contact/">
+      https://www.isc.org/mission/contact/</link>联系ISC。
+    </para>
+  </section>
+
+  <section xml:id="win_support"><info><title>早期Windows不再支持</title></info>
+    <para>
+      自BIND 9.11.2起，Windows XP和Windows 2003不再是BIND支持的平台；“XP”
+      二进制不再能够从ISC下载。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_security"><info><title>安全修补</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+          使用<command>tcp-clients</command>的TCP客户端限额设置在某些情况
+          可能被超过。这可能导致文件描述符被耗尽。这个缺陷在CVE-2018-5743
+          中公开。 [GL #615]
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_features"><info><title>新特性</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  无。
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_changes"><info><title>特性变化</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  无。
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes_bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  无。
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="end_of_life"><info><title>生命周期结束</title></info>
+    <para>
+      BIND 9.11 （延长支持版）至少将会被支持到2021年12月。
+      参见<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>以获取ISC的软件支持策略的详细信息。
+    </para>
+  </section>
+  <section xml:id="relnotes_thanks"><info><title>谢谢您</title></info>
+
+    <para>
+      感谢每一个帮助我们的您，使得本版本得以发布。
+      如果您愿意对ISC有所贡献，以帮助我们继续改进开源软件，请访问我们的
+      捐助网页
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/donate/">http://www.isc.org/donate/</link>。
+    </para>
+  </section>
+</section>

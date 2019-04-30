@@ -341,8 +341,8 @@
           <para>
             其它的权威服务器，<emphasis>辅服务器</emphasis>（slave，也被称为
             secondary）通过一个名叫<emphasis>区传送</emphasis>（zone transfer）
-            的复制过程从其它服务器中取得区的内容。典型情况下，数据直接从
-            主服务器传送，但是也可能从其它辅服务器传送。换句话说，一个辅服务器
+            的复制过程从另一台服务器中取得区的内容。典型情况下，数据直接从
+            主服务器传送，但是也可能从另一台辅服务器传送。换句话说，一个辅服务器
             本身也可以充当一个二级辅服务器的主服务器。
           </para>
           <para>
@@ -357,7 +357,7 @@
           </para>
           <para>
             如果区数据不能在SOA的EXPIRE选项（最大到硬编码的24周）所指定的
-            时间内更新，辅服务器将会过期并不再响应请求。
+            时间内更新，辅区将会过期并不再响应请求。
           </para>
         </section>
 
@@ -533,7 +533,7 @@
       <section xml:id="cache_only_sample"><info><title>一个只缓存名字服务器</title></info>
 
         <para>
-	  下列配置样例合适用于一个只缓存名字服务器，由一个公司的内部客户端
+	  下列配置样例适合用于一个只缓存名字服务器，由一个公司的内部客户端
 	  所使用。
           通过使用<command>allow-query</command>选项，所有外来客户端的请求都被
           拒绝。另外一个选择是，使用合适的防火墙规则也可以取得同样的效果。
@@ -562,7 +562,7 @@ zone "0.0.127.in-addr.arpa" {
       <section xml:id="auth_only_sample"><info><title>一个只权威名字服务器</title></info>
 
         <para>
-          这个样例配置是给只作权威服务器的，在这里服务器作
+          这个样例配置是给只权威服务器的，在这里服务器作
           “<filename>example.com</filename>”的主服务器和其子域
           “<filename>eng.exmaple.com</filename>”的辅服务器。
         </para>
@@ -1008,7 +1008,7 @@ zone "eng.example.com" {
                   “<userinput>hmac-sha384</userinput>”
                   和“<userinput>hmac-sha512</userinput>”
                   有意义。这个密钥是一个
-                  由RFC 3548所指定的Base64编码的字符串。
+                  在RFC 3548中所指定的Base64编码的字符串。
                 </para>
 
                 <para>
@@ -1210,7 +1210,7 @@ controls {
         </para>
 
         <para>
-          当服务器在停止或宕掉之后重启时，将重新装载日志文件，以将自从上次
+          当服务器在停止或宕掉之后重启时，将重新装载日志文件，以便将自从上次
           区转储以后发生的所有更新合并到区中。
         </para>
 
@@ -1257,7 +1257,7 @@ controls {
       <para>
         当作为一个主服务器时，<acronym>BIND</acronym> 9支持IXFR 协议，为区提供
         必要的变化历史的信息。这些包括以动态更新维护的主区和通过IXFR获取数据的
-        辅区。对于手工维护的主区，以及通过全区传送（AXFR）获取数据的辅区，
+        辅区。对于手工维护的主区，以及通过全量区传送（AXFR）获取数据的辅区，
         IXFR仅在<command>ixfr-from-differences</command>选项被设置成
         <userinput>yes</userinput>时才支持。
       </para>

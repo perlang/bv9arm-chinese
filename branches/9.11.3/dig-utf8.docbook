@@ -766,11 +766,6 @@
               在设置了这个选项时，<command>dig</command>试图找到包含所查找名字
               的区的权威名字服务器并显示这个区的每个名字服务器都有的SOA记录。
             </para>
-	    <para>
-              <filename>resolv.conf</filename>中的'ndots'（缺省是1），它可以被
-              <parameter>+ndots</parameter>覆盖，决定了名字是否被作为相对名字
-              对待，以及因此是否最终执行一个搜索。
-	    </para>
           </listitem>
         </varlistentry>
 

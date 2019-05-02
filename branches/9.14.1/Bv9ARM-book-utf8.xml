@@ -1792,26 +1792,29 @@ allow-update { !{ !localnets; any; }; key host1-host2. ;};
           一个加密的区必须包含一个或多个区密钥。区密钥对区中的所有其它记录
           签名，也对任何安全授权的区的区密钥签名。区密钥必须有一个与区同样
           的名字，一个为<command>ZONE</command>的类型名，并且必须可以用于认
-          证。推荐区密钥使用由IETF作为“强制实现”所指定的加密算法；当前唯
-          一的是RSASHA1。
+          证。推荐区密钥使用由IETF作为“强制实现”所指定的加密算法；当前有
+          两种算法：RSASHA256和ECDSAP256SHA256。推荐ECDSAP256SHA256用于
+          当前和将来的部署。
         </para>
 
         <para>
-          下列命令为<filename>child.example</filename>区生成一个768位的
-		  RSASHA1密钥：
+          下列命令为<filename>child.example</filename>区生成一个
+          ECDSAP256SHA256密钥：
         </para>
 
         <para>
-          <userinput>dnssec-keygen -a RSASHA1 -b 768 -n ZONE child.example.</userinput>
+          <userinput>dnssec-keygen -a ECDSAP256SHA256 -n ZONE child.example.</userinput>
         </para>
 
         <para>
           将产生两个输出文件：
-          <filename>Kchild.example.+005+12345.key</filename>和
-          <filename>Kchild.example.+005+12345.private</filename>
-          （12345是密钥标记的一个例子）。密钥文件名包含密钥名（
-          <filename>child.example.</filename>），算法（3表示DSA，1表示RSAMD5，
-          5表示RSASHA1，等等），和密钥标记（在本例中为12345）。私钥
+          <filename>Kchild.example.+013+12345.key</filename>和
+          <filename>Kchild.example.+013+12345.private</filename>
+          （这里的12345是密钥标记的一个例子）。
+          密钥文件名包含密钥名（<filename>child.example.</filename>），
+          算法（5表示RSASHA1，8表示RSASHA256，13表示ECDSAP256SHA256，
+          15表示ED25519，等等）
+          和密钥标记（在本例中为12345）。私钥
           （在<filename>.private</filename>文件中）用于生成签名，公钥
           （在<filename>.key</filename>文件中）用于验证签名。
         </para>
@@ -1873,30 +1876,47 @@ allow-update { !{ !localnets; any; }; key host1-host2. ;};
 
       </section>
 
-      <section xml:id="dnssec_config"><info><title>配置服务器</title></info>
-
+      <section xml:id="dnssec_config"><info><title>为DNSSEC配置服务器</title></info>
 	<para>
 	  为了使<command>named</command>正确响应感知DNSSEC的客户端所发出的
 	  DNS请求，必须将<command>dnssec-enable</command>设置为yes。
-	  （这是缺省设置。）
+	  这是缺省设置。
         </para>
-
 	<para>
-	  为了使<command>named</command>验证其它服务器来的响应，必须将
-	  <command>dnssec-enable</command>选项设置为
-          <userinput>yes</userinput>，并且将<command>dnssec-validation</command>
+	  为了使<command>named</command>验证来自其它服务器的响应，
+          必须将<command>dnssec-validation</command>
           选项设置为<userinput>yes</userinput>或
           <userinput>auto</userinput>。
 	</para>
-
 	<para>
-	  如果<command>dnssec-validation</command>选项被设置为
-          <userinput>auto</userinput>，就会使用DNS根区的一个缺省信任锚。
-          如果它被设置为<userinput>yes</userinput>，
-	  必须通过在<filename>named.conf</filename>中使用一个
-	  <command>trusted-keys</command>或
-	  <command>managed-keys</command>语句配置至少一个信任锚点，否则就不会
-          进行DNSSEC验证。缺省设置为<userinput>yes</userinput>。
+	  当<command>dnssec-validation</command>被设置为
+          <userinput>auto</userinput>时，就会自动使用DNS根区的一个信任锚。
+          这个信任锚作为BIND的一部份提供并使用RFC 5011密钥管理来保持更新。
+	</para>
+	<para>
+	  当<command>dnssec-validation</command>被设置为
+	  <userinput>yes</userinput>时，仅当在<filename>named.conf</filename>
+          中使用<command>trusted-keys</command>或者
+          <command>managed-keys</command>语句至少显式配置了一个信任锚，
+          才会进行DNSSEC验证。
+	</para>
+	<para>
+	  当<command>dnssec-validation</command>被设置为
+	  <userinput>no</userinput>时，不会进行DNSSEC验证。
+	</para>
+	<para>
+          缺省值是<userinput>auto</userinput>，除非BIND编译时带有
+	  <command>configure --disable-auto-validation</command>，
+          这种情况下缺省值是<userinput>yes</userinput>。
+	</para>
+	<para>
+	  如果<command>dnssec-enable</command>被设置为
+	  <userinput>no</userinput>，那么
+	  <command>dnssec-validation</command>的缺省值也会被改为
+	  <userinput>no</userinput>。
+	  如果<command>dnssec-validation</command>被设置为
+	  <userinput>yes</userinput>，那么服务器将在内部进行
+	  DNSSEC验证，但在被请求时不会返回签名 - 但它不会自动打开。
         </para>
 	  
 	<para>
@@ -3078,9 +3098,8 @@ and perl</programlisting>
 </programlisting>
 
         <para>
-          在<acronym>BIND</acronym> 9中，日志配置只是在全部的配置文件被分析完成
-          之后才建立。在<acronym>BIND</acronym> 8中，日志配置是在
-          <command>logging</command>语句被分析时建立的。在服务器启动时，所有关
+          日志配置只是在全部的配置文件被分析完成之后才建立。
+          在服务器启动时，所有关
           于配置文件中语法错误的日志消息都被写到缺省通道，或者在指定
           <option>-g</option>选项时被写到标准错误中。
         </para>
@@ -3107,40 +3126,56 @@ and perl</programlisting>
 
           <para>
             <command>file</command>目标子句将通道定向到一个磁盘文件。
-	    它可以包括两个指标的限制，一个是允许多大的文件，另一个是在每次
-	    打开文件时允许多少个版本的文件存在。
+            它可以包含附加的参数指定文件在轮转到一个备份文件之前允许
+            增长到多大（<command>size</command>），指定在每次轮转时
+            可以保存多少个文件的备份版本（<command>versions</command>），
+            以及用于命名备份版本的格式（<command>suffix</command>）。
           </para>
 
           <para>
-            如果你使用<command>versions</command>日志文件选项，
-            <command>named</command>将通过在打开状态更改名字来保存多个备份
-            版本。例如，如果你选择保持文件<filename>lamers.log</filename>的三个
-            旧版本，那么在打开它之前，<filename>lamers.log.1</filename>被更名为
-            <filename>lamers.log.2</filename>，
-            <filename>lamers.log.0</filename>被更名为
-            <filename>lamers.log.1</filename>，<filename>lamers.log</filename>
-            被更名为<filename>lamers.log.0</filename>。你可以设置
-            <command>versions unlimited</command>不限制版本数。如果将
-            <command>size</command>选项关联到日志文件，只有在被打开的文件超过了
-            所指定的大小时才会更名。缺省情况下，没有备份版本；所有现存的日志文
-            件只是简单地追加。
-          </para>
-
-          <para>
-            <command>size</command>选项用于限制日志的增长，如果文件超过了这个大
-            小，<command>named</command>将会停止写到文件，除非它有一个
-            <command>versions</command>选项。如果保持备份版本，文件将按照上述方
-            式轮转，并开始一个新的。如果没有<command>versions</command>选项，就
-            不会写入更多的数据到日志中，除非有某些带外的机制输出日志或者截断日
+            <command>size</command>选项用于限制日志文件的增长。如果文件超过了
+            指定的大小，<command>named</command>将会停止写到文件，除非它有一个
+            <command>versions</command>选项。如果保持备份版本，文件将按照
+            下面描述的方式轮转。如果没有<command>versions</command>选项，就
+            不会写入更多的数据到日志中，除非有某些带外的机制删出日志或者截断日
             志使其小于最大大小。缺省行为是不限制文件大小。
           </para>
+          <para>
+            文件轮转仅发生在文件超过<command>size</command>选项指定的
+            大小时。缺省不保有备份版本；任何存在的日志文件都是简单地添加。
+	    <command>versions</command>选项指定文件应该保持多少备份版本。
+            如果设置为<literal>unlimited</literal>，就没有限制。
+          </para>
+          <para>
+            <command>suffix</command>选项可以被设置为
+	    <literal>increment</literal>或者
+	    <literal>timestamp</literal>。如果被设置为
+	    <literal>timestamp</literal>，当一个日志文件轮转时，
+	    它被保存为以当前时间戳作为文件的后缀。
+            如果被设置为<literal>increment</literal>，备份文件
+            被保存为以增加的数字作为后缀；
+            轮转时，更旧的文件都被更名。
+            例如，如果<command>versions</command>被设置为3
+            并且<command>suffix</command>被设置为
+	    <literal>increment</literal>，那么当
+	    <filename>filename.log</filename>达到
+	    <command>size</command>所指定的大小时，
+	    <filename>filename.log.1</filename>被更名为
+	    <filename>filename.log.2</filename>，
+	    <filename>filename.log.0</filename>被更名为
+	    <filename>filename.log.1</filename>，而
+	    <filename>filename.log</filename>被更名为
+	    <filename>filename.log.0</filename>，同时一个新的
+	    <filename>filename.log</filename>被打开。
+          </para>
 
           <para>
-            <command>size</command>和<command>versions</command>选项用法例子：
+            <command>size</command>，<command>versions</command>和
+            <command>suffix</command>选项用法例子：
           </para>
 
 <programlisting>channel an_example_channel {
-    file "example.log" versions 3 size 20m;
+    file "example.log" versions 3 size 20m suffix increment;
     print-time yes;
     print-category yes;
 };

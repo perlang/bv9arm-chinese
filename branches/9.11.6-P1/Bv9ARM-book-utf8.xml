@@ -3209,7 +3209,7 @@ and perl</programlisting>
             小，<command>named</command>将会停止写到文件，除非它有一个
             <command>versions</command>选项。如果保持备份版本，文件将按照上述方
             式轮转，并开始一个新的。如果没有<command>versions</command>选项，就
-            不会写入更多的数据到日志中，除非有某些带外的机制输出日志或者截断日
+            不会写入更多的数据到日志中，除非有某些带外的机制删出日志或者截断日
             志使其小于最大大小。缺省行为是不限制文件大小。
           </para>
 

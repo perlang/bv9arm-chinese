@@ -119,7 +119,7 @@
         <term>-a</term>
         <listitem>
           <para>
-            "全部“。<option>-a</option>选项通常等效于
+            “全部”。<option>-a</option>选项通常等效于
             <option>-v -t <literal>ANY</literal></option>。
             它也影响<option>-l</option>列出区名单选项的行为。
           </para>

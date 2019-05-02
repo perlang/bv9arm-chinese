@@ -1,0 +1,630 @@
+<!DOCTYPE book [
+<!ENTITY mdash "&#8212;">]>
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.delv">
+  <info>
+    <date>2014-04-23</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>delv</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>delv</refname>
+    <refpurpose>DNS查找和验证工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
+      <year>2017</year>
+      <year>2018</year>
+      <year>2019</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>delv</command>
+      <arg choice="opt" rep="norepeat">@server</arg>
+      <group choice="opt" rep="norepeat">
+      <arg choice="opt" rep="norepeat"><option>-4</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-6</option></arg>
+      </group>
+      <arg choice="opt" rep="norepeat"><option>-a <replaceable class="parameter">anchor-file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-b <replaceable class="parameter">address</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-d <replaceable class="parameter">level</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-i</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-m</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-p <replaceable class="parameter">port#</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-q <replaceable class="parameter">name</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-t <replaceable class="parameter">type</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-x <replaceable class="parameter">addr</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat">name</arg>
+      <arg choice="opt" rep="norepeat">type</arg>
+      <arg choice="opt" rep="norepeat">class</arg>
+      <arg choice="opt" rep="repeat">queryopt</arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis sepchar=" ">
+      <command>delv</command>
+      <arg choice="opt" rep="norepeat"><option>-h</option></arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis sepchar=" ">
+      <command>delv</command>
+      <arg choice="opt" rep="norepeat"><option>-v</option></arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis sepchar=" ">
+      <command>delv</command>
+      <arg choice="opt" rep="repeat">queryopt</arg>
+      <arg choice="opt" rep="repeat">query</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+
+    <para><command>delv</command>
+      是一个发送
+      DNS请求并验证结果的工具，它使用与<command>named</command>同样的内部解析器
+      和验证器逻辑。
+    </para>
+    <para>
+      <command>delv</command>将所有需要获取的请求发向一个指定的名字服务器并
+      验证请求到的数据；这包含原始请求，跟随CNAME或DNAME链的后续请求，以及
+      为建立一个用于DNSSEC验证的信任链的对DNSKEY，DS和DLV记录的请求。
+      它不执行迭代解析，但是模仿一个配置为DNSSEC验证和转发的名字服务器的行为。
+    </para>
+    <para>
+      缺省时，响应使用内置的根区（"."）
+      DNSSEC信任锚点进行验证。<command>delv</command>返回的记录要么是完全
+      验证的，要么是没有签名的。如果验证失败，输出中会包含一个对失败的解释；
+      验证过程可被详细跟踪。由于<command>delv</command>不依赖一个外部服务器
+      来执行验证，它可以用于本地名字服务器不可信的环境中来检查DNS响应的
+      有效性。
+    </para>
+    <para>
+      除非其被告知去请求一个特定的名字服务器，<command>delv</command>将试探
+      <filename>/etc/resolv.conf</filename>中列出的每个服务器。如果没有发现
+      可用的服务器地址，<command>delv</command>将发请求到环回地址（IPv4为
+      127.0.0.1，IPv6为::1）。
+    </para>
+    <para>
+      当没有给出命令行参数或选项时，<command>delv</command>将执行对"."（根区）
+      的NS查询。
+    </para>
+  </refsection>
+
+  <refsection><info><title>简单用法</title></info>
+
+    <para>
+      一个典型的<command>delv</command>调用看起来像：
+      <programlisting> delv @server name type </programlisting>
+      其中:
+
+      <variablelist>
+	<varlistentry>
+	  <term><constant>server</constant></term>
+	  <listitem>
+	    <para>
+	      是要请求的名字服务器的名字或IP地址。这可以是一个点分十进制表示的
+              IPv4地址或一个冒号分隔表示的IPv6地址。当所提供的
+              <parameter>server</parameter>参数是一个主机名时，
+              <command>delv</command>在请求那个名字服务器之前先解析那个名字
+              （注意，那个初始查询<emphasis>不</emphasis>被DNSSEC验证。
+	    </para>
+	    <para>
+	      如果没有提供<parameter>server</parameter>参数，
+              <command>delv</command>会查找
+              <filename>/etc/resolv.conf</filename>；如果在其中发现一个地址，
+              它会请求那个地址上的名字服务器。如果使用了<option>-4</option>
+              或<option>-6</option>选项，则只有相关传输协议的地址才会被试探。
+              如果没有发现可用的地址，<command>delv</command>将向本地地址（对
+              IPv4为127.0.0.1，对IPv6为::1）发送请求。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><constant>name</constant></term>
+	  <listitem>
+	    <para>
+	      是被查找的域名。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><constant>type</constant></term>
+	  <listitem>
+	    <para>
+	      指明需要请求那种类型&mdash;ANY，A，MX，等。
+              <parameter>type</parameter>可以是任何有效的请求类型。
+	      如果没有提供<parameter>type</parameter>参数，
+              <command>delv</command>将执行一个对A记录的查找。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+      </variablelist>
+    </para>
+
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+    <variablelist>
+
+      <varlistentry>
+	<term>-a <replaceable class="parameter">anchor-file</replaceable></term>
+	<listitem>
+	  <para>
+            指定从中读取DNSSEC信任锚点的文件。缺省为
+            <filename>/etc/bind.keys</filename>，它被包含在
+            <acronym>BIND</acronym> 9中，并含有一个或多个根区（"."）
+            的信任锚点。
+	  </para>
+	  <para>
+	    与根区名字不匹配的密钥会被忽略；一个替换的密钥名可以
+            使用<option>+root=NAME</option>选项指定。也可以使用
+            <option>+dlv=NAME</option>指定一个包含DLV记录的区的名字
+            来打开DNSSEC后备验证。
+	  </para>
+	  <para>
+            注意：在读取信任锚点文件时，<command>delv</command>同等对待
+            <option>managed-keys</option>语句和
+            <option>trusted-keys</option>语句。
+            即，对于一个被管理的密钥，它就是被信任的初始密钥；RFC 5011密钥管理
+            不被支持。
+	    <command>delv</command>将不咨询由<command>named</command>维护的
+            被管理密钥数据库。
+            这意谓如果<filename>/etc/bind.keys</filename>有一个密钥被撤销并
+            轮转，就必须更新<filename>/etc/bind.keys</filename>以便在
+            <command>delv</command>中使用DNSSEC验证。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-b  <replaceable class="parameter">address</replaceable></term>
+	<listitem>
+	  <para>
+	    设置请求的源IP地址为<parameter>address</parameter>。这必须是一个
+            主机网络接口上的有效地址，或者"0.0.0.0"，或者"::"。
+            可以通过附加"#&lt;port&gt;"指定一个可选的源端口。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-c <replaceable class="parameter">class</replaceable></term>
+	<listitem>
+	  <para>
+	    为请求数据设置请求类。当前，在<command>delv</command>中只支持
+            类"IN"，任何其它值将被忽略。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-d <replaceable class="parameter">level</replaceable></term>
+	<listitem>
+	  <para>
+	    设置系统范围的调试级别为<option>level</option>。
+            允许的范围为0到99.
+            缺省是0（关闭调试）。
+            调试级别越高，从<command>delv</command>调试跟踪得到的信息越多。
+	    参见下列<option>+mtrace</option>，<option>+rtrace</option>和
+	    <option>+vtrace</option>选项以获得关于调试的详细信息。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-h</term>
+	<listitem>
+	  <para>
+	    显示<command>delv</command>使用帮助并退出。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-i</term>
+	<listitem>
+	  <para>
+	    非安全模式。这个关闭内部DNSSEC验证。（注意，这不会在向上游
+            查询时设置CD位。如果被查询的服务器正在执行DNSSEC验证，它将
+            会返回无效数据；这导致<command>delv</command>超时。当必须
+            检查无效数据以调试一个DNSSEC问题时，使用
+            <command>dig +cd</command>。）
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-m</term>
+	<listitem>
+	  <para>
+	    打开内存使用调试。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-p <replaceable class="parameter">port#</replaceable></term>
+	<listitem>
+	  <para>
+	    指定一个用于请求的目的端口，而不是使用标准的DNS端口号53.这个
+            选项用于同一个被配置为在一个非标准端口号监听请求的名字服务器
+            通信时。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-q <replaceable class="parameter">name</replaceable></term>
+	<listitem>
+	  <para>
+	    设置请求名为<parameter>name</parameter>。虽然指定请求名可以不需要
+            使用<option>-q</option>，但是某些时候必须使用这个选项来将请求名与
+            类型和类区别开来（例如，在查找名字"ns"时，可能被错误解释为类型NS，
+            或者查找"ch"，可能被错误解释为类CH）。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-t <replaceable class="parameter">type</replaceable></term>
+	<listitem>
+	  <para>
+	    设置请求类型为<parameter>type</parameter>，它可以是除区传送类型
+            AXFR和IXFR之外BIND 9所支持的任何有效类型。
+	    As with <option>-q</option>, this is useful to distinguish
+	    query name type or class when they are ambiguous.
+	    在某些时候必须将名字从类型中区别出来。
+	  </para>
+	  <para>
+            缺省请求类型是"A"，除非提供了<option>-x</option>指定一个反向
+            查找，这种情况类型是"PTR"。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-v</term>
+	<listitem>
+	  <para>
+            打印<command>delv</command>版本并退出。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-x <replaceable class="parameter">addr</replaceable></term>
+	<listitem>
+	  <para>
+            执行一个反向查找，映射一个地址到一个名字。
+            <parameter>addr</parameter>是一个点分十进制表示的IPv4地址，或者
+            一个冒号分隔的IPv6地址。
+            当使用了<option>-x</option>，不需要提供<parameter>name</parameter>
+            或<parameter>type</parameter>参数。
+            <command>delv</command>自动执行对一个类似
+            <literal>11.12.13.10.in-addr.arpa</literal>的名字的查找，并设置
+            请求类型为PTR。
+            IPv6地址是以半字节格式在IP6.ARPA域下查找。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-4</term>
+	<listitem>
+	  <para>
+	    强制<command>delv</command>使用IPv4。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-6</term>
+	<listitem>
+	  <para>
+	    强制<command>delv</command>使用IPv6。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>请求选项</title></info>
+
+    <para><command>delv</command>
+      提供一些请求选项，它们影响结果的显式方式，在某些情况它们也影响请求执行
+      的方式。
+    </para>
+
+    <para>
+      每个请求由一个加号（<literal>+</literal>）引导的关键字所标识。
+      一些关键字设置或清除一个选项。
+      这些可以由前导的<literal>no</literal>字符串反转关键字的含义。
+      其它关键字给选项赋值，如超时间隔。
+      它们具有<option>+keyword=value</option>的形式。
+      请求选项为：
+
+      <variablelist>
+	<varlistentry>
+	  <term><option>+[no]cdflag</option></term>
+	  <listitem>
+	    <para>
+	      控制是否在由<command>delv</command>发出的请求中设置CD
+              （checking disabled，关闭验证）位。
+              这个可以用于从一个验证解析器后端进行DNSSEC问题排查。
+              一个验证解析器将阻塞无效响应，就使获取它们进行分析变得很困难。
+              在请求中设置CD标志将使解析器返回无效响应，
+              <command>delv</command>可以在内部验证并详细报告错误。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]class</option></term>
+	  <listitem>
+	    <para>
+	      控制在打印一个记录时是否显示类。缺省是显示类。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]ttl</option></term>
+	  <listitem>
+	    <para>
+	      控制在打印一个记录时是否显示TTL。缺省是显示TTL。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]rtrace</option></term>
+	  <listitem>
+	    <para>
+	      翻转解析器取动作的日志。这报告了在执行解析和验证过程中每个
+              由<command>delv</command>发送的请求的名字和类型：这包含了
+              原始请求和跟随CNAME记录和为DNSSEC验证建立信任链的随后请求。
+	    </para>
+	    <para>
+	      这和在"resolver"日志类别中设置调试级别为1是等效的。
+              使用<option>-d</option>选项在系统范围设置调试级别为1会得到
+              同样的输出（但是也会影响其它日志类别）。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]mtrace</option></term>
+	  <listitem>
+	    <para>
+              翻转消息日志。这产生<command>delv</command>在执行解析和
+              验证过程中收到的响应的详细导出结果。
+	    </para>
+	    <para>
+	      这和在"resolver"日志类别的"packets"模块中设置调试级别为10是等效的。
+              使用<option>-d</option>选项在系统范围设置调试级别为10会得到
+              同样的输出（但是也会影响其它日志类别）。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]vtrace</option></term>
+	  <listitem>
+	    <para>
+	      翻转验证日志。这显示验证器的内部进程，它决定一个答复是否是
+              有效签名、未签名或者无效的。
+	    </para>
+	    <para>
+	      这和在"dnssec"日志类别的"validator"模块中设置调试级别为3是等效的。
+              使用<option>-d</option>选项在系统范围设置调试级别为3会得到
+              同样的输出（但是也会影响其它日志类别）。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]short</option></term>
+	  <listitem>
+	    <para>
+              提供一个简洁的回答。缺省是以冗长形式输出回答。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]comments</option></term>
+	  <listitem>
+	    <para>
+	      翻转在输出中显示注释。缺省是打印注释。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]rrcomments</option></term>
+	  <listitem>
+	    <para>
+	      翻转对输出中每个记录注释的显示状态（例如，关于DNSKEY的人可读
+              的密钥信息）。
+              缺省是打印每个记录的注释。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]crypto</option></term>
+	  <listitem>
+	    <para>
+	      翻转DNSSEC记录中加密字段的显示。
+              这些字段的内容对于调试大多数DNSSEC验证失败不是必须的，并且去掉
+              它们会使查看通常的失败更容易。
+              缺省是显示这些字段。
+              如果省略，它们被字符串"[omitted]"所替代，或者在DNSKEY的情况下，
+              作为替代，显示密钥的id，例如"[ key id = value ]"。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]trust</option></term>
+	  <listitem>
+	    <para>
+	      控制在打印一个记录时是否显示信任级别。缺省是显示信任级别。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]split[=W]</option></term>
+	  <listitem>
+	    <para>
+              分割资源记录中的长的hex-或base64-格式的字段为
+              <parameter>W</parameter>个字符大小的块。
+              （这里<parameter>W</parameter>是最接近的4的倍数）。
+	      <parameter>+nosplit</parameter>或
+	      <parameter>+split=0</parameter>使字段完全不被分割。
+              缺省是56个字符，或者在打开多行模式时为44个字符。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]all</option></term>
+	  <listitem>
+	    <para>
+	      设置或清除显示选项
+	      <option>+[no]comments</option>, 
+	      <option>+[no]rrcomments</option>和
+	      <option>+[no]trust</option>作为一个组。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]multiline</option></term>
+	  <listitem>
+	    <para>
+              以冗长多行格式并附带人可读的注释打印长记录（诸如RRSIG，DNSKEY
+              和SOA记录）
+              缺省是将每条记录打印在一行上，以便<command>delv</command>的
+              输出更容易被机器分析。
+	      output.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]dnssec</option></term>
+	  <listitem>
+	    <para>
+	      指示是否在<command>delv</command>的输出中显示RRSIG记录。
+              缺省是显示。
+              注意（与<command>dig</command>不同）这<emphasis>不</emphasis>
+              控制是否请求DNSSEC记录或者是否验证它们。
+              总是请求DNSSEC记录，并总是进行验证，除非使用<option>-i</option>
+              或<option>+noroot</option>和<option>+nodlv</option>禁止。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]root[=ROOT]</option></term>
+	  <listitem>
+	    <para>
+              指示是否执行传统的（非后备）DNSSEC验证，如果是，指定信任锚点
+              的名字。
+              缺省是使用一个"."（根区）的信任锚点，对此有一个内置密钥。
+              如果指定一个不同的信任锚点，必须使用<option>-a</option>
+              指定一个包含这个密钥的文件。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>+[no]dlv[=DLV]</option></term>
+	  <listitem>
+	    <para>
+	      指示是否执行DNSSEC后备验证，如果执行，就指定DLV信任锚点的名字。
+              也必须使用<option>-a</option>选项
+              指定一个包含DLV密钥的文件。
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+        <varlistentry>
+          <term><option>+[no]tcp</option></term>
+          <listitem>
+            <para>
+              控制在发送请求时是否使用TCP。缺省是使用UDP，除非
+              收到一个被截断的响应。
+            </para>
+          </listitem>
+        </varlistentry>
+ 
+        <varlistentry>
+          <term><option>+[no]unknownformat</option></term>
+          <listitem>
+            <para>
+              以未知RR类型表示格式（RFC 3597）打印所有RDATA。缺省是
+              以类型的表示格式打印已知类型的RDATA。
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+    </para>
+  </refsection>
+
+  <refsection><info><title>文件</title></info>
+    <para><filename>/etc/bind.keys</filename></para>
+    <para><filename>/etc/resolv.conf</filename></para>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+    <para><citerefentry>
+	<refentrytitle>dig</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+	<refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>RFC4034</citetitle>,
+      <citetitle>RFC4035</citetitle>,
+      <citetitle>RFC4431</citetitle>,
+      <citetitle>RFC5074</citetitle>,
+      <citetitle>RFC5155</citetitle>.
+    </para>
+  </refsection>
+
+</refentry>

@@ -18,7 +18,7 @@
 -->
 
 <section xmlns:db="http://docbook.org/ns/docbook" version="5.0"><info/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion-utf8.xml"/>
   <section xml:id="relnotes_intro"><info><title>介绍</title></info>
     <para>
       BIND 9.14 是 BIND 的一个稳定分支。
@@ -42,7 +42,7 @@
   <section xml:id="relnotes_platforms"><info><title>支持的平台</title></info>
     <para>
       自从 9.12 开始，BIND 经历了大量的代码重构和清理，一些非常旧的
-      代码被去掉了，而对需要支持的遗留平台，其生产厂商也不在支持的，
+      代码被去掉了，而对需要支持的遗留平台，其生产厂商也不再支持的，
       ISC 也不再能够执行质量保证测试。
       特别地，对老版本的UnixWare，BSD/OS，AIX，Tru64，SunOS，
       TruCluster和IRIX的工作区都被去掉了。
@@ -159,7 +159,6 @@
       BIND 9.14 的生命结束日期还未决定。
       对那些需要长期支持的人，当前延长支持版（ESV）是 BIND 9.11，将会
       至少被支持到2021年12月。参见
-      least December 2021. See
       <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>
       以获取ISC的软件支持策略的详细信息。
     </para>

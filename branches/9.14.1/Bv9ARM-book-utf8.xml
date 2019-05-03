@@ -4306,11 +4306,23 @@ badresp:1,adberr:0,findfail:0,valfail:0]
             <term><command>random-device</command></term>
             <listitem>
               <para>
-                服务器所用的熵源。熵的主要需求是DNSSEC操作，例如TKEY事务和签名
-                区的动态更新。这个选项指定一个读出熵的设备（或文件）。如果是一
-                个文件，当要求熵的操作在文件耗尽时将会失败。如果未指定，缺省值
-                为<filename>/dev/random</filename>（或等效物），如果后者存在的
-                话，如果不存在则为none。<command>random-device</command>选项在
+                指定一个服务器使用的熵源。
+                这是一个从中读取熵的设备或文件。
+                如果它是一个文件，在文件被耗尽时，请求熵的操作将会失败。
+	      </para>
+              <para>
+                熵的需求是加密操作，例如TKEY事务和签名区的动态更新。
+                它也用于伪随机数生成器的生成种子和扰动，伪随机数生成器
+                用于更不太关键的要求随机性的函数，如DNS消息事务ID的生成。
+	      </para>
+              <para>
+                如果未指定<command>random-device</command>，或者它被
+                设置为<literal>none</literal>，将会从BIND链接到的加密库
+                （即，OpenSSL或者一个PKCS#11提供者）
+                所提供的随机数生成函数中读取熵。
+	      </para>
+              <para>
+                <command>random-device</command>选项在
                 服务器启动时的初始配置装载时生效，而在随后的重载将会忽略它。
               </para>
             </listitem>

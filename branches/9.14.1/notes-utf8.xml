@@ -1,7 +1,9 @@
 <!DOCTYPE book [
 <!ENTITY Scaron "&#x160;">
+<!ENTITY scaron "&#x161;">
 <!ENTITY ccaron "&#x10D;">
 <!ENTITY aacute "&#x0E1;">
+<!ENTITY iacute "&#x0ED;">
 <!ENTITY mdash "&#8212;">
 <!ENTITY ouml "&#xf6;">]>
 <!--
@@ -16,63 +18,79 @@
 -->
 
 <section xmlns:db="http://docbook.org/ns/docbook" version="5.0"><info/>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion-utf8.xml"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="noteversion.xml"/>
   <section xml:id="relnotes_intro"><info><title>介绍</title></info>
     <para>
-      本文档总结了自从BIND 9.11（延长支持版）分支上一个产品发布版以来的变化。
-      请参考<filename>CHANGES</filename>文件以获取关于漏洞修补和
-      其它变化的更多清单。
+      BIND 9.14 是 BIND 的一个稳定分支。
+      本文档汇总了此分支上自上一个产品版本以来的重大变化。
+    <para>
+    </para>
+      关于变化和漏洞修订的一个更详细的清单，请参见文件
+      <filename>CHANGES</filename>。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_versions"><info><title>关于版本号的注释</title></info>
+    <para>
+      截止 BIND 9.13/9.14，BIND 采用了“奇数-不稳定/偶数-稳定”的版本编号
+      规范，BIND 9.14 包含了在 BIND 9.13 开发过程中增加的新特性。
+      今后，9.14 分支将被限制于漏洞修订，而新特性开发将在不稳定的
+      9.15 分支中进行，如此循环。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_platforms"><info><title>支持的平台</title></info>
+    <para>
+      自从 9.12 开始，BIND 经历了大量的代码重构和清理，一些非常旧的
+      代码被去掉了，而对需要支持的遗留平台，其生产厂商也不在支持的，
+      ISC 也不再能够执行质量保证测试。
+      特别地，对老版本的UnixWare，BSD/OS，AIX，Tru64，SunOS，
+      TruCluster和IRIX的工作区都被去掉了。
+    </para>
+    <para>
+      在类-UNIX 系统上，BIND 现在要求支持 POSIX.1c 线程（
+      IEEE Std 1003.1c-1995），关于IPv6的高级套接字API（RFC 3542），
+      和由 C 编译器提供的标准原子操作。
+    </para>
+    <para>
+      更多信息可以在<filename>PLATFORM.md</filename>文件中找到，它
+      被包含在 BIND 9 的源码发布中。如果你的平台编译器和系统库提供
+      了上述特征，BIND 9 就应当能够编译和运行。如果不是这种情况，
+      BIND 开发团队通常接受补丁以支持仍然被各自厂商支持的系统。
+    </para>
+    <para>
+      截止 BIND 9.14，BIND 开发团队也使加密（即，TSIG 和 DNSSEC）成为 DNS
+      服务器的一个完整部份。目标平台上 OpenSSL 加密库必须可用。
+      一个 PKCS#11 提供者可以用于替代公共密钥加密（即，DNSSEC 签名和验证），
+      但是仍然需要 OpenSSL 用于通常的加密操作，诸如散列和随机数生成。
     </para>
   </section>
 
   <section xml:id="relnotes_download"><info><title>下载</title></info>
     <para>
-      最新版的BIND 9软件总是可以在
+      最新版本的 BIND 9 软件总是可以在
       <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://www.isc.org/downloads/">http://www.isc.org/downloads/</link>找到。
-      在那里，你会发现每个版本的附加信息，源码和为微软Windows操作系统
+      那里，你会发现每个版本的附加信息，源码和为微软 Windows 操作系统
       预编译的版本。
-    </para>
-  </section>
-
-  <section xml:id="relnotes_license"><info><title>许可证变化</title></info>
-    <para>
-      从BIND 9.11.0，ISC改变了BIND的开源许可证，从ISC许可证变为
-      Mozilla公共许可证（MPL 2.0）。
-    </para>
-    <para>
-      MPL-2.0许可证要求，如果你修改了使用这个许可证的软件
-      （例如BIND），并在你的组织之外发布它们，你要在同样许可证下
-      公开这些修改。它不要求你发布或公开对我们的软件的修改之外的
-      部份。
-    </para>
-    <para>
-      这个要求不影响任何使用而不重分发的人，无论是否修改，也不影响
-      任何重分发它但不修改的人。所以，这个变化对大多数使用BIND的
-      个人和组织没有影响。
-    </para>
-    <para>
-      对那些不确定许可证变化是否会影响到他们使用BIND的人，或者
-      想讨论如何遵守许可证的人可以在<link
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      xlink:href="https://www.isc.org/mission/contact/">
-      https://www.isc.org/mission/contact/</link>联系ISC。
-    </para>
-  </section>
-
-  <section xml:id="win_support"><info><title>早期Windows不再支持</title></info>
-    <para>
-      自BIND 9.11.2起，Windows XP和Windows 2003不再是BIND支持的平台；“XP”
-      二进制不再能够从ISC下载。
     </para>
   </section>
 
   <section xml:id="relnotes_security"><info><title>安全修补</title></info>
     <itemizedlist>
       <listitem>
+        <para>
+	  在某些配置中，如果使用了
+	  <command>nxdomain-redirect</command>，并且一个重定向请求导致
+	  一个来自缓存的NXDOMAIN，
+	  <command>named</command>可能崩溃，并报出一个断言错误。
+	  这个漏洞在CVE-2019-6467中被公开。 [GL #880]
+	</para>
+      </listitem>
+      <listitem>
 	<para>
-          使用<command>tcp-clients</command>的TCP客户端限额设置在某些情况
-          可能被超过。这可能导致文件描述符被耗尽。这个缺陷在CVE-2018-5743
-          中公开。 [GL #615]
+	  使用<command>tcp-clients</command>选项的 TCP 客户端限额设置
+	  在某些情况下可能被超过。这可能导致文件描述符被耗尽。
+	  (CVE-2018-5743) [GL #615]
 	</para>
       </listitem>
     </itemizedlist>
@@ -82,8 +100,11 @@
     <itemizedlist>
       <listitem>
 	<para>
-	  无。
-	</para>
+	  新的<command>add-soa</command>选项指示
+	  <command>response-policy</command>区的SOA记录是否应该被包含
+	  进 RPZ 响应的附加部份。
+	  [GL #865]
+        </para>
       </listitem>
     </itemizedlist>
   </section>
@@ -101,21 +122,50 @@
   <section xml:id="relnotes_bugs"><info><title>漏洞修补</title></info>
     <itemizedlist>
       <listitem>
-	<para>
-	  无。
+        <para>
+	  <command>allow-update</command>和
+	  <command>allow-update-forwarding</command>选项在用于
+	  <command>options</command>或<command>view</command>级别时，
+	  被无意地当成配置错误对待。
+	  这个现在已被改正。
+	  [GL #913]
 	</para>
       </listitem>
     </itemizedlist>
   </section>
 
-  <section xml:id="end_of_life"><info><title>生命周期结束</title></info>
+  <section xml:id="relnotes_license"><info><title>许可证</title></info>
     <para>
-      BIND 9.11 （延长支持版）至少将会被支持到2021年12月。
-      参见<link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>以获取ISC的软件支持策略的详细信息。
+      BIND 是一个遵循 Mozilla 公共许可证，版本 2.0（参见
+      <filename>LICENSE</filename>文件获得完整文本）的开源软件。
+    </para>
+    <para>
+      这个许可证要求如果你修改 BIND 并分发到你的组织之外，这些修改必须在
+      同样的许可证下公开。它不要求你发布或公开你没有修改的部份。
+      这个要求对于使用 BIND 的，无论修不修改，只要没有重分发的人以及对
+      分发 BIND 但是没有修改的人没有影响。
+    </para>
+    <para>
+      那些希望讨论许可证遵守情况的人可以在
+      <link
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xlink:href="https://www.isc.org/mission/contact/">
+	https://www.isc.org/mission/contact/</link>联系 ISC。
     </para>
   </section>
-  <section xml:id="relnotes_thanks"><info><title>谢谢您</title></info>
 
+  <section xml:id="end_of_life"><info><title>生命周期结束</title></info>
+    <para>
+      BIND 9.14 的生命结束日期还未决定。
+      对那些需要长期支持的人，当前延长支持版（ESV）是 BIND 9.11，将会
+      至少被支持到2021年12月。参见
+      least December 2021. See
+      <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/downloads/software-support-policy/">https://www.isc.org/downloads/software-support-policy/</link>
+      以获取ISC的软件支持策略的详细信息。
+    </para>
+  </section>
+
+  <section xml:id="relnotes_thanks"><info><title>谢谢您</title></info>
     <para>
       感谢每一个帮助我们的您，使得本版本得以发布。
       如果您愿意对ISC有所贡献，以帮助我们继续改进开源软件，请访问我们的

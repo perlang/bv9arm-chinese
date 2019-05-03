@@ -5149,6 +5149,9 @@ options {
 		  <userinput>no-auth-recursive</userinput>是设计用
 		  于混合模式服务器中，它会处理权威和递归请求。
 		</para>
+		<para>
+		  缺省是<userinput>no</userinput>。
+		</para>
               </listitem>
             </varlistentry>
 

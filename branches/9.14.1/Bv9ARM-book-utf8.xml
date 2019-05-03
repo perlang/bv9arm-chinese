@@ -3250,10 +3250,28 @@ and perl</programlisting>
             哪些消息。
           </para>
           <para>
-            如果<command>print-time</command>被打开，日期和时间将会被记入日志。
+            <command>print-time</command>可以被设置为
+	    <userinput>yes</userinput>，<userinput>no</userinput>或一个时间
+            格式说明符，它可以是<userinput>local</userinput>，
+            <userinput>iso8601</userinput>或
+            <userinput>iso8601-utc</userinput>之一。
+            如果设置为<userinput>no</userinput>，就不将日期和时间记入日志。
+            如果设置为<userinput>yes</userinput>或者
+            <userinput>local</userinput>，日期和时间就以人可读的格式，使用
+            本地时区记入日志。
+            如果设置为<userinput>iso8601</userinput>，本地时间以ISO8601格式
+            记入日志。
+            如果设置为<userinput>iso8601-utc</userinput>，日期和时间
+            以ISO8601格式记入日志，时区设置为UTC。
+            缺省时<userinput>no</userinput>。
+          </para>
+          <para>
             <command>print-time</command>可以用于<command>syslog</command>
-            通道，但是通常不这样用，因为<command>syslog</command>也记录日期和
-            时间。如果要<command>print-category</command>，消息的类别也将被记入
+            通道，但是它通常不这样用，因为<command>syslog</command>也记录日期和
+            时间。
+          </para>
+          <para>
+            如果要<command>print-category</command>，消息的类别也将被记入
             日志。最后，如果打开<command>print-severity</command>，消息的严重
             级别将被记入日志。<command>print-</command>选项可以用在任何组合，
             并总是按照下列顺序打印：时间，类别，严重性。这里是所有三个
@@ -3704,14 +3722,17 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 		  共享同一个缓存的视图必须在可能影响缓存的配置参数上
 		  有同样的策略。
 		  当前的实现要求在这些视图在下列配置选项上要一致：
-		  <command>check-names</command>,
-		  <command>cleaning-interval</command>,
-		  <command>dnssec-accept-expired</command>,
-		  <command>dnssec-validation</command>,
-		  <command>max-cache-ttl</command>,
-		  <command>max-ncache-ttl</command>,
-		  <command>max-cache-size</command>, and
-		  <command>zero-no-soa-ttl</command>.
+		  <command>check-names</command>，
+		  <command>cleaning-interval</command>，
+		  <command>dnssec-accept-expired</command>，
+		  <command>dnssec-validation</command>，
+		  <command>max-cache-ttl</command>，
+		  <command>max-ncache-ttl</command>，
+		  <command>max-stale-size</command>，
+		  <command>max-cache-size</command>，
+		  <command>min-cache-size</command>，
+		  <command>min-ncache-size</command>和
+		  <command>zero-no-soa-ttl</command>。
 		</para>
 
 		<para>
@@ -3735,8 +3756,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
                 这个目录的。服务器的大多数输出文件（例如：
                 <filename>named.run</filename>）都是以此为缺省位置。如果未指定
                 目录，工作目录缺省为’<filename>.</filename>’，即服务器开始运
-		行的目录。这个目录应该被指定为一个绝对路径。
-		<emphasis>强烈推荐</emphasis>这个目录对
+		行的目录。这个目录应该被指定为一个绝对路径，
+		并且<emphasis>必须</emphasis>对
 		<command>named</command>进程的有效用户ID是可写的。
               </para>
             </listitem>
@@ -3767,8 +3788,9 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 		<command>dnstap</command>选项是一个带括号的、被记录消息
 		类型的列表。这些在每个视图中可以被设置为不同的值。支持的
 		类型是<literal>client</literal>，
-		<literal>auth</literal>，<literal>resolver</literal>和
-		<literal>forwarder</literal>。指定类型
+		<literal>auth</literal>，<literal>resolver</literal>，
+		<literal>forwarder</literal>和<literal>update</literal>。
+		指定类型
 		<literal>all</literal>将使所有<command>dnstap</command>
 		消息被日志记录，而不考虑其类型。
 	      </para>
@@ -3856,6 +3878,8 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 		    在重新打开一个已关闭输出流之间需要等待的秒数。
 		    最小值是1秒，最大值是600秒（10分钟），缺省值
 		    是5秒。
+		    为方便起见，可以为这个值指定TTL风格的时间单位
+		    后缀。
 		  </simpara>
 		</listitem>
 	      </itemizedlist>
@@ -3884,6 +3908,25 @@ badresp:1,adberr:0,findfail:0,valfail:0]
 	        （由<command>libfstrm</command>提供），监听了这个套接字时
 	        才发送。）
               </para>
+	      <para>
+		如果第一个参数是<literal>file</literal>，就可以最大
+		添加三个附加选项：
+		<command>size</command>指示一个
+		<command>dnstap</command>日志文件在轮转到一个新文件之前
+		可以增长到的最大大小；
+		<command>versions</command>指定要保持的已经轮转的日志文件
+                的数量；而<command>suffix</command>指示是以一个增长的
+                计数器（<literal>increment</literal>）还是以当前时间戳（
+		<literal>timestamp</literal>）
+                作为已经轮转的日志文件的后缀。
+                这些类似于在一个
+		<command>logging</command>通道中的
+		<command>size</command>，
+		<command>versions</command>和<command>suffix</command>
+                选项。
+		缺省是允许<command>dnstap</command>日志文件增长到任何
+		大小而没有轮转。
+	      </para>
               <para>
                 <command>dnstap-output</command>只能在
                 <command>options</command>中全局设置。当前，它只能在
@@ -3992,18 +4035,38 @@ badresp:1,adberr:0,findfail:0,valfail:0]
             </listitem>
           </varlistentry>
 
-          <varlistentry>
-            <term><command>named-xfer</command></term>
-            <listitem>
-              <para>
-                <emphasis>本选项已被废除。</emphasis>它是用于
-                <acronym>BIND</acronym> 8中指定<command>named-xfer</command>程
-                序的路径。在<acronym>BIND</acronym> 9中，不再需要单独的
-                <command>named-xfer</command>程序；其功能已经被内建在名字服务器
-                中。
-              </para>
-            </listitem>
-          </varlistentry>
+	  <varlistentry>
+	    <term><command>new-zones-directory</command></term>
+	    <listitem>
+	      <para>
+		指定存放通过<command>rndc addzone</command>增加的区的
+                配置参数的存放目录。
+                缺省时，这就是工作目录。如果设置为一个相对路径，
+                它将是相对于工作目录。
+                这个目录<emphasis>必须</emphasis>是
+		<command>named</command>进程的有效用户ID可写的。
+	      </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><command>qname-minimization</command></term>
+	    <listitem>
+	      <para>
+		这个选项控制 BIND 解析器中 QNAME 最小化行为。
+		当设置为<command>strict</command>时，
+		BIND 将遵循 QNAME 最小化算法到字母，如同 RFC 7816
+		所描述。
+                将这个选项设置为<command>relaxed</command>将使
+                BIND 回退到普通（非最小化）请求模式，这是它的最小化
+                请求将收到 NXDOMAIN 或其它不可预期的响应（如，
+                SERVFAIL，不正确的区截断，REFUSED）。
+		<command>disabled</command>完全关闭 QNAME 最小化。
+                当前缺省是<command>relaxed</command>，但是在未来的
+		版本中可能被改为<command>strict</command>。
+	      </para>
+	    </listitem>
+	  </varlistentry>
 
           <varlistentry>
             <term><command>tkey-gssapi-keytab</command></term>
@@ -4553,7 +4616,6 @@ options {
 	    </listitem>
 	  </varlistentry>
 
-
 	  <varlistentry>
 	    <term><command>max-zone-ttl</command></term>
 	    <listitem>
@@ -4580,6 +4642,21 @@ options {
                 一个为0的<option>max-zone-ttl</option>被当成
                 <constant>unlimited</constant>看待。
               </para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><command>stale-answer-ttl</command></term>
+	    <listitem>
+	      <para>
+		为旧答复指定TTL。缺省是1秒。最小的允许值也是1秒；
+		一个为0的值将被静默地更改为1秒。
+	      </para>
+	      <para>
+		对要返回的旧答复，它们必须打开，要么在配置文件中使用
+		<command>stale-answer-enable</command>或者通过
+		<command>rndc serve-stale on</command>。
+	      </para>
 	    </listitem>
 	  </varlistentry>
 
@@ -4942,39 +5019,12 @@ options {
 	      <term><command>geoip-use-ecs</command></term>
 	      <listitem>
 		<para>
-		  当BIND带有GeoIP支持编译并配置了“geoip”ACL元素，选项指示
-		  EDNS客户端子网选项，如果在一个请求中出现，是否应该被
-		  用于GeoIP数据库匹配。
-		  缺省是
-		  <command>geoip-use-ecs</command> <userinput>yes</userinput>。
+		  这个选项曾经是一个针对权威服务器的EDNS CLIENT-SUBNET的
+		  试验性实现的一部份。
+		  但是现在已被废弃。
 		</para>
 	      </listitem>
 	    </varlistentry>
-
-            <varlistentry>
-              <term><command>has-old-clients</command></term>
-              <listitem>
-                <para>
-                  这个选项在<acronym>BIND</acronym> 8中被错误实现了，并在
-                  <acronym>BIND</acronym> 9中被忽略了。要取得
-                  <command>has-old-clients</command> <userinput>yes</userinput>
-                  的预想效果，使用两个分开的选项
-                  <command>auth-nxdomain</command> <userinput>yes</userinput>和
-                  <command>rfc2308-type1</command> <userinput>no</userinput>来
-                  替代。
-                </para>
-              </listitem>
-            </varlistentry>
-
-            <varlistentry>
-              <term><command>host-statistics</command></term>
-              <listitem>
-                <para>
-                  在BIND 8中，这个选项打开一个统计开关，它允许对与此名字服务器
-                  相互影响的所有主机进行统计。在BIND 9中没有实现。
-                </para>
-              </listitem>
-            </varlistentry>
 
             <varlistentry>
               <term><command>root-key-sentinel</command></term>
@@ -5016,13 +5066,36 @@ options {
 		  省略来自权威部份的记录，除非其被请求，但是它可能
 		  仍然添加记录到附加部份。当设置为
 		  <userinput>no-auth-recursive</userinput>，这仅限
-		  于请求是递归的。这些设置在回应存根客户端时很有用，
+		  于请求是递归的。
+		  当请求不是递归的，效果就和指定
+		  <userinput>no</userinput>一样。
+		  这些设置在回应存根客户端时很有用，
 		  后者通常忽略权威部份。
 		  <userinput>no-auth-recursive</userinput>是设计用
 		  于混合模式服务器中，它会处理权威和递归请求。
 		</para>
+		<para>
+		  缺省是<userinput>no-auth-recursive</userinput>。
+		</para>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>glue-cache</command></term>
+	      <listitem>
+		<para>
+		  当设置为<userinput>yes</userinput>时，在添加地址
+		  类型（A和AAAA）的粘合记录到授权到一个子区的DNS响应信息
+		  的附加部分时，会使用一个缓存来提高请求性能。
+		</para>
+		<para>
+		  粘合缓存使用的内存与中授权数目成比例。
+                  缺省设置是<userinput>yes</userinput>，
+		  它提高了性能，代价是增加了这个区的内存使用量。
+                  如果你不想要这个结果，将其设置为<userinput>no</userinput>。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
 	    <varlistentry>
 	      <term><command>minimal-any</command></term>
@@ -5144,7 +5217,7 @@ options {
                   这个仅能在全局选项中设置，不能用于视图中。
                 </para>
                 <para>
-		  <command>answer-cookie no</command>的目的仅仅是作为一个
+		  <command>answer-cookie no</command>的目的是作为一个
 		  临时测量手段，用于<command>named</command>与还不
                   支持DNS COOKIE的其它服务器共享一个IP地址时。
                   监听在同一个地址上的服务器不一致不会导致运行问题，
@@ -5171,6 +5244,35 @@ options {
 		  不发送一个正确COOKIE选项的解析器可能被服务器通过
 		  <command>nocookie-udp-size</command>
 		  选项限制成只收到更小的响应。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>stale-answer-enable</command></term>
+	      <listitem>
+		<para>
+		  当一个区的名字服务器没有答复时，开启返回“旧的”缓存
+		  答复。
+		  缺省是不返回旧答复。
+		</para>
+		<para>
+                  旧答复也可以在运行时通过
+                  <command>rndc serve-stale on</command>或
+		  <command>rndc serve-stale off</command>开启或关闭；
+		  这些覆盖配置的设置。
+		  <command>rndc serve-stale reset</command>
+                  将设置恢复成<filename>named.conf</filename>中的
+                  设置。
+                  注意，如果旧答复被<command>rndc</command>关闭，
+                  它们不能通过重新装载或重新配置
+		  <command>named</command>来重新打开；
+                  它们只能通过<command>rndc serve-stale on</command>
+                  或者重新启动服务器来重新打开。
+		</para>
+		<para>
+		  关于旧答复的信息是记录在
+                  <command>serve-stale</command>日志类别下。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -5704,7 +5806,7 @@ options {
               <term><command>try-tcp-refresh</command></term>
               <listitem>
                 <para>
-		  如果UDP请求失败，试图使用TCP刷新区。为BIND 8兼容性，
+		  如果UDP请求失败，试图使用TCP刷新区。
 		  缺省是<command>yes</command>。
                 </para>
               </listitem>

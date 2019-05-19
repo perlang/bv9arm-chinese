@@ -713,6 +713,30 @@
       </varlistentry>
 
       <varlistentry>
+	<term><userinput>serve-stale ( on | off | reset | status ) <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></userinput></term>
+	<listitem>
+	  <para>
+	    打开，关闭，重置或报告配置在<filename>named.conf</filename>
+            中的旧答复服务的当前状态。
+	  </para>
+	  <para>
+            如果旧答复服务被<command>rndc-serve-stale off</command>
+            关闭，那么，即使<command>named</command>重新加载或
+            重新配置，它仍然会关闭。
+            <command>rndc serve-stale reset</command>恢复
+            <filename>named.conf</filename>中的配置。
+	  </para>
+	  <para>
+	    <command>rndc serve-stale status</command>将报告旧答复
+            服务当前是被配置打开或关闭，或者被
+            <command>rndc</command>关闭。
+            它也会报告<command>stale-answer-ttl</command>和
+            <command>max-stale-ttl</command>的值。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
 	<term><userinput>showzone <replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional> </userinput></term>
 	<listitem>
 	  <para>
@@ -795,9 +819,6 @@
             为指定值。如果这个值将会使序列号后退，它将被拒绝。
             主要用途是在联机签名区中设置序列号。
 	  </para>
-	  <para>
-	    参见<command>rndc showzone</command>。
-	  </para>
         </listitem>
       </varlistentry>
 
@@ -844,6 +865,24 @@
            </para>
          </listitem>
        </varlistentry>
+
+      <varlistentry>
+	<term><userinput>tcp-timeouts <optional><replaceable>initial</replaceable> <replaceable>idle</replaceable> <replaceable>keepalive</replaceable> <replaceable>advertised</replaceable></optional></userinput></term>
+	<listitem>
+	  <para>
+	    当不使用参数调用时，显示
+            <command>tcp-initial-timeout</command>，
+	    <command>tcp-idle-timeout</command>，
+	    <command>tcp-keepalive-timeout</command>和
+	    <command>tcp-advertised-timeout</command>选项的
+            当前值。
+	    当使用参数调用时，更新这些值。
+            这允许一位管理员在面临一次拒绝服务攻击时能够快速调整。
+            参见 BIND 9 管理员参考手册中对这些选项的描述以获取
+            关于它们用法的详细信息。
+	  </para>
+	</listitem>
+      </varlistentry>
 
        <varlistentry>
          <term><userinput>thaw <optional><replaceable>zone</replaceable> <optional><replaceable>class</replaceable> <optional><replaceable>view</replaceable></optional></optional></optional></userinput></term>
@@ -910,9 +949,12 @@
 	    <listitem>
 	      <para>
 		打开，关闭DNSSEC验证或检查DNSSEC验证的状态。
-		注意<command>dnssec-enable</command>也需要设置成
-		<userinput>yes</userinput>或<userinput>auto</userinput>才能
-                生效。缺省打开的。
+                缺省时，验证时打开的。
+		（注意<command>dnssec-enable</command>必须也设置成
+		<userinput>yes</userinput>（缺省值）以返回签名及验证的数据。
+                如果验证被打开同时<command>dnssec-enable</command>被
+                设置为<userinput>no</userinput>，服务器将在内部验证，
+                但将不会给客户端提供必要的记录以确认验证。）
 	      </para>
 	    </listitem>
 	  </varlistentry>
@@ -927,10 +969,25 @@
             是否作了DNSSEC签名，它是否使用动态DNSSEC密钥管理或inline签名，
             以及区的预期刷新或过期时间。
           </para>
+	  <para>
+	    参见<command>rndc showzone</command>。
+	  </para>
         </listitem>
       </varlistentry>
 
     </variablelist>
+
+    <para>
+      指定区名的<command>rndc</command>命令，例如
+      <command>reload</command>，<command>retransfer</command>或
+      <command>zonestatus</command>，在应用于类型
+      <option>redirect</option>的区时可能会有歧义。
+      重定向区总是被称为“.”，可能与<option>hint</option>类型的区
+      或者根区的辅拷贝混淆。
+      要指定一个重定向区，使用特定的区名
+      <userinput>-redirect</userinput>，不带结尾的点。
+      （如果带有结尾的点，这就会指定一个名为“-redirect”的区。）
+    </para>
   </refsection>
 
   <refsection><info><title>限制</title></info>

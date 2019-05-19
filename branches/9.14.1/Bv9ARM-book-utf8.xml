@@ -5459,10 +5459,11 @@ options {
                 </para>
                 <para>
                   <command>ixfr-from-differences</command>在view和options级别也
-                  接受<command>master</command>和<command>slave</command>，这将
+                  接受<command>master</command>（或<command>primary</command>）和
+		  <command>slave</command>（或<command>secondary</command>），这将
                   导致<command>ixfr-from-differences</command>分别在所有的
-                  <command>master</command>或<command>slave</command>区被打开。
-		  缺省是关闭的。
+                  主区或辅区被打开。
+		  缺省时对所有区都是关闭的。
                 </para>
                <para>
                  注意：如果一个区打开了行内签名（译注：inline signing），
@@ -5536,27 +5537,42 @@ options {
               </listitem>
             </varlistentry>
 
-            <varlistentry>
-              <term><command>dnssec-validation</command></term>
+	    <varlistentry xml:id="dnssec_validation">
+	      <term xml:id="dnssec_validation_term"><command>dnssec-validation</command></term>
               <listitem>
                 <para>
-                  在<command>named</command>中打开DNSSEC正确性检查。注意
+                  这在<command>named</command>中打开DNSSEC验证。注意
                   <command>dnssec-enable</command>也需要被设为
-                  <userinput>yes</userinput>以使此选项生效。
+                  <userinput>yes</userinput>以使签名伴随验证后的回复被返回给客户端。
+                </para>
+                <para>
+                  如果设置为<userinput>auto</userinput>，DNSSEC验证被开启，
+                  并使用一个缺省的DNS根区信任锚。
+                </para>
+                <para>
+                  如果设置为<userinput>yes</userinput>，DNSSEC验证被开启，
+                  但是必须使用一个<command>trusted-keys</command>或者
+                  <command>managed-keys</command>手工配置一个信任锚；
+                  如果没有配置信任锚，将不会进行验证。
+                </para>
+                <para>
                   如果设置为<userinput>no</userinput>，DNSSEC验证将被关闭。
                 </para>
                 <para>
-                  如果设置为<userinput>auto</userinput>，DNSSEC验证将被开启，
-                  并为根区使用一个缺省的信任锚。如果设置为
-                  <userinput>yes</userinput>，DNSSEC验证将被开启，但是必须使用
-                  一个<command>trusted-keys</command>或
-                  <command>managed-keys</command>语句手工配置一个信任锚。
-                  缺省为<userinput>yes</userinput>。
+                  缺省为<userinput>auto</userinput>，除非BIND使用
+		  <command>configure --disable-auto-validation</command>构建，
+                  在此情况下缺省为<userinput>yes</userinput>。
+                  如果<command>dnssec-enable</command>被设置为
+		  <userinput>no</userinput>，则
+		  <command>dnssec-validation</command>的缺省值也为
+		  <userinput>no</userinput>。
+                  如果期望，验证仍然可以被打开 - 这地址一台服务器执行DNSSEC验证
+                  但不对请求返回签名 - 但是它不会自动被打开。
                 </para>
 		<para>
 		  缺省的根信任锚被存储在文件<filename>bind.keys</filename>中。
 		  如果<command>dnssec-validation</command>被设置为
-		  <constant>auto</constant>，<command>named</command>将在
+		  <userinput>auto</userinput>，<command>named</command>将在
 		  启动时装载这个密钥。
 		  这个文件的一份拷贝随着BIND 9被安装，是发布日期时的
 		  版本。如果根密钥过期，新的<filename>bind.keys</filename>
@@ -5565,10 +5581,10 @@ options {
 		  下载。
 		</para>
 		<para>
-		  为防止因<filename>bind.keys</filename>未找到而带来的
+		  （为防止因<filename>bind.keys</filename>未找到而带来的
 		  问题，当前信任锚也被编译进<command>named</command>。
 		  不推荐依赖这个，无论如何，因为这在根密钥过期时，要求
-		  带一个新密钥重新编译<command>named</command>。
+		  带一个新密钥重新编译<command>named</command>。）
 		</para>
                 <note>
 		  <para>
@@ -5586,6 +5602,20 @@ options {
                 </note>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>validate-except</command></term>
+	      <listitem>
+		<para>
+                  指定一个域名列表，在这些域名或之下<emphasis>不</emphasis>
+                  执行DNSSEC验证，无论这些名字或之上是否提供了信任锚。
+                  这个可以被用于，例如，当配置一个顶级域仅仅用于内部，
+                  这样缺乏在根区中对这个域的安全授权不会导致验证失败。
+                  （这类似设置一个否定信任锚，除了它是永久配置，而否定
+                  信任锚会在一段时间之后过期并被删除之外。）
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>dnssec-accept-expired</command></term>
@@ -5783,7 +5813,8 @@ options {
 	        <para>
                   当这个选项和<command>update-check-ksk</command>都被设置
                   为<literal>yes</literal>时，只有密钥签名密钥（即设置了
-                  KSK位的密钥）会被用于对区顶点的DNSKEY资源记录集签名。
+                  KSK位的密钥）会被用于对区顶点的DNSKEY，CDNSKEY和CDS
+                  资源记录集签名。
                   区签名密钥（未置KSK位的密钥）会被用于对区剩下部份签名，
                   不包括DNSKEY资源记录集。这与
                   <command>dnssec-signzone -x</command>命令行选项相似。
@@ -5830,6 +5861,32 @@ options {
 	        <para>
 		  通过删除所有DNSKEY记录，允许一个区从安全状态迁移到
                   不安全状态。缺省为<command>no</command>。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>synth-from-dnssec</command></term>
+	      <listitem>
+		<para>
+		  从NSEC，NSEC3和其它被使用DNSSEC证明是正确的资源记录
+		  合成答复。
+                  缺省是<command>yes</command>。
+		</para>
+		<para>
+		  注意：
+		  <itemizedlist>
+		    <listitem>
+		      <para>
+			要使这个选项生效，必须开启DNSSEC验证。
+		      </para>
+		      <para>
+			这个首次实现仅仅覆盖了从NSEC记录合成答复。
+			从NSEC3合成是将来的计划。
+			这个也由<command>synth-from-dnssec</command>控制。
+		      </para>
+		    </listitem>
+		  </itemizedlist>
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -5918,12 +5975,21 @@ options {
               <term><command>allow-notify</command></term>
               <listitem>
                 <para>
-                  指定允许哪些主机可以通知本服务器，作为一个辅服务器，除了区主
-                  服务器之外关于区改变的信息。<command>allow-notify</command>也
-                  可以在<command>zone</command>语句中指定，这时它会覆盖
-                  <command>options allow-notify</command>语句。它仅对一个辅区有
-                  意义。如果未指定，缺省是仅处理来自一个区的主服务器的
-                  通知消息。
+                  这个 ACL 指定哪些主机可以发送NOTIFY消息通知本服务器关于
+                  本服务器作为辅服务器的区的变化。
+                  这个仅适用于辅区（即类型<literal>secondary</literal>或
+                  <literal>slave</literal>）。
+                </para>
+                <para>
+                  如果这个选项设置在<command>view</command>或
+                  <command>options</command>中，它全局应用于所有的辅区。
+                  如果设置在<command>zone</command>语句，会覆盖全局值。
+                </para>
+                <para>
+                  如果未指定，缺省是仅处理来自区中配置在
+                  <command>masters</command>中的服务器的NOTIFY消息。
+		  <command>allow-notify</command>可以用于扩展所允许的主机的
+		  名单，但不能缩小它。
                 </para>
               </listitem>
             </varlistentry>
@@ -6070,15 +6136,17 @@ options {
               </listitem>
             </varlistentry>
 
-            <varlistentry>
-              <term><command>allow-transfer</command></term>
+            <varlistentry xml:id="allow_transfer">
+              <term xml:id="allow_transfer_term"><command>allow-transfer</command></term>
               <listitem>
                 <para>
                   指定哪些主机允许从服务器接收区传送。
                   <command>allow-transfer</command>也可以在
                   <command>zone</command>语句中指定，在这种情况下它会覆盖
-                  <command>options allow-transfer</command>语句。如果未指定，缺
-                  省是允许所有主机进行传送。
+                  设置在<command>options</command>或<command>view</command>
+                  中的<command>allow-transfer</command>语句。
+                  <command>options allow-transfer</command>语句。
+                  如果未指定，缺省是允许所有主机进行传送。
                 </para>
               </listitem>
             </varlistentry>
@@ -6148,11 +6216,16 @@ options {
               <term><command>resolver-query-timeout</command></term>
               <listitem>
                 <para>
-		解析器在尝试解析一个递归请求时，在失败之前将花费的以秒计
-		的时间。缺省值和最小值是<literal>10</literal>，最大值是
-		<literal>30</literal>。
-                将其设置为<literal>0</literal>将会导致使用缺省值。
+		  解析器在尝试解析一个递归请求时，在失败之前将花费的以毫秒计
+                  的时间。缺省值和最小值是<literal>10000</literal>，最大值是
+                  <literal>30000</literal>。
+                  将其设置为<literal>0</literal>将会导致使用缺省值。
                 </para>
+		<para>
+		  这个值最初以秒指定。
+		  小于或等于300的值将被当成秒，并在应用到上述限制之前被
+		  转换为毫秒。
+		</para>
               </listitem>
             </varlistentry>
 
@@ -6628,8 +6701,7 @@ avoid-v6-udp-ports {};
               <listitem>
                 <para>
                   是否使用可替换的传送源，如果使用视图，这个选项的省为
-                  <command>no</command>，否则其缺省为<command>yes</command>
-                  （为了BIND 8的兼容性）。
+                  <command>no</command>，否则其缺省为<command>yes</command>。
                 </para>
               </listitem>
             </varlistentry>
@@ -6786,24 +6858,21 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
           <variablelist>
 
             <varlistentry>
-              <term><command>max-ixfr-log-size</command></term>
-              <listitem>
-                <para>
-                  本选项被废除了；它被接受并忽略只是为了BIND 8的兼容性。在
-                  BIND 9中，选项<command>max-journal-size</command>执行类似的功
-                  能。
-                </para>
-              </listitem>
-            </varlistentry>
-
-            <varlistentry>
               <term><command>max-journal-size</command></term>
               <listitem>
                 <para>
-                  设置每个日志文件（参见<xref linkend="journal"/>）的最大大小。
+                  设置每个日志文件（参见<xref linkend="journal"/>）的最大大小，
+                  表示成字节，或者如果后跟一个可选的单位后缀（‘k’，‘m’或‘g’），
+                  成千字节，兆字节或吉字节。
                   当日志文件达到指定的大小时，其中一些最旧的事务会被自动删除。
-                  允许的最大值为2G字节。缺省是<literal>unlimited</literal>，也
-                  表示2G字节。这也可以基于每个区来设置。
+                  允许的最大值为2G字节。
+                  值会取整到4096字节的倍数。
+                  可以指定<literal>unlimited</literal>，表示2吉字节。
+                  如果设置限制为 <literal>default</literal>或者不设置值，
+                  日志可以增长到两倍区的大小。（存储较大的日志有点微小的好处。）
+                </para>
+                <para>
+                  这个选项也可以基于每个区来设置。
                 </para>
               </listitem>
             </varlistentry>
@@ -7074,40 +7143,16 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <listitem>
                 <para>
                   服务器将每<command>interface-interval</command>分钟对网络接口
-                  列表进行扫描。缺省是60分钟。最大值是28天（40320分钟）。如果
-                  设置为0，仅在配置文件装载后，才会进行接口扫描。扫描后，服务器
-                  将开始在新发现的端口监听请求（假定这些端口在
+                  列表进行扫描。缺省是60分钟。最大值是28天（40320分钟）。
+                  如果设置为0，仅在配置文件装载后，才会进行接口扫描。
+                  扫描后，服务器将开始在新发现的端口监听请求（假定这些端口在
                   <command>listen-on</command>配置中被允许），
+                  并且停止监听已经不再存在的接口。
+                  为方便起见，可以用TTL风格的时间单位后缀来指定这个值。
                   并且不会停止已经不存在的监听端口。
                 </para>
               </listitem>
             </varlistentry>
-
-            <varlistentry>
-              <term><command>statistics-interval</command></term>
-              <listitem>
-                <para>
-                  名字服务器统计信息在每<command>statistics-interval</command>
-                  分钟被写入日志。缺省是60分钟。最大值是28天（40320分钟）。
-                  如果设置为0，就不将统计写入日志。
-                </para><note>
-                  <simpara>
-                    <acronym>BIND</acronym> 9中还未实现。
-                  </simpara>
-                </note>
-              </listitem>
-            </varlistentry>
-
-	    <varlistentry>
-	      <term><command>topology</command></term>
-	      <listitem>
-		<para>
-		  在BIND 8中，这个选项指明网络拓扑，这样在发送请求时，
-		  拓扑上接近的名字服务器会被优先对待。
-		  它在BIND 9中未实现。
-		</para>
-	      </listitem>
-	    </varlistentry>
 
           </variablelist>
 
@@ -7232,6 +7277,8 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   <entry colname="2">
                     <para>
                       以区文件中定义的顺序返回记录。
+                      这个选项仅在<acronym>BIND</acronym>编译时以
+                      “--enable-fixed-rrset”配置时才可用。
                     </para>
                   </entry>
                 </row>
@@ -7251,28 +7298,42 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   </entry>
                   <entry colname="2">
                     <para>
-                      以循环轮转的顺序返回记录。
+                      以循环轮转的顺序返回记录，每次请求轮转一条记录。
                     </para>
                     <para>
 		      如果<acronym>BIND</acronym>在编译时使用了
                       "--enable-fixed-rrset"选项，资源记录集的初始顺序
-		      会与区文件中指定的一致。
+		      会与区文件中指定的一致；
+		      否则，初始顺序是不确定的。
                     </para>
                   </entry>
                 </row>
+		<row rowsep="0">
+		  <entry colname="1">
+		    <para><command>none</command></para>
+		  </entry>
+		  <entry colname="2">
+		    <para>
+		      以从数据库中提取到的顺序返回记录。
+		      这个顺序是不确定的，但是会保持一致，只要数据库
+		      没有被修改。
+		      当没有指定顺序时，这是缺省值。
+		    </para>
+		  </entry>
+		</row>
               </tbody>
             </tgroup>
           </informaltable>
           <para>
+	  </para>
+          <para>
             例如：
           </para>
-
 <programlisting>rrset-order {
    class IN type A name "host.example.com" order random;
    order cyclic;
 };
 </programlisting>
-
           <para>
             将使响应中任何类为IN类型为A并有
             “<literal>host.example.com</literal>”
@@ -7283,7 +7344,8 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
             组合 — 只有最后一个起作用。
           </para>
           <para>
-            缺省时，所有记录以随机顺序返回。
+            缺省时，所有记录以不确定但一致的顺序返回
+            （参见上面的<command>none</command>）。
           </para>
 
           <note>
@@ -8062,7 +8124,7 @@ deny-answer-aliases { "example.net"; };
             <command>response-policy</command>选项可以支持多个策略区。
             为最大化性能，使用一个基数树来快速识别包含与当前查询匹配的触发器
             的响应策略区。这强制一个<command>response-policy</command>选项中
-            策略区的数量上限为32；超过那个数就是一个配置错误。
+            策略区的数量上限为64；超过那个数就是一个配置错误。
 	  </para>
 
 	  <para>
@@ -8130,6 +8192,8 @@ deny-answer-aliases { "example.net"; };
                     相对于RPZ原点的<userinput>rpz-nsdname</userinput>的子域名。
 	            NSIP触发器用A和AAAA资源记录集中的IP地址匹配域名，后者可以与
                     NSDNAME策略记录比对。
+		    <command>nsdname-enable</command>子句为单一策略区或所有
+		    策略区关闭或打开 NSDNAME 触发器。
 		  </para>
 		</listitem>
 	      </varlistentry>
@@ -8144,6 +8208,8 @@ deny-answer-aliases { "example.net"; };
                     NSDNAME和NSIP触发器仅在名字至少带有
                     <command>min-ns-dots</command>个点时才被检查。
                     <command>min-ns-dots</command>的缺省值是1，以排除顶级域。
+		    <command>nsip-enable</command>子句为单一策略区或所有
+		    策略区关闭或打开 NSIP 触发器。
 		  </para>
 		  <para>
 		    如果一个名字服务器的IP地址还是未知，
@@ -8357,10 +8423,10 @@ deny-answer-aliases { "example.net"; };
             但是，不解析请求名可能泄漏使用了策略区重写和名字被列入一个策略区
             的事实给所列名字的服务器的操作者。
             为阻止这个信息泄漏，缺省一个请求所需的任何递归查询都在任何策略
-            触发器被考虑之前完成。因为列出的域名通常有较慢的权威服务器，这个
-            缺省行为可能花费大量时间。
-	    当递归查询不能改变一个非错响应时，
-            <command>qname-wait-recurse no</command>选项覆盖缺省行为。
+            触发器被考虑之前完成。因为列出的域名通常有较慢的权威服务器，
+            这个行为可能花费大量时间。
+	    当递归查询不能改变一个非错误响应时，
+            <command>qname-wait-recurse yes</command>选项覆盖缺省并开启这个行为。
             这个选项不影响列在其它包含IP，NSIP和NSDNAME触发器的区之后的策略区中
             的QNAME或client-IP触发器，因为那些（触发器）可能依赖在递归解析中会被
             发现的A，AAAA和NS记录。
@@ -9219,11 +9285,15 @@ view "external" {
             <para>
               <command>zone</command>配置要求<command>type</command>关键字，
               除非它时一个<command>in-view</command>配置。可以接受的值包括：
+	      <varname>master</varname>（或<varname>primary</varname>），
+	      <varname>slave</varname>（或<varname>secondary</varname>），
+	      <varname>mirror</varname>，
               <varname>delegation-only</varname>，
-              <varname>forward</varname>，<varname>hint</varname>，
-              <varname>master</varname>，<varname>redirect</varname>，
-              <varname>slave</varname>，<varname>static-stub</varname>和
-              <varname>stub</varname>。
+	      <varname>forward</varname>，
+	      <varname>hint</varname>，
+	      <varname>redirect</varname>，
+              <varname>static-stub</varname>
+              和<varname>stub</varname>。
             </para>
 
             <informaltable colsep="0" rowsep="0">
@@ -9242,7 +9312,8 @@ view "external" {
                     <entry colname="2">
                       <para>
                         服务器拥有区数据的主拷贝，并能够提供关于这个区的
-                        权威回答。
+                        权威回答。类型<varname>primary</varname>与
+                        <varname>master</varname>是同义词。
                       </para>
                     </entry>
                   </row>
@@ -9255,6 +9326,8 @@ view "external" {
                     <entry colname="2">
                       <para>
                         一个辅区是一个主区的一份复制。
+                        类型<varname>secondary</varname>与
+                        <varname>slave</varname>是同义词。
                         <command>masters</command>列表指定一个或多个主服务器，
                         辅服务器从其更新自己的区拷贝。主服务器列表元素也可以是
                         其它主服务器列表的名字。缺省时，自53端口发出区传送；这
@@ -9417,12 +9490,20 @@ view "external" {
                       <para>
                         注意重定向区支持所有可能的类型；它不限于A和AAAA记录。
                       </para>
+		      <para>
+			如果一个重定向区配置了一个
+			<option>masters</option>选项，那么它就会像一个辅区
+			一样从外面做区传送。
+			否则，它就会如同一个主区一样从一个文件装载。
+		      </para>
                       <para>
                         由于重定向区不会直接被名字引用，它们不保存在普通主区
                         和辅区的区查找表中。因此，当前不可能使用
-                        <command>rndc reload
-                                <replaceable>zonename</replaceable></command>
-                        来重载一个重定向区。然而，当使用
+                        要重新装载一个重定向区，使用
+                        <command>rndc reload -redirect</command>，
+                        要重新传输一个作为辅区配置的重定向区，使用
+                        <command>rndc retransfer -redirect</command>。
+                        当使用
                         <command>rndc reload</command>而不指定一个区名时，
                         重定向区将会随着其它区被重载。
                       </para>
@@ -9730,15 +9811,16 @@ view "external" {
                 </listitem>
               </varlistentry>
 
-	      <varlistentry>
-		<term><command>file</command></term>
+	      <varlistentry xml:id="file_option">
+		<term xml:id="file_option_term"><command>file</command></term>
 		<listitem>
 		  <para>
 		    设置区的文件名，在<command>master</command>
 		    <command>hint</command>和<command>redirect</command>
 		    这些没有<command>masters</command>定义的区中，区数据
 		    是从这个文件装载。
-		    在<command>slave</command>，<command>stub</command>和
+                    在<command>slave</command>，<command>mirror</command>，
+                    <command>stub</command>和
 		    <command>redirect</command>这些有
 		    <command>masters</command>定义的区中，区数据是来自
 		    另一个服务器并保存在这个文件中。
@@ -14196,32 +14278,10 @@ zone "example.com" {
 	  的任何请求都被禁止。
 	</para>
 	<para>
-	  除了与DNS请求中的源地址匹配的网络地址和前缀之外，ACL也可
+	  除了网络地址和前缀，这些与DNS请求中的源地址比对，之外，ACL也可
 	  包含<option>key</option>元素，这是指定一个TSIG或者SIG(0)
-	  密钥的名字，或者<option>ecs</option>元素，这是指定一个网络前缀，
-	  但仅在这个前缀与请求中包含的一个EDNS客户端子网选项匹配时
-	  才进行匹配。
+	  密钥的名字。
 	</para>
-	<para>
-	  EDNS客户端子网(ECS)选项用于一个递归解析器通知一个权威服务器
-	  所收到的原始请求来自的网络地址块，
-	  使权威服务器能够对同一解析器但是带有不同解析器客户端给出不同
-	  的回答。一个包含形如
-	  <command>ecs <replaceable>prefix</replaceable></command>
-	  的元素的ACL将会匹配成功，如果如果一个到来的请求中包括一个
-	  ECS选项，其中编码了在这个前缀中的一个地址。
-	  如果请求没有ECS选项，“ecs”元素被简单地忽略。
-	  ACL中的地址如果不以“ecs”为前缀，就只针对源地址进行匹配。
-	</para>
-	<note>
-	  <simpara>
-	    （注意：在<command>named</command>上的权威ECS实现是基于这个
-	    规范的一个早期版本，众所周知它与其它实现存在不兼容。它也是
-	    低效的，对每个要发送不同回答的客户端子网，都需要一个单独的
-	    视图，而且它不能在配置中改正有重叠的子网。它可以用于试验
-	    目的，但是不建议在生产环境中使用。）
-	  </simpara>
-	</note>
 	<para>
 	  当<acronym>BIND</acronym> 9构建时带有GeoIP支持，ACL也可
 	  用于地理访问限制。这是通过指定一个如下形式的ACL元素完成

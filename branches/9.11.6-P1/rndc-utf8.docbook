@@ -717,9 +717,6 @@
             为指定值。如果这个值将会使序列号后退，它将被拒绝。
             主要用途是在联机签名区中设置序列号。
 	  </para>
-	  <para>
-	    参见<command>rndc showzone</command>。
-	  </para>
         </listitem>
       </varlistentry>
 
@@ -849,6 +846,9 @@
             是否作了DNSSEC签名，它是否使用动态DNSSEC密钥管理或inline签名，
             以及区的预期刷新或过期时间。
           </para>
+	  <para>
+	    参见<command>rndc showzone</command>。
+	  </para>
         </listitem>
       </varlistentry>
 

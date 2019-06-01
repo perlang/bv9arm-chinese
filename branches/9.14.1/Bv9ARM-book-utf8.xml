@@ -6063,10 +6063,14 @@ options {
 	      <term><command>allow-query-cache-on</command></term>
 	      <listitem>
 		<para>
-		  指定哪些本机地址可以从缓存给出答案，如果未指定，缺省
-		  允许在任何地址上的对缓存的请求，
-		  <command>localnets</command>和
-		  <command>localhost</command>。
+		  指定哪些本机地址可以发送来自缓存的响应，如果未设置
+                  <command>allow-query-cache-on</command>，就使用
+                  <command>allow-recursion-on</command>，如果设置了后者。
+                  否则，缺省允许缓存响应从任何地址发送。
+                  注意：在一个缓存响应被发送之前，
+		  <command>allow-query-cache</command>和
+		  <command>allow-query-cache-on</command>都必须被满足；
+		  一个被其中之一阻止的客户端也会被另一个阻止。
 		</para>
 	      </listitem>
 	    </varlistentry>
@@ -7104,6 +7108,74 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>tcp-initial-timeout</command></term>
+	      <listitem>
+		<para>
+		  服务器等待一个新的TCP连接上客户端的第一个消息的总时间
+		  （以100毫秒为单位）。
+		  缺省是300（30秒），最小值是25（2.5秒），最大值是1200（2分钟）。
+		  超过最大值或者低于最小值将被调整，并在日志中记录告警。
+		  （注意：这个值必须大于期望的往返延迟时间；否则没有客户端
+		  能够有足够的时间提交一个消息。）
+                  这个值可以在运行时使用<command>rndc tcp-timeouts</command>
+                  更改。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>tcp-idle-timeout</command></term>
+	      <listitem>
+		<para>
+		  当客户端不使用EDNS TCP keepalive选项时，服务器在关闭一个
+		  空闲的TCP连接之前等待的总时间（以100毫秒为单位）。
+		  缺省是300（30秒），最大值是1200（2分钟），最小值是1
+		  （十分之一秒）。
+		  超过最大值或者低于最小值将被调整，并在日志中记录告警。
+                  参见<command>tcp-keepalive-timeout</command>
+                  查看客户端使用EDNS TCP keepalive选项。
+                  这个值可以在运行时使用<command>rndc tcp-timeouts</command>
+                  更改。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>tcp-keepalive-timeout</command></term>
+	      <listitem>
+		<para>
+		  当客户端使用EDNS TCP keepalive选项时，服务器在关闭一个
+		  空闲的TCP连接之前等待的总时间（以100毫秒为单位）。
+		  缺省是300（30秒），最大值是65535（大约1.8小时），最小值是1
+		  （十分之一秒）。
+		  超过最大值或者低于最小值将被调整，并在日志中记录告警。
+                  这个值可以大于<command>tcp-idle-timeout</command>，
+                  因为使用EDNS TCP keepalive选项的客户端期望使用TCP连接
+                  传送多个消息。
+                  这个值可以在运行时使用<command>rndc tcp-timeouts</command>
+                  更改。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>tcp-advertised-timeout</command></term>
+	      <listitem>
+		<para>
+		  服务器在包含EDNS TCP keepalive选项的响应中发送的超时
+		  值（100毫秒为单位）。
+		  它通知一个客户端应该保持会话打开的总时间。
+		  缺省是300（30秒），最大值是65535（大约1.8小时），最小值是0，
+		  这表示客户端必须立即关闭TCP连接。
+                  通常这应该被设置为与<command>tcp-keepalive-timeout</command>
+                  相同的值。
+                  这个值可以在运行时使用<command>rndc tcp-timeouts</command>
+                  更改。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
           </variablelist>
 
         </section>
@@ -7393,16 +7465,46 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               </listitem>
             </varlistentry>
 
+	    <varlistentry>
+	      <term><command>min-ncache-ttl</command></term>
+	      <listitem>
+		<para>
+		  为了减少网络流量和提高性能，服务器存储否定响应。
+                  <command>min-ncache-ttl</command>用于设置这些响应在服务器中最
+                  小持时间，单位为秒。
+                  为方便起见，TTL风格的时间单位后缀也可用于指定这个值。
+                  缺省的<command>min-ncache-ttl</command>值是<literal>0</literal>秒。
+		  <command>min-ncache-ttl</command>不能超过90秒，如果设置为更大
+		  的值将被截断成90秒。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><command>min-cache-ttl</command></term>
+	      <listitem>
+		<para>
+		  设置服务器缓存普通（肯定）响应的最小时间，单位为秒。
+		  为方便起见，TTL风格的时间单位后缀也可用于指定这个值。
+                  缺省的<command>min-cache-ttl</command>值是<literal>0</literal>秒。
+		  <command>min-cache-ttl</command>不能超过90秒，如果设置为更大
+		  的值将被截断成90秒。
+		</para>
+	      </listitem>
+	    </varlistentry>
+
             <varlistentry>
               <term><command>max-ncache-ttl</command></term>
               <listitem>
                 <para>
-                  为减少网络流量和提高性能，服务器会存储“记录不存在”的响应。
-                  <command>max-ncache-ttl</command>用来设置这些响应在服务器中最
-                  大保持时间的秒数。缺省的<command>max-ncache-ttl</command>值为
+                  为了减少网络流量和提高性能，服务器会存储否定响应。
+                  <command>max-ncache-ttl</command>用于设置这些响应在服务器中最
+                  大保持时间，单位为秒。
+                  为方便起见，TTL风格的时间单位后缀也可用于指定这个值。
+                  缺省的<command>max-ncache-ttl</command>值为
                   <literal>10800</literal>（3小时）。
                   <command>max-ncache-ttl</command>
-                  不能超过7天，如果超过，将会静默地被截为7天。
+                  不能超过7天，如果设置为更大的值，将会静默地被截为7天。
                 </para>
               </listitem>
             </varlistentry>
@@ -7411,7 +7513,8 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               <term><command>max-cache-ttl</command></term>
               <listitem>
                 <para>
-		  设置以秒计的服务器的缓存普通（肯定）响应的最大时间。
+		  设置服务器缓存普通（肯定）响应的最大时间，单位为秒。
+                  为方便起见，TTL风格的时间单位后缀也可用于指定这个值。
 		  缺省值是604800（一周）。
                   值为0可能导致所有的请求都返回SERVFAIL，因为在解析过程中会丢失
                   中间资源记录集（如NS和粘着AAAA/A记录）的缓存。
@@ -7419,20 +7522,24 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
               </listitem>
             </varlistentry>
 
-            <varlistentry>
-              <term><command>min-roots</command></term>
-              <listitem>
-                <para>
-                  根服务器的最小个数，一个需要查询根服务器的请求所能接受。缺省
-                  值为<userinput>2</userinput>。
-                </para>
-                <note>
-                  <simpara>
-                    <acronym>BIND</acronym> 9中还未实现。
-                  </simpara>
-                </note>
-              </listitem>
-            </varlistentry>
+	    <varlistentry>
+	      <term><command>max-stale-ttl</command></term>
+	      <listitem>
+		<para>
+		  如果旧响应被开启，
+                  <command>max-stale-ttl</command>设置服务器保留
+                  那些超期记录的最大时间。
+                  这些超期记录在其服务器不可达时将作为旧记录响应。
+		  缺省是1周。允许的最小值是1秒；一个为0的值将被
+		  静默地更新为1秒。
+		</para>
+		<para>
+		  要返回旧记录，它们必须被开启，要么在配置文件中
+                  使用<command>stale-answer-enable</command>，或者通过
+		  <command>rndc serve-stale on</command>。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
             <varlistentry>
               <term><command>sig-validity-interval</command></term>
@@ -7451,11 +7558,33 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
 		  有限的时钟误差。
                 </para>
 		<para>
+		  <command>sig-validity-interval</command>可以为了DNSKEY记录
+		  被覆盖，通过设置
+		  <command>dnskey-sig-validity</command>。
+		</para>
+		<para>
 		  <command>sig-validity-interval</command>应该至少是SOA过期
 		  间隔的几倍，以允许在不同计时器和过期日期之间合理的互操作。
 		</para>
               </listitem>
             </varlistentry>
+
+	    <varlistentry>
+	      <term><command>dnskey-sig-validity</command></term>
+	      <listitem>
+		<para>
+		  指定在未来的一个天数，在这个时候，为DNSKEY资源记录集
+		  而自动生成的，且作为动态更新
+                  （<xref linkend="dynamic_update"/>）的结果的DNSSEC
+                  签名将会过期。
+		  如果设置为一个非零值，这将覆盖由
+		  <command>sig-validity-interval</command>所设置的值。
+		  缺省是零，表示使用
+		  <command>sig-validity-interval</command>。
+		  最大值是3660天（10年），更大的值将被拒绝。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
 	    <varlistentry>
 	      <term><command>sig-signing-nodes</command></term>
@@ -8438,9 +8567,42 @@ deny-answer-aliases { "example.net"; };
 	  </para>
 
 	  <para>
+	    <command>dnsrps-enable yes</command>选项打开DNS响应策略服务
+	    （DNSRPS）接口，如果它已经使用
+	    <command>configure --enable-dnsrps</command>编译进了
+	    <command>named</command>。
+	  </para>
+
+	  <para>
+	    <command>dnsrps-options</command>块提供额外的RPZ配置设置，它会
+	    被传递给DNSRPS提供者库。
+            在一个<command>dnsrps-options</command>串中的多个DNSRPS设置
+            应当使用分号分开。
+	    The DNSRPS provider, librpz, is passed a configuration string
+	    consisting of the <command>dnsrps-options</command> text,
+	    concatenated with settings derived from the
+	    <command>response-policy</command> statement.
+	  </para>
+
+	  <para>
+	    注意：<command>dnsrps-options</command>文本只能包含与具体DNSRPS
+	    提供者相关的配置设置。例如，来自Farsight Security的DNSRPS提供者
+	    使用的选项有
+	    <command>dnsrpzd-conf</command>，
+	    <command>dnsrpzd-sock</command>和
+	    <command>dnzrpzd-args</command>（关于这些选项的详细信息，
+	    参见<command>librpz</command>文档）。
+	    其它RPZ配置设置也可以被包含进
+	    <command>dnsrps-options</command>，但是如果
+	    <command>named</command>通过设置<command>dnsrps-enable</command>
+	    为“no”而切换到传统的RPZ时，这些选项都会被忽略。
+	  </para>
+
+	  <para>
 	    一个被RPZ策略所修改的记录的TTL根据策略区中相关记录的TTL来设置。
             它被限制为一个最大值。
             <command>max-policy-ttl</command>子句从其缺省值5改变最大值秒数。
+            为方便起见，TTL风格的时间单位后缀也可用于指定这个值。
 	  </para>
 
 	  <para>

@@ -9014,7 +9014,6 @@ example.com                 CNAME   rpz-tcp-only.
 	  </para>
 
 	  <para>
-	    The <command>tcp-only</command> option sets the transport
 	    <command>tcp-only</command>选项设置传输协议为TCP。缺省是
 	    使用UDP传输，并仅在收到一个截断响应时回退到TCP。
 	  </para>

@@ -8674,6 +8674,22 @@ example.com                 CNAME   rpz-tcp-only.
 	    可以使用<command>log</command>子句来选择性关闭对某个特定响应策略区
 	    的重写日志。缺省时，所有重写都被记录到日志。
 	  </para>
+
+	  <para>
+	    <command>add-soa</command>选项控制RPZ的SOA记录是否被添加到附加部份
+	    以回溯这个区中的变化。这个可以在单独的策略区级别或者在响应策略级别
+	    设置。
+            缺省是<literal>yes</literal>。
+	  </para>
+
+	  <para>
+	    对RPZ区的更新是异步处理的；如果存在多个更新，它们会被捆绑在一起。
+	    如果一个队RPZ区的更新（例如，通过IXFR）在最近的更新之后还不到
+            <option>min-update-interval</option>秒，这个改变就不会被执行，
+            直到这个间隔时间之后。
+            缺省是<literal>60</literal>秒。
+            为方便起见，TTL风格的时间单位后缀也可用于指定这个值。
+	  </para>
         </section>
 
 	<section xml:id="rrl"><info><title>响应比率限制</title></info>
@@ -9007,9 +9023,23 @@ example.com                 CNAME   rpz-tcp-only.
 	  </para>
 
 	  <para>
-	    The <command>tcp-only</command> option sets the transport
+	    <command>padding</command>选项为发出的消息增加EDNS填充
+	    选项，增加包的大小为一批特定的块大小。有效块大小范围从0
+	    （缺省，关闭使用ENS填充）到512字节。
+	    更大的值将被缩减成512，并在日志中记录告警。
+	    注意：这个选项当前不兼容于TSIG或SIG(0)，因为包含填充的
+	    EDNS OPT记录必须被添加到已经被签名的包中。
+	  </para>
+
+	  <para>
 	    <command>tcp-only</command>选项设置传输协议为TCP。缺省是
 	    使用UDP传输，并仅在收到一个截断响应时回退到TCP。
+	  </para>
+
+	  <para>
+	    <command>tcp-keepalive</command>选项添加EDNS TCP keepalive
+	    到经过TCP发送的消息。
+	    注意当前响应中的空闲超时被忽略。
 	  </para>
 
           <para>
@@ -9545,6 +9575,112 @@ view "external" {
                       </para>
                     </entry>
                   </row>
+		  <row rowsep="0">
+		    <entry colname="1">
+		      <para>
+			<varname>mirror</varname>
+		      </para>
+		    </entry>
+		    <entry colname="2">
+		      <para>
+                        <emphasis role="bold">注意：</emphasis>在根区之
+                        外的任何区使用这个区类型都被认为是
+                        <emphasis>试验性的</emphasis>并可能带来性能问题，
+                        特别是对较大和/或频繁更新的区。
+		      </para>
+		      <para>
+		        一个镜像区就像一个类型为
+		        <userinput>secondary</userinput>的区，其数据
+		        在用于响应之前会被DNSSEC验证。
+		        验证在区传送过程中（包括AXFR和IXFR）被执行，
+		        当<command>named</command>重启时，区文件从磁盘
+		        装载时又会再次进行验证。
+		        如果对一个新版本镜像区的验证失败，就调度一次
+		        重传，并使用最近正确验证的这个区的版本，直到其
+		        过期；如果这个区的一个更新的版本后来正确验证了，
+		        它将替代先前使用的版本。
+		        如果一个镜像区没有可以使用的区数据（要么是因为
+		        从来没有从磁盘装载并且还没有从主服务器完成传送，
+		        要么是因为其最近的正确验证版本已经过期），
+		        作为替代，传统的DNS递归将会被用来查找答案。
+		      </para>
+		      <para>
+		        虽然任何区都可以被配置成这个类型，但是其意图
+		        还是用于设置一个快速的根区的本地拷贝，类似于
+		        在RFC 7706中所描述的。
+		        注意，镜像区不应该增加RFC 7706提供的配置示例，
+		        而是完全替代它。
+		      </para>
+		      <para>
+		        一个缺省的IANA根区主服务器列表是內建于
+		        <command>named</command>，它的镜像可以使用下列
+		        配置来打开：
+		      </para>
+<programlisting>zone "." {
+	type mirror;
+};</programlisting>
+		      <para>
+		        为了设置任何其它区的镜像，需要使用
+		        <command>masters</command>选项提供一个显式的
+			主服务器列表（参见<xref linkend="masters_grammar"/>
+                        获取详细信息）。
+		      </para>
+		      <para>
+                        要使镜像区内容在<command>named</command>重启间
+                        持久，使用
+		        <xref endterm="file_option_term" linkend="file_option"/>
+		        选项。
+		      </para>
+		      <para>
+		        镜像区验证总是发生在整个区内容，即没有“增量验证”
+		        发生，即使对于IXFR也是如此。
+		        这需要确保解析器所使用的每个版本的区在DNSSEC
+		        方面是自相一致的。
+		        另外，将来可能增加更有效率的区验证方法。
+		      </para>
+		      <para>
+                        为验证成功，必须在<filename>named.conf</filename>中
+                        配置一个区的密钥签名密钥（KSK）作为一个信任锚：
+                        即一个区的密钥必须被指定要么在
+		        <command>managed-keys</command>中，要么在
+		        <command>trusted-keys</command>中。
+		        在根区的情况，你也可依赖內建的根信任锚，它是在
+		        当<xref endterm="dnssec_validation_term"
+			  linkend="dnssec_validation"/>被设置为缺省值
+			<userinput>auto</userinput>时被开启的。
+		      </para>
+		      <para>
+			来自一个镜像区的响应看起来非常类似来自一个类型为
+		        <userinput>secondary</userinput>的区的响应，但有
+		        明显的例外，AA位（“权威响应”）未设置，而AD位
+		        （“认证数据”）被设置。
+		      </para>
+		      <para>
+		        由于镜像区目标是被递归解析器使用的，将其放在
+		        一个关闭递归的视图中将被认为是一个配置错误。
+		      </para>
+		      <para>
+		        当为一个镜像区配置NOTIFY时，仅能使用
+		        <userinput>notify no;</userinput>和
+		        <userinput>notify explicit;</userinput>。
+		        在区级使用任何其它<command>notify</command>设置
+		        都是一个配置错误。
+		        在<command>options</command>或者
+		        <command>view</command>级使用任何其它
+		        <command>notify</command>设置将导致这个设置
+		        被镜像区的
+		        <userinput>notify explicit;</userinput>所覆盖。
+		        由于<command>notify</command>选项的全局缺省值是
+		        <userinput>yes</userinput>，镜像区缺省是配置为
+		        <userinput>notify explicit;</userinput>。
+		      </para>
+		      <para>
+		        镜像区的出向区传送缺省是被关闭的，但是可以使用
+		        <xref endterm="allow_transfer_term" linkend="allow_transfer"/>
+		        开启。
+		      </para>
+		    </entry>
+		  </row>
                   <row rowsep="0">
                     <entry colname="1">
                       <para>

@@ -5339,20 +5339,41 @@ options {
 	      </listitem>
 	    </varlistentry>
 
-            <varlistentry>
-              <term><command>rfc2308-type1</command></term>
-              <listitem>
-                <para>
-                  将这个设置为<userinput>yes</userinput>将导致服务器发送NS记录
-                  连同SOA记录作为否定答案。缺省为<userinput>no</userinput>。
-                </para>
-                <note>
-                  <simpara>
-                    <acronym>BIND</acronym> 9还没有实现。
-                  </simpara>
-                </note>
-              </listitem>
-            </varlistentry>
+	    <varlistentry>
+	      <term><command>response-padding</command></term>
+	      <listitem>
+		<para>
+		  EDNS填充选项的目的是当DNS请求通过一个加密通道发送时，
+		  通过减少包大小的变化来提升保密性。
+		  如果一个请求：
+		  <orderedlist inheritnum="ignore" continuation="restarts">
+		    <listitem>
+		      包含一个EDNS填充选项，
+		    </listitem>
+		    <listitem>
+		      包含一个有效的服务器cookie或者使用TCP，
+		    </listitem>
+		    <listitem>
+		      <emphasis>没有</emphasis>被TSIG或SIG(0)签名，以及
+		    </listitem>
+		    <listitem>
+		      来自一个地址与指定ACL匹配的客户端，
+		    </listitem>
+		  </orderedlist>
+		  响应就使用一个EDNS填充选项被填充到
+		  <varname>block-size</varname>字节的倍数。
+                  如果这些条件不满足，响应就不会被填充。
+		</para>
+		<para>
+		  如果<varname>block-size</varname>是0或者ACL是
+		  <command>none;</command>，这个特性会被关闭，不进行
+		  填充；这是缺省行为。
+		  如果<varname>block-size</varname>大于512，将在日志中
+		  记录一条告警，并且这个值会被截断到512。
+                  块大小通常期望是2的幂（例如，128），但这不是必须的。
+		</para>
+	      </listitem>
+	    </varlistentry>
 
 	    <varlistentry>
 	      <term><command>trust-anchor-telemetry</command></term>
@@ -6092,8 +6113,16 @@ options {
               <term><command>allow-recursion-on</command></term>
               <listitem>
                 <para>
-		  指定哪些本机地址可以接受递归请求。如果未指定，缺省是
-		  允许在所有地址上的递归请求。
+		  指定哪些本机地址可以接受递归请求。
+		  如果<command>allow-recursion-on</command>未设置，就使用
+		  <command>allow-query-cache-on</command>，如果后者被设置
+		  了；否则，缺省是允许在所有地址上的递归请求：任何允许
+		  发送递归请求的客户端可以将其发送到
+		  <command>named</command>监听的任何地址。
+		  注意：在递归被允许之前，
+		  <command>allow-recursion</command>和
+		  <command>allow-recursion-on</command>都必须被满足；
+		  被其中之一阻止的客户端也会被另一个阻止。
                 </para>
               </listitem>
             </varlistentry>
@@ -6101,31 +6130,52 @@ options {
             <varlistentry>
               <term><command>allow-update</command></term>
               <listitem>
-                <para>
-                  指定允许哪些主机可以对主区提交动态DNS更新。缺省是拒绝所有主机
-                  的动态更新。注意，允许基于请求者IP地址的动态更新是不安全的；
+		<para>
+		  当为了一个主区而设置在<command>zone</command>语句中时，
+                  指定允许哪些主机可以对这个区提交动态DNS更新。
+                  缺省是拒绝所有主机的动态更新。
+		</para>
+		<para>
+                  注意，允许基于请求者IP地址的动态更新是不安全的；
                   更详细的内容参见<xref linkend="dynamic_update_security"/>。
-                </para>
+		</para>
+		<para>
+		  通常情况这个选项只应该设置在<command>zone</command>级。
+		  由于一个缺省值可以设置在<command>options</command>或
+		  <command>view</command>级并被区所继承，
+		  这可能导致某些区无意间允许更新。
+		</para>
               </listitem>
             </varlistentry>
 
             <varlistentry>
               <term><command>allow-update-forwarding</command></term>
               <listitem>
-                <para>
-                  指定允许哪些主机可以对能够转发到主区的辅区提交动态DNS更新。缺
-                  省是<userinput>{ none; }</userinput>，表示不执行
-                  更新转发操作。要允许更新转发，指定
+		<para>
+		  当为了一个辅区而设置在<command>zone</command>语句中时，
+                  指定允许哪些主机可以提交动态DNS更新，并将其转发给主区。
+                  缺省是<userinput>{ none; }</userinput>，表示不执行
+                  更新转发操作。
+		</para>
+		<para>
+                  要允许更新转发，在<command>zone</command>语句中指定
                   <userinput>allow-update-forwarding { any; };</userinput>。
                   指定<userinput>{ none; }</userinput>或
-                  <userinput>{ any; }</userinput>之外的值通常是相反的意义，因为
+                  <userinput>{ any; }</userinput>之外的值通常是相反的意义；
                   对更新的访问控制应该是主服务器的责任，而不是辅服务器的责任。
-                </para>
-                <para>
-                  注意打开一个辅服务器上的更新转发特性可能将主服务器依赖基于不
-                  安全IP地址的访问控制暴露给攻击者；更详细的内容参见
+		</para>
+		<para>
+                  注意打开一个辅服务器上的更新转发特性可能将主服务器
+                  暴露给攻击者，如果它们依赖不安全的基于IP地址的访问控制；
+                  更详细的内容参见
                   <xref linkend="dynamic_update_security"/>。
-                </para>
+		</para>
+		<para>
+		  通常情况这个选项只应该设置在<command>zone</command>级。
+		  由于一个缺省值可以设置在<command>options</command>或
+		  <command>view</command>级并被区所继承，
+		  这可能导致某些区无意间允许更新。
+		</para>
               </listitem>
             </varlistentry>
 
@@ -14766,6 +14816,53 @@ allow-query { !{ !10/8; any; }; key example; };
           </para>
 
         </section>
+
+	<section><info><title>EDNS合规性问题</title></info>
+	  <para>
+	    EDNS（扩展DNS）一项最早在1999年指定的标准。
+	    它是DNSSEC验证，DNS COOKIE选项以及其它特性的基础。
+	    仍然有一些故障的或者过时的DNS服务器和防火墙在使用，它们
+	    在收到带EDNS的请求时会产生错误的行为；例如，它们会丢弃EDNS
+	    请求而不是回复FORMERR。
+	    BIND和其它递归名字服务器在面对这个情况时，习惯上采用变通
+	    的方法，以不同方式重试，最终回退到不带EDNS的普通DNS请求。
+	  </para>
+	  <para>
+	    这样的变通方法导致不必要的解析延迟，增加代码复杂性，并
+	    阻碍开发新的DNS特性。
+	    截至2019年2月，所有主流的DNS软件开发商都同意去除这些
+	    变通方法；参见
+	    <link xmlns:xlink="http://www.w3.org/1999/xlink"
+	      xlink:href="https://dnsflagday.net">https://dnsflagday.net</link>
+            以获取更多细节。这个变化在BIND的9.14.0版本开始实现。
+	  </para>
+	  <para>
+	    作为一种结果，在没有人工干预时，某些域名可能不能解析。
+	    在这种情况下，可以针对有问题的服务器添加
+	    <command>server</command>子句来恢复解析，指定
+	    <command>edns no</command>或
+	    <command>send-cookie no</command>，依赖于具体的不合规情况。
+	  </para>
+	  <para>
+	    要决定使用哪个<command>server</command>子句，
+	    运行下列命令发送请求给有问题域名的权威服务器：
+	  </para>
+  <literallayout>
+	    dig soa &lt;zone&gt; @&lt;server&gt; +dnssec
+	    dig soa &lt;zone&gt; @&lt;server&gt; +dnssec +nocookie
+	    dig soa &lt;zone&gt; @&lt;server&gt; +noedns
+  </literallayout>
+	  <para>
+	    如果第一条命令失败但是第二条成功，服务器很可能需要
+	    <command>send-cookie no</command>。
+	    如果头两条失败但是第三条成功，服务器需要通过
+	    <command>edns no</command>将EDNS完全关闭。
+	  </para>
+	  <para>
+	    请联系不合规域名的管理员，并鼓励他们升级他们的有问题的
+	    DNS服务器。
+	  </para>
+	</section>
       </section>
       <section><info><title>增加和修改序列号</title></info>
 

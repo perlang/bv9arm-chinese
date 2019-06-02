@@ -10,14 +10,14 @@
 -->
 
 <!-- Converted by db4-upgrade version 1.0 -->
-<section xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="module-info"><info><title>Plugins</title></info>
+<section xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="module-info"><info><title>插件</title></info>
 
   <para>
-    Plugins are a mechanism to extend the functionality of
-    <command>named</command> using dynamically loadable libraries.
-    By using plugins, core server functionality can be kept simple
-    for the majority of users; more complex code implementing optional
-    features need only be installed by users that need those features.
+    插件是一个实验动态加载库扩展<command>named</command>功能
+    的机制。
+    通过使用插件，对多数用户，服务器的核心功能可以保持简单；
+    更复杂的代码实现可选的特性，只被那些需要这些特性的用户
+    安装。
   </para>
   <para>
     The plugin interface is a work in progress, and is expected to evolve
@@ -37,10 +37,10 @@
     functionality.
   </para>
 
-  <section><info><title>Configuring Plugins</title></info>
+  <section><info><title>配置插件</title></info>
     <para>
-      A plugin is configured with the <command>plugin</command>
-      statement in <filename>named.conf</filename>:
+      插件通过在<filename>named.conf</filename>中使用
+      <command>plugin</command>语句配置：
     </para>
     <screen>
     plugin query "library.so" {
@@ -63,9 +63,9 @@
     </para>
   </section>
 
-  <section><info><title>Developing Plugins</title></info>
+  <section><info><title>开发插件</title></info>
     <para>
-      Each plugin implements four functions:
+      每个插件实现了四个功能：
       <itemizedlist>
         <listitem><command>plugin_register</command> to allocate memory,
         configure a plugin instance, and attach to hook points within

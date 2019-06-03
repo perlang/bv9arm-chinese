@@ -68,7 +68,7 @@
         </listitem>
         <listitem><command>plugin_destroy</command>拆卸插件实例
         并释放内存，</listitem>
-        <listitem><command>plugin_version</command>检查插件是兼容于
+        <listitem><command>plugin_version</command>检查插件是否兼容于
         当前版本的插件API，</listitem>
         <listitem><command>plugin_check</command>测试插件参数的
         语法正确性。</listitem>

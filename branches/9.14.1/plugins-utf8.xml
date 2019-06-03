@@ -20,21 +20,18 @@
     安装。
   </para>
   <para>
-    The plugin interface is a work in progress, and is expected to evolve
-    as more plugins are added. Currently, only "query plugins" are supported;
-    these modify the name server query logic. Other plugin types may be added
-    in the future.
+    插件接口是一项正在进行中的工作，预期进化成添加更多的插件。
+    当前，仅支持“请求插件”；这些改变了名字服务器的请求逻辑。
+    未来可能增加其它的插件类型。
   </para>
   <para>
-    The only plugin currently included in BIND is
-    <filename>filter-aaaa.so</filename>, which replaces the
-    <command>filter-aaaa</command> feature that previously existed natively
-    as part of <command>named</command>.
-    The code for this feature has been removed from <command>named</command>,
-    and can no longer be configured using standard
-    <filename>named.conf</filename> syntax, but linking in the
-    <filename>filter-aaaa.so</filename> plugin provides identical
-    functionality.
+    当前唯一包含进BIND的插件是
+    <filename>filter-aaaa.so</filename>，它替代了先前已存在的
+    <command>named</command>自然组成部份的
+    <command>filter-aaaa</command>特性。
+    这个特性的代码已经从<command>named</command>中去掉了，
+    并且不再能使用标准的<filename>named.conf</filename>语法配置，
+    但是链接<filename>filter-aaaa.so</filename>插件提供同样的功能。
   </para>
 
   <section><info><title>配置插件</title></info>
@@ -48,18 +45,17 @@
     };
     </screen>
     <para>
-      In this example, file <filename>library.so</filename> is the plugin
-      library.  <literal>query</literal> indicates that this is a query
-      plugin.
+      在这个例子中，文件<filename>library.so</filename>是插件库。
+      <literal>query</literal>指示这是一个请求插件。
     <para>
     </para>
-      Multiple <command>plugin</command> statements can be specified, to load
-      different plugins or multiple instances of the same plugin.
+      可以指定多个<command>plugin</command>语句，以加载不同的插件
+      或者同一个插件的多个实例。
     </para>
     <para>
-      <replaceable>parameters</replaceable> are passed as an opaque
-      string to the plugin's initialization routine. Configuration
-      syntax will differ depending on the module.
+      <replaceable>parameters</replaceable>会作为一个不透明的字符串
+      传送给插件的初始化程序。
+      配置语法依不同的模块而有差异。
     </para>
   </section>
 
@@ -67,28 +63,26 @@
     <para>
       每个插件实现了四个功能：
       <itemizedlist>
-        <listitem><command>plugin_register</command> to allocate memory,
-        configure a plugin instance, and attach to hook points within
-        <command>named</command>,</listitem>
-        <listitem><command>plugin_destroy</command> to tear down the plugin
-        instance and free memory,</listitem>
-        <listitem><command>plugin_version</command> to check that the plugin
-        is compatible with the current version of the plugin API,</listitem>
-        <listitem><command>plugin_check</command> to test syntactic
-        correctness of the plugin parameters.</listitem>
+        <listitem><command>plugin_register</command>申请内存，
+        配置一个插件实例，并绑定到<command>named</command>内的钩子点，
+        </listitem>
+        <listitem><command>plugin_destroy</command>拆卸插件实例
+        并释放内存，</listitem>
+        <listitem><command>plugin_version</command>检查插件是兼容于
+        当前版本的插件API，</listitem>
+        <listitem><command>plugin_check</command>测试插件参数的
+        语法正确性。</listitem>
       </itemizedlist>
     </para>
     <para>
-      At various locations within the <command>named</command> source code,
-      there are "hook points" at which a plugin may register itself.
-      When a hook point is reached while <command>named</command> is
-      running, it is checked to see whether any plugins have registered
-      themselves there; if so, the associated "hook action" is called -
-      this is a function within the plugin library. Hook actions may
-      examine the runtime state and make changes - for example, modifying
-      the answers to be sent back to a client or forcing a query to be
-      aborted. More details can be found in the file
-      <filename>lib/ns/include/ns/hooks.h</filename>.
+      在<command>named</command>源代码的不同位置，有一些“钩子点”，
+      插件在此注册自身。
+      在<command>named</command>运行时，当运行到钩子点，会检查
+      是否有任何插件在此注册了它们自身；如果注册过，就调用相应的
+      “钩子动作” - 这是插件库中的一个功能 - 例如，修改发送回一个
+      客户端的响应或者强制终止一个请求。
+      更多细节可以在文件
+      <filename>lib/ns/include/ns/hooks.h</filename>中找到。
     </para>
   </section>
 

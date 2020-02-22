@@ -1,0 +1,77 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes_features"><info><title>新特性</title></info>
+  <itemizedlist>
+    <listitem>
+      <para>
+        当 BIND 在编译时使用了 <command>configure --with-geoip2</command>，
+        现在可以支持来自 MaxMind 的新的 GeoIP2 API。
+        旧的 GeoIP API 仍然可以使用，但是需要在编译时使用
+	<command>configure --with-geoip</command>。
+	（注意，MaxMind已经不再维护旧的数据库 API 了。）
+      </para>
+      <para>
+        到 GeoIP2 数据库的缺省路径将基于<command>libmaxminddb</command>
+        的位置而设置；例如，如果它在<filename>/usr/local/lib</filename>下，
+        缺省路径将是<filename>/usr/local/share/GeoIP</filename>。
+        这个值可以在<filename>named.conf</filename>中使用
+        <command>geoip-directory</command>选项覆盖。
+      </para>
+      <para>
+        一些在旧 GeoIP 中可用的<command>geoip</command> ACL 设置，
+        包括对<command>netspeed</command>，<command>org</command>
+        和三字母 ISO 国家代码的搜索，将不能工作在 GeoIP2 中。
+        支持 GeoIP2 的数据库类型为<command>country</command>，
+        <command>city</command>，<command>domain</command>，
+        <command>isp</command>和<command>as</command>。
+        所有数据库都支持 IPv4 和 IPv6 查找。 [GL #182]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <command>statistics-channel</command>中增加了两个新的指标
+        以报告 DNSSEC 签名操作。
+        对每个区中的每个密钥，<command>dnssec-sign</command>计数器
+        指示了自从服务器启动以来<command>named</command>使用这个
+        密钥生成的签名的总数，而<command>dnssec-refresh</command>
+        计数器指示了在区维护期间，这些签名被刷新的次数，
+        与之对照的是作为一个区更新的结果而被生成。 [GL #513]
+        (原文：For each key in each zone, the
+        <command>dnssec-sign</command> counter indicates the total
+        number of signatures <command>named</command> has generated
+        using that key since server startup, and the
+        <command>dnssec-refresh</command> counter indicates how
+        many of those signatures were refreshed during zone
+        maintenance, as opposed to having been generated
+        as a result of a zone update.  [GL #513])
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        增加了一个基于 SipHash 2-4 的 DNS Cookie （RFC 7873）算法。
+        [GL #605]
+      </para>
+      <para>
+        如果你运行多个 DNS 服务器（不同的 BIND 9 版本或者来自多个
+        厂商的 DNS 服务器）使用同一个 IP 地址进行响应（任播或
+        负载均衡的场景），你必须确保所有的服务器配置使用同样的
+        DNS Cookie 算法和同样的服务器密码，以获得最好的性能。
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        包含在 DNS 引用消息中的 DS 记录现在可以被验证并立即缓存，
+        减少了一次 DNSSEC 验证所需要的请求次数。 [GL #964]
+      </para>
+    </listitem>
+  </itemizedlist>
+</section>

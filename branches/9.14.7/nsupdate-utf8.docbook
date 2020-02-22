@@ -1,0 +1,849 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.nsupdate">
+  <info>
+    <date>2014-04-18</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>nsupdate</application></refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+  <refnamediv>
+    <refname><application>nsupdate</application></refname>
+    <refpurpose>动态DNS更新工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <year>2002</year>
+      <year>2003</year>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2006</year>
+      <year>2007</year>
+      <year>2008</year>
+      <year>2009</year>
+      <year>2010</year>
+      <year>2011</year>
+      <year>2012</year>
+      <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
+      <year>2017</year>
+      <year>2018</year>
+      <year>2019</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+    <command>nsupdate</command>
+      <arg choice="opt" rep="norepeat"><option>-d</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-D</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-i</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-L <replaceable class="parameter">level</replaceable></option></arg>
+      <group choice="opt" rep="norepeat">
+      <arg choice="opt" rep="norepeat"><option>-g</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-o</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-l</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-y <replaceable class="parameter"><optional>hmac:</optional>keyname:secret</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-k <replaceable class="parameter">keyfile</replaceable></option></arg>
+      </group>
+      <arg choice="opt" rep="norepeat"><option>-t <replaceable class="parameter">timeout</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-u <replaceable class="parameter">udptimeout</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-r <replaceable class="parameter">udpretries</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-T</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-P</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-V</option></arg>
+      <group choice="opt" rep="norepeat">
+	<arg choice="opt" rep="norepeat"><option>-4</option></arg>
+	<arg choice="opt" rep="norepeat"><option>-6</option></arg>
+      </group>
+      <arg choice="opt" rep="norepeat">filename</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title>></info>
+
+    <para><command>nsupdate</command>
+      是用于提交在RFC 2136中所定义的动态DNS更新请求给一个名字服务器。
+      这允许在不用手工编辑区文件的情况下增加或删除一个区的资源记录。
+      一个更新请求可以包含增加或删除多个资源记录的请求。
+    </para>
+    <para>
+      在由<command>nsupdate</command>进行动态控制之下的区或者
+      一个DHCP服务器不应该由手工编辑。手工编辑可能与动态更新
+      相冲突并导致数据丢失。
+    </para>
+    <para>
+      使用<command>nsupdate</command>动态增加或删除的资源记录必须
+      在同一个区内。
+      请求发给区的主服务器。
+      这由区的SOA记录的MNAME字段来标识。
+    </para>
+    <para>
+      事务签名可以被用于认证动态DNS更新。
+      这些使用在RFC 2845中所描述的TSIG资源记录或者在RFC 2535和RFC 2931
+      中所描述的SIG(0)记录或者在RFC 3645中所描述的GSS-TSIG。
+    </para>
+    <para>
+      TSIG依赖于一个仅有<command>nsupdate</command>和名字服务器所知道
+      一个共享密钥。
+      当前，TSIG中唯一支持的加密算法是在RFC 2104中所定义的HMAC-MD5。
+      一旦为TSIG定义了其它算法，应用程序需要确保在相互认证时，它们选择
+      合适的算法，如同选择合适的密钥一样。
+      当前唯一支持的TSIG算法是HMAC-MD5，它在RFC 2104中定义。一旦为TSIG
+      定义了其它算法，应用需要确保它们选择了正确的算法，如同它们与其它
+      应用之间做认证需要选择正确的密钥一样。
+      例如，合适的<type>key</type>和<type>server</type>语句会被添加到
+      <filename>/etc/named.conf</filename>，这样名字服务器可以将合适
+      的密钥和算法关联到将会使用TSIG认证的客户端应用所在的IP地址上。
+      你可以使用<command>ddns-confgen</command>生成合适的配置片段。
+      <command>nsupdate</command>使用<option>-y</option>或<option>-k</option>
+      选项提供TSIG共享密码。这些选项是互斥的。
+    </para>
+    <para>
+      SIG(0)使用公钥加密算法。要使用一个SIG(0)密钥，公钥必须存放在
+      名字服务器所服务的区的一个KEY记录中。
+    </para>
+    <para>
+      GSS-TSIG使用Kerberos凭证。标准的GSS-TSIG模式使用
+      <option>-g</option>标志打开。Windows 2000所使用的一个非标准兼容的
+      GSS-TSIG变体可以用<option>-o</option>标志打开。
+    </para>
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+
+    <variablelist>
+      <varlistentry>
+	<term>-4</term>
+	<listitem>
+	  <para>
+	    只使用IPv4。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-6</term>
+	<listitem>
+	  <para>
+	    只使用IPv6。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-d</term>
+      <listitem>
+        <para>
+          调试模式。
+          它提供关于所生成的更新请求和从名字服务器收到的回复的跟踪信息。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-D</term>
+      <listitem>
+        <para>
+          扩展调试模式。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-i</term>
+      <listitem>
+        <para>
+          强制交互模式，即使标准输入不是一个终端。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-k <replaceable class="parameter">keyfile</replaceable></term>
+      <listitem>
+        <para>
+          这个文件存放TSIG认证密钥。密钥文件可以
+          有两种格式：一个包含一个<filename>named.conf</filename>-格式
+          的<command>key</command>语句的文件，它可以由
+          <command>ddns-confgen</command>自动生成，或者一对文件，其
+          文件名格式是
+          <filename>K{name}.+157.+{random}.private</filename>和
+          <filename>K{name}.+157.+{random}.key</filename>，它们可以
+          由<command>dnssec-keygen</command>生成。
+          <option>-k</option>也可以用于指定一个用于认证动态DNS更新请求的SIG(0)
+          密钥。在这个情况下，所指定的密钥不是一个HMAC-MD5密钥。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-l</term>
+      <listitem>
+        <para>
+          只local-host模式，
+          通过使用<option>-l</option>标志。这将会把服务器地址设置为
+          localhost（关闭<command>server</command>，这样服务器地址
+          就不能被覆盖）。到本地服务器的连接将使用在
+          <filename>/var/run/named/session.key</filename>中找到的一个
+          TSIG密钥，如果有任何本地主区的<command>update-policy</command>
+          设置为<command>local</command>，这个密钥可以由<command>named</command>
+          自动生成。这个密钥文件的位置可以使用<option>-k</option>
+          选项覆盖。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-L <replaceable class="parameter">level</replaceable></term>
+      <listitem>
+        <para>
+          设置日志的调试级别。如果为0，就关掉日志。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-p <replaceable class="parameter">port</replaceable></term>
+      <listitem>
+        <para>
+          设置用于连接一个名字服务器的缺省端口。缺省为53。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-P</term>
+      <listitem>
+        <para>
+          打印输出私有的BIND特定资源记录类型的列表，这些资源记录类型的格式
+          是<command>nsupdate</command>所能理解的。参见
+          <option>-T</option>选项。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-r <replaceable class="parameter">udpretries</replaceable></term>
+      <listitem>
+        <para>
+          UDP重试次数。缺省是3。如果为0，仅仅会生成一次更新请求。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-t <replaceable class="parameter">timeout</replaceable></term>
+      <listitem>
+        <para>
+          一个更新请求在其被中断之前可以持续的最大
+          时间。缺省是300秒。0可以用来关掉超时。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-T</term>
+      <listitem>
+        <para>
+          打印输出IANA标准资源记录类型的列表，这些资源记录类型的格式
+          是<command>nsupdate</command>所能理解的。
+          <command>nsupdate</command>将在打印列表后退出。
+          <option>-T</option>选项可以和<option>-P</option>选项组合。
+        </para>
+        <para>
+          可以使用“TYPEXXXXX”输入其它类型，其中“XXXXX”是不以0开始的十进制
+          数值。如果出现了rdata，将会使用UNKNOWN rdata格式分析，
+          （&lt;backslash&gt; &lt;hash&gt; &lt;space&gt; &lt;length&gt;
+          &lt;space&gt; &lt;hexstring&gt;）。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-u <replaceable class="parameter">udptimeout</replaceable></term>
+      <listitem>
+        <para>
+          UDP重试间隔。缺省是3秒。如果为0，这个间隔
+          将会从超时间隔和UDP重试次数中计算得到。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-v</term>
+      <listitem>
+        <para>
+          即使对小的更新请求也使用TCP。
+          缺省时，<command>nsupdate</command>使用UDP发送更新请求给名字服务器，
+          除非它们太大不能装进一个UDP请求中，这种情况将使用TCP。
+          当有一批更新请求时，TCP可能是更优的。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-V</term>
+      <listitem>
+        <para>
+          打印版本号并退出。
+        </para>
+      </listitem>
+      </varlistentry>
+
+      <varlistentry>
+      <term>-y <replaceable class="parameter"><optional>hmac:</optional>keyname:secret</replaceable></term>
+      <listitem>
+        <para>
+          字面的TSIG认证密钥。
+          <parameter>keyname</parameter>是密钥的名字，而
+          <parameter>secret</parameter>是base64编码的共享密钥。
+          <parameter>hmac</parameter>是密钥算法名；有效的选择为
+          <literal>hmac-md5</literal>，
+          <literal>hmac-sha1</literal>，<literal>hmac-sha224</literal>，
+          <literal>hmac-sha256</literal>，<literal>hmac-sha384</literal>或
+          <literal>hmac-sha512</literal>。如果未指定<parameter>hmac</parameter>，
+          缺省是<literal>hmac-md5</literal>，或者如果MD5被禁止，则是
+          <literal>hmac-sha256</literal>。
+        </para>
+        <para>
+          注意：不鼓励使用<option>-y</option>选项，因为共享密钥是以
+          明文形式作为命令行参数提供的。在
+          <citerefentry>
+	    <refentrytitle>ps</refentrytitle><manvolnum>1</manvolnum>
+          </citerefentry>的输出或者在用户的shell所维护的历史文件中，
+          这个可能是可见的。
+        </para>
+      </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>输入格式</title></info>
+
+    <para><command>nsupdate</command>
+      从<parameter>filename</parameter>或标准输入读取输入。
+      每个命令刚好在一个输入行内。
+      一些命令是出于管理的目的。
+      其它的命令要么是更新指令，要么是检查区内容的先决条件。
+      这些检查设置条件，即一些名字或资源记录集要么存在，要么
+      不存在于区中。
+      如果要让整个更新请求成功，这些条件必须被满足。
+      如果对先决条件的测试失败，更新将被拒绝。
+    </para>
+    <para>
+      每个更新请求由0个或多个先决条件以及0个或多个更新所组成。
+      如果某些指定的资源记录出现或不出现在区中，这允许一个合适的经过
+      认证的更新请求进行处理。
+      一个空输入行（或<command>send</command>命令）导致所有累积的命令被
+      作为一个动态DNS更新请求发送给名字服务器。
+    </para>
+    <para>
+      命令格式及其含义如下：
+      <variablelist>
+
+        <varlistentry>
+          <term>
+	      <command>server</command>
+	      <arg choice="req" rep="norepeat">servername</arg>
+	      <arg choice="opt" rep="norepeat">port</arg>
+            </term>
+          <listitem>
+            <para>
+              发送所有更新请求给名字服务器
+              <parameter>servername</parameter>。
+              当没有提供server语句时，<command>nsupdate</command>将发送
+              更新请求给正确的区的主服务器。
+              这个区的SOA记录中的MNAME字段将会标识这个区的主服务器。
+              <parameter>port</parameter>
+              是接收动态更新请求的
+              <parameter>servername</parameter>
+              上的端口号。
+              如果没有指定端口号，就使用缺省的DNS端口号53。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command>local</command>
+	      <arg choice="req" rep="norepeat">address</arg>
+	      <arg choice="opt" rep="norepeat">port</arg>
+            </term>
+          <listitem>
+            <para>
+              使用本地<parameter>address</parameter>发送所有动态更新请求
+              当没有提供local语句时，
+              将使用系统所选择的一个地址和端口发送更新。
+              <parameter>port</parameter>还可以用在使请求来自一个
+              指定的端口。
+              如果没有指定端口号，系统将会分配一个。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command>zone</command>
+	      <arg choice="req" rep="norepeat">zonename</arg>
+            </term>
+          <listitem>
+            <para>
+              指定所有的更新都发生在区
+              <parameter>zonename</parameter>上。
+              如果没有提供<parameter>zone</parameter>语句，
+              <command>nsupdate</command>会试图基于其余的输入来决定正确的区。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command>class</command>
+	      <arg choice="req" rep="norepeat">classname</arg>
+            </term>
+          <listitem>
+            <para>
+              指定缺省类。如果没有指定
+              <parameter>class</parameter>，缺省类是
+              <parameter>IN</parameter>。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command>ttl</command>
+	      <arg choice="req" rep="norepeat">seconds</arg>
+            </term>
+          <listitem>
+            <para>
+              指定要添加记录的缺省生存期。
+              值<parameter>none</parameter>将清除缺省生存期。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command>key</command>
+	      <arg choice="opt" rep="norepeat">hmac:</arg><arg choice="req" rep="norepeat">keyname</arg>
+	      <arg choice="req" rep="norepeat">secret</arg>
+            </term>
+          <listitem>
+            <para>
+              指定所有的更新都用
+              <parameter>keyname</parameter> <parameter>secret</parameter>
+              对进行TSIG签名。
+              如果指定了<parameter>hmac</parameter>，它将设置签名使用的算法；
+              缺省是<literal>hmac-md5</literal>，或者如果MD5被禁止，则是
+              <literal>hmac-sha256</literal>。
+              <command>key</command>命令覆盖任何在命令行由
+              <option>-y</option>或<option>-k</option>所指定的
+              密钥。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+            <command>gsstsig</command>
+          </term>
+          <listitem>
+            <para>
+              使用GSS-TSIG对更新签名。这个等效于在命令行指定
+              <option>-g</option>。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+            <command>oldgsstsig</command>
+          </term>
+          <listitem>
+            <para>
+              使用Windows 2000版的GSS-TSIG对更新签名。这个等效于在命令行指定
+              <option>-o</option>。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+            <command>realm</command>
+	    <arg choice="req" rep="norepeat"><optional>realm_name</optional></arg>
+          </term>
+          <listitem>
+            <para>
+            在使用GSS-TSIG时，用<parameter>realm_name</parameter>而不是
+            <filename>krb5.conf</filename>中的缺省realm。如果未指定realm，
+            则已保存的realm将被清除。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+            <command>check-names</command>
+            <arg choice="req" rep="norepeat"><optional>yes_or_no</optional></arg>
+          </term>
+          <listitem>
+            <para>
+              在增加记录时打开或者关闭check-names处理。Check-names
+              对被删除的先决条件或记录没有影响。缺省时check-names
+              处理是打开的。如果check-names处理失败，记录将不会被
+              添加到UPDATE消息中。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command><optional>prereq</optional> nxdomain</command>
+	      <arg choice="req" rep="norepeat">domain-name</arg>
+            </term>
+          <listitem>
+            <para>
+              要求名字<parameter>domain-name</parameter>没有存在任何类型的
+              资源记录。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command><optional>prereq</optional> yxdomain</command>
+	      <arg choice="req" rep="norepeat">domain-name</arg>
+            </term>
+          <listitem>
+            <para>
+              要求<parameter>domain-name</parameter>存在（至少有一个
+              资源记录，可以是任何类型）。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command><optional>prereq</optional> nxrrset</command>
+	      <arg choice="req" rep="norepeat">domain-name</arg>
+	      <arg choice="opt" rep="norepeat">class</arg>
+	      <arg choice="req" rep="norepeat">type</arg>
+            </term>
+          <listitem>
+            <para>
+              要求指定的<parameter>type</parameter>，
+              <parameter>class</parameter>和
+              <parameter>domain-name</parameter>不存在任何资源记录。
+              如果省略
+              <parameter>class</parameter>，就假定为IN（internet）。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command><optional>prereq</optional> yxrrset</command>
+	      <arg choice="req" rep="norepeat">domain-name</arg>
+	      <arg choice="opt" rep="norepeat">class</arg>
+	      <arg choice="req" rep="norepeat">type</arg>
+            </term>
+          <listitem>
+            <para>
+              这个要求指定的<parameter>type</parameter>，
+              <parameter>class</parameter>和
+              <parameter>domain-name</parameter>必须存在一个资源记录。
+              如果省略<parameter>class</parameter>，
+              就假定为IN（internet）。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command><optional>prereq</optional> yxrrset</command>
+	      <arg choice="req" rep="norepeat">domain-name</arg>
+	      <arg choice="opt" rep="norepeat">class</arg>
+	      <arg choice="req" rep="norepeat">type</arg>
+	      <arg choice="req" rep="repeat">data</arg>
+            </term>
+          <listitem>
+            <para>
+              来自每个这种形式的先决条件集合的
+              <parameter>data</parameter>共享一个共同的
+              <parameter>type</parameter>，
+              <parameter>class</parameter>和
+              <parameter>domain-name</parameter>，并被组合成一个
+              资源记录集合的形式。
+              这个资源记录集合必须精确地匹配区中以
+              <parameter>type</parameter>，
+              <parameter>class</parameter>和
+              <parameter>domain-name</parameter>给出的已存在的资源记录
+              集合。
+              <parameter>data</parameter>以资源记录RDATA的标准文本表示
+              方法书写。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command><optional>update</optional> del<optional>ete</optional></command>
+	      <arg choice="req" rep="norepeat">domain-name</arg>
+	      <arg choice="opt" rep="norepeat">ttl</arg>
+	      <arg choice="opt" rep="norepeat">class</arg>
+	      <arg choice="opt" rep="norepeat">type <arg choice="opt" rep="repeat">data</arg></arg>
+            </term>
+          <listitem>
+            <para>
+              删除名为<parameter>domain-name</parameter>的任何资源记录。
+              如果提供了<parameter>type</parameter>和
+              <parameter>data</parameter>，只有匹配的资源记录会被删除。
+              如果没有提供<parameter>class</parameter>，就假设是
+              internet类。<parameter>ttl</parameter>被忽略，仅为了
+              兼容性而允许之。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+	      <command><optional>update</optional> add</command>
+	      <arg choice="req" rep="norepeat">domain-name</arg>
+	      <arg choice="req" rep="norepeat">ttl</arg>
+	      <arg choice="opt" rep="norepeat">class</arg>
+	      <arg choice="req" rep="norepeat">type</arg>
+	      <arg choice="req" rep="repeat">data</arg>
+            </term>
+          <listitem>
+            <para>
+              使用指定的<parameter>ttl</parameter>，
+              <parameter>class</parameter>和
+              <parameter>data</parameter>增添一个新的
+              资源记录。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+              <command>show</command>
+            </term>
+          <listitem>
+            <para>
+              显示当前消息，包含自上次发送以来所指定的所有
+              先决条件和更新。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+              <command>send</command>
+            </term>
+          <listitem>
+            <para>
+              发送当前消息。这等效于输入一个空行。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+              <command>answer</command>
+            </term>
+          <listitem>
+            <para>
+              显示回答。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+              <command>debug</command>
+            </term>
+          <listitem>
+            <para>
+              打开调试。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+              <command>version</command>
+            </term>
+          <listitem>
+            <para>
+              打印版本号。
+            </para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>
+              <command>help</command>
+            </term>
+          <listitem>
+            <para>
+              打印命令表。
+            </para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+    </para>
+
+    <para>
+      以分号开始的行为注释，将被忽略。
+    </para>
+
+  </refsection>
+
+  <refsection><info><title>例子</title></info>
+
+    <para>
+      下面的例子显示<command>nsupdate</command>如何被用于对
+      <type>example.com</type>区插入和删除资源记录。
+      注意每个例子中的输入包含一个结尾的空行，这样就将一组命令作为一个
+      动态更新请求发送给<type>example.com</type>的主名字服务器。
+
+      <programlisting>
+# nsupdate
+&gt; update delete oldhost.example.com A
+&gt; update add newhost.example.com 86400 A 172.16.1.1
+&gt; send
+</programlisting>
+    </para>
+    <para>
+      <type>oldhost.example.com</type>的任何A记录
+      被删除。
+      <type>newhost.example.com</type>的一个带有
+      IP地址172.16.1.1的A记录被添加。
+      新添加的记录具有一个1天的TTL（86400秒）。
+      <programlisting>
+# nsupdate
+&gt; prereq nxdomain nickname.example.com
+&gt; update add nickname.example.com 86400 CNAME somehost.example.com
+&gt; send
+</programlisting>
+    </para>
+    <para>
+      先决条件是让名字服务器检查没有<type>nickname.example.com</type>
+      的任何类型的资源记录。
+
+      如果有，更新请求失败。
+      如果这个名字不存在，就为它添加一个CNAME。
+      这就确保了在添加CNAME时，不会与RFC 1034中的长标准规则相冲突，即如果一个
+      名字存在一个CNAME，就必须不能存在其它任何记录类型。
+      （这个规则在RFC 2535中为DNSSEC而被更新，以允许CNAME可以有RRSIG，DNSKEY
+      和NSEC记录。）
+    </para>
+  </refsection>
+
+  <refsection><info><title>文件</title></info>
+
+    <variablelist>
+      <varlistentry>
+        <term><constant>/etc/resolv.conf</constant></term>
+        <listitem>
+          <para>
+	    用于标识缺省的名字服务器。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><constant>/var/run/named/session.key</constant></term>
+        <listitem>
+          <para>
+            设置用于local-only模式的缺省TSIG密钥。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><constant>K{name}.+157.+{random}.key</constant></term>
+        <listitem>
+          <para>
+	    由
+            <citerefentry>
+              <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+            </citerefentry>所创建的HMAC-MD5密钥的base-64编码。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><constant>K{name}.+157.+{random}.private</constant></term>
+        <listitem>
+          <para>
+	    由
+            <citerefentry>
+              <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+            </citerefentry>所创建的HMAC-MD5密钥的base-64编码。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+
+    <para>
+      <citetitle>RFC 2136</citetitle>,
+      <citetitle>RFC 3007</citetitle>,
+      <citetitle>RFC 2104</citetitle>,
+      <citetitle>RFC 2845</citetitle>,
+      <citetitle>RFC 1034</citetitle>,
+      <citetitle>RFC 2535</citetitle>,
+      <citetitle>RFC 2931</citetitle>,
+      <citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>ddns-confgen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>.
+    </para>
+  </refsection>
+
+  <refsection><info><title>BUGS</title></info>
+
+    <para>
+      TSIG密钥是冗余存放在两个分离的文件中。
+      这是nsupdate为其加密操作使用DST库的一个后果，在将来的
+      版本中可能会变化。
+    </para>
+  </refsection>
+
+</refentry>

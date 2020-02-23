@@ -1,0 +1,26 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.14.6"><info><title>BIND 9.14.6 注记</title></info>
+
+  <section xml:id="relnotes-9.14.6-bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          当一个<command>response-policy</command>区过期时，确保
+          其策略从 RPZ 汇总数据库中被删除。
+          [GL #1146]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+</section>

@@ -1,0 +1,31 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.14.9"><info><title>BIND 9.14.9 注记</title></info>
+
+  <section xml:id="relnotes-9.14.9-bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          修正了一个在重配置时可能导致<command>named</command>
+          泄漏内存的漏洞，当使用了任何 GeoIP2 数据库时。 [GL #1445]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          修正了几个由 ThreadSanitizer 发现的可能的竞争条件。
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+
+</section>

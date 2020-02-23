@@ -1,0 +1,25 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.14.11"><info><title>BIND 9.14.11 注记</title></info>
+
+  <section xml:id="relnotes-9.14.11-bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          当<command>named</command>被请求一个 CHAOS 类中不存在的名字时
+          会崩溃。 [GL #1540]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+</section>

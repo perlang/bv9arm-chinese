@@ -1,0 +1,21 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes_intro"><info><title>介绍</title></info>
+  <para>
+    BIND 9.14 是 BIND 的一个稳定分支。
+    本文档汇总了此分支上自上一个产品版本以来的重大变化。
+  <para>
+  </para>
+    关于变化和漏洞修订的一个更详细的清单，请参见文件
+    <filename>CHANGES</filename>。
+  </para>
+</section>

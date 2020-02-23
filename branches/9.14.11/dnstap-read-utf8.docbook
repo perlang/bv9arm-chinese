@@ -1,0 +1,127 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnstap-read">
+  <info>
+    <date>2015-09-13</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnstap-read</application></refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnstap-read</application></refname>
+    <refpurpose>以人可读的格式输出dnstap数据</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2015</year>
+      <year>2016</year>
+      <year>2017</year>
+      <year>2018</year>
+      <year>2019</year>
+      <year>2020</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>dnstap-read</command>
+      <arg choice="opt" rep="norepeat"><option>-m</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-p</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-x</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-y</option></arg>
+      <arg choice="req" rep="norepeat"><replaceable class="parameter">file</replaceable></arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+
+    <para>
+      <command>dnstap-read</command>
+      <command>dnstap-read</command>从一个指定文件中读入
+      <command>dnstap</command>数据并以人可读的格式输出它。
+      缺省时，<command>dnstap</command>数据是以简短的概括
+      格式输出，但是如果指定<option>-y</option>选项，就会
+      是以一个较长并且更详细的YAML格式替代。
+    </para>
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+
+
+    <variablelist>
+      <varlistentry>
+        <term>-m</term>
+        <listitem>
+          <para>
+            跟踪内存分配；用于调试内存泄漏。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-p</term>
+        <listitem>
+          <para>
+            在输出<command>dnstap</command>数据之后，以文本格式输出
+            封装在<command>dnstap</command>帧中的DNS消息。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-x</term>
+        <listitem>
+          <para>
+            在打印<command>dnstap</command>数据之后，打印封装在
+            <command>dnstap</command>帧中的DNS消息的线上格式的
+            十六进制转码。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-y</term>
+        <listitem>
+          <para>
+            以详细YAML格式输出<command>dnstap</command>数据。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+
+    <para>
+      <citerefentry>
+        <refentrytitle>named</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>rndc</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>.
+    </para>
+  </refsection>
+
+</refentry>

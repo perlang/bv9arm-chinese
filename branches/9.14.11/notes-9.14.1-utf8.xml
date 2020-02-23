@@ -1,0 +1,63 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.14.1"><info><title>BIND 9.14.1 注记</title></info>
+
+  <section xml:id="relnotes-9.14.1-security"><info><title>安全修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          在某些配置中，如果使用了
+          <command>nxdomain-redirect</command>，并且一个重定向请求导致
+          一个来自缓存的NXDOMAIN，
+          <command>named</command>可能崩溃，并报出一个断言错误。
+          这个漏洞在CVE-2019-6467中被公开。 [GL #880]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          使用<command>tcp-clients</command>选项的 TCP 客户端限额设置
+          在某些情况下可能被超过。这可能导致文件描述符被耗尽。
+          (CVE-2018-5743) [GL #615]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.14.1-features"><info><title>新特性</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          新的<command>add-soa</command>选项指示
+          <command>response-policy</command>区的SOA记录是否应该被包含
+          进 RPZ 响应的附加部份。
+          [GL #865]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.14.1-bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          <command>allow-update</command>和
+          <command>allow-update-forwarding</command>选项在用于
+          <command>options</command>或<command>view</command>级别时，
+          被无意地当成配置错误对待。
+          这个现在已被改正。
+          [GL #913]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+</section>

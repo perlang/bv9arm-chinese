@@ -1,0 +1,41 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.14.3"><info><title>BIND 9.14.3 注记</title></info>
+
+  <section xml:id="relnotes-9.14.3-security"><info><title>安全修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          当大量进入包被拒绝时，一个竞争条件可能触发一个断言失败。
+          这个漏洞在 CVE-2019-6471 中公开。 [GL #942]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.14.3-bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          When <command>qname-minimization</command> was set to
+          <command>relaxed</command>, some improperly configured domains
+          would fail to resolve, but would have succeeded when minimization
+          was disabled. <command>named</command> will now fall back to normal
+          resolution in such cases, and also uses type A rather than NS for
+          minimal queries in order to reduce the likelihood of encountering
+          the problem. [GL #1055]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+</section>

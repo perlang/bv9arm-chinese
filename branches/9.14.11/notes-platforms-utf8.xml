@@ -1,0 +1,37 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes_platforms"><info><title>支持的平台</title></info>
+  <para>
+    自从 9.12 开始，BIND 经历了大量的代码重构和清理，一些非常旧的
+    代码被去掉了，这些代码是用于支持已废弃的操作系统和那些
+    ISC 不再能够执行质量保证测试的操作系统。
+    特别地，UnixWare，BSD/OS，AIX，Tru64，SunOS，
+    TruCluster和IRIX的工作区都被去掉了。
+  </para>
+  <para>
+    在类-UNIX 系统上，BIND 现在要求支持 POSIX.1c 线程
+    （IEEE Std 1003.1c-1995），关于IPv6的高级套接字API（RFC 3542），
+    和由 C 编译器提供的标准原子操作。
+  </para>
+  <para>
+    更多信息可以在<filename>PLATFORM.md</filename>文件中找到，它
+    被包含在 BIND 9 的源码发布中。如果你的平台编译器和系统库提供
+    了上述特征，BIND 9 就应当能够编译和运行。如果不是这种情况，
+    BIND 开发团队通常接受补丁以支持仍然被各自厂商支持的系统。
+  </para>
+  <para>
+    截止 BIND 9.14，BIND 开发团队也使加密（即，TSIG 和 DNSSEC）成为 DNS
+    服务器的一个完整部份。目标平台上 OpenSSL 加密库必须可用。
+    一个 PKCS#11 提供者可以用于替代公共密钥加密（即，DNSSEC 签名和验证），
+    但是仍然需要 OpenSSL 用于通常的加密操作，诸如散列和随机数生成。
+  </para>
+</section>

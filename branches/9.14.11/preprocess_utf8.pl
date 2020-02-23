@@ -16,7 +16,7 @@ s/(\\ifpdf)\n(\\usepackage\[pdftex,bookmarksnumbered,colorlinks,backref,bookmark
 
 my($ver) = readfile('version');
 # add "Copyright" for chinese version
-s/(\\tableofcontents)/\n\n\\begin\{center\}Copyright \\copyright\{\} 2008-2019 本文档中文版权归sunguonian\@gmail.com所有\\end\{center\}\n\\begin\{center\}\n\n允许任何个人、任何组织以任何目的、任何形式付费或免费使用，拷贝，修改和分发\n本文档，前提是需要在所有拷贝中出现上述的版权声明和本许可声明。\n\n版本号：$ver\\end\{center\}\n\n$1/;
+s/(\\tableofcontents)/\n\n\\begin\{center\}Copyright \\copyright\{\} 2008-2020 本文档中文版权归sunguonian\@gmail.com所有\\end\{center\}\n\\begin\{center\}\n\n允许任何个人、任何组织以任何目的、任何形式付费或免费使用，拷贝，修改和分发\n本文档，前提是需要在所有拷贝中出现上述的版权声明和本许可声明。\n\n版本号：$ver\\end\{center\}\n\n$1/;
 
 # replace 10pt font with 11pt font. line 19/21 in Bv9ARM-gbk.tex
 # for ASCII characters, 11pt is too large

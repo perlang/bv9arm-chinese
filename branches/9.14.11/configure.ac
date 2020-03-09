@@ -297,7 +297,8 @@ AC_SUBST(BIND9_CONFIGARGS)
 #	[chmod],
 #	[chmod a+x isc-config.sh doc/doxygen/doxygen-input-filter])
 AC_CONFIG_COMMANDS(
-	[chmod])
+	[chmod],
+	[chmod a+x arm/*.pl])
 
 #
 # Files to configure.  These are listed here because we used to
@@ -312,6 +313,10 @@ AC_CONFIG_FILES([
 	arm/pkgversion-zh_CN.xml
 	arm/releaseinfo-zh_CN.xml
 	arm/docversion
+	arm/unicode2utf8.pl
+	arm/add_xelatex.pl
+	arm/add_cjk_tex.pl
+	arm/preprocess_utf8.pl
 	tex/Makefile
 	tex/armstyle.sty
 	xsl/Makefile

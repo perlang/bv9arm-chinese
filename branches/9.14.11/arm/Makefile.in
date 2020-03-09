@@ -73,6 +73,11 @@ maintainer-clean distclean::
 	rm -f releaseinfo-zh_CN.xml
 	rm -f pkgversion-zh_CN.xml
 	rm -f noteversion-zh_CN.xml
+	rm -f unicode2utf8.pl
+	rm -f add_xelatex.pl
+	rm -f add_cjk_tex.pl
+	rm -f preprocess_utf8.pl
+	rm -f docversion
 
 # use xmllint to process include
 notes.html: notes-wrapper.xml ${NOTESXML} releaseinfo-zh_CN.xml pkgversion-zh_CN.xml noteversion-zh_CN.xml

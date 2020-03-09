@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!@PERL@
 
 use Encode;
 use Text::Iconv;

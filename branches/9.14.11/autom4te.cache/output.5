@@ -4468,7 +4468,7 @@ ac_config_commands="$ac_config_commands chmod"
 # elsewhere if there's a good reason for doing so.
 #
 
-ac_config_files="$ac_config_files Makefile arm/Makefile arm/noteversion-zh_CN.xml arm/pkgversion-zh_CN.xml arm/releaseinfo-zh_CN.xml arm/docversion tex/Makefile tex/armstyle.sty xsl/Makefile xsl/isc-docbook-chunk.xsl xsl/isc-docbook-html.xsl xsl/isc-manpage.xsl xsl/isc-notes-html.xsl"
+ac_config_files="$ac_config_files Makefile arm/Makefile arm/noteversion-zh_CN.xml arm/pkgversion-zh_CN.xml arm/releaseinfo-zh_CN.xml arm/docversion arm/unicode2utf8.pl arm/add_xelatex.pl arm/add_cjk_tex.pl arm/preprocess_utf8.pl tex/Makefile tex/armstyle.sty xsl/Makefile xsl/isc-docbook-chunk.xsl xsl/isc-docbook-html.xsl xsl/isc-manpage.xsl xsl/isc-notes-html.xsl"
 
 
 #
@@ -5192,6 +5192,10 @@ do
     "arm/pkgversion-zh_CN.xml") CONFIG_FILES="$CONFIG_FILES arm/pkgversion-zh_CN.xml" ;;
     "arm/releaseinfo-zh_CN.xml") CONFIG_FILES="$CONFIG_FILES arm/releaseinfo-zh_CN.xml" ;;
     "arm/docversion") CONFIG_FILES="$CONFIG_FILES arm/docversion" ;;
+    "arm/unicode2utf8.pl") CONFIG_FILES="$CONFIG_FILES arm/unicode2utf8.pl" ;;
+    "arm/add_xelatex.pl") CONFIG_FILES="$CONFIG_FILES arm/add_xelatex.pl" ;;
+    "arm/add_cjk_tex.pl") CONFIG_FILES="$CONFIG_FILES arm/add_cjk_tex.pl" ;;
+    "arm/preprocess_utf8.pl") CONFIG_FILES="$CONFIG_FILES arm/preprocess_utf8.pl" ;;
     "tex/Makefile") CONFIG_FILES="$CONFIG_FILES tex/Makefile" ;;
     "tex/armstyle.sty") CONFIG_FILES="$CONFIG_FILES tex/armstyle.sty" ;;
     "xsl/Makefile") CONFIG_FILES="$CONFIG_FILES xsl/Makefile" ;;
@@ -5615,6 +5619,11 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;
   esac
 
+
+  case $ac_file$ac_mode in
+    "chmod":C) chmod a+x arm/*.pl ;;
+
+  esac
 done # for ac_tag
 
 

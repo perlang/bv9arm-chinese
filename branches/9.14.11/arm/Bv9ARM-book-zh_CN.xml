@@ -1129,8 +1129,8 @@ controls {
     <section xml:id="notify"><info><title>通知（Notify）</title></info>
       <para>
         <acronym>DNS</acronym> NOTIFY是一个让主服务器通知其辅服务器某个区数据
-        发生了变化的机制。作为对来自主服务器的<command>NOTIFY</command>的相应，
-        辅服务器会检查其区的版本是否是当前版本，如果不是，就发起区传送。
+        发生了变化的机制。作为对来自主服务器的<command>NOTIFY</command>的响应，
+        辅服务器会检查自己的区版本是否是当前版本，如果不是，就发起区传送。
       </para>
 
       <para>
@@ -4164,7 +4164,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
             <listitem>
               <para>
                 指定服务器在收到<command>rndc dumpdb</command>命令时，转储数据
-                到文件的路径。如果未指定，缺省为
+                到文件的路径名。如果未指定，缺省为
                 <filename>named_dump.db</filename>。
               </para>
             </listitem>
@@ -4222,7 +4222,7 @@ badresp:1,adberr:0,findfail:0,valfail:0]
             <listitem>
               <para>
                 指定服务器在通过<command>rndc recursing</command>命令指定转储当
-                前递归请求到文件的路径。如果未指定，缺省为
+                前递归请求到文件的路径名。如果未指定，缺省为
                 <filename>named.recursing</filename>文件。
               </para>
             </listitem>

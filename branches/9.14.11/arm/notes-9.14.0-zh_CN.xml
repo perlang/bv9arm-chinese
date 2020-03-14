@@ -15,11 +15,10 @@
     <itemizedlist>
       <listitem>
         <para>
-          Task manager and socket code have been substantially modified.
-          The manager uses per-cpu queues for tasks and network stack runs
-          multiple event loops in CPU-affinitive threads. This greatly
-          improves performance on large systems, especially when using
-          multi-queue NICs.
+          任务管理器和套接字编码被大幅修改。
+          管理器为任务使用每个CPU一个队列，而网络堆栈以CPU亲和线程的方式
+          运行多个事件循环。
+          这极大提高了大型系统的性能，特别是使用多队列网络接口时。
         </para>
       </listitem>
       <listitem>
@@ -59,10 +58,9 @@
       </listitem>
       <listitem>
         <para>
-          BIND now can be compiled against the <command>libidn2</command>
-          library to add IDNA2008 support.  Previously, BIND supported
-          IDNA2003 using the (now obsolete and unsupported)
-          <command>idnkit-1</command> library.
+          BIND 现在可以与<command>libidn2</command>库一起编译并增加了
+          对 IDNA2008 的支持。在这之前，BIND使用（现已被废弃而不再支持的）
+          <command>idnkit-1</command>库，只支持 IDNA2003。
         </para>
       </listitem>
       <listitem>
@@ -85,13 +83,12 @@
       </listitem>
       <listitem>
         <para>
-          When built on Linux, BIND now requires the <command>libcap</command>
-          library to set process privileges.  The adds a new compile-time
-          dependency, which can be met on most Linux platforms by installing the
-          <command>libcap-dev</command> or <command>libcap-devel</command>
-          package. BIND can also be built without capability support by using
-          <command>configure --disable-linux-caps</command>, at the cost of some
-          loss of security.
+          在 Linux 上编译时，BIND 现在需要<command>libcap</command>库
+          来设置进程优先级。这增加了一个新的编译时依赖，在大多数 Linux 平台上，
+          可以通过安装<command>libcap-dev</command>或
+          <command>libcap-devel</command>包来满足。 
+          BIND 也可以使用<command>configure --disable-linux-caps</command>
+          不提供这个支持，代价是损失一些安全性。
         </para>
       </listitem>
       <listitem>
@@ -156,7 +153,7 @@
     </itemizedlist>
   </section>
 
-  <section xml:id="relnotes-9.14.0-removed"><info><title>Removed Features</title></info>
+  <section xml:id="relnotes-9.14.0-removed"><info><title>去掉的特性</title></info>
     <itemizedlist>
       <listitem>
         <para>
@@ -250,15 +247,14 @@
       </listitem>
       <listitem>
         <para>
-          Support for OpenSSL 0.9.x has been removed.  OpenSSL version
-          1.0.0 or greater, or LibreSSL is now required.
+          对 OpenSSL 0.9.x 的支持被去掉了。现在要求 1.0.0 或更高
+          版本的 OpenSSL，或者 LibreSSL。
         </para>
       </listitem>
       <listitem>
         <para>
-          The <command>configure --enable-seccomp</command> option,
-          which formerly turned on system-call filtering on Linux, has
-          been removed. [GL #93]
+          <command>configure --enable-seccomp</command>选项，
+          以前是在 Linux 上打开系统调用过滤，被去掉了。 [GL #93]
         </para>
       </listitem>
       <listitem>
@@ -313,9 +309,8 @@
       </listitem>
       <listitem>
         <para>
-          Support for DSA and DSA-NSEC3-SHA1 algorithms has been
-          removed from BIND as the DSA key length is limited to 1024
-          bits and this is not considered secure enough.
+          对 DSA 和 DSA-NSEC3-SHA1 算法的支持从 BIND 中去掉了，因为
+          DSA 的密钥长度被限制为 1024 位，而这已被认为不足够安全了。
         </para>
       </listitem>
       <listitem>
@@ -348,7 +343,7 @@
     </itemizedlist>
   </section>
 
-  <section xml:id="relnotes-9.14.0-changes"><info><title>Feature Changes</title></info>
+  <section xml:id="relnotes-9.14.0-changes"><info><title>特性变化</title></info>
     <itemizedlist>
       <listitem>
         <para>

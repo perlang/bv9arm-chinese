@@ -10727,7 +10727,6 @@ example.com. NS ns2.example.net.
 			<replaceable>identity</replaceable>字段中指定。
                       </para>
                       <para>
-			要匹配的域（译注：realm）在
 			<replaceable>name</replaceable>字段在本规则中没有
 			效果；作为占位符，它应被设置为“.”。
                       </para>
@@ -10765,7 +10764,7 @@ example.com. NS ns2.example.net.
 			区的指定子域中的任何记录。
                       </para>
                       <para>
-                        要匹配的域（REALM）在
+			要匹配的域（译注：realm）在
                         <replaceable>identity</replaceable>字段中指定。
 		      </para>
                       <para>

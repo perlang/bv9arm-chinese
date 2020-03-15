@@ -5587,7 +5587,7 @@ options {
 		  <userinput>no</userinput>，则
 		  <command>dnssec-validation</command>的缺省值也为
 		  <userinput>no</userinput>。
-                  如果期望，验证仍然可以被打开 - 这地址一台服务器执行DNSSEC验证
+                  如果期望，验证仍然可以被打开 - 这导致一台服务器执行DNSSEC验证
                   但不对请求返回签名 - 但是它不会自动被打开。
                 </para>
 		<para>

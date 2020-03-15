@@ -20,7 +20,7 @@ open(FRD, "<$file0");
 open(FWR, ">$file1");
 while(<FRD>) {
 	chomp;
-	if(/^diff / and (/\.(docbook|xml|xsl|sty)$/)) {
+	if(/^diff / and (/\.(docbook|xml|xsl(\.in)*|sty(\.in)*)$/)) {
 		print FWR "$_\n";
 	}
 }

@@ -1870,9 +1870,9 @@ allow-update { !{ !localnets; any; }; key host1-host2. ;};
 
         <para>
           <command>dnssec-signzone</command>也会生成一个keyset和dsset文件，以及
-          一个可选的dlvset文件。他们用于向上级区管理员提供
+          一个可选的dlvset文件。它们用于向上级区管理员提供
           <literal>DNSKEY</literal>（或者与之相关的<literal>DS</literal>
-          记录），后者作为区的安全入口点。
+          记录），作为本区的安全入口点。
         </para>
 
       </section>
@@ -5651,7 +5651,7 @@ options {
 		  <userinput>no</userinput>，则
 		  <command>dnssec-validation</command>的缺省值也为
 		  <userinput>no</userinput>。
-                  如果期望，验证仍然可以被打开 - 这地址一台服务器执行DNSSEC验证
+                  如果期望，验证仍然可以被打开 - 这导致一台服务器执行DNSSEC验证
                   但不对请求返回签名 - 但是它不会自动被打开。
                 </para>
 		<para>

@@ -167,7 +167,7 @@
             如果未指定密钥大小，一些算法具有预定义的缺省值。
             例如，用于DNSSEC区签名密钥的RSA密钥具有一个缺省为1024位
             的值；用于密钥签名密钥（KSK，由<option>-f KSK</option>
-            生成）的RSA密钥缺省值为2048位。
+            生成）的RSA密钥缺省大小为2048位。
           </para>
         </listitem>
       </varlistentry>

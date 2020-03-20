@@ -1,0 +1,223 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.rndc.conf">
+  <info>
+    <date>2013-03-14</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><filename>rndc.conf</filename></refentrytitle>
+    <manvolnum>5</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><filename>rndc.conf</filename></refname>
+    <refpurpose>rndc的配置文件</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2000</year>
+      <year>2001</year>
+      <year>2004</year>
+      <year>2005</year>
+      <year>2007</year>
+      <year>2013</year>
+      <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
+      <year>2018</year>
+      <year>2019</year>
+      <year>2020</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>rndc.conf</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+
+    <para>
+	  <filename>rndc.conf</filename>是BIND 9名字服务器控制工具
+	  <command>rndc</command>的配置文件。这个文件有与
+	  <filename>named.conf</filename>相似的结构和语法。语句包含
+	  在花括号之内，并以分号结束。语句中的子句也以分号结束。
+	  所支持的通常的注释风格为：
+    </para>
+    <para>
+      C风格：/* */
+    </para>
+    <para>
+      C++风格：// 到行尾
+    </para>
+    <para>
+      Unix风格：# 到行尾
+    </para>
+    <para>
+	  <filename>rndc.conf</filename>比
+	  <filename>named.conf</filename>简短得多。文件使用三个语句：
+	  一个options语句，一个server语句和一个key语句。
+    </para>
+    <para>
+      <option>options</option>语句包含五个子句。
+	  <option>default-server</option>子句后跟名字或者一个名字服
+	  务器的地址。在没有为<command>rndc</command>提供名字服务器
+          参数时，将使用这个主机。
+	  <option>default-key</option>子句后跟一个密钥名，这个密钥由
+	  一个<option>key</option>语句标识。如果在rndc命令行没有提供
+	  <option>keyid</option>，并且在一个匹配的
+	  <option>server</option>语句中没有找到<option>key</option>子
+	  句，就使用这个缺省的密钥来认证服务器的命令和响应。
+	  
+	  <option>default-port</option>子句后跟要连接到的远程名字服务
+	  器的端口。如果在rndc命令行没有提供<option>port</option>选项，
+	  并且在一个匹配的<option>server</option>语句中没有找到
+	  <option>port</option>子句，就使用这个缺省的端口来连接。
+	  
+	  <option>default-source-address</option>和
+      <option>default-source-address-v6</option>子句可以分别
+	  用来设置IPv4和IPv6的源地址。
+	  </para>
+    <para>
+      在<option>server</option>关键字之后，server语句包含一个字符串，
+	  代表一个名字服务器的主机名或地址。这个语句有三个可能的子句：
+	  <option>key</option>，<option>port</option>和
+      <option>addresses</option>。密钥名必须匹配文件中一个key语句的
+	  名字。端口号指定要连接到的端口。如果提供了一个
+	  <option>addresses</option>子句，将使用这些地址来代替服务器名
+	  字。每个地址可以带有一个可选的端口。如果使用了
+	  <option>source-address</option>或者
+	  <option>source-address-v6</option>，这些会分别用于指定IPv4和
+	  IPv6的源地址。
+    </para>
+    <para>
+      <option>key</option>语句以一个标识密钥名字的字符串开始。这个
+      语句有两个子句。<option>algorithm</option>定义
+      <command>rndc</command>用到的认证算法；当前仅支持HMAC-MD5（为了兼容），
+      HMAC-SHA1，HMAC-SHA224，HMAC-SHA256（缺省），HMAC-SHA384和HMAC-SHA512。
+      它后跟一个secret子句，后者包含base-64编码的算法的认证密钥。
+      这个base-64字符串使用双引号引起来。
+    </para>
+    <para>
+      有两个通常的方式来生成密钥的base-64字符串。BIND 9程序
+      <command>rndc-confgen</command>可以用来生成一个随机密钥，或者
+      <command>mmencode</command>程序，也叫做
+      <command>mimencode</command>，可以用来生成一个已知输入的base-64
+      字符串。<command>mmencode</command>不随BIND 9提供，但是它在许多
+      系统上是可用的。关于每个命令行的样例，参见例子部份。
+    </para>
+  </refsection>
+
+  <refsection><info><title>例子</title></info>
+
+    <para><programlisting>
+      options {
+        default-server  localhost;
+        default-key     samplekey;
+      };
+</programlisting>
+    </para>
+    <para><programlisting>
+      server localhost {
+        key             samplekey;
+      };
+</programlisting>
+    </para>
+    <para><programlisting>
+      server testserver {
+        key		testkey;
+        addresses	{ localhost port 5353; };
+      };
+</programlisting>
+    </para>
+    <para><programlisting>
+      key samplekey {
+        algorithm       hmac-sha256;
+        secret          "6FMfj43Osz4lyb24OIe2iGEz9lf1llJO+lz";
+      };
+</programlisting>
+    </para>
+    <para><programlisting>
+      key testkey {
+        algorithm	hmac-sha256;
+        secret		"R3HI8P6BKw9ZwXwN3VZKuQ==";
+      };
+    </programlisting>
+    </para>
+
+    <para>
+      在上面的例子中，<command>rndc</command>缺省将使用
+      localhost(127.0.0.1)作为服务器，和名为samplekey的密钥。到服务器
+      localhost的命令将使用密钥samplekey，后者也必须使用同样的名字和
+      密钥定义在服务器的配置文件中。key语句指明samplekey使用HAMC-SHA256
+      算法，它的secret子句包含这个HMAC-SHA256密钥的base-64编码，并被包括
+      在双引号中。
+    </para>
+    <para>
+      如果使用<command>rndc -s testserver</command>，
+      <command>rndc</command>将会连接到服务器localhost的5353端口，并
+      使用密钥testkey。
+    </para>
+    <para>
+      使用<command>rndc-confgen</command>生成一个随机密钥：
+    </para>
+    <para><userinput>rndc-confgen</userinput>
+    </para>
+    <para>
+      一个完整的<filename>rndc.conf</filename>文件，包含随机生成
+      的密钥，将会被写到标准输出。还会打印出为
+      <filename>named.conf</filename>提供的被注释掉的
+      <option>key</option> 和<option>controls</option>语句。
+    </para>
+    <para>
+      使用<command>mmencode</command>生成一个base-64密钥：
+    </para>
+    <para><userinput>echo "known plaintext for a secret" | mmencode</userinput>
+    </para>
+  </refsection>
+
+  <refsection><info><title>名字服务器配置</title></info>
+
+    <para>
+      名字服务器必须被配置成接受rndc连接和识别
+      <filename>rndc.conf</filename>文件中所指定的密钥，这通过在
+      <filename>named.conf</filename>中的controls语句来实现。详细情况参见
+      BIND 9管理员参考手册中的<option>controls</option>语句部份。
+    </para>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+
+    <para><citerefentry>
+        <refentrytitle>rndc</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>，
+      <citerefentry>
+        <refentrytitle>rndc-confgen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>，
+      <citerefentry>
+        <refentrytitle>mmencode</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>，
+      <citetitle>BIND 9管理员参考手册</citetitle>。
+    </para>
+  </refsection>
+
+</refentry>

@@ -7277,7 +7277,7 @@ avoid-v6-udp-ports { 40000; range 50000 60000; };
                   设置为0，仅在配置文件装载后，才会进行接口扫描。扫描后，服务器
                   将开始在新发现的端口监听请求（假定这些端口在
                   <command>listen-on</command>配置中被允许），
-                  并且不会停止已经不存在的监听端口。
+                  并会停止在已经不存在的端口上的监听。
                 </para>
               </listitem>
             </varlistentry>
@@ -9247,7 +9247,7 @@ example.com                 CNAME   rpz-tcp-only.
 	    <command>trusted-keys</command>语句定义DNSSEC安全根。DNSSEC在
 	    <xref linkend="DNSSEC"/>中描述。一个安全根被定义，当一个非授权区的
 	    公钥被公开，但是不能通过DNS获得安全，要么因为它是DNS根区，要么因为
-	    它的父区为签名。一旦一个密钥被配置成可信任密钥，它就被当作已验证和
+	    它的父区未签名。一旦一个密钥被配置成可信任密钥，它就被当作已验证和
 	    被证实为安全。解析器试图DNSSEC验证一个安全根子域的所有DNS数据。
 	  </para>
 	  <para>

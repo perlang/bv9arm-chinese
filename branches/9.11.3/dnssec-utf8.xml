@@ -17,7 +17,7 @@
   <para>对这两种方法，你都需要配置<command>named</command>，使其
   能够看到<filename>K*</filename>文件，而后者包含签名区时会用到的
   公钥和私钥部份。这些文件由<command>dnssec-keygen</command>生成。
-  你可以将密钥文件放到在<filename>named.conf</filename>中所指名的
+  你可以将密钥文件放到在<filename>named.conf</filename>中所指定的
   密钥目录中：</para>
   <programlisting>
         zone example.net {

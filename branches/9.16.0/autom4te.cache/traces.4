@@ -1,0 +1,210 @@
+m4trace:m4/ax_prog_perl_modules.m4:37: -1- AU_DEFUN([AC_PROG_PERL_MODULES], [m4_if($#, 0, [AX_PROG_PERL_MODULES], [AX_PROG_PERL_MODULES($@)])])
+m4trace:m4/ax_prog_perl_modules.m4:37: -1- AC_DEFUN([AC_PROG_PERL_MODULES], [AC_DIAGNOSE([obsolete], [The macro `AC_PROG_PERL_MODULES' is obsolete.
+You should run autoupdate.])dnl
+m4_if($#, 0, [AX_PROG_PERL_MODULES], [AX_PROG_PERL_MODULES($@)])])
+m4trace:m4/ax_prog_perl_modules.m4:38: -1- AC_DEFUN([AX_PROG_PERL_MODULES], [dnl
+
+m4_define([ax_perl_modules])
+m4_foreach([ax_perl_module], m4_split(m4_normalize([$1])),
+	  [
+	   m4_append([ax_perl_modules],
+		     [']m4_bpatsubst(ax_perl_module,=,[ ])[' ])
+          ])
+
+# Make sure we have perl
+if test -z "$PERL"; then
+AC_CHECK_PROG(PERL,perl,perl)
+fi
+
+if test "x$PERL" != x; then
+  ax_perl_modules_failed=0
+  for ax_perl_module in ax_perl_modules; do
+    AC_MSG_CHECKING(for perl module $ax_perl_module)
+
+    # Would be nice to log result here, but can't rely on autoconf internals
+    $PERL -e "use $ax_perl_module; exit" > /dev/null 2>&1
+    if test $? -ne 0; then
+      AC_MSG_RESULT(no);
+      ax_perl_modules_failed=1
+   else
+      AC_MSG_RESULT(ok);
+    fi
+  done
+
+  # Run optional shell commands
+  if test "$ax_perl_modules_failed" = 0; then
+    :
+    $2
+  else
+    :
+    $3
+  fi
+else
+  AC_MSG_WARN(could not find perl)
+fi])
+m4trace:configure.ac:10: -1- m4_pattern_forbid([^_?A[CHUM]_])
+m4trace:configure.ac:10: -1- m4_pattern_forbid([_AC_])
+m4trace:configure.ac:10: -1- m4_pattern_forbid([^LIBOBJS$], [do not use LIBOBJS directly, use AC_LIBOBJ (see section `AC_LIBOBJ vs LIBOBJS'])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^AS_FLAGS$])
+m4trace:configure.ac:10: -1- m4_pattern_forbid([^_?m4_])
+m4trace:configure.ac:10: -1- m4_pattern_forbid([^dnl$])
+m4trace:configure.ac:10: -1- m4_pattern_forbid([^_?AS_])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^SHELL$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PATH_SEPARATOR$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_NAME$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_VERSION$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_STRING$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_URL$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^exec_prefix$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^prefix$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^program_transform_name$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^bindir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^sbindir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^libexecdir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^datarootdir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^datadir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^sysconfdir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^sharedstatedir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^localstatedir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^includedir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^oldincludedir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^docdir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^infodir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^htmldir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^dvidir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^pdfdir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^psdir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^libdir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^localedir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^mandir$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_NAME$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_TARNAME$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_VERSION$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_STRING$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_BUGREPORT$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^PACKAGE_URL$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^DEFS$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^ECHO_C$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^ECHO_N$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^ECHO_T$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^LIBS$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^build_alias$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^host_alias$])
+m4trace:configure.ac:10: -1- m4_pattern_allow([^target_alias$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^build$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^build_cpu$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^build_vendor$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^build_os$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^host$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^host_cpu$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^host_vendor$])
+m4trace:configure.ac:18: -1- m4_pattern_allow([^host_os$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CFLAGS$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^LDFLAGS$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^LIBS$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CC$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^ac_ct_CC$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^EXEEXT$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^OBJEXT$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CPP$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CPPFLAGS$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^CPP$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^GREP$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^EGREP$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^STDC_HEADERS$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^_POSIX_SOURCE$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^_POSIX_1_SOURCE$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^_MINIX$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^__EXTENSIONS__$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^_ALL_SOURCE$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^_GNU_SOURCE$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^_POSIX_PTHREAD_SEMANTICS$])
+m4trace:configure.ac:19: -1- m4_pattern_allow([^_TANDEM_SOURCE$])
+m4trace:configure.ac:25: -1- m4_pattern_allow([^LFS_CFLAGS$])
+m4trace:configure.ac:26: -1- m4_pattern_allow([^LFS_LDFLAGS$])
+m4trace:configure.ac:27: -1- m4_pattern_allow([^LFS_LIBS$])
+m4trace:configure.ac:30: -1- m4_pattern_allow([^SET_MAKE$])
+m4trace:configure.ac:41: -1- m4_pattern_allow([^AR$])
+m4trace:configure.ac:43: -1- m4_pattern_allow([^AR$])
+m4trace:configure.ac:44: -1- m4_pattern_allow([^ARFLAGS$])
+m4trace:configure.ac:53: -1- m4_pattern_allow([^PERL$])
+m4trace:configure.ac:54: -1- m4_pattern_allow([^PERL$])
+m4trace:configure.ac:56: -1- AX_PROG_PERL_MODULES([YAML], [], [{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Need Perl modules" >&5
+$as_echo "$as_me: WARNING: Need Perl modules" >&2;}])
+m4trace:configure.ac:56: -1- m4_pattern_allow([^PERL$])
+m4trace:configure.ac:87: -1- m4_pattern_allow([^LATEX$])
+m4trace:configure.ac:88: -1- m4_pattern_allow([^LATEX$])
+m4trace:configure.ac:90: -1- m4_pattern_allow([^XELATEX$])
+m4trace:configure.ac:91: -1- m4_pattern_allow([^XELATEX$])
+m4trace:configure.ac:93: -1- m4_pattern_allow([^PDFLATEX$])
+m4trace:configure.ac:94: -1- m4_pattern_allow([^PDFLATEX$])
+m4trace:configure.ac:96: -1- m4_pattern_allow([^DBLATEX$])
+m4trace:configure.ac:97: -1- m4_pattern_allow([^DBLATEX$])
+m4trace:configure.ac:103: -1- m4_pattern_allow([^W3M$])
+m4trace:configure.ac:104: -1- m4_pattern_allow([^W3M$])
+m4trace:configure.ac:109: -1- m4_pattern_allow([^PANDOC$])
+m4trace:configure.ac:110: -1- m4_pattern_allow([^PANDOC$])
+m4trace:configure.ac:117: -1- m4_pattern_allow([^XSLTPROC$])
+m4trace:configure.ac:118: -1- m4_pattern_allow([^XSLTPROC$])
+m4trace:configure.ac:124: -1- m4_pattern_allow([^XMLLINT$])
+m4trace:configure.ac:125: -1- m4_pattern_allow([^XMLLINT$])
+m4trace:configure.ac:131: -1- m4_pattern_allow([^DOXYGEN$])
+m4trace:configure.ac:132: -1- m4_pattern_allow([^DOXYGEN$])
+m4trace:configure.ac:138: -1- m4_pattern_allow([^CURL$])
+m4trace:configure.ac:139: -1- m4_pattern_allow([^CURL$])
+m4trace:configure.ac:154: -1- AC_DEFUN([NOM_PATH_FILE], [
+$1=""
+AC_MSG_CHECKING(for $2)
+for d in $3
+do
+	f=$d/$2
+	if test -f $f
+	then
+		$1=$f
+		AC_MSG_RESULT($f)
+		break
+	fi
+done
+if test "X[$]$1" = "X"
+then
+	AC_MSG_RESULT("not found");
+	$1=$2
+fi
+AC_SUBST($1)
+])
+m4trace:configure.ac:201: -1- NOM_PATH_FILE([XSLT_DOCBOOK_STYLE_HTML], [html/docbook.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:201: -1- m4_pattern_allow([^XSLT_DOCBOOK_STYLE_HTML$])
+m4trace:configure.ac:202: -1- NOM_PATH_FILE([XSLT_DOCBOOK_STYLE_XHTML], [xhtml/docbook.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:202: -1- m4_pattern_allow([^XSLT_DOCBOOK_STYLE_XHTML$])
+m4trace:configure.ac:203: -1- NOM_PATH_FILE([XSLT_DOCBOOK_STYLE_MAN], [manpages/docbook.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:203: -1- m4_pattern_allow([^XSLT_DOCBOOK_STYLE_MAN$])
+m4trace:configure.ac:204: -1- NOM_PATH_FILE([XSLT_DOCBOOK_CHUNK_HTML], [html/chunk.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:204: -1- m4_pattern_allow([^XSLT_DOCBOOK_CHUNK_HTML$])
+m4trace:configure.ac:205: -1- NOM_PATH_FILE([XSLT_DOCBOOK_CHUNK_XHTML], [xhtml/chunk.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:205: -1- m4_pattern_allow([^XSLT_DOCBOOK_CHUNK_XHTML$])
+m4trace:configure.ac:206: -1- NOM_PATH_FILE([XSLT_DOCBOOK_CHUNKTOC_HTML], [html/chunktoc.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:206: -1- m4_pattern_allow([^XSLT_DOCBOOK_CHUNKTOC_HTML$])
+m4trace:configure.ac:207: -1- NOM_PATH_FILE([XSLT_DOCBOOK_CHUNKTOC_XHTML], [xhtml/chunktoc.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:207: -1- m4_pattern_allow([^XSLT_DOCBOOK_CHUNKTOC_XHTML$])
+m4trace:configure.ac:208: -1- NOM_PATH_FILE([XSLT_DOCBOOK_MAKETOC_HTML], [html/maketoc.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:208: -1- m4_pattern_allow([^XSLT_DOCBOOK_MAKETOC_HTML$])
+m4trace:configure.ac:209: -1- NOM_PATH_FILE([XSLT_DOCBOOK_MAKETOC_XHTML], [xhtml/maketoc.xsl], [$docbook_xsl_trees])
+m4trace:configure.ac:209: -1- m4_pattern_allow([^XSLT_DOCBOOK_MAKETOC_XHTML$])
+m4trace:configure.ac:252: -1- m4_pattern_allow([^BIND9_PRODUCT$])
+m4trace:configure.ac:254: -1- m4_pattern_allow([^BIND9_DESCRIPTION$])
+m4trace:configure.ac:256: -1- m4_pattern_allow([^BIND9_VERSION$])
+m4trace:configure.ac:258: -1- m4_pattern_allow([^BIND9_MAJOR$])
+m4trace:configure.ac:260: -1- m4_pattern_allow([^BIND9_VERSIONSTRING$])
+m4trace:configure.ac:262: -1- m4_pattern_allow([^BIND9_VERSIONSHORT$])
+m4trace:configure.ac:264: -1- m4_pattern_allow([^BIND9_DOCVERSION$])
+m4trace:configure.ac:274: -1- m4_pattern_allow([^BIND9_SRCID$])
+m4trace:configure.ac:286: -1- m4_pattern_allow([^BIND9_CONFIGARGS$])
+m4trace:configure.ac:336: -1- m4_pattern_allow([^LIB@&t@OBJS$])
+m4trace:configure.ac:336: -1- m4_pattern_allow([^LTLIBOBJS$])

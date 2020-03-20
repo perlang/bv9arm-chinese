@@ -1,0 +1,34 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes_security"><info><title>安全修补</title></info>
+  <itemizedlist>
+    <listitem>
+      <para>
+        当大量进入包被拒绝时，一个竞争条件可能触发一个断言失败。
+        这个漏洞在 CVE-2019-6471 中公开。 [GL #942]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	如果一个转发者返回一个引用，而不是解析请求，并且 QNAME 最小化
+	被开启时，<command>named</command>可能崩溃于一个断言失败。
+	这个漏洞在 CVE-2019-6476 中公开。 [GL #1501]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	当传输镜像区时，一个 DNSSEC 验证的漏洞可能允许数据被错误地
+	标记为验证的。这个漏洞在 CVE-2019-6475 中公开。 [GL #16P]
+      </para>
+    </listitem>
+  </itemizedlist>
+</section>

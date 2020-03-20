@@ -1,0 +1,19 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes_versions"><info><title>关于版本号的注释</title></info>
+  <para>
+    截止 BIND 9.13/9.14，BIND 采用了“奇数-不稳定/偶数-稳定”的版本编号
+    规范，BIND 9.16 包含了在 BIND 9.15 开发过程中增加的新特性。
+    今后，9.16 分支将被限制于漏洞修订，而新特性开发将在不稳定的
+    9.17 分支中进行。
+  </para>
+</section>

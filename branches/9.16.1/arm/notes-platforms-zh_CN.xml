@@ -1,0 +1,31 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes_platforms"><info><title>支持的平台</title></info>
+  <para>
+    要在类 UNIX 系统上编译，BIND 要求支持 POSIX.1c 线程
+    （IEEE Std 1003.1c-1995），关于IPv6的高级套接字API（RFC 3542），
+    和由 C 编译器提供的标准原子操作。
+  </para>
+  <para>
+    在目标平台上，<filename>libuv</filename>异步 I/O 库和
+    OpenSSL 加密库必须是可用的。对于公共密钥加密（即，DNSSEC 签名
+    和验证），可以使用一个 PKCS#11 提供者来代替 OpenSSL。
+    但是仍然需要 OpenSSL 进行通常的加密操作，诸如散列和
+    随机数生成。
+  </para>
+  <para>
+    更多信息可以在<filename>PLATFORMS.md</filename>文件中找到，它
+    被包含在 BIND 9 的源码发布中。如果你的编译器和系统库提供
+    了上述特征，BIND 9 就应当能够编译和运行。如果不是这种情况，
+    BIND 开发团队通常接受补丁以支持仍然被各自厂商支持的系统。
+  </para>
+</section>

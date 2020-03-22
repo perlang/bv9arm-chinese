@@ -1,0 +1,79 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes_bugs"><info><title>漏洞修补</title></info>
+  <itemizedlist>
+    <listitem>
+      <para>
+        When <command>qname-minimization</command> was set to
+        <command>relaxed</command>, some improperly configured domains
+        would fail to resolve, but would have succeeded when minimization
+        was disabled. <command>named</command> will now fall back to normal
+        resolution in such cases, and also uses type A rather than NS for
+        minimal queries in order to reduce the likelihood of encountering
+        the problem. [GL #1055]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Glue address records were not being returned in responses
+        to root priming queries; this has been corrected. [GL #1092]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        在 DNS64 和 RPZ No Data 规则（CNAME *.）之间互操作可能
+        导致不可预料的结果；这个已被修补。 [GL #1106]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <command>named-checkconf</command>现在检查 DNS64 前缀以确保
+        第 64-71 位为零。 [GL #1159]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        在配置时如果使用“geoip continent” ACL 和旧的 GeoIP，
+        <command>named-checkconf</command>可能会崩溃。 [GL #1163]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        <command>named-checkconf</command> now correctly reports a missing
+        <command>dnstap-output</command> option when
+        <command>dnstap</command> is set. [GL #1136]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Handle ETIMEDOUT error on connect() with a non-blocking
+        socket. [GL #1133]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        当旧答复被开启时，缓存数据库统计计数器可能报告无效值，
+        这是因为在缓存数据变成旧数据时的计数器维护中的一个错误。
+        统计计数器被修复成可以报告每种资源记录类型的资源记录集
+        数目，其中多少是活跃的，陈旧但仍然可能服务的以及
+        陈旧并被标记为删除的。 [GL #602]
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        When a <command>response-policy</command> zone expires, ensure
+        that its policies are removed from the RPZ summary database.
+        [GL #1146]
+      </para>
+    </listitem>
+  </itemizedlist>
+</section>

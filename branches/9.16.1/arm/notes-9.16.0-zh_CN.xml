@@ -1,0 +1,246 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.16.0"><info><title>BIND 9.16.0 注记</title></info>
+
+  <para>
+    <emphasis>注意： 这个部份仅列出自 BIND 9.14 （上一个稳定的 BIND
+     分支）以来的变化。
+    </emphasis>
+  </para>
+
+  <section xml:id="relnotes-9.16.0-new"><info><title>新特性</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          一种基于<command>libuv</command>的新的异步网络通信系统
+          现在用于<command>named</command>中监听进入的请求和对其响应。
+          这个变化将使提升性能和在未来实现新的协议层（例如，DNS over TLS）
+          更容易。 [GL #29]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          新的<command>dnssec-policy</command>选项允许为区配置一个
+          密钥和签名策略（KASP）。
+          这个选项使<command>named</command>能够按需生成新密钥并
+          自动轮转 ZSK 和 KSK 密钥。
+          （注意这个语句的语法与<command>dnssec-keymgr</command>
+          所用的 DNSSEC 策略不同。） [GL #1134]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          为了使 DNSSEC 密钥的配置更清晰，
+          <command>trusted-keys</command>和
+          <command>managed-keys</command>语句都被作废了，
+          而新的<command>trust-anchors</command>语句现在应该
+          可以用于两种类型的密钥。
+        </para>
+        <para>
+          当与关键字<command>initial-key</command>一起使用时，
+          <command>trust-anchors</command>具有与
+          <command>managed-keys</command>同样的特性，即它配置
+          一个通过 RFC 5011 维护的信任锚。
+        </para>
+        <para>
+          当与新的关键字<command>static-key</command>一起使用时，
+          <command>trust-anchors</command>具有与
+          <command>trusted-keys</command>同样的特性，即它配置
+          一个永久信任锚，不会自动更新。
+          这个用法不推荐用于根密钥。） [GL #6]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Two new keywords have been added to the
+          <command>trust-anchors</command> statement:
+          <command>initial-ds</command> and <command>static-ds</command>.
+          These allow the use of trust anchors in DS format instead of
+          DNSKEY format.  DS format allows trust anchors to be configured
+          for keys that have not yet been published; this is the format
+          used by IANA when announcing future root keys.
+        </para>
+        <para>
+          As with the <command>initial-key</command> and
+          <command>static-key</command> keywords, <command>initial-ds</command>
+          configures a dynamic trust anchor to be maintained via RFC 5011, and
+          <command>static-ds</command> configures a permanent trust anchor.
+          [GL #6] [GL #622]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <command>dig</command>，<command>mdig</command>和
+          <command>delv</command>现在都可以接受一个新的<command>+yaml</command>
+          选项并以一个详细的 YAML 格式打印输出。 [GL #1145]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <command>dig</command>现在有了一个新的命令行选项：
+          <command>+[no]unexpected</command>。
+          缺省时，<command>dig</command>不会接受一个源地址不是它所请求
+          的地址的回复。
+          增加<command>+unexpected</command>参数使其可以处理来自
+          非预期源地址来的回复。 [RT #44978]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <command>dig</command> now accepts a new command line option,
+          <command>+[no]expandaaaa</command>, which causes the IPv6
+          addresses in AAAA records to be printed in full 128-bit
+          notation rather than the default RFC 5952 format. [GL #765]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Statistics channel groups can now be toggled. [GL #1030]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.0-changes"><info><title>特性变化</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          When static and managed DNSSEC keys were both configured for the
+          same name, or when a static key was used to
+          configure a trust anchor for the root zone and
+          <command>dnssec-validation</command> was set to the default
+          value of <literal>auto</literal>, automatic RFC 5011 key
+          rollovers would be disabled. This combination of settings was
+          never intended to work, but there was no check for it in the
+          parser. This has been corrected, and it is now a fatal
+          configuration error. [GL #868]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          DS and CDS records are now generated with SHA-256 digests
+          only, instead of both SHA-1 and SHA-256. This affects the
+          default output of <command>dnssec-dsfromkey</command>, the
+          <filename>dsset</filename> files generated by
+          <command>dnssec-signzone</command>, the DS records added to
+          a zone by <command>dnssec-signzone</command> based on
+          <filename>keyset</filename> files, the CDS records added to
+          a zone by <command>named</command> and
+          <command>dnssec-signzone</command> based on "sync" timing
+          parameters in key files, and the checks performed by
+          <command>dnssec-checkds</command>. [GL #1015]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <command>named</command> will now log a warning if
+          a static key is configured for the root zone. [GL #6]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          A SipHash 2-4 based DNS Cookie (RFC 7873) algorithm has been added and
+          made default.  Old non-default HMAC-SHA based DNS Cookie algorithms
+          have been removed, and only the default AES algorithm is being kept
+          for legacy reasons.  This change has no operational impact in most
+          common scenarios. [GL #605]
+        </para>
+        <para>
+          If you are running multiple DNS servers (different versions of BIND 9
+          or DNS servers from multiple vendors) responding from the same IP
+          address (anycast or load-balancing scenarios), make sure that all the
+          servers are configured with the same DNS Cookie algorithm and same
+          Server Secret for the best performance.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The information from the <command>dnssec-signzone</command> and
+          <command>dnssec-verify</command> commands is now printed to standard
+          output.  The standard error output is only used to print warnings and
+          errors, and in case the user requests the signed zone to be printed to
+          standard output with the <command>-f -</command> option.  A new
+          configuration option <command>-q</command> has been added to silence
+          all output on standard output except for the name of the signed zone.
+          [GL #1151]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          DNSSEC 验证代码已被重构，更加清晰并且减少了代码重复。 [GL #622]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <command>configure</command>的
+          <command>--with-tuning=large</command>选项所开启的编译
+          时设置现在已经缺省生效。
+          之前缺省生效的编译时设置可以在
+          <command>configure</command>时使用
+	  <command>--with-tuning=small</command>来开启。 [GL !2989]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          JSON-C is now the only supported library for enabling JSON
+          support for BIND statistics. The <command>configure</command>
+          option has been renamed from <command>--with-libjson</command>
+          to <command>--with-json-c</command>.  Set the
+          <command>PKG_CONFIG_PATH</command> environment variable
+          accordingly to specify a custom path to the
+          <command>json-c</command> library, as the new
+          <command>configure</command> option does not take the library
+          installation path as an optional argument. [GL #855]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <command>./configure</command> no longer sets
+          <command>--sysconfdir</command> to <command>/etc</command> or
+          <command>--localstatedir</command> to <command>/var</command>
+          when <command>--prefix</command> is not specified and the
+          aforementioned options are not specified explicitly. Instead,
+          Autoconf's defaults of <command>$prefix/etc</command> and
+          <command>$prefix/var</command> are respected. [GL #658]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.0-removed"><info><title>去掉的特性</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          <command>dnssec-enable</command>选项已被作废并不再有效了。
+          如果签名并且具有其它的 DNSSEC 数据，DNSSEC 响应总是被开启。
+          [GL #866]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          DNSSEC 后备验证（DLV）现已被作废。
+          <command>dnssec-lookaside</command>被标记为废弃；
+          当用于<filename>named.conf</filename>时，它将生成一个警告
+          并被忽略。
+          所有开启了使用后备验证的代码都已从验证器，
+          <command>delv</command>和 DNSSEC 工具中删除了。 [GL #7]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          <command>cleaning-interval</command>选项已被删除。 [GL !1731]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+</section>

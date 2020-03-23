@@ -210,14 +210,14 @@
             instead of writing DS records to the standard output.
           </para>
 	  <para>
-	    There must be no space between the <option>-i</option> and
-	    the <replaceable>extension</replaceable>. If you provide
-	    no <replaceable>extension</replaceable> then the
-	    old <filename>dsset-</filename> is discarded. If
-	    an <replaceable>extension</replaceable> is present, a
-	    backup of the old <filename>dsset-</filename> file is kept
-	    with the <replaceable>extension</replaceable> appended to
-	    its filename.
+	    在<option>-i</option>和<replaceable>extension</replaceable>
+            之间必须没有空格。如果你没有提供
+            <replaceable>extension</replaceable>，旧的
+            <filename>dsset-</filename>会被丢弃。
+            如果提供了一个<replaceable>extension</replaceable>，
+            旧<filename>dsset-</filename>文件的备份就被保存在
+            旧文件名跟上<replaceable>extension</replaceable>作为
+            新文件名的文件中。
 	  </para>
           <para>
             To protect against replay attacks, the modification time
@@ -242,9 +242,8 @@
             一个相当于当前时间的时间用 now+N 表示。
 	  </para>
 	  <para>
-            If no <replaceable>start-time</replaceable> is specified, the
-            modification time of the <filename>dsset-</filename> file
-            is used.
+            如果没有指定<replaceable>start-time</replaceable>，
+            就使用<filename>dsset-</filename>文件的修改时间。
           </para>
         </listitem>
       </varlistentry>
@@ -253,10 +252,9 @@
         <term>-T <replaceable class="parameter">ttl</replaceable></term>
         <listitem>
           <para>
-            Specifies a TTL to be used for new DS records. If not
-            specified, the default is the TTL of the old DS records.
-            If they had no explicit TTL then the new DS records also
-            have no explicit TTL.
+            指定一个用于新的 DS 记录的 TTL。如果未指定，缺省是旧的
+            DS 记录的 TTL。
+            如果旧的没有显式的 TTL，新的 DS 记录也没有。
           </para>
         </listitem>
       </varlistentry>

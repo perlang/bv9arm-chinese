@@ -61,13 +61,12 @@
       </listitem>
       <listitem>
         <para>
-          Two new keywords have been added to the
-          <command>trust-anchors</command> statement:
-          <command>initial-ds</command> and <command>static-ds</command>.
-          These allow the use of trust anchors in DS format instead of
-          DNSKEY format.  DS format allows trust anchors to be configured
-          for keys that have not yet been published; this is the format
-          used by IANA when announcing future root keys.
+          <command>trust-anchors</command>语句中增加了两个新的
+          关键字：
+          <command>initial-ds</command>和<command>static-ds</command>。
+          这些允许在使用信任锚时以 DS 格式替代 DNSKEY 格式。
+          DS 格式允许信任锚配置还没有发布的密钥；这是 IANA 宣布
+          未来根密钥所用的格式。
         </para>
         <para>
           As with the <command>initial-key</command> and
@@ -104,7 +103,7 @@
       </listitem>
       <listitem>
         <para>
-        Statistics channel groups can now be toggled. [GL #1030]
+          统计通道组现在可以被切换了。 [GL #1030]
         </para>
       </listitem>
     </itemizedlist>
@@ -142,8 +141,8 @@
       </listitem>
       <listitem>
         <para>
-          <command>named</command> will now log a warning if
-          a static key is configured for the root zone. [GL #6]
+          如果为根区配置了一个静态密钥，
+          <command>named</command>将会记录一条警告日志。 [GL #6]
         </para>
       </listitem>
       <listitem>
@@ -204,13 +203,16 @@
       </listitem>
       <listitem>
         <para>
-          <command>./configure</command> no longer sets
-          <command>--sysconfdir</command> to <command>/etc</command> or
-          <command>--localstatedir</command> to <command>/var</command>
-          when <command>--prefix</command> is not specified and the
-          aforementioned options are not specified explicitly. Instead,
-          Autoconf's defaults of <command>$prefix/etc</command> and
-          <command>$prefix/var</command> are respected. [GL #658]
+          当没有指定<command>--prefix</command>并且没有
+          显式指定<command>--sysconfdir</command>和
+          <command>--localstatedir</command>时，
+          <command>./configure</command>不会将
+          <command>--sysconfdir</command>设置为<command>/etc</command>，
+          或将<command>--localstatedir</command>设置为
+	  <command>/var</command>。
+          作为替代，两者将分别被设置为 Autoconf 的缺省值
+          <command>$prefix/etc</command>和
+          <command>$prefix/var</command>。 [GL #658]
         </para>
       </listitem>
     </itemizedlist>

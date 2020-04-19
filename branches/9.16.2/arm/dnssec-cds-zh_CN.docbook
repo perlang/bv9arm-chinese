@@ -117,11 +117,11 @@
       不要删除 DS 记录！
     </para>
     <para>
-      Alternatively, <command>dnssec-cds -u</command> writes
-      an <command>nsupdate</command> script to the standard output.
-      You can use the <option>-u</option> and <option>-i</option>
-      options together to maintain a <filename>dsset-</filename> file
-      as well as emit an <command>nsupdate</command> script.
+      作为一种选择，<command>dnssec-cds -u</command>将一个
+      <command>nsupdate</command>脚本写到标准输出。
+      你可以同时使用<option>-u</option>和<option>-i</option>选项
+      来维护一个<filename>dsset-</filename>文件，如同执行
+      一个<command>nsupdate</command>脚本。
     </para>
 
   </refsection>
@@ -161,9 +161,8 @@
         <term>-D</term>
         <listitem>
           <para>
-	    Generate DS records from CDNSKEY records if both CDS and
-	    CDNSKEY records are present in the child zone. By default
-	    CDS records are preferred.
+	    如果 CDS 和 CDNSKEY 记录都出现在子区中，从 CDNSKEY 生成 DS
+            记录。缺省优先 CDS 记录。
           </para>
         </listitem>
       </varlistentry>

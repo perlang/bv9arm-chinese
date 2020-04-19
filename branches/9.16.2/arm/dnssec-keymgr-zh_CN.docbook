@@ -1,0 +1,401 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnssec-keymgr">
+  <info>
+    <date>2016-06-03</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-keymgr</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-keymgr</application></refname>
+    <refpurpose>为一个基于一个已定义策略的区确保正确的DNSKEY覆盖</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2016</year>
+      <year>2017</year>
+      <year>2018</year>
+      <year>2019</year>
+      <year>2020</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>dnssec-keymgr</command>
+      <arg choice="opt" rep="norepeat"><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-f</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-k</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-q</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-z</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-g <replaceable class="parameter">path</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-s <replaceable class="parameter">path</replaceable></option></arg>
+      <arg choice="opt" rep="repeat">zone</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>DESCRIPTION</title></info>
+    <para>
+      <command>dnssec-keymgr</command>是一个高级Python包裹以使
+      BIND处理区的密钥轮转进程更加容易。它使用BIND命令操纵
+      DNSSEC密钥元数据：<command>dnssec-keygen</command>和
+      <command>dnssec-settime</command>。
+    </para>
+    <para>
+      DNSSEC策略可以从一个配置文件（缺省是
+      <filename>/etc/dnssec-policy.conf</filename>）读取，从中
+      任何给定区的密钥参数，发布和轮转时间表，以及期望的覆盖时间段
+      都可以被决定。
+      这个文件可以用于基于每个区定义单独的DNSSEC策略，或者为所有区
+      设置一个“<literal>default</literal>”策略。
+    </para>
+    <para>
+      当运行<command>dnssec-keymgr</command>时，它检查一个或多个区
+      的DNSSEC密钥，将这些区的时间元数据与其策略进行对比。
+      如果密钥设置不符合DNSSEC策略（例如，由于策略被修改），他们
+      就会被自动纠正。
+    </para>
+    <para>
+      一个区策略可以指定一段我们想要确保密钥正确性的持续时间
+      （<option>coverage</option>）。它也可以指定一个轮转周期
+      （<option>roll-period</option>）。
+      如果策略指示一个密钥应当在覆盖周期结束之前轮转，就会自动
+      创建一个后继密钥并将其添加到密钥串的末尾。
+    </para>
+    <para>
+      如果在命令行指定了区，<command>dnssec-keymgr</command>将
+      只检查这些区。
+      如果一个指定的区没有在适当的地方有密钥，就会根据策略为其
+      自动生成密钥。
+    </para>
+    <para>
+      如果<emphasis>没有</emphasis>在命令行指定区，
+      <command>dnssec-keymgr</command>将搜索密钥目录（要么是当前
+      工作目录，要么是由<option>-K</option>选项设置的目录），并
+      检查出现在目录中的所有区的密钥。
+    </para>
+    <para>
+      密钥时间在过去的将不会被更新，除非使用了<option>-f</option>
+      （参见下面）。密钥失活和删除时间小于五分钟之后的将会被延长
+      五分钟。
+    </para>
+    <para>
+      预期这个工具将会自动地运行并无需人工照看（例如，通过
+      <command>cron</command>）。
+    </para>
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+    <variablelist>
+      <varlistentry>
+	<term>-c <replaceable class="parameter">file</replaceable></term>
+	<listitem>
+	  <para>
+	    如果指定了<option>-c</option>，就从文件
+            <option>file</option>读取DNSSEC策略。
+            （如果未指定，就从文件
+            <filename>/etc/dnssec-policy.conf</filename>读取策略；
+            如果那个文件不存在，就使用一个内置的全局缺省策略。）
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-f</term>
+	<listitem>
+	  <para>
+	    强制：允许密钥事件的更新，即使它们已经过时。
+            不推荐在密钥已经发布的区使用这个。
+            然而，如果一些密钥被生成，所有密钥的发布日期和激活日期
+            都在过去，但是密钥还未在区中发布，这时这个选项可以用于
+            清理它们并使用合适的轮转间隔将其变成一个适当的密钥集合。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-g <replaceable class="parameter">keygen-path</replaceable></term>
+	<listitem>
+	  <para>
+	    给<command>dnssec-keygen</command>二进制程序指定一个路径。
+	    用于测试。
+            参见<option>-s</option>选项。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-h</term>
+	<listitem>
+	  <para>
+	    输出<command>dnssec-keymgr</command>帮助概要并退出。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-K <replaceable class="parameter">directory</replaceable></term>
+	<listitem>
+	  <para>
+	    设置能够找到密钥的目录。缺省是当前工作目录。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-k</term>
+	<listitem>
+	  <para>
+	    仅应用策略到KSK密钥。
+            参见<option>-z</option>选项。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-q</term>
+	<listitem>
+	  <para>
+	    安静：禁止<command>dnssec-keygen</command>和
+            <command>dnssec-settime</command>的输出。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-s <replaceable class="parameter">settime-path</replaceable></term>
+	<listitem>
+	  <para>
+	    给<command>dnssec-settime</command>二进制文件指定一个路径。
+	    用于测试。
+            参见<option>-g</option>选项。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-v</term>
+	<listitem>
+	  <para>
+	    输出<command>dnssec-keymgr</command>版本并退出。
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-z</term>
+	<listitem>
+	  <para>
+	    仅应用策略到ZSK密钥。
+            参见<option>-k</option>选项。
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>策略配置</title></info>
+    <para>
+      <filename>dnssec-policy.conf</filename>文件可以指定三种策略：
+    </para>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <emphasis>策略类</emphasis>
+	  （<option>policy <replaceable>name</replaceable> { ... };</option>）
+          可以被区策略或者其它策略类继承；这些可以用于建议不同安全档案的
+          集合。例如，一个策略类<userinput>normal</userinput>可能指定
+          1024位的密钥长度，但是一个类<userinput>extra</userinput>可能
+          指定2048位取代它；<userinput>extra</userinput>用于那些有不一般
+          的高安全需求的区。
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+          <emphasis>算法策略：</emphasis>
+	  （<option>algorithm-policy <replaceable>algorithm</replaceable> { ... };</option>）
+	  覆盖缺省的按每个算法的设置。例如，缺省时，RSASHA256密钥对KSK和
+          ZSK这两者都使用2048位密钥长度。
+          这个可以使用<command>algorithm-policy</command>修改，并且新的
+          密钥长度就可以被用于任何RSASHA256类型的密钥。          
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <emphasis>区策略：</emphasis>
+	  （<option>zone <replaceable>name</replaceable> { ... };</option>）
+          按区名字为单一区设置策略。一个区策略可以通过包含一个
+          <option>policy</option>选项继承一个策略类。
+          以数字（如，0-9）开头的区名必须加引号。
+          如果一个区没有自己的策略，就应用“<literal>default</literal>”策略。
+	</para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      可以在策略中指定的选项：
+    </para>
+    <variablelist>
+      <varlistentry>
+        <term><command>algorithm</command>
+          <replaceable>name</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    密钥算法。如果未定义策略，缺省是RSASHA256。
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>coverage</command>
+          <replaceable>duration</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    确保密钥正确的时间长度；在这个时间之后，将不采取措施建立
+            并激活新密钥。
+	    这可以被表示为一个以秒为单位的数，或者使用人可读的单位表示的一段时间
+            （例如：“1y”或者“6 months”）。
+            这个选项的一个缺省值可以被设置在算法策略中，和在策略类或
+            区策略中一样。
+            如果未配置策略，缺省是六个月。
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>directory</command>
+          <replaceable>path</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    指定密钥应该存放的目录。
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>key-size</command> <replaceable>keytype</replaceable>
+          <replaceable>size</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    指定用于创建密钥的位数。
+            keytype要么是“zsk”，要么是“ksk”。
+            这个选项的一个缺省值可以设置在算法策略中，和在策略类或区策略中
+            一样。如果没有配置策略，RSA密钥的缺省值是2048位。
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>keyttl</command>
+          <replaceable>duration</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    密钥的TTL。如果没有定义策略，缺省是一小时。
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>post-publish</command> <replaceable>keytype</replaceable>
+          <replaceable>duration</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    在失活一个密钥后多长时间应将其从区中删除。
+            注意：如果未设置<option>roll-period</option>，这个值将被忽略。
+            keytype要么是“zsk”，要么是“ksk”。
+            这个选项的一个缺省持续时间可以设置在算法策略中，和在策略类或
+            区策略中一样。缺省值是一个月。
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>pre-publish</command> <replaceable>keytype</replaceable>
+          <replaceable>duration</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    在激活一个密钥之前多长时间应该发布它。
+            注意：如果未设置<option>roll-period</option>，这个值将被忽略。
+            keytype要么是“zsk”，要么是“ksk”。
+            这个选项的一个缺省持续时间可以设置在算法策略中，和在策略类或
+            区策略中一样。缺省值是一个月。
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>roll-period</command> <replaceable>keytype</replaceable>
+          <replaceable>duration</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    密钥应以多大频率被轮转。
+            keytype要么是“zsk”，要么是“ksk”。
+            这个选项的一个缺省持续时间可以设置在算法策略中，和在策略类或
+            区策略中一样。如果没有配置策略，对ZSK缺省值是一年。KSK缺省不轮转。
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><command>standby</command> <replaceable>keytype</replaceable>
+          <replaceable>number</replaceable><literal>;</literal></term>
+	<listitem>
+	  <para>
+	    还未实现。
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>剩余工作</title></info>
+  <itemizedlist>
+    <listitem>
+      <para>
+	通过给<command>dnssec-keygen</command>和
+        <command>dnssec-settime</command>使用
+        <option>-P sync</option>和<option>-D sync</option>选项打开
+        KSK轮转的调度。
+        检查父区（如同在<command>dnssec-checkds</command>中一样）
+        以决定何时轮转密钥是安全的。
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	允许为使用RFC 5011语义的密钥配置后备密钥和使用REVOKE位。
+      </para>
+    </listitem>
+  </itemizedlist>
+  </refsection>
+
+  <refsection><info><title>SEE ALSO</title></info>
+    <para>
+      <citerefentry>
+	<refentrytitle>dnssec-coverage</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+	<refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+	<refentrytitle>dnssec-settime</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+	<refentrytitle>dnssec-checkds</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>
+    </para>
+  </refsection>
+
+</refentry>

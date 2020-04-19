@@ -1,0 +1,62 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.16.1"><info><title>BIND 9.16.1 注记</title></info>
+
+  <section xml:id="relnotes-9.16.1-known"><info><title>已知问题</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          用于监听的 UDP 网络端口不能再同时用于发送流量。
+          一个会触发这个问题的例子配置可能会是一个将同样的
+          <replaceable>address:port</replaceable>对用于
+          <command>listen-on(-v6)</command>语句且用于
+	  <command>notify-source(-v6)</command>或
+	  <command>transfer-source(-v6)</command>语句。
+	  而这个问题会影响到所有操作系统，在其中一些系统上它只会记录日志
+	  （例如，“unable to create dispatch for reserved port”）。
+	  当前还没有计划使这样的组合设置能够重新工作。
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.1-changes"><info><title>特性变化</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          系统所提供的 POSIX 线程读写锁实现现在作为缺省项，替代了原生的
+          BIND 9 实现。
+          请注意 glibc 版本 2.26 到 2.29 有一个
+          <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://sourceware.org/bugzilla/show_bug.cgi?id=23844">漏洞</link>，
+          可能导致 BIND 9 死锁。
+          对此的修补发布在 glibc 2.30 中，并且当前大多数 Linux 发行都已
+          修补或更新了 glibc，但有一个值得注意的例外，Ubuntu 18.04 (Bionic)
+          正在修补中。
+          如果你在一个受影响的操作系统上运行，编译 BIND 9 时带上
+	  <command>--disable-pthread-rwlock</command>，直到一个 glibc 的修补
+	  版本可用为止。 [GL !3125]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.1-bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          修正了在内联区中重签的问题，即导致签名延迟或者完全没有签名。
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+</section>

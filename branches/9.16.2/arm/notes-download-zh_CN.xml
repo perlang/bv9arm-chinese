@@ -1,0 +1,19 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes_download"><info><title>下载</title></info>
+  <para>
+    最新版本的 BIND 9 软件总是可以在
+    <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://www.isc.org/download/">https://www.isc.org/download/</link>找到。
+    那里，你会发现每个版本的附加信息，源码和为微软 Windows 操作系统
+    预编译的版本。
+  </para>
+</section>

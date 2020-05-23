@@ -1,0 +1,379 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnssec-cds">
+  <info>
+    <date>2017-10-02</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+    <author>
+      <personname>Tony Finch</personname>
+      <email>dot@dotat.at</email>
+      <email>fanf2@cam.ac.uk</email>
+      <affiliation>Cambridge University Information Services</affiliation>
+      <personblurb></personblurb>
+    </author>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-cds</application></refentrytitle>
+   <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-cds</application></refname>
+    <refpurpose>基于 CDS/CDNSKEY 修改一个子区的 DS 记录。</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2017</year>
+      <year>2018</year>
+      <year>2019</year>
+      <year>2020</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>dnssec-cds</command>
+      <arg choice="opt" rep="repeat"><option>-a <replaceable class="parameter">alg</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-D</option></arg>
+      <arg choice="req" rep="norepeat"><option>-d <replaceable class="parameter">dsset-file</replaceable></option></arg>
+      <arg choice="req" rep="norepeat"><option>-f <replaceable class="parameter">child-file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-i</option><arg choice="opt" rep="norepeat"><replaceable class="parameter">extension</replaceable></arg></arg>
+      <arg choice="opt" rep="norepeat"><option>-s <replaceable class="parameter">start-time</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-T <replaceable class="parameter">ttl</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-u</option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-V</option></arg>
+      <arg choice="req" rep="norepeat">domain</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>DESCRIPTION</title></info>
+
+    <para>
+      <command>dnssec-cds</command>命令基于在子区中发布的 CDS 或
+      CDNSKEY 记录修改一个授权点的 DS 记录。
+      如果 CDS 和 CDNSKEY 记录都出现在子区中，优先使用 CDS。
+      这使得一个子区可以向其父区通知即将对其自身的密钥签名密钥的修改；
+      通过定期使用<command>dnssec-cds</command>轮询，父区可以保持 DS
+      记录的更新，并开启自动对 KSK 的轮转。
+    </para>
+    <para>
+      要求两个输入文件。
+      <option>-f <replaceable class="parameter">child-file</replaceable></option>
+      选项指定一个包含子区的 CDS 和/或 CDNSKEY 记录加上 RRSIG 和 DNSKEY
+      记录的文件，这样它们就能够认证。
+      <option>-d <replaceable class="parameter">path</replaceable></option>
+      选项指定一个包含当前 DS 记录的文件的位置。
+      例如，这可能是由<command>dnssec-signzone</command>生成的
+      一个<filename>dsset-</filename>文件，或者之前运行
+      <command>dnssec-cds</command>的输出。
+    </para>
+    <para>
+      <command>dnssec-cds</command>命令使用由 RFC 7344 指定的特定的
+      DNSSEC 验证逻辑。它要求 CDS 和/或 CDNSKEY 记录是由一个在现存
+      DS 记录中表示的密钥有效签名。这将是典型的预先存在的密钥签名
+      密钥（KSK）。
+    </para>
+    <para>
+      For protection against replay attacks, the signatures on the
+      child records must not be older than they were on a previous run
+      of <command>dnssec-cds</command>. This time is obtained from the
+      modification time of the <filename>dsset-</filename> file, or
+      from the <option>-s</option> option.
+    </para>
+    <para>
+      To protect against breaking the delegation,
+      <command>dnssec-cds</command> ensures that the DNSKEY RRset can be
+      verified by every key algorithm in the new DS RRset, and that the
+      same set of keys are covered by every DS digest type.
+    </para>
+    <para>
+      By default, replacement DS records are written to the standard
+      output; with the <option>-i</option> option the input file is
+      overwritten in place. The replacement DS records will be the
+      same as the existing records when no change is required. The
+      output can be empty if the CDS / CDNSKEY records specify that
+      the child zone wants to go insecure.
+    </para>
+    <para>
+      警告：当<command>dnssec-cds</command>失败时，需要小心，
+      不要删除 DS 记录！
+    </para>
+    <para>
+      作为一种选择，<command>dnssec-cds -u</command>将一个
+      <command>nsupdate</command>脚本写到标准输出。
+      你可以同时使用<option>-u</option>和<option>-i</option>选项
+      来维护一个<filename>dsset-</filename>文件，如同执行
+      一个<command>nsupdate</command>脚本。
+    </para>
+
+  </refsection>
+
+  <refsection><info><title>OPTIONS</title></info>
+
+    <variablelist>
+
+      <varlistentry>
+	<term>-a <replaceable class="parameter">algorithm</replaceable></term>
+        <listitem>
+          <para>
+	    指定用于转换 CDNSKEY 记录到 DS 记录的摘要算法。
+            这个选项可以重复，这样会为每个 CDNSKEY 记录建立多个
+            DS 记录。
+            在使用 CDS 记录时，这个选项无效。
+          </para>
+          <para>
+	    <replaceable>algorithm</replaceable>必须是 SHA-1，SHA-256
+            或 SHA-384 之一。这些值是大小写不敏感的，并且连字符可以
+            省略。
+            如果没有指定算法，缺省是 SHA-256。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">class</replaceable></term>
+        <listitem>
+          <para>
+            指定区的 DNS 类。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-D</term>
+        <listitem>
+          <para>
+	    如果 CDS 和 CDNSKEY 记录都出现在子区中，从 CDNSKEY 生成 DS
+            记录。缺省优先 CDS 记录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-d <replaceable class="parameter">path</replaceable></term>
+        <listitem>
+          <para>
+            Location of the parent DS records.
+	    The <replaceable>path</replaceable> can be the name of a file
+	    containing the DS records, or if it is a
+	    directory, <command>dnssec-cds</command> looks for
+	    a <filename>dsset-</filename> file for
+	    the <replaceable>domain</replaceable> inside the directory.
+          </para>
+          <para>
+            To protect against replay attacks, child records are
+            rejected if they were signed earlier than the modification
+            time of the <filename>dsset-</filename> file. This can be
+            adjusted with the <option>-s</option> option.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-f <replaceable class="parameter">child-file</replaceable></term>
+        <listitem>
+          <para>
+	    File containing the child's CDS and/or CDNSKEY records,
+	    plus its DNSKEY records and the covering RRSIG records so
+	    that they can be authenticated.
+          </para>
+	  <para>
+	    下面的例子描述了然后生成这个文件。
+	  </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-i<arg choice="opt" rep="norepeat"><replaceable class="parameter">extension</replaceable></arg></term>
+        <listitem>
+          <para>
+            Update the <filename>dsset-</filename> file in place,
+            instead of writing DS records to the standard output.
+          </para>
+	  <para>
+	    在<option>-i</option>和<replaceable>extension</replaceable>
+            之间必须没有空格。如果你没有提供
+            <replaceable>extension</replaceable>，旧的
+            <filename>dsset-</filename>会被丢弃。
+            如果提供了一个<replaceable>extension</replaceable>，
+            旧<filename>dsset-</filename>文件的备份就被保存在
+            旧文件名跟上<replaceable>extension</replaceable>作为
+            新文件名的文件中。
+	  </para>
+          <para>
+            To protect against replay attacks, the modification time
+            of the <filename>dsset-</filename> file is set to match
+            the signature inception time of the child records,
+            provided that is later than the file's current
+            modification time.
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s <replaceable class="parameter">start-time</replaceable></term>
+        <listitem>
+          <para>
+            指定 RRSIG 记录可以接受的日期和时间。
+            这可以是一个绝对或相对时间。
+            一个绝对开始时间是由一个 YYYYMMDDHHMMSS 格式的数表示的；
+            20170827133700 表示 UTC 时间 2017年8月27日 13:37:00。
+            一个相当于<filename>dsset-</filename>文件的时间由 -N 表示，
+            即文件修改时间之前 N 秒。
+            一个相当于当前时间的时间用 now+N 表示。
+	  </para>
+	  <para>
+            如果没有指定<replaceable>start-time</replaceable>，
+            就使用<filename>dsset-</filename>文件的修改时间。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-T <replaceable class="parameter">ttl</replaceable></term>
+        <listitem>
+          <para>
+            指定一个用于新的 DS 记录的 TTL。如果未指定，缺省是旧的
+            DS 记录的 TTL。
+            如果旧的没有显式的 TTL，新的 DS 记录也没有。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-u</term>
+        <listitem>
+          <para>
+	    Write an <command>nsupdate</command> script to the
+	    standard output, instead of printing the new DS reords.
+	    The output will be empty if no change is needed.
+          </para>
+	  <para>
+	    Note: The TTL of new records needs to be specified, either
+	    in the original <filename>dsset-</filename> file, or with
+	    the <option>-T</option> option, or using
+	    the <command>nsupdate</command> <command>ttl</command>
+	    command.
+	  </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>-V</term>
+        <listitem>
+	  <para>
+	    打印版本信息。
+	  </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v <replaceable class="parameter">level</replaceable></term>
+        <listitem>
+          <para>
+            设置调试级别。级别 1 用于为普通用户提供更详细信息；
+            更高的级别是给开发者使用。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><replaceable>domain</replaceable></term>
+        <listitem>
+          <para>
+            授权点/子区顶点的名字。
+          </para>
+        </listitem>
+      </varlistentry>
+
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>EXIT STATUS</title></info>
+
+    <para>
+      <command>dnssec-cds</command>命令运行成功时退出码为 0，如果
+      发生一个错误则为非零。
+    </para>
+    <para>
+      在成功的情况，DS 记录可能需要也可能不需要修改。
+    </para>
+
+  </refsection>
+
+  <refsection><info><title>EXAMPLES</title></info>
+
+    <para>
+      在运行<command>dnssec-signzone</command>之前，你可以通过在
+      每个<filename>dsset-</filename>文件上运行
+      <command>dnssec-cds</command>来确保授权是最新的。
+    </para>
+    <para>
+      To fetch the child records required by <command>dnssec-cds</command>
+      you can invoke <command>dig</command> as in the script below.  It's
+      okay if the <command>dig</command> fails since
+      <command>dnssec-cds</command> performs all the necessary checking.
+    </para>
+<programlisting>for f in dsset-*
+do
+	d=${f#dsset-}
+	dig +dnssec +noall +answer $d DNSKEY $d CDNSKEY $d CDS |
+	dnssec-cds -i -f /dev/stdin -d $f $d
+done
+</programlisting>
+
+    <para>
+      When the parent zone is automatically signed by
+      <command>named</command>, you can use <command>dnssec-cds</command>
+      with <command>nsupdate</command> to maintain a delegation as follows.
+      The <filename>dsset-</filename> file allows the script to avoid
+      having to fetch and validate the parent DS records, and it keeps the
+      replay attack protection time.
+    </para>
+<programlisting>
+dig +dnssec +noall +answer $d DNSKEY $d CDNSKEY $d CDS |
+dnssec-cds -u -i -f /dev/stdin -d $f $d |
+nsupdate -l
+</programlisting>
+  </refsection>
+
+  <refsection><info><title>SEE ALSO</title></info>
+
+    <para>
+      <citerefentry>
+        <refentrytitle>dig</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-settime</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>nsupdate</refentrytitle><manvolnum>1</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9 Administrator Reference Manual</citetitle>,
+      <citetitle>RFC 7344</citetitle>.
+    </para>
+
+  </refsection>
+
+</refentry>

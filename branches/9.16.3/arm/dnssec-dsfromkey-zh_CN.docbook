@@ -1,0 +1,344 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<!-- Converted by db4-upgrade version 1.0 -->
+<refentry xmlns:db="http://docbook.org/ns/docbook" version="5.0" xml:id="man.dnssec-dsfromkey">
+  <info>
+    <date>2019-05-08</date>
+  </info>
+  <refentryinfo>
+    <corpname>ISC</corpname>
+    <corpauthor>Internet Systems Consortium, Inc.</corpauthor>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle><application>dnssec-dsfromkey</application></refentrytitle>
+    <manvolnum>8</manvolnum>
+    <refmiscinfo>BIND9</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname><application>dnssec-dsfromkey</application></refname>
+    <refpurpose>DNSSEC DS资源记录生成工具</refpurpose>
+  </refnamediv>
+
+  <docinfo>
+    <copyright>
+      <year>2008</year>
+      <year>2009</year>
+      <year>2010</year>
+      <year>2011</year>
+      <year>2012</year>
+      <year>2014</year>
+      <year>2015</year>
+      <year>2016</year>
+      <year>2018</year>
+      <year>2019</year>
+      <year>2020</year>
+      <holder>Internet Systems Consortium, Inc. ("ISC")</holder>
+    </copyright>
+  </docinfo>
+
+  <refsynopsisdiv>
+    <cmdsynopsis sepchar=" ">
+      <command>dnssec-dsfromkey</command>
+      <group choice="opt">
+      <arg choice="plain"><option>-1</option></arg>
+      <arg choice="plain"><option>-2</option></arg>
+      <arg choice="plain"><option>-a <replaceable class="parameter">alg</replaceable></option></arg>
+      </group>
+      <group>
+      <arg choice="plain" rep="norepeat"><option>-C</option></arg>
+      <arg choice="plain" rep="norepeat"><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
+      </group>
+      <arg choice="opt" rep="norepeat"><option>-T <replaceable class="parameter">TTL</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+      <arg choice="req" rep="norepeat">keyfile</arg>
+    </cmdsynopsis>
+    <cmdsynopsis sepchar=" ">
+      <command>dnssec-dsfromkey</command>
+      <group choice="opt">
+      <arg choice="plain"><option>-1</option></arg>
+      <arg choice="plain"><option>-2</option></arg>
+      <arg choice="plain"><option>-a <replaceable class="parameter">alg</replaceable></option></arg>
+      </group>
+      <group>
+      <arg choice="plain" rep="norepeat"><option>-C</option></arg>
+      <arg choice="plain" rep="norepeat"><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
+      </group>
+      <arg choice="opt" rep="norepeat"><option>-T <replaceable class="parameter">TTL</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat"><option>-A</option></arg>
+      <arg choice="req" rep="norepeat"><option>-f <replaceable class="parameter">file</replaceable></option></arg>
+      <arg choice="opt" rep="norepeat">dnsname</arg>
+   </cmdsynopsis>
+   <cmdsynopsis sepchar=" ">
+     <command>dnssec-dsfromkey</command>
+     <group choice="opt">
+     <arg choice="plain"><option>-1</option></arg>
+     <arg choice="plain"><option>-2</option></arg>
+     <arg choice="plain"><option>-a <replaceable class="parameter">alg</replaceable></option></arg>
+     </group>
+     <group>
+     <arg choice="plain" rep="norepeat"><option>-C</option></arg>
+     <arg choice="plain" rep="norepeat"><option>-l <replaceable class="parameter">domain</replaceable></option></arg>
+     </group>
+     <arg choice="opt" rep="norepeat"><option>-T <replaceable class="parameter">TTL</replaceable></option></arg>
+     <arg choice="opt" rep="norepeat"><option>-v <replaceable class="parameter">level</replaceable></option></arg>
+     <arg choice="opt" rep="norepeat"><option>-c <replaceable class="parameter">class</replaceable></option></arg>
+     <arg choice="opt" rep="norepeat"><option>-K <replaceable class="parameter">directory</replaceable></option></arg>
+     <arg choice="req" rep="norepeat">-s</arg>
+     <arg choice="req" rep="norepeat">dnsname</arg>
+   </cmdsynopsis>
+   <cmdsynopsis sepchar=" ">
+     <command>dnssec-dsfromkey</command>
+     <group choice="opt">
+     <arg choice="plain" rep="norepeat"><option>-h</option></arg>
+     <arg choice="plain" rep="norepeat"><option>-V</option></arg>
+     </group>
+   </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsection><info><title>描述</title></info>
+
+    <para>
+      <command>dnssec-dsfromkey</command>命令输出DS（Delegation Signer，
+      授权签名者）资源记录（RRs），
+      或者带有<option>-C</option>时它输出CDS（子DS）RRs。
+    </para>
+
+    <para>
+      输入密钥可以以一个数字的方式指定。
+    </para>
+
+    <para>
+      缺省时，<command>dnssec-dsfromkey</command>读取一个名字类似
+      <filename>Knnnn.+aaa+iiiii.key</filename>的密钥文件，这是由
+      <command>dnssec-keygen</command>生成的。
+    </para>
+
+    <para>
+      带有<option>-f <replaceable>file</replaceable></option>选项时，
+      <command>dnssec-dsfromkey</command>从一个区文件或部份区文件（可以只
+      包含DNSKEY记录）中读取密钥。
+    </para>
+
+    <para>
+      带有<option>-s</option>选项时，
+      <command>dnssec-dsfromkey</command>读一个
+      <filename>keyset-</filename>文件，这是由
+      <command>dnssec-keygen</command> <option>-C</option>生成的。
+    </para>
+
+  </refsection>
+
+  <refsection><info><title>选项</title></info>
+
+    <variablelist>
+      <varlistentry>
+        <term>-1</term>
+        <listitem>
+          <para>
+	    <option>-a SHA1</option>的缩写。
+	    （注意：生成新的 DS 和 CDS 记录时，不再推荐使用 SHA-1 算法。）
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-2</term>
+        <listitem>
+          <para>
+	    <option>-a SHA-256</option>的缩写。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-a <replaceable class="parameter">algorithm</replaceable></term>
+        <listitem>
+          <para>
+	    指定一个用于转换DNSKEY记录到DS记录的摘要算法。这个选项可以重复，
+            这样就为每个DNSKEY记录生成多个DS记录。
+          </para>
+          <para>
+	    <replaceable>algorithm</replaceable>的值必须是
+	    SHA-1，SHA-256或SHA-384之一。
+	    这些值是大小写不敏感的，而且连字符可以省略。
+            如果没有指定算法，缺省是SHA-256。
+	    （注意：生成新的 DS 和 CDS 记录时，不再推荐使用 SHA-1 算法。）
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-A</term>
+        <listitem>
+          <para>
+            当生成DS记录时包含ZSK。没有这个选项时，只有具有KSK标志的
+            密钥被转换为DS记录并打印。
+            仅用于<option>-f</option>区文件模式。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-c <replaceable class="parameter">class</replaceable></term>
+        <listitem>
+          <para>
+	    指定DNS类（缺省是IN），仅用于<option>-s</option>密钥集合
+            中或者<option>-f</option>区文件模式。
+          </para>
+	  </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-C</term>
+        <listitem>
+          <para>
+            生成CDS记录而不是DS记录。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-f <replaceable class="parameter">file</replaceable></term>
+        <listitem>
+          <para>
+            区文件模式：<command>dnssec-dsfromkey</command>的最终
+            <replaceable>dnsname</replaceable>参数是一个其主文件可以
+            从<option>file</option>中读取的区的DNS域名。
+            如果区名与<option>file</option>相同，这个参数可以忽略。
+          </para>
+          <para>
+            如果<replaceable>file</replaceable>为<literal>"-"</literal>，
+            区数据将从标准输入读入。这使得使用<command>dig</command>命令
+            的输出作为输入成为可能，例如：
+          </para>
+          <para>
+            <userinput>dig dnskey example.com | dnssec-dsfromkey -f - example.com</userinput>
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-h</term>
+        <listitem>
+          <para>
+            打印用法信息。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-K <replaceable class="parameter">directory</replaceable></term>
+        <listitem>
+          <para>
+            在<option>directory</option>中查找密钥文件或者
+            <filename>keyset-</filename>文件。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-s</term>
+        <listitem>
+          <para>
+            密钥集合模式：<command>dnssec-dsfromkey</command>的最终
+            <replaceable>dnsname</replaceable>参数是DNS域名，用于
+            定位一个<filename>keyset-</filename>文件。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-T <replaceable class="parameter">TTL</replaceable></term>
+        <listitem>
+          <para>
+            指定DS记录的TTL。缺省时TTL是省略的。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-v <replaceable class="parameter">level</replaceable></term>
+        <listitem>
+          <para>
+	    设置调试级别。
+          </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>-V</term>
+        <listitem>
+          <para>
+            打印版本信息。
+          </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsection>
+
+  <refsection><info><title>例子</title></info>
+    <para>
+      要从<userinput>Kexample.com.+003+26160</userinput>密钥文件（keyfile）
+      名构建SHA-256 DS资源记录，你可以执行下列命令：
+    </para>
+    <para><userinput>dnssec-dsfromkey -2 Kexample.com.+003+26160</userinput>
+    </para>
+    <para>
+      命令将输出类似下面的内容：
+    </para>
+    <para><userinput>example.com. IN DS 26160 5 2 3A1EADA7A74B8D0BA86726B0C227AA85AB8BBD2B2004F41A868A54F0C5EA0B94</userinput>
+    </para>
+
+  </refsection>
+
+  <refsection><info><title>文件</title></info>
+
+    <para>
+      密钥文件可以由密钥标识<filename>Knnnn.+aaa+iiiii</filename>
+      或者由
+      <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      所生成的完整文件名<filename>Knnnn.+aaa+iiiii.key</filename>来指定。
+    </para>
+    <para>
+      密钥集合文件名是从<option>directory</option>，字符串
+      <filename>keyset-</filename>和<option>dnsname</option>中构建的。
+    </para>
+  </refsection>
+
+  <refsection><info><title>注意</title></info>
+
+    <para>
+      即使文件存在，一个密钥文件错误也会给出一个"文件不存在"消息。
+    </para>
+  </refsection>
+
+  <refsection><info><title>参见</title></info>
+    <para><citerefentry>
+        <refentrytitle>dnssec-keygen</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citerefentry>
+        <refentrytitle>dnssec-signzone</refentrytitle><manvolnum>8</manvolnum>
+      </citerefentry>,
+      <citetitle>BIND 9管理员参考手册</citetitle>,
+      <citetitle>RFC 3658</citetitle> (DS RRs),
+      <citetitle>RFC 4509</citetitle> (SHA-256 for DS RRs),
+      <citetitle>RFC 6605</citetitle> (SHA-384 for DS RRs),
+      <citetitle>RFC 7344</citetitle> (CDS and CDNSKEY RRs).
+    </para>
+  </refsection>
+
+</refentry>

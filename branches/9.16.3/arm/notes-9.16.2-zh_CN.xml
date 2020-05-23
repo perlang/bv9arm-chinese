@@ -1,0 +1,73 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.16.2"><info><title>BIND 9.16.2 注记</title></info>
+
+  <section xml:id="relnotes-9.16.2-security"><info><title>安全修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          当 BIND 9 被配置为一个转发服务器时，DNS 重绑定保护失效。由
+          Tobias Klein 发现并负责地报告。 [GL #1574]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.2-known"><info><title>已知问题</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          我们收到一些报告，在某些环境下，接收一个 IXFR 时可能导致对请求的处理
+          显著变慢。其中一些与 RPZ 处理相关，这在新版本中已被修订（参见下面）。
+          其它似乎发生在 NSEC3 相关的变化中（例如一个操作员修改了用于散列计算中
+          的 NSEC3 salt）。这些正在研究中。 [GL #1685]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.2-changes"><info><title>特性变化</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          先前的 DNSSEC 签名统计使用了大量的内存。每个区要跟踪的密钥数目减少到
+          四个，这对 99% 的全签名区已经足够。 [GL #1179]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.2-bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          当一个 RPZ 策略区通过区传送更新且有大量记录被删除时，
+          <command>named</command>可能有一小段时间，即从 RPZ 概要数据库中
+          删除名字这段时间，没有响应。
+          现在这个数据库经过一个较长的时间段就会增量地清理，减少了这个延迟。
+          [GL #1447]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          当试图从<command>auto-dnssec maintain</command>到基于
+          <command>dnssec-policy</command>迁移一个已签名的区时，
+          已存在的密钥会立即被删掉并被新的密钥所替代。
+          由于密钥轮转计时限制未被遵守，可能某些客户端无法验证响应，
+          直到所有的旧 DNSSEC 信息都从缓存中过期。
+          BIND 现在查找现存密钥的时间元数据并使其并入 DNS 策略操作。 [GL #1706]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+</section>

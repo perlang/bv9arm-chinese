@@ -1,0 +1,12 @@
+# This file must follow /bin/sh rules.  It is imported directly via
+# configure.
+#
+PRODUCT=BIND
+DESCRIPTION="（稳定版）"
+MAJORVER=9
+MINORVER=16
+PATCHVER=3
+RELEASETYPE=
+RELEASEVER=
+EXTENSIONS=
+DOCVERSION="2020052301"

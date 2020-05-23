@@ -1,0 +1,129 @@
+<!--
+ - Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+ -
+ - This Source Code Form is subject to the terms of the Mozilla Public
+ - License, v. 2.0. If a copy of the MPL was not distributed with this
+ - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ -
+ - See the COPYRIGHT file distributed with this work for additional
+ - information regarding copyright ownership.
+-->
+
+<section xml:id="relnotes-9.16.3"><info><title>BIND 9.16.3 注记</title></info>
+
+  <section xml:id="relnotes-9.16.3-security"><info><title>安全修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          为阻止服务器资源被一个恶意配置的域耗尽，在终止递归之前可由一个请求
+          触发的递归请求数量有了更多的限制。根和顶级域服务器不再豁免于
+          <command>max-recursion-queries</command>限制之外。
+          对每个域，获取缺失的名字服务器地址记录被限制为4。
+          这个问题在 CVE-2020-8616 中公布。 [GL #1388]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          将一个 TSIG BADTIME 响应当做一个请求重新发送可能触发一个
+          断言失败。这个在 CVE-2020-8617 中公布。 [GL #1703]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.3-known"><info><title>已知问题</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          BIND 在链接到 libuv 1.36 时，启动时会宕掉。这个问题与 libuv 中对
+          recvmmsg() 的支持相关，在 libuv 1.35 中首次出现。这个问题在
+          libuv 1.37 中解决了，但是相关的 libuv 代码进行了修改，要求在库的初始化
+          时，为了打开对 recvmmsg() 的支持，需要设置一个特定的标志。
+          本 BIND 版本在需要时设置了这个特定的标志，所以 BIND 在针对 libuv 1.35
+          或 libuv >= 1.37 编译时开启了对 recvmmsg() 的支持；libuv 1.36 不能
+          与 BIND 一起使用。 [GL #1761] [GL #1797]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.3-changes"><info><title>特性变化</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          BIND 9 不再为 UDP 套接字设置接收/发送缓冲区大小，
+          而是依赖系统缺省值。 [GL #1713]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          缺省的 rwlock 实现被修改为回退到原生的 BIND 9 rwlock 实现。 [GL #1753]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          原生 PKCS#11 EdDSA 实现被更新到 PKCS#11 v3.0，这样就又可以使用了。
+          由 Aaron Thompson 贡献。 [GL !3326]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The OpenSSL ECDSA implementation has been updated to support PKCS#11
+          via OpenSSL engine (see engine_pkcs11 from libp11 project). [GL #1534]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          The OpenSSL EdDSA implementation has been updated to support PKCS#11
+          via OpenSSL engine. Please note that an EdDSA-capable OpenSSL engine
+          is required and thus this code is only a proof-of-concept for the time
+          being.
+          由 Aaron Thompson 贡献。 [GL #1763]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          进入 AXFR 区传送中的消息 ID 现在进行一致性检查。
+          对于消息 ID 不一致的流，将记录到日志。 [GL #1674]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section xml:id="relnotes-9.16.3-bugs"><info><title>漏洞修补</title></info>
+    <itemizedlist>
+      <listitem>
+        <para>
+          dnstap 初始化中的一个漏洞可能阻止某些 dnstap 数据被记录，特别是
+          对于递归解析器。 [GL #1795]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          当运行在一个具有 Linux 能力的系统上时，
+          <command>named</command>在启动后会尽快放弃根特权。
+          这将产生一个误导性的日志消息，"unable to set
+          effective uid to 0: Operation not permitted", 这个已被去掉。 [GL #1042] [GL #1090]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          When <command>named-checkconf -z</command> was run, it would sometimes
+          incorrectly set its exit code. It reflected the status of the last
+          view found; if zone-loading errors were found in earlier configured
+          views but not in the last one, the exit code indicated success.
+          Thanks to Graham Clinch. [GL #1807]
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          When built without LMDB support, <command>named</command> failed to
+          restart after a zone with a double quote (") in its name was added
+          with <command>rndc addzone</command>. Thanks to Alberto Fernández.
+          [GL #1695]
+        </para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+</section>

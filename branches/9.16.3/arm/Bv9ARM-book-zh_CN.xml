@@ -4766,9 +4766,9 @@ options {
                   基于时间的<command>interface-interval</command>设置为0。
 		</para>
 		<para>
-		  <command>automatic-interface-scan</command>隐含为网络接口
-		  发现而使用路由套接字（原文：routing sockets），因此，要使
-		  这个特性能够工作，操作系统必须支持路由套接字。
+                  <command>automatic-interface-scan</command>的实现使用了路由套接字
+                  （原文：routing sockets）进行网络接口发现，因此，要使这个特性能够
+                  工作，操作系统必须支持路由套接字。
 		</para>
 	      </listitem>
 	    </varlistentry>

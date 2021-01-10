@@ -4789,7 +4789,6 @@ options {
 		  编译，在一个名为
 		  <filename><replaceable>viewname</replaceable>.nzd</filename>
 		  的LMDB数据库文件中）。
-		  <replaceable>viewname</replaceable> is the name of the
 		  <replaceable>viewname</replaceable>是视图的名字，除非
 		  视图名包含不能用于文件名中的字符，这种情况下使用一个
 		  视图名的加密hash作为替代。

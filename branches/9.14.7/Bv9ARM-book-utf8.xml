@@ -5108,7 +5108,7 @@ options {
                     <userinput>no-auth-recursive</userinput>：当请求
                     中要求递归时（RD=1），与<userinput>no-auth</userinput>
                     时相同，或者在没有要求递归时，与
-		    <userinput>no-auth</userinput>时相同。
+		    <userinput>no</userinput>时相同。
 		  </listitem>
                 </itemizedlist>
 		<para>

@@ -5379,8 +5379,8 @@ options {
 	      <listitem>
 		<para>
                   如果设置，这是一个用于在一个任播集群内生成和验证
-                  EDNS COOKIE选项的共享秘钥。如果未设置，系统将在
-                  启动时生成一个随机秘钥。共享密钥被编码成一个十六进制
+                  EDNS COOKIE选项的共享密钥。如果未设置，系统将在
+                  启动时生成一个随机密钥。共享密钥被编码成一个十六进制
                   字符串，对AES128为128位，对SHA1为160位，对SHA256为
                   256位。
 		</para>
@@ -5752,7 +5752,7 @@ options {
 	      <term><command>check-mx</command></term>
 	      <listitem>
 		<para>
-		  检查MX记录是否与一个IP地址一起出现。缺省值为
+		  检查MX记录是否是指向一个IP地址。缺省值为
 		  <command>warn</command>。其它可能值为<command>fail</command>
 		  和<command>ignore</command>。
 		</para>
@@ -5840,7 +5840,7 @@ options {
 	      <term><command>zero-no-soa-ttl</command></term>
 	      <listitem>
 	        <para>
-		  当给SOA请求返回权威的消极响应时，将所返回的权威部份中的SOA记
+		  当给SOA请求返回权威的否定响应时，将所返回的权威部份中的SOA记
 		  录的TTL值设置为零。缺省是<command>yes</command>。
 	        </para>
 	      </listitem>
@@ -5850,7 +5850,7 @@ options {
 	      <term><command>zero-no-soa-ttl-cache</command></term>
 	      <listitem>
 	        <para>
-		  当为SOA请求返回缓存的消极响应时，将其中TTL值设置为零。缺省是
+		  当缓存一个SOA请求的否定响应时，将其中TTL值设置为零。缺省是
 		  <command>no</command>。
 	        </para>
 	      </listitem>
@@ -11112,7 +11112,7 @@ example.com. NS ns2.example.net.
               密钥的名字。
               如果指定的名字是一个通配符，它服从DNS通配符扩展规范，并且
               规则可以应用到多个个体。当使用一个TKEY交换来创建一个共享
-              密钥时，用于认证TKEY交换的密钥标识将被用作共享秘钥的标识。
+              密钥时，用于认证TKEY交换的密钥标识将被用作共享密钥的标识。
               一些规则类型使用标识与客户端的Kerberos principal
               （例如，<userinput>"host/machine@REALM"</userinput>）或
               Windows realm（<userinput>machine$@REALM</userinput>）匹配。

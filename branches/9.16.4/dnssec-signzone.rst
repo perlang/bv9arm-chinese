@@ -238,10 +238,10 @@ dnssec-signzone - DNSSEC区签名工具
       不再公开或用于对区签名，而不管任何其它元数据。
 
       如果设置了密钥的同步发布日期并且已经过了，就建立同步记录（类
-	  型CDS和/或CDNSKEY）。
+      型CDS和/或CDNSKEY）。
 
       如果设置了密钥的同步删除日期并且已经过了，就删除同步记录（类
-	  型CDS和/或CDNSKEY）。
+      型CDS和/或CDNSKEY）。
 
 **-T** ttl
    为从密钥仓库导入到区中的新DNSKEY记录指定一个TTL。如果未指定，缺

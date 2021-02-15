@@ -66,7 +66,7 @@ BIND 9 配置参考
         一个 IP 端口 ``number``。这个 ``number`` 范围为 0 到 65535，1024 以下端口被限制为以 root 身份运行的进程所使用。在某些情况下星号（``*``）字符用作占位符，以选择大数目的端口。
 
     ``ip_prefix``
-        一个IP网络地址，由一个 ``ip_addr`` 后跟一个斜线 （‘/’）和一个代表掩码位数的数字所指定。 ``ip_addr`` 后面的零将被忽略。例如， ``127/8`` 表示网络 ``127.0.0.0，掩码为 ``255.0.0.0``，``1.2.3.0/28`` 表示网络 ``1.2.3.0``， 掩码为 ``255.255.255.240``。当指定的一个前缀涉及一个IPv6范围地址，这个范围可以被忽略，在这个情况，前缀将会匹配来自任何范围的包。
+        一个IP网络地址，由一个 ``ip_addr`` 后跟一个斜线 （‘/’）和一个代表掩码位数的数字所指定。 ``ip_addr`` 后面的零将被忽略。例如， ``127/8`` 表示网络 ``127.0.0.0`` ，掩码为 ``255.0.0.0`` ， ``1.2.3.0/28`` 表示网络 ``1.2.3.0`` ，掩码为 ``255.255.255.240`` 。当指定的一个前缀涉及一个IPv6范围地址，这个范围可以被忽略，在这个情况，前缀将会匹配来自任何范围的包。
 
     ``key_id``
         一个 ``domain_name``，代表一个共享密钥的名字，用在事务安全中。
@@ -217,7 +217,7 @@ C++风格的注释以两个字符 //（斜线，斜线）开始并持续到一�
    // is a new comment, even though it is logically
    // part of the previous comment.
 
-Shell风格（或者称为perl风格，只要你愿意）的注释以字符#（井号）开始
+Shell风格（或者称为perl风格，如果你愿意）的注释以字符#（井号）开始
 并持续到一行的结束，与C++注释一样。
 例如：
 
@@ -802,7 +802,7 @@ BIND发行版会添加更多的类别。
    ``attach-cache`` 选项也可以在 ``view`` 语句中指定，这种情况下，
    它会覆盖全局的 ``attach-cache`` 选项。
 
-   ``cache_name`` 指定要共享的缓存。当named服务器配置要共享一个缓存的
+   cache_name指定要共享的缓存。当 ``named`` 服务器配置要共享一个缓存的
    视图时，它使用指定的名字为这些共享视图中的第一个视图建立一个缓存。
    其余的视图只是简单地引用已经建立的视图。
 
@@ -1363,7 +1363,7 @@ BIND发行版会添加更多的类别。
    维护，以使每个动作快速发生，每个 ``heartbeat-interval`` 进行一次，理想情况在一
    次连接中完成。它也抑制了一些通常的区维护流量。缺省为 ``no`` 。
       
-   如果在 ``view`` 和 ``zone`` 语句中指定了 ``dialup``选项，会覆盖全局的
+   如果在 ``view`` 和 ``zone`` 语句中指定了 ``dialup`` 选项，会覆盖全局的
    ``dialup`` 选项。
 
    如果区是一个主区，服务器将会向其所有辅发出一个NOTIFY请求（缺省的）。这将会
@@ -1693,7 +1693,7 @@ BIND发行版会添加更多的类别。
          ``bind.keys`` 中的根密钥将被忽略。
 
          无论何时解析器发出请求到EDNS兼容的服务器，它总是设置DO位表示它
-		 可以支持DNSSEC响应，即使 ``dnssec-validation`` 被关闭。
+         可以支持DNSSEC响应，即使 ``dnssec-validation`` 被关闭。
 
 ``validate-except``
    这指定一个域名列表，在这些域名或之下 **不应** 执行DNSSEC验证，无论这些
@@ -2041,7 +2041,7 @@ BIND发行版会添加更多的类别。
 请求地址
 ^^^^^^^^^^^^^
 
-如果不知道一个问题答案，它就会请求其它的名字服务器。 ``query-source``
+如果服务器不知道一个问题答案，它就会请求其它的名字服务器。 ``query-source``
 指定这样的请求所使用的地址和端口。对通过IPv6发出的请求，有一个单独的
 ``query-source-v6`` 选项。如果 ``address`` 为 ``*`` （星号）或被省略，
 就使用通配符IP地址（ ``INADDR_ANY`` ）。
@@ -2755,10 +2755,6 @@ UDP端口列表
    这个值设置得越小，就会鼓励越多的TCP流量到达名字服务器。
 
 ``masterfile-format``
-   This statement sets the ``masterfile-format`` for all zones, but can
-   be overridden on a per-zone or per-view basis by including a
-   ``masterfile-format`` statement within the ``zone`` or ``view`` block
-   in the configuration file.
    这个指定区文件的格式（参见 :ref:`zonefile_format` ）。缺省值是 ``text`` ，
    即标准的文本表示，除非对辅区，对后者缺省值为 ``raw`` 。 ``text`` 之外的
    文件格式一般是用 ``named-compilezone`` 工具生成，或由 ``named`` 导出。
@@ -2993,12 +2989,10 @@ UDP端口列表
    这都是内建空区。这使它们能够返回树中对更深一级的引用。
 
 ``empty-server``
-   这个指定出现在空区的SOA记录中的服务器名字。如果未指定，就使用区的名字。
+   这个指定出现在空区的返回的SOA记录中的服务器名字。如果未指定，就使用区的名字。
 
 ``empty-contact``
-   This specifies the contact name that appears in the returned SOA record for
-   empty zones. If none is specified, "." is used.
-   这个指定出现在空区的SOA记录中的联系人名字。如果未指定，就使用“.”。
+   这个指定出现在空区的返回的SOA记录中的联系人名字。如果未指定，就使用“.”。
 
 ``empty-zones-enable``
    这个打开或关闭所有的空区。缺省是打开的。
@@ -3701,7 +3695,7 @@ http://127.0.0.1:8888/json/v1/traffic（流量大小）。
 签，算法，摘要类型和十六进制表示的密钥摘要。这与DS记录的文本表示相同。
 空格、制表符、换行和回车字符都被忽略。
 
-使用 ``static-key`` 或 ``static-ds`` 配置的信任锚时不可变的，而使用
+使用 ``static-key`` 或 ``static-ds`` 配置的信任锚是不可变的，而使用
 ``initial-key`` 或 ``initial-ds`` 配置的密钥可以保持自动更新，而无需
 解析器操作员的干预。（ ``static-key`` 中的密钥与使用已废弃的
 ``trusted-keys`` 语句配置的密钥是一致的。）

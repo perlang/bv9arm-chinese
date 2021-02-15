@@ -170,7 +170,7 @@
 
    ``dig @server domain query-type query-class``
 
-   关于更多的可用命令和选项的清单，参见 ``dig`` 的帮助页。
+   关于更多的可用命令和选项的清单，参见 ``dig`` 的手册页。
 
 ``host``
    ``host`` 工具强调简单和易用。缺省情况下，
@@ -179,7 +179,7 @@
 
    ``host [-aCdlnrsTwv][-c class][-N ndots][-t type][-W timeout][-R retries][-m flag][-4][-6] hostname [server]``
 
-   关于更多的可用命令和选项的清单，参见 ``host`` 的帮助页。
+   关于更多的可用命令和选项的清单，参见 ``host`` 的手册页。
 
 ``nslookup``
    ``nslookup`` 有两种模式：交互式和非交互式。
@@ -230,7 +230,7 @@
 
    ``rndc [-c config][-s server][-p port][-y key] command [command...]``
 
-   于可用的rndc命令细节，参见 :ref:`man_rndc` 。
+   关于可用的 ``rndc`` 命令细节，参见 :ref:`man_rndc` 。
 
    ``rndc`` 需要一个配置文件，由于所有与服务器的通信都使用依赖共享密钥
    的数字签名来认证，并且没有其它方式可以比配置文件提供更好的保密方式。

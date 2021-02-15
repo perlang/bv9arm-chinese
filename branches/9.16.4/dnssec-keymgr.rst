@@ -25,7 +25,7 @@ dnssec-keymgr - 为一个基于一个已定义策略的区确保正确的DNSKEY�
 描述
 ~~~~~~~~~~~
 
-``dnssec-keymgr`` 是一个高级Python包裹以使BIND处理区的密钥轮转
+``dnssec-keymgr`` 是一个高级Python外包装以使BIND处理区的密钥轮转
 进程更加容易。它使用BIND命令操纵DNSSEC密钥元数据：
 ``dnssec-keygen`` 和 ``dnssec-settime`` 。
 

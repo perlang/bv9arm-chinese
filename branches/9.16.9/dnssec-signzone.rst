@@ -1,0 +1,330 @@
+.. 
+   Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+   
+   This Source Code Form is subject to the terms of the Mozilla Public
+   License, v. 2.0. If a copy of the MPL was not distributed with this
+   file, you can obtain one at https://mozilla.org/MPL/2.0/.
+   
+   See the COPYRIGHT file distributed with this work for additional
+   information regarding copyright ownership.
+
+..
+   Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+
+   This Source Code Form is subject to the terms of the Mozilla Public
+   License, v. 2.0. If a copy of the MPL was not distributed with this
+   file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+   See the COPYRIGHT file distributed with this work for additional
+   information regarding copyright ownership.
+
+
+.. highlight: console
+
+.. _man_dnssec-signzone:
+
+dnssec-signzone - DNSSEC区签名工具
+------------------------------------------
+
+概要
+~~~~~~~~
+
+:program:`dnssec-signzone` [**-a**] [**-c** class] [**-d** directory] [**-D**] [**-E** engine] [**-e** end-time] [**-f** output-file] [**-g**] [**-h**] [**-i** interval] [**-I** input-format] [**-j** jitter] [**-K** directory] [**-k** key] [**-L** serial] [**-M** maxttl] [**-N** soa-serial-format] [**-o** origin] [**-O** output-format] [**-P**] [**-Q**] [**-q**] [**-R**] [**-S**] [**-s** start-time] [**-T** ttl] [**-t**] [**-u**] [**-v** level] [**-V**] [**-X** extended end-time] [**-x**] [**-z**] [**-3** salt] [**-H** iterations] [**-A**] {zonefile} [key...]
+
+描述
+~~~~~~~~~~~
+
+``dnssec-signzone`` 签名一个区。它生成NSEC和RRSIG记录并产生一个区的
+签名版本。来自这个签名区的授权的安全状态（即，子区是否安全）是由是
+否存在各个子区的 ``keyset`` 文件而决定的。
+
+选项
+~~~~~~~
+
+**-a**
+   验证所有生成的签名。
+
+**-c** class
+   指定区的DNS类。
+
+**-C**
+   兼容模式：在对一个区签名时，除了生成 ``dsset-zonename`` 之外还生
+   成 ``keyset-zonename`` ，用于旧版本的 ``dnssec-signzone`` 。
+
+**-d** directory
+   在 ``directory`` 中查找 ``dsset-`` 或 ``keyset-`` 文件。
+
+**-D**
+   输出那些仅由 ``dnssec-signzone`` 自动管理的记录类型，即RRSIG，
+   NSEC，NSEC3和NSEC3PARAM记录。如果使用了智能签名（ ``-S`` ），也
+   包含DNSKEY记录。结果文件可以用 ``$INCLUDE`` 包含进原始的区文件中。
+   这个选项不能和 ``-O raw`` ， ``-O map`` 或序列号更新一起使用。
+
+**-E** engine
+   如果适用，指定要使用的加密硬件，例如用于签名的一个安全密钥存储。
+
+   当BIND使用带OpenSSL PKCS#11支持构建时，这个缺省值是字符串“pkcs11”，
+   它标识一个可以驱动一个加密加速器或硬件服务模块的OpenSSL引擎，当
+   BIND使用带原生PKCS#11加密（--enable-native-pkcs11）构建时，它缺
+   省是由“--with-pkcs11”指定的PKCS#11提供者库的路径。
+
+**-g**
+   为来自 ``dsset-`` 或 ``keyset-`` 文件的子区生成DS记录。已经存在的
+   DS将被删除。
+
+**-K** directory
+   密钥仓库：为搜索DNSSEC密钥指定一个目录。如果未指定，缺省为当前目录。
+
+**-k** key
+   将指定的密钥当作密钥签名密钥并忽略所有密钥标志。这个选项可以指定
+   多次。
+
+**-M** maxttl
+   为签名区设置最大TTL。输入区中任何超过maxttl的TTL在输出中将被减小到
+   maxttl。这为签名区中最大可能的TTL提供了确定性，这对知道何时轮转密
+   钥是非常有用的，因为这是被解析器取走的签名能够在解析器缓存中保存的
+   最长可能的时间，使用这个选项签名的区应该配置成在 ``named.conf`` 中
+   使用一个一致的 ``max-zone-ttl`` 。（注意：这个选项与 ``-D`` 不兼容，
+   因为它修改了输出区中的非DNSSEC数据。）
+
+**-s** start-time
+   指定所生成的RRSIG记录生效的日期和时间。这个可以是一个绝对或相对时
+   间。一个绝对开始时间由一个YYYYMMDDHHMMSS格式的数所指明；
+   20000530144500表示2000年5月30日14:45:00（UTC）。一个相对开始时间由
+   +N所指明，N是从当前时间开始的秒数。如果没有指定 ``start-time`` ，
+   就使用当前时间减1小时（允许时钟误差）。
+
+**-e** end-time
+   指定所生成的RRSIG记录过期的日期和时间。与 ``start-time`` 一样，一
+   个绝对时间由YYYYMMDDHHMMSS格式所指明。一个相对于开始时间的时间由
+   +N所指明，即自开始时间之后N秒。一个相对于当前时间的时间由now+N所
+   指明。如果没有指定 ``end-time`` ，就使用开始时间30天后作为缺省值。
+   ``end-time`` 必须比 ``start-time`` 更晚。
+
+**-X** extended end-time
+   指定为DNSKEY资源记录集而生成的RRSIG记录的过期日期和时间。这是用
+   于DNSKEY签名的有效时间需要比其它记录签名的有效时间持续更长的情
+   况；例如，当KSK的私密部份被离线保存并且需要手动刷新KSK签名时。
+
+   与 ``start-time`` 一样，一个绝对时间由YYYYMMDDHHMMSS格式所指明。
+   一个相对于开始时间的时间由+N所指明，即自开始时间之后N秒。一个相
+   对于当前时间的时间由now+N所指明。如果没有指定
+   ``extended end-time`` ，就使用 ``end-time`` 的值作为缺省值。（
+   相应地， ``end-time`` 的缺省值为开始时间的30天后。）
+   ``extended end-time`` 必须比 ``start-time`` 更晚。
+
+**-f** output-file
+   包含签名区的输出文件的名字。缺省是在输入文件名后面添加
+   ``.signed`` 。如果 ``output-file`` 被设置成 ``"-"`` ，签名区将
+   被写到标准输出，以缺省的输出格式“full”。
+
+**-h**
+   打印 ``dnssec-signzone`` 的选项和参数的简短摘要。
+
+**-V**
+   打印版本信息。
+
+**-i** interval
+   当一个先前已签名的区被作为输入，记录可能被再次签名。 ``interval``
+   选项指定作为自当前时间开始的偏移量（以秒计）的循环间隔。如果一个
+   RRSIG记录在这个循环间隔后过期，它会被保留。否则，它被考虑为马上过
+   期，并被替代。
+
+   缺省的循环间隔是签名的结束时间和开始时间之差的四分之一，所以如果
+   既不指定 ``end-time`` ，也不指定 ``start-time`` ， ``dnssec-signzone``
+   生成的签名在30天内有效，并带有7.5天的循环间隔。所以，如果任何现存
+   的RRSIG记录将在7.5天以内过期，它们将会被替代。
+
+**-I** input-format
+   输入区文件的格式。可能的格式是 ``"text"`` （缺省）， ``"raw"`` 和
+   ``"map"`` 。这个选项主要用于动态签名区，这样一个包含动态更新的以
+   非文本格式转储的区文件就可以被直接签名。使用这个选项对非动态区没
+   有意义。
+
+**-j** jitter
+   在使用一个固定的签名生存时间对一个区签名时，所有的RRSIG记录都分配
+   了几乎是同时的签名过期时间。如果区被增量签名，例如，一个先前签过
+   名的区作为输入传递给签名者，所有过期的签名必须在大致相同的时间被
+   重新生成。 ``jitter`` 选项指定了一个抖动窗口，用来随机化签名的过
+   期时间，这样就将增量签名的重生成扩展到一个时间段。
+
+   签名生存时间抖动通过分散缓存过期时间对验证者和服务器也有某种程度
+   的帮助，例如，如果所有的缓冲中都没有大量RRSIG在同一时间过期，就比
+   所有验证者需要在几乎相同的时刻来重新获取记录有更少的拥塞。
+
+**-L** serial
+   当以“raw”或“map”格式输出一个签名区时，在头部中设置“source serial”
+   值以指定序列号。（这个功能预期主要用于测试目的。）
+
+**-n** ncpus
+   指定要使用的线程个数。缺省时，为每个被检测到的CPU绑定一个线程。
+
+**-N** soa-serial-format
+   签名区的SOA序列号格式。可能的格式有 ``"keep"`` （缺省），
+   ``"increment"`` ， ``"unixtime"`` 和 ``"date"`` 。
+
+   ``"keep"``
+      不改变SOA序列号。
+
+   ``"increment"``
+      使用 :rfc:`1982` 算术增加SOA序列号。
+
+   ``"unixtime"``
+      将SOA序列号设置为UNIX纪元以来的秒数。
+
+   ``"date"``
+      将SOA序列号以YYYYMMDDNN的格式设置为今天的日期。
+
+**-o** origin
+   区起点。如果未指定，就使用区名作为起点。
+
+**-O** output-format
+   包含签名区的输出文件的格式。可能的格式为 ``"text"`` （缺省），它
+   是区的标准文本格式； ``"full"`` ，它是以文本输出的适合由外部脚本
+   处理的格式，和 ``"map"`` ， ``"raw"`` 和 ``"raw=N"`` ，它是以二
+   进制格式存储区以便 ``named`` 快速加载。 ``"raw=N"`` 指定raw区文
+   件的格式版本：如果N为0，raw区文件可以被任何版本的named读取；如果
+   N为1，这个文件则只能被9.9.0或更高版本读取。缺省为1。
+
+**-P**
+   关闭签名验证后测试。
+
+   签名验证后测试确保对每个用到的算法都有至少一个非撤销自签名的KSK
+   密钥，所有撤销的KSK都是自签名的，以及区中所有记录都是由这个算法
+   所签名的。这个选项跳过这些测试。
+
+**-Q**
+   删除不再活动的密钥的签名。
+
+   通常情况，当一个以前已经签名的区被作为输入传递给签名者时，并且一
+   个DNSKEY记录被删除且被一个新的所替代时，来自旧密钥的并且仍在其有
+   效期内的签名将被保留。这允许区继续使用缓存中的旧DNSKEY资源记录集
+   来作验证。 ``-Q`` 强制 ``dnssec-signzone`` 删除不再活动的密钥的
+   签名。这使ZSK使用 :rfc:`4641#4.2.1.1`
+   （“Pre-Publish Key Rollover”）中描述的过程进行轮转。
+
+``-q``
+   安静模式：拟制不必要的输出。没有这个选项时，运行
+   ``dnssec-signzone`` 将打印在用的密钥数目，用于验证区是否正确签名
+   的算法，其它状态信息，以及包含签名区的最终文件名。使用这个选项时，
+   输出被拟制，只剩下文件名。
+
+**-R**
+   删除不再公开的密钥的签名。
+
+   这个选项与 ``-Q`` 相似，除了它强制 ``dnssec-signzone`` 从不再公
+   开的密钥签名之外。这使ZSK使用 :rfc:`4641#4.2.1.2`
+   （“Double Signature Zone Signing Key Rollover”）中描述的过程进行
+   轮转。
+
+**-S**
+   智能签名：指示 ``dnssec-signzone`` 在密钥仓库中搜索与被签名区匹
+   配的密钥，如果有合适的还要将其包含到区中。
+
+   当找到了一个密钥时，就检查其计时元数据以决定如何根据以下的规则来
+   使用它。每个后面的规则优先于其之前的规则：
+
+      如果没有为密钥指定计时元数据，密钥被发布在区中并用于对区签名。
+
+      如果设置了密钥的发布日期并且已经到了，密钥就被发布到区中。
+
+      如果设置了密钥的激活日期并且已经到了，密钥就被发布（忽略发布
+      日期） 并用于对区签名。
+
+      如果设置了密钥的撤销日期并且已经到了，并且密钥已被发布，就撤
+      销密钥，已撤销的密钥可用于对区签名。
+
+      如果设置了密钥的停止公开日期或删除日期之一并且已经到了，密钥
+      不再公开或用于对区签名，而不管任何其它元数据。
+
+      如果设置了密钥的同步发布日期并且已经过了，就建立同步记录（类
+      型CDS和/或CDNSKEY）。
+
+      如果设置了密钥的同步删除日期并且已经过了，就删除同步记录（类
+      型CDS和/或CDNSKEY）。
+
+**-T** ttl
+   为从密钥仓库导入到区中的新DNSKEY记录指定一个TTL。如果未指定，缺
+   省是区的SOA记录中的TTL值。当不使用 ``-S`` 签名时这个选项被忽略，
+   因为在那种情况下，不会从密钥仓库导入DNSKEY记录。同样，如果在区
+   顶点存在任何DNSKEY记录时，也会忽略这个选项，在这个情况中，新记
+   录的TTL值将会被设置成与其匹配，或者如果任何被导入的DNSKEY记录有
+   一个缺省的TTL值时也会被忽略。在导入密钥中的TTL值有冲突的情况下，
+   使用时间最短的一个。
+
+**-t**
+   在完成时打印统计结果。
+
+**-u**
+   当对之前已签过名的区重新签名时更新NSEC/NSEC3链。带有这个选项时，
+   一个使用NSEC签名的区可以转换到NSEC3，或者一个使用NSEC3签名的区
+   可以转换为NSEC或其它参数的NSEC3。没有这个选项时，重新签名时，
+   ``dnssec-signzone`` 将维持已存在的链。
+
+**-v** level
+   设置调试级别。
+
+**-x**
+   仅使用密钥签名密钥对DNSKEY，CDNSKEY和CDS资源记录集签名，并忽略
+   来自区签名密钥的签名。（这与 ``named`` 中的
+   ``dnssec-dnskey-kskonly yes;`` 区选项相似。）
+
+**-z**
+   在决定要签名什么东西时，忽略密钥中的KSK标志。这导致有KSK标志的
+   密钥对所有记录签名，而不仅仅是DNSKEY资源记录集。（这与 ``named``
+   中的 ``update-check-ksk no;`` 区选项相似。）
+
+**-3** salt
+   使用给定的十六进制编码的干扰值（salt）生成一个NSEC3链。在生成
+   NSEC3链时，可以使用一个破折号（salt）来指示不使用干扰值（salt）。
+
+**-H** iterations
+   在生成一个NSEC3链时，使用这个循环次数。缺省是10。
+
+**-A**
+   在生成一个NSEC3链时，设置所有NSEC3记录的OPTOUT标志，并且不为不
+   安全的授权生成NSEC3记录。
+
+   使用这个选项两次（例如， ``-AA`` ）关闭所有记录的OPTOUT标志。这
+   在使用 ``-u`` 选项修改一个先前具有OPTOUT集合的NSEC3链时很有用。
+
+**zonefile**
+   包含被签名区的文件。
+
+**key**
+   指定应该使用那个密钥来签名这个区。如果没有指定密钥，会对区进行检
+   查，在区顶点找DNSKEY记录。如果在当前目录找到并与私钥匹配，这个就
+   会用于签名。
+
+例子
+~~~~~~~
+
+下列命令使用由 ``dnssec-keygen`` 所生成的ECDSAP256SHA256密钥
+（Kexample.com.+013+17247）对 ``example.com`` 区签名。因为没有使用
+``-S`` 选项，区的密钥必须在主文件中（ ``db.example.com`` ）。这个
+需要在当前目录查找 ``dsset`` 文件，这样DS记录可以从中导入（ ``-g`` ）。
+
+::
+
+   % dnssec-signzone -g -o example.com db.example.com \
+   Kexample.com.+013+17247
+   db.example.com.signed
+   %
+
+在上述例子中， ``dnssec-signzone`` 创建文件 ``db.example.com.signed`` 。
+这个文件被 ``named.conf`` 文件中的区语句所引用。
+
+这个例子使用缺省参数重新对先前的签名区签名。假定私钥存放在当前目录。
+
+::
+
+   % cp db.example.com.signed db.example.com
+   % dnssec-signzone -o example.com db.example.com
+   db.example.com.signed
+   %
+
+参见
+~~~~~~~~
+
+:manpage:`dnssec-keygen(8)`, BIND 9管理员参考手册, :rfc:`4033`,
+:rfc:`4641`.

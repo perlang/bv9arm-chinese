@@ -22,7 +22,7 @@ copyright = u'2020, Internet Systems Consortium'
 author = u"Internet Systems Consortium \\and 翻译: sunguonian@yahoo.com"
 
 # The full version, including alpha/beta/rc tags
-release = 'BIND 9.16.10（稳定版）'
+release = 'BIND 9.16.11（稳定版）'
 
 
 # -- General configuration ---------------------------------------------------

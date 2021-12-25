@@ -10,32 +10,27 @@
 
 .. _dnssec_troubleshooting:
 
-Basic DNSSEC Troubleshooting
-----------------------------
+基本的DNSSEC排错
+----------------
 
-In this chapter, we cover some basic troubleshooting
-techniques, some common DNSSEC symptoms, and their causes and solutions. This
-is not a comprehensive "how to troubleshoot any DNS or DNSSEC problem"
-guide, because that could easily be an entire book by itself.
+在本章中，我们将介绍一些基本的排障技术，一些常见的DNSSEC症状，以及它们
+的原因和解决方案。这不是一个全面的“如何排除任何DNS或DNSSEC问题”指南，因
+为它本身很容易成为一本书。
 
 .. _troubleshooting_query_path:
 
-Query Path
+查询路径
 ~~~~~~~~~~
 
-The first step in troubleshooting DNS or DNSSEC should be to
-determine the query path. Whenever you are working with a DNS-related issue, it is
-always a good idea to determine the exact query path to identify the
-origin of the problem.
+排除DNS或DNSSEC故障的第一步应该是确定查询路径。无论何时处理与dns相关的
+问题，确定准确的查询路径以确定问题的根源总是一个好主意。
 
-End clients, such as laptop computers or mobile phones, are configured
-to talk to a recursive name server, and the recursive name server may in
-turn forward requests on to other recursive name servers before arriving at the
-authoritative name server. The giveaway is the presence of the
-Authoritative Answer (``aa``) flag in a query response: when present, we know we are talking
-to the authoritative server; when missing, we are talking to a recursive
-server. The example below shows an answer to a query for
-``www.example.com`` without the Authoritative Answer flag:
+终端客户端(如笔记本电脑或移动电话)被配置为与递归名字服务器通信，而递归
+名字服务器在到达权威名字服务器之前，可能转而将请求转发给其它递归名字服
+务器。附属品是在查询响应中出现了权威答案(``aa``)标志：当出现这个标志时，
+我们知道我们正在与权威服务器通信；当没有这个标志时，我们正在与递归服务
+器通信。下面的例子显示了一个对 ``www.example.com`` 查询的答案不带权威答
+案标志：
 
 ::
 
@@ -62,13 +57,11 @@ server. The example below shows an answer to a query for
    ;; WHEN: Wed Mar 18 14:08:16 GMT 2020
    ;; MSG SIZE  rcvd: 88
 
-Not only do we not see the ``aa`` flag, we see an ``ra``
-flag, which indicates Recursion Available. This indicates that the
-server we are talking to (10.53.0.3 in this example) is a recursive name
-server: although we were able to get an answer for
-``www.example.com``, we know that the answer came from somewhere else.
+我们不仅没有看到 ``aa`` 标志，还看到 ``ra`` 标志，表明递归可用。这表明
+我们正在与之通信的服务器(在本例中为10.53.0.3)是一个递归名字服务器：尽管
+我们能够获得 ``www.example.com`` 的答案，但我们知道答案来自其它地方。
 
-If we query the authoritative server directly, we get:
+如果我们直接查询权威服务器，我们得到：
 
 ::
 
@@ -83,31 +76,24 @@ If we query the authoritative server directly, we get:
    ;; WARNING: recursion requested but not available
    ...
 
-The ``aa`` flag tells us that we are now talking to the
-authoritative name server for ``www.example.com``, and that this is not a
-cached answer it obtained from some other name server; it served this
-answer to us right from its own database. In fact,
-the Recursion Available (``ra``) flag is not present, which means this
-name server is not configured to perform recursion (at least not for
-this client), so it could not have queried another name server to get
-cached results.
+``aa`` 标志告诉我们，我们现在正在与 ``www.example.com`` 的权威名字服务
+器进行对话，并且这不是它从其它名字服务器获取的缓存答案；它从自己的数据
+库向我们提供了这个答案。事实上，没有递归可用(``ra``)标志，这意味着这个
+名字服务器没有被配置为执行递归(至少对这个客户机没有)，所以它不可能查询
+另一个名字服务器以获得缓存结果。
 
 .. _troubleshooting_visible_symptoms:
 
-Visible DNSSEC Validation Symptoms
+可见的DNSSEC验证症状
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After determining the query path, it is necessary to
-determine whether the problem is actually related to DNSSEC
-validation. You can use the ``+cd`` flag in ``dig`` to disable
-validation, as described in
-:ref:`how_do_i_know_validation_problem`.
+确定查询路径后，需要确定问题是否实际与DNSSEC验证有关。你可以在 ``dig``
+中使用 ``+cd`` 标志来禁用验证，如
+:ref:`how_do_i_know_validation_problem` 中所述。
 
-When there is indeed a DNSSEC validation problem, the visible symptoms,
-unfortunately, are very limited. With DNSSEC validation enabled, if a
-DNS response is not fully validated, it results in a generic
-SERVFAIL message, as shown below when querying against a recursive name
-server at 192.168.1.7:
+当确实存在DNSSEC验证问题时，不幸的是，可见的症状非常有限。启用了DNSSEC
+验证后，如果没有完全验证DNS响应，就会产生一个通用的SERVFAIL消息，如下所
+示的查询位于192.168.1.7的递归名字服务器：
 
 ::
 
@@ -131,7 +117,7 @@ server at 192.168.1.7:
    ;; WHEN: Wed Mar 18 15:12:49 GMT 2020
    ;; MSG SIZE  rcvd: 72
 
-With ``delv``, a "resolution failed" message is output instead:
+使用 ``delv`` ，将输出一条“解析失败”消息：
 
 ::
 
@@ -139,44 +125,39 @@ With ``delv``, a "resolution failed" message is output instead:
    ;; fetch: www.example.org/A
    ;; resolution failed: SERVFAIL
    
-BIND 9 logging features may be useful when trying to identify
-DNSSEC errors.
+在试图识别DNSSEC错误时，BIND 9的日志特性可能是有用的。
 
 .. _troubleshooting_logging:
 
-Basic Logging
+基本的日志
 ~~~~~~~~~~~~~
 
-DNSSEC validation error messages show up in ``syslog`` as a
-query error by default. Here is an example of what it may look like:
+DNSSEC验证错误消息缺省是作为一个查询错误显示在 ``syslog`` 中。下面是一
+个可能的例子：
 
 ::
 
    validating www.example.org/A: no valid signature found
    RRSIG failed to verify resolving 'www.example.org/A/IN': 10.53.0.2#53
 
-Usually, this level of error logging is sufficient.
-Debug logging, described in
-:ref:`troubleshooting_logging_debug`, gives information on how
-to get more details about why DNSSEC validation may have
-failed.
+通常，这种级别的错误日志记录就足够了。在
+:ref:`troubleshooting_logging_debug` 中描述的调试日志提供了如何获得更多
+关于为什么DNSSEC验证可能失败的细节信息。
 
 .. _troubleshooting_logging_debug:
 
-BIND DNSSEC Debug Logging
+BIND DNSSEC调试日志
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A word of caution: before you enable debug logging, be aware that this
-may dramatically increase the load on your name servers. Enabling debug
-logging is thus not recommended for production servers.
+警告：在启用调试日志之前，请注意这可能会极大地增加名称服务器的负载。因
+此，不建议在生产服务器上启用调试日志。
 
-With that said, sometimes it may become necessary to temporarily enable
-BIND debug logging to see more details of how and whether DNSSEC is
-validating. DNSSEC-related messages are not recorded in ``syslog`` by default,
-even if query log is enabled; only DNSSEC errors show up in ``syslog``.
+虽然如此，有时需要临时开启BIND调试日志，以查看DNSSEC如何验证以及是否验
+证的更多细节。DNSSEC相关的消息缺省不记录在 ``syslog`` 中，即使启用了查
+询日志；只有DNSSEC错误显示在 ``syslog`` 中。
 
-The example below shows how to enable debug level 3 (to see full DNSSEC
-validation messages) in BIND 9 and have it sent to ``syslog``:
+下面的示例展示了如何在BIND 9中启用调试级别3(查看完整的DNSSEC验证消息)，
+并将其发送到 ``syslog`` ：
 
 ::
 
@@ -189,8 +170,8 @@ validation messages) in BIND 9 and have it sent to ``syslog``:
        category dnssec { dnssec_log; };
    };
 
-The example below shows how to log DNSSEC messages to their own file
-(here, ``/var/log/dnssec.log``):
+下面这个例子展示了如何将DNSSEC消息记录到自己的文件中（这里是
+``/var/log/dnssec.log`` ）：
 
 ::
 
@@ -202,10 +183,8 @@ The example below shows how to log DNSSEC messages to their own file
        category dnssec { dnssec_log; };
    };
 
-After turning on debug logging and restarting BIND, a large
-number of log messages appear in
-``syslog``. The example below shows the log messages as a result of
-successfully looking up and validating the domain name ``ftp.isc.org``.
+打开调试日志并重新启动BIND后，大量的日志消息出现在 ``syslog`` 中。下面
+的例子显示了成功查找和验证域名 ``ftp.isc.org`` 后的日志消息。
 
 ::
 
@@ -252,33 +231,29 @@ successfully looking up and validating the domain name ``ftp.isc.org``.
    validating ftp.isc.org/A: verify rdataset (keyid=27566): success
    validating ftp.isc.org/A: marking as secure, noqname proof not needed
 
-Note that these log messages indicate that the chain of trust has been
-established and ``ftp.isc.org`` has been successfully validated.
+请注意，这些日志消息表明信任链已经建立，并且 ``ftp.isc.org`` 已经成功验
+证。
 
-If validation had failed, you would see log messages indicating errors.
-We cover some of the most validation problems in the next section.
+如果验证失败，您将看到指示错误的日志消息。我们将在下一节中讨论一些最重
+要的验证问题。
 
 .. _troubleshooting_common_problems:
 
-Common Problems
+普通问题
 ~~~~~~~~~~~~~~~
 
 .. _troubleshooting_security_lameness:
 
-Security Lameness
+安全性残缺
 ^^^^^^^^^^^^^^^^^
 
-Similar to lame delegation in traditional DNS, security lameness refers to the
-condition when the parent zone holds a set of DS records that point to
-something that does not exist in the child zone. As a result,
-the entire child zone may "disappear," having been marked as bogus by
-validating resolvers.
+与传统DNS中的残缺授权类似，安全残缺是指父区持有一组DS记录，它们指向子区
+中不存在的东西。结果，整个子区域可能“消失”，因为验证解析器将其标记为伪
+区。
 
-Below is an example attempting to resolve the A record for a test domain
-name ``www.example.net``. From the user's perspective, as described in
-:ref:`how_do_i_know_validation_problem`, only a SERVFAIL
-message is returned. On the validating resolver, we see the
-following messages in ``syslog``:
+下面是一个尝试解析测试域名 ``www.example.net`` 的A记录的示例。从用户的
+角度来看，如在 :ref:`how_do_i_know_validation_problem` 中所述，只返回一
+个SERVFAIL消息。在验证解析器上，我们在 ``syslog`` 中看到以下消息：
 
 ::
 
@@ -286,9 +261,8 @@ following messages in ``syslog``:
    named[126063]: no valid RRSIG resolving 'example.net/DNSKEY/IN': 10.53.0.2#53
    named[126063]: broken trust chain resolving 'www.example.net/A/IN': 10.53.0.2#53
 
-This gives us a hint that it is a broken trust chain issue. Let's take a
-look at the DS records that are published for the zone (with the keys
-shortened for ease of display):
+这给了我们一个提示，这是一个破裂的信任链问题。让我们看一下为该区发布的
+DS记录(为了便于显示，将密钥缩短)：
 
 ::
 
@@ -315,13 +289,10 @@ shortened for ease of display):
    ;; WHEN: Thu Mar 19 11:54:36 GMT 2020
    ;; MSG SIZE  rcvd: 116
 
-Next, we query for the DNSKEY and RRSIG of ``example.net`` to see if
-there's anything wrong. Since we are having trouble validating, we
-can use the ``+cd`` option to temporarily disable checking and return
-results, even though they do not pass the validation tests. The
-``+multiline`` option tells ``dig`` to print the type, algorithm type,
-and key id for DNSKEY records. Again,
-some long strings are shortened for ease of display:
+接下来，我们查询 ``example.net`` 的DNSKEY和RRSIG，看看是否有什么错误。
+由于在验证时遇到了问题，我们可以使用 ``+cd`` 选项暂时禁用检查并返回结果，
+即使这些结果没有通过验证测试。 ``+multiline`` 选项告诉 ``dig`` 打印
+DNSKEY记录的类型、算法类型和密钥id。同样，一些长字符串被缩短以方便显示：
 
 ::
 
@@ -360,38 +331,30 @@ some long strings are shortened for ease of display:
    ;; WHEN: Thu Mar 19 13:22:40 GMT 2020
    ;; MSG SIZE  rcvd: 962
 
-Here is the problem: the parent zone is telling the world that
-``example.net`` is using the key 14956, but the authoritative server
-indicates that it is using keys 27247 and 35328. There are several
-potential causes for this mismatch: one possibility is that a malicious
-attacker has compromised one side and changed the data. A more likely
-scenario is that the DNS administrator for the child zone did not upload
-the correct key information to the parent zone.
+这里有一个问题：父区告诉世界 ``example.net`` 正在使用密钥14956，但是权
+威服务器指出它正在使用密钥27247和35328。造成这种不匹配的潜在原因有几个：
+一种可能是恶意攻击者破坏了其中一方并更改了数据。更可能的情况是，子区的
+DNS管理员没有将正确的密钥信息上载到父区。
 
 .. _troubleshooting_incorrect_time:
 
-Incorrect Time
+不正确的时间
 ^^^^^^^^^^^^^^
 
-In DNSSEC, every record comes with at least one RRSIG, and each RRSIG
-contains two timestamps: one indicating when it becomes valid, and
-one when it expires. If the validating resolver's current system time does
-not fall within the two RRSIG timestamps, error messages
-appear in the BIND debug log.
+在DNSSEC中，每个记录至少有一个RRSIG，每个RRSIG包含两个时间戳：一个指示
+它何时生效，另一个指示它何时过期。如果验证解析器的当前系统时间不在两个
+RRSIG时间戳之间，则错误消息将出现在BIND调试日志中。
 
-The example below shows a log message when the RRSIG appears to have
-expired. This could mean the validating resolver system time is
-incorrectly set too far in the future, or the zone administrator has not
-kept up with RRSIG maintenance.
+下面的示例显示了RRSIG似乎已经过期时的一条日志消息。这可能意味着验证解析
+器系统时间设置得不正确，在太远的将来时间，或者区管理员没有保持RRSIG的维
+护。
 
 ::
 
    validating example.com/DNSKEY: verify failed due to bad signature (keyid=19036): RRSIG has expired
 
-The log below shows that the RRSIG validity period has not yet begun. This could mean
-the validation resolver's system time is incorrectly set too far in the past, or
-the zone administrator has incorrectly generated signatures for this
-domain name.
+下面的日志显示RRSIG的有效期还没有开始。这可能意味着验证解析器的系统时间
+设置得不正确，在太远的过去时间，或者区管理员错误地为该域名生成了签名。
 
 ::
 
@@ -399,12 +362,11 @@ domain name.
 
 .. _troubleshooting_unable_to_load_keys:
 
-Unable to Load Keys
+无法加载密钥
 ^^^^^^^^^^^^^^^^^^^
 
-This is a simple yet common issue. If the key files are present but
-unreadable by ``named`` for some reason, the ``syslog`` returns clear error
-messages, as shown below:
+这是一个简单但普遍的问题。如果存在密钥文件，但由于某种原因 ``named`` 无
+法读取， ``syslog`` 将返回明确的错误消息，如下所示：
 
 ::
 
@@ -413,9 +375,8 @@ messages, as shown below:
    named[32447]: dns_dnssec_findmatchingkeys: error reading key file Kexample.com.+008+17694.private: permission denied
    named[32447]: zone example.com/IN (signed): next key event: 27-Nov-2014 20:04:36.521
 
-However, if no keys are found, the error is not as obvious. Below shows
-the ``syslog`` messages after executing ``rndc
-reload`` with the key files missing from the key directory:
+但是，如果没有找到密钥，错误就不那么明显了。下面显示了在密钥目录中缺少
+密钥文件时，执行 ``rndc reload`` 后， ``syslog`` 的消息：
 
 ::
 
@@ -433,9 +394,8 @@ reload`` with the key files missing from the key directory:
    named[32516]: zone example.com/IN (signed): reconfiguring zone keys
    named[32516]: zone example.com/IN (signed): next key event: 27-Nov-2014 20:07:09.292
 
-This happens to look exactly the same as if the keys were present and
-readable, and appears to indicate that ``named`` loaded the keys and signed the zone. It
-even generates the internal (raw) files:
+这恰好与密钥存在且可读的情况完全相同，并且似乎表明 ``named`` 加载了密钥
+并签名了区。它甚至会生成内部(原始)文件：
 
 ::
 
@@ -443,8 +403,7 @@ even generates the internal (raw) files:
    # ls
    example.com.db  example.com.db.jbk  example.com.db.signed
 
-If ``named`` really loaded the keys and signed the zone, you should see
-the following files:
+如果 ``named`` 真的加载了密钥并签名了区，您应该会看到以下文件：
 
 ::
 
@@ -452,44 +411,37 @@ the following files:
    # ls
    example.com.db  example.com.db.jbk  example.com.db.signed  example.com.db.signed.jnl
 
-So, unless you see the ``*.signed.jnl`` file, your zone has not been
-signed.
+所以，除非你看到 ``*.signed.jnl`` 文件，您的区还未签名。
 
 .. _troubleshooting_invalid_trust_anchors:
 
-Invalid Trust Anchors
-^^^^^^^^^^^^^^^^^^^^^
+无效的信任锚
+^^^^^^^^^^^^
 
-In most cases, you never need to explicitly configure trust
-anchors. ``named`` supplies the current root trust anchor and,
-with the default setting of ``dnssec-validation``, updates it on the
-infrequent occasions when it is changed.
+在大多数情况下，您从不需要显式配置信任锚。 ``named`` 提供了当前的根信任
+锚，通过缺省的 ``dnssec-validation`` 设置，当根变化时，也会更新这个信任
+链，这种情况很少发生。
 
-However, in some circumstances you may need to explicitly configure
-your own trust anchor. As we saw in the :ref:`trust_anchors_description`
-section, whenever a DNSKEY is received by the validating resolver, it is
-compared to the list of keys the resolver explicitly trusts to see if
-further action is needed. If the two keys match, the validating resolver
-stops performing further verification and returns the answer(s) as
-validated.
+然而，在某些情况下，您可能需要显式地配置自己的信任锚。正如我们在
+:ref:`trust_anchors_description` 一节中看到的，每当验证解析器接收到一条
+DNSKEY时，它就会与解析器显式信任的密钥列表进行比较，以确定是否需要进一
+步的操作。如果这两个密钥匹配，验证解析器将停止执行进一步的验证，并返回
+经过验证的答案。
 
-But what if the key file on the validating resolver is misconfigured or
-missing? Below we show some examples of log messages when things are not
-working properly.
+但是，如果验证解析器上的密钥文件配置错误或丢失怎么办？下面我们展示一些
+当情况不支持时的日志消息的 例子。
 
-First of all, if the key you copied is malformed, BIND does not even
-start and you will likely find this error message in syslog:
+首先，如果您复制的密钥格式不正确，BIND甚至无法启动，您可能会在syslog中
+发现此错误消息：
 
 ::
 
    named[18235]: /etc/bind/named.conf.options:29: bad base64 encoding
    named[18235]: loading configuration: failure
 
-If the key is a valid base64 string but the key algorithm is incorrect,
-or if the wrong key is installed, the first thing you will notice is
-that virtually all of your DNS lookups result in SERVFAIL, even when
-you are looking up domain names that have not been DNSSEC-enabled. Below
-shows an example of querying a recursive server 10.53.0.3:
+如果密钥是一个有效的base64字符串但密钥算法是不正确的，或者安装了错误的
+密钥，您首先注意到的就是几乎你所有的DNS查找都导致SERVFAIL，甚至当你查找
+没有开启DNSSEC的域名。下面是查询递归服务器10.53.0.3的示例：
 
 ::
 
@@ -508,7 +460,7 @@ shows an example of querying a recursive server 10.53.0.3:
    ;; QUESTION SECTION:
    ;www.example.org.       IN  A
 
-``delv`` shows a similar result:
+``delv`` 显示了类似的结果：
 
 ::
 
@@ -516,7 +468,7 @@ shows an example of querying a recursive server 10.53.0.3:
    ;; fetch: www.example.com/A
    ;; resolution failed: SERVFAIL
 
-The next symptom you see is in the DNSSEC log messages:
+您看到的下一个症状是在DNSSEC日志消息中：
 
 ::
 
@@ -527,60 +479,51 @@ The next symptom you see is in the DNSSEC log messages:
    validating ./DNSKEY: no DNSKEY matching DS
    validating ./DNSKEY: no valid signature found (DS)
 
-These errors are indications that there are problems with the trust
-anchor.
+这些错误表明信任锚存在问题。
 
 .. _troubleshooting_nta:
 
-Negative Trust Anchors
-~~~~~~~~~~~~~~~~~~~~~~
+否定的信任锚
+~~~~~~~~~~~~
 
-BIND 9.11 introduced Negative Trust Anchors (NTAs) as a means to
-*temporarily* disable DNSSEC validation for a zone when you know that
-the zone's DNSSEC is misconfigured.
+BIND 9.11引入了否定信任锚(Negative Trust Anchor, NTA)，当你知道区的
+DNSSEC配置错误时，作为一种方法 *临时* 禁用区的DNSSEC验证。
 
-NTAs are added using the ``rndc`` command, e.g.:
+NTA是使用 ``rndc`` 命令添加的，例如：
 
 ::
 
    $ rndc nta example.com
     Negative trust anchor added: example.com/_default, expires 19-Mar-2020 19:57:42.000
-    
 
-The list of currently configured NTAs can also be examined using
-``rndc``, e.g.:
+还可以使用 ``rndc`` 检查当前配置的NTA列表，例如：
 
 ::
 
    $ rndc nta -dump
     example.com/_default: expiry 19-Mar-2020 19:57:42.000
-    
 
-The default lifetime of an NTA is one hour, although by default, BIND
-polls the zone every five minutes to see if the zone correctly
-validates, at which point the NTA automatically expires. Both the
-default lifetime and the polling interval may be configured via
-``named.conf``, and the lifetime can be overridden on a per-zone basis
-using the ``-lifetime duration`` parameter to ``rndc nta``. Both timer
-values have a permitted maximum value of one week.
+NTA的缺省生命周期是1小时，不过在缺省情况下，BIND每5分钟轮询一次区域，以
+查看区是否正确验证，此时NTA将自动过期。缺省的生命周期和轮询间隔都可以通
+过 ``named.conf`` 来配置，并且生命周期可以使用 ``rndc nta`` 的
+``-lifetime duration`` 参数在区的粒度上覆盖缺省值。两个计时器值可允许的
+最大值都为一周。
 
 .. _troubleshooting_nsec3:
 
-NSEC3 Troubleshooting
-~~~~~~~~~~~~~~~~~~~~~
+NSEC3排错
+~~~~~~~~~
 
-BIND includes a tool called ``nsec3hash`` that runs through the same
-steps as a validating resolver, to generate the correct hashed name
-based on NSEC3PARAM parameters. The command takes the following
-parameters in order: salt, algorithm, iterations, and domain. For
-example, if the salt is 1234567890ABCDEF, hash algorithm is 1, and
-iteration is 10, to get the NSEC3-hashed name for ``www.example.com`` we
-would execute a command like this:
+BIND包含一个名为 ``nsec3hash`` 的工具，它与验证解析器运行相同的步骤，根
+据NSEC3PARAM参数生成正确的散列名称。该命令按顺序接受以下参数：salt、
+algorithm、iterations和domain。例如，如果salt是1234567890ABCDEF，散列算
+法是1，迭代次数是10，为了获得 ``www.example.com`` 的NSEC3散列名称，我们
+将执行如下命令：
 
 ::
 
    $ nsec3hash 1234567890ABCEDF 1 10 www.example.com
    RN7I9ME6E1I6BDKIP91B9TCE4FHJ7LKF (salt=1234567890ABCEDF, hash=1, iterations=10)
 
-While it is unlikely you would construct a rainbow table of your own
-zone data, this tool may be useful when troubleshooting NSEC3 problems.
+虽然不太可能为自己的区数据构造一个彩虹表，但这个工具在诊断NSEC3问题时可
+能很有用。

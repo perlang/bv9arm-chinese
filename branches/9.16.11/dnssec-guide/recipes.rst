@@ -10,37 +10,33 @@
 
 .. _dnssec_recipes:
 
-Recipes
+诀窍
 -------
 
-This chapter provides step-by-step "recipes" for some common
-DNSSEC configurations.
+本章逐步提供一些常见的DNSSEC配置的“诀窍”。
 
 .. _recipes_inline_signing:
 
-DNSSEC Signing
+DNSSEC签名
 ~~~~~~~~~~~~~~
 
-There are two recipes here: the first shows an example using DNSSEC
-signing on the primary server, which has been covered in this
-guide; the second shows how to setup a "bump in the
-wire" between a hidden primary and the secondary servers to seamlessly
-sign the zone "on the fly."
+这里有两个诀窍：第一个展示了在主服务器上使用DNSSEC签名的例子，这在本指
+南中已经介绍过；第二个展示了如何在隐藏主服务器和辅服务器之间设置一个
+“中间节点”，以无缝地“快速” [#]_ 签名区。
+
+.. [#]
+   译注：原文为“on the fly”。
 
 .. _recipes_inline_signing_primary:
 
-Primary Server DNSSEC Signing
+主服务器DNSSEC签名
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this recipe, our servers are illustrated as shown in
-:ref:`dnssec-signing-1`: we have a primary server
-(192.168.1.1) and three secondary servers (192.168.1.2, 192.168.1.3, and
-192.168.1.4) that receive zone transfers. To get the zone
-signed, we need to reconfigure the primary server. Once reconfigured, a
-signed version of the zone is generated on the fly;
-zone transfers take care of synchronizing the signed zone data
-to all secondary name servers, without configuration or software changes
-on them.
+在这个诀窍中，我们的服务器如 :ref:`dnssec-signing-1` 所展示：我们有一个
+主服务器(192.168.1.1)和三个辅服务器(192.168.1.2,192.168.1.3和
+192.168.1.4)，它们接收区传输。为了签名区，我们需要重新配置主服务器。一
+旦重新配置，快速地生成区的签名版本；区传输负责将经过签名的区数据同步到
+所有辅名字服务器，而无需对它们进行配置或软件更改。
 
 .. _dnssec-signing-1:
 
@@ -48,12 +44,11 @@ on them.
    :alt: DNSSEC Signing Recipe #1
    :width: 80.0%
 
-   DNSSEC Signing Recipe #1
+   DNSSEC签名诀窍1
 
-Using the method described in
-:ref:`easy_start_guide_for_authoritative_servers`, we just need to
-add a ``dnssec-policy`` statement to the relevant zone clause. This is
-what the ``named.conf`` zone statement looks like on the primary server, 192.168.1.1:
+使用在 :ref:`easy_start_guide_for_authoritative_servers` 中描述的方法，
+我们只需要在相关的zone子句中添加一个 ``dnssec-policy`` 语句。这就是主服
+务器192.168.1.1上的 ``named.conf`` zone语句的样子：
 
 ::
 
@@ -65,14 +60,11 @@ what the ``named.conf`` zone statement looks like on the primary server, 192.168
        allow-transfer { 192.168.1.2; 192.168.1.3; 192.168.1.4; };
    };
 
-We have chosen to use the default policy, storing the keys generated for
-the zone in the directory ``keys/example.com``. To use a
-custom policy, define the policy in the configuration
-file and select it in the zone statement (as described in
-:ref:`signing_custom_policy`).
+我们选择使用缺省的策略，将为区生成的密钥存放于目录
+``keys/example.com`` 。要使用自定义策略，请在配置文件中定义该策略，并在
+区语句中选择它(如 :ref:`signing_custom_policy` 所述)。
 
-On the secondary servers, ``named.conf`` does not need to be updated,
-and it looks like this:
+在辅服务器上， ``named.conf`` 不需要更新，它看起来像这样：
 
 ::
 
@@ -82,23 +74,19 @@ and it looks like this:
        primaries { 192.168.1.1; };
    };
 
-In fact, the secondary servers do not even need to be running BIND; they
-can run any DNS product that supports DNSSEC.
+实上，辅服务器甚至不需要运行BIND；它们可以运行任何支持DNSSEC的DNS产品。
 
 .. _recipes_inline_signing_bump_in_the_wire:
 
-"Bump in the Wire" Signing
+“中间节点”签名
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this recipe, we take advantage of the power of automated signing
-by placing an additional name server (192.168.1.5) between the hidden
-primary (192.168.1.1) and the DNS secondaries (192.168.1.2, 192.168.1.3,
-and 192.168.1.4). The additional name server, 192.168.1.5, acts as a "bump
-in the wire," taking an unsigned zone from the hidden primary,
-and sending out signed data on the other end to the secondary name
-servers. The steps described in this recipe may be used as part of a
-DNSSEC deployment strategy, since it requires only minimal changes made to
-the existing hidden DNS primary and DNS secondaries.
+在本诀窍中，我们通过在隐藏主服务器(192.168.1.1)和DNS辅服务器
+(192.168.1.2、192.168.1.3和192.168.1.4)之间放置一个额外的名字服务器
+(192.168.1.5)来利用自动签名的强大功能。附加的名字服务器192.168.1.5充当
+“中间节点”，它从隐藏主服务器获取一个未签名区，并在另一端将签名区的数据
+发送到辅名字服务器。本诀窍中描述的步骤可以用作DNSSEC部署策略的一部分，
+因为它只需要对现有的隐藏主服务器和辅服务器进行最小的修改。
 
 .. _dnssec-signing-2:
 
@@ -106,15 +94,14 @@ the existing hidden DNS primary and DNS secondaries.
    :alt: DNSSEC Signing Recipe #2
    :width: 100.0%
 
-   DNSSEC Signing Recipe #2
+   DNSSEC签名诀窍2
 
-It is important to remember that 192.168.1.1 in this case is a hidden
-primary not exposed to the world, and it must not be listed in the NS RRset.
-Otherwise the world will get conflicting answers: unsigned answers from
-the hidden primary and signed answers from the other name servers.
+重要的是要记住，在本例中192.168.1.1是一个不公开的隐藏主服务器，它不能在
+NS资源记录集中列出。否则世界将得到冲突的答案：来自隐藏主服务器的未签名
+答案和来自其它名字服务器的已签名答案。
 
-The only configuration change needed on the hidden primary, 192.168.1.1,
-is to make sure it allows our middle box to perform a zone transfer:
+在隐藏主服务器192.168.1.1上唯一需要做的配置更改是确保它允许我们的中间服
+务器执行区传输：
 
 ::
 
@@ -124,14 +111,12 @@ is to make sure it allows our middle box to perform a zone transfer:
        ...
    };
 
-On the middle box, 192.168.1.5, all the tasks described in
-:ref:`easy_start_guide_for_authoritative_servers` still need to be
-performed, such as generating key pairs and uploading information to
-the parent zone. This server is configured as secondary to the hidden
-primary 192.168.1.1 to receive the unsigned data; then, using keys
-accessible to this middle box, to sign data on the fly; and finally, to send out the
-signed data via zone transfer to the other three DNS secondaries. Its
-``named.conf`` zone statement looks like this:
+在中间服务器192.168.1.5上，在
+:ref:`easy_start_guide_for_authoritative_servers` 中描述的任务仍然需要
+执行，例如生成密钥对和上传信息到父区。该服务器被配置为隐藏主服务器
+192.168.1.1的辅服务器，以接收未签名的数据；然后，使用这个中间服务器可以
+访问的密钥，来动态地签名数据；最后，通过区传输将签名数据发送给其它三个
+辅助服务器。它的 ``named.conf`` zone语句看起来像这样：
 
 ::
 
@@ -144,14 +129,12 @@ signed data via zone transfer to the other three DNS secondaries. Its
        allow-transfer { 192.168.1.2; 192.168.1.3; 192.168.1.4; };
    };
 
-(As before, the default policy has been selected here. See
-:ref:`signing_custom_policy` for instructions on how to define
-and use a custom policy.)
+(与前面一样，这里选择了缺省策略。参见 :ref:`signing_custom_policy` 查看
+如何定义和使用自定义策略的说明。)
 
-Finally, on the three secondary servers, the configuration should be updated
-to receive a zone transfer from 192.168.1.5 (the middle box) instead of
-from 192.168.1.1 (the hidden primary). If using BIND, the ``named.conf`` file looks
-like this:
+最后，在三个辅助服务器上，应该更新配置以接收来自192.168.1.5(中间服务器)
+的区传输，而不是来自192.168.1.1(隐藏主服务器)。如果使用BIND，
+``named.conf`` 文件看起来像这样：
 
 ::
 
@@ -163,60 +146,52 @@ like this:
 
 .. _recipes_rollovers:
 
-Rollovers
-~~~~~~~~~
+轮转
+~~~~
 
-If you are signing your zone using a ``dnssec-policy`` statement, this
-section is not really relevant to you. In the policy statement, you set how long
-you want your keys to be valid for, the time
-taken for information to propagate through your zone, the time it takes
-for your parent zone to register a new DS record, etc., and that's more
-or less it. ``named`` implements everything for you automatically, apart from
-uploading the new DS records to your parent zone - which is covered in
-:ref:`signing_easy_start_upload_to_parent_zone`. (Some
-screenshots from a session where a KSK is uploaded to the parent zone
-are presented here for convenience.) However, these recipes may be useful
-in describing what happens
-through the rollover process and what you should be monitoring.
+如果您正在使用 ``dnssec-policy`` 语句为您的区签名，那么本节实际上与您无
+关。在策略语句中，您设置了希望密钥有效的时间长度、信息传播到您的区所花
+费的时间、父区注册一个新DS记录所花费的时间，等等，差不多就是这些。
+``named`` 自动实现了一切，除了上传新的DS记录到你的父区 - 这包含在
+:ref:`signing_easy_start_upload_to_parent_zone` 。(为了方便起见，这里提
+供了上传KSK到父区的会话的一些截图。)然而，这些诀窍在描述轮转过程中发生
+的事情以及应该监视什么方面可能很有用。
 
 .. _recipes_zsk_rollover:
 
-ZSK Rollover
-^^^^^^^^^^^^
+ZSK轮转
+^^^^^^^
 
-This recipe covers how to perform a ZSK rollover using what is known as
-the Pre-Publication method. For other ZSK rolling methods, please see
-:ref:`zsk_rollover_methods` in :ref:`dnssec_advanced_discussions`.
+本诀窍介绍了如何使用预发布方法执行ZSK轮转。关于其它ZSK轮转方法，请参见
+:ref:`dnssec_advanced_discussions` 中的 :ref:`zsk_rollover_methods` 。
 
-Below is a sample timeline for a ZSK rollover to occur on January 1, 2021:
+下面是发生在2021年1月1日的ZSK轮转的时间线例子：
 
-1. December 1, 2020 (one month before rollover)
+1. 2020年12月1日 （在轮转之前一个月）
 
-   -  Generate new ZSK
+   -  生成新ZSK
 
-   -  Add DNSKEY for new ZSK to zone
+   -  将新ZSK的DNSKEY增加到区中
 
-2. January 1, 2021 (day of rollover)
+2. 2021年1月1日 （轮转日）
 
-   -  New ZSK used to replace RRSIGs for the bulk of the zone
+   -  新ZSK用于替换区内大部分的RRSIG
 
-3. February 1, 2021 (one month after rollover)
+3. 2021年2月1日(轮转之后一个月)
 
-   -  Remove old ZSK DNSKEY RRset from zone
+   -  从区中移除旧的ZSK DNSKEY资源记录集
 
-   -  DNSKEY signatures made with KSK are changed
+   -  修改KSK生成的DNSKEY签名
 
-The current active ZSK has the ID 17694 in the example below. For more
-information on key management and rollovers, please see
-:ref:`advanced_discussions_key_management`.
+在下面的示例中，当前活动的ZSK的ID为17694。有关密钥管理和轮转的更多信息，
+请参阅 :ref:`advanced_discussions_key_management` 。
 
-One Month Before ZSK Rollover
-+++++++++++++++++++++++++++++
+在ZSK轮转之前一个月
++++++++++++++++++++
 
-On December 1, 2020, a month before the example rollover, you (as administrator)
-should change the parameters on the current key (17694). Set it to become inactive on
-January 1, 2021 and be deleted from the zone on February 1, 2021; also,
-generate a successor key (51623):
+在2020年12月1日，也就是例子轮转之前一个月，您(作为管理员)应该更改当前密
+钥(17694)上的参数。将其设置为到2021年1月1日失活，并于2021年2月1日从区中
+删除；另外，生成一个后续密钥(51623)：
 
 ::
 
@@ -229,31 +204,26 @@ generate a successor key (51623):
    Generating key pair..++++++ ...........++++++ 
    Kexample.com.+008+51623
 
-The first command gets us into the key directory
-``/etc/bind/keys/example.com/``, where keys for ``example.com`` are
-stored.
+第一条命令使我们转到密钥目录 ``/etc/bind/keys/example.com/`` ，这里存放
+着 ``example.com`` 的密钥。
 
-The second, ``dnssec-settime``, sets an inactive (``-I``) date of January 1,
-2021, and a deletion (``-D``) date of February 1, 2021, for the current ZSK
-(``Kexample.com.+008+17694``).
+第二条命令 ``dnssec-settime`` 为当前ZSK(``Kexample.com.+008+17694``)设
+置一个失活(``-I``)日期2021年1月1日，和一个删除日期2021年2月1日。
 
-The third command, ``dnssec-keygen``, creates a successor key, using
-the exact same parameters (algorithms, key sizes, etc.) as the current
-ZSK. The new ZSK created in our example is ``Kexample.com.+008+51623``.
+第三条命令 ``dnssec-keygen`` 创建一条后续密钥，使用与当前ZSK完全相同的
+参数（算法，密钥大小等）。在我们的例子中创建的新ZSK是
+``Kexample.com.+008+51623`` 。
 
-Make sure the successor keys are readable by ``named``.
+确保后续密钥可以被 ``named`` 读取。
 
-``named``'s logging messages indicate when the next
-key checking event is scheduled to occur, the frequency of which can be
-controlled by ``dnssec-loadkeys-interval``. The log message looks like
-this:
+``named`` 的日志信息表明何时发生下一次密钥检查事件，其频率可以由
+``dnssec-loadkeys-interval`` 控制。日志消息如下所示：
 
 ::
 
    zone example.com/IN (signed): next key event: 01-Dec-2020 00:13:05.385
 
-And you can check the publish date of the key by looking at the key
-file:
+您还可以通过查看密钥文件来检查密钥的发布日期：
 
 ::
 
@@ -265,12 +235,10 @@ file:
    ; Activate: 20210101000000 (Sun Jan  1 08:00:00 2021)
    ...
 
-Since the publish date is set to the morning of December 2, and our example
-scenario takes place on December 1, the next
-morning you will notice that your zone has gained a new DNSKEY record,
-but the new ZSK is not yet being used to generate signatures. Below is
-the abbreviated output - with shortened DNSKEY and RRSIG - when querying the
-authoritative name server, 192.168.1.13:
+由于发布日期设置为12月2日上午，而我们的例子场景发生在12月1日，第二天早
+上您将会注意到区已经获得了一条新的DNSKEY记录，但是新的ZSK还没有用于生成
+签名。下面是查询权威名字服务器192.168.1.13时的简短输出 —— 使用了缩短后
+的DNSKEY和RRSIG：
 
 ::
 
@@ -295,10 +263,8 @@ authoritative name server, 192.168.1.13:
                    HK4EBbbOpj...n5V6nvAkI= )
    ...
 
-For good measure, let's take a look at the SOA record and its
-signature for this zone. Notice the RRSIG is signed by the current ZSK,
-17694. This will come in handy later when you want to verify whether
-the new ZSK is in effect:
+为了更好地衡量，让我们看一下这个区的SOA记录及其签名。注意RRSIG是由当前
+ZSK, 17694签名的。当您稍后想要验证新的ZSK是否有效时，将会用到它：
 
 ::
 
@@ -320,19 +286,16 @@ the new ZSK is in effect:
                    buAsAYLw8vEOIxVpXwlArY+oSp9T1w2wfTZ0vhVIxaYX
                    6dkcz4I3wbDx2xmG0yngtA6A8lAchERx2EGy0RM= )
 
-These are all the manual tasks you need to perform for a ZSK rollover.
-If you have followed the configuration examples in this guide of using
-``inline-signing`` and ``auto-dnssec``, everything else is automated for
-you by BIND.
+这些是ZSK轮转时需要执行的所有手动任务。如果您遵循了本指南中使用
+``inline-signing`` 和 ``auto-dnssec`` 的配置例子，那么其它一切都是由
+BIND自动为您实现的。
 
-Day of ZSK Rollover
-+++++++++++++++++++
+ZSK轮转日
++++++++++
 
-On the actual day of the rollover, although there is technically nothing
-for you to do, you should still keep an eye on the zone to make sure new
-signatures are being generated by the new ZSK (51623 in this example).
-The easiest way is to query the authoritative name server 192.168.1.13
-for the SOA record as you did a month ago:
+在实际的轮转当天，虽然从技术上讲您没有什么可做的，但您仍然应该关注区域，
+以确保新ZSK(在本例中为51623)正在生成新的签名。最简单的方法是查询权威名
+字服务器192.168.1.13以获取SOA记录，就像一个月之前所做的那样：
 
 ::
 
@@ -355,30 +318,24 @@ for the SOA record as you did a month ago:
                    y5nkGqf83OXTK26IfnjU1jqiUKSzg6QR7+XpLk0= )
    ...
 
-As you can see, the signature generated by the old ZSK (17694) has
-disappeared, replaced by a new signature generated from the new ZSK
-(51623).
+如您所见，由旧ZSK(17694)生成的签名已经消失，取而代之的是由新ZSK(51623)
+生成的新签名。
 
 .. note::
 
-   Not all signatures will disappear magically on the same day;
-   it depends on when each one was generated. In the worst-case scenario,
-   a new signature could have been signed by the old ZSK (17694) moments
-   before it was deactivated, meaning that the signature could live for almost
-   30 more days, until just before February 1.
+   并不是所有的签名都会在同一天神奇地消失；这取决于每个签名的生成时间。
+   在最坏的情况下，旧的ZSK(17694)在失活之前签了一个新的签名，这意味着
+   该签名可以再存活近30，直到2月1日之前。
 
-   This is why it is important to keep the old ZSK in the
-   zone and not delete it right away.
+   这就是为什么把旧ZSK保留在区中而不是立即删除它是很重要的。
 
-One Month After ZSK Rollover
-++++++++++++++++++++++++++++
+ZSK轮转之后一个月
++++++++++++++++++
 
-Again, technically there is nothing you need to do on this day,
-but it doesn't hurt to verify that the old ZSK (17694) is now completely
-gone from your zone. ``named`` will not touch
-``Kexample.com.+008+17694.private`` and ``Kexample.com.+008+17694.key``
-on your file system. Running the same ``dig`` command for DNSKEY should
-suffice:
+同样，从技术上讲，这一天你没有什么需要做的，但核实旧ZSK(17694)现在完全
+从你的区中消失是没有坏处的。 ``named`` 不会接触文件系统上的
+``Kexample.com.+008+17694.private`` 和 ``Kexample.com.+008+17694.key``
+。对DNSKEY运行同样的 ``dig`` 命令就足够了：
 
 ::
 
@@ -400,58 +357,51 @@ suffice:
                    G2g3crN17h...Oe4gw6gH8= )
    ...
 
-Congratulations, the ZSK rollover is complete! As for the actual key
-files (the files ending in ``.key`` and ``.private``), they may be deleted at this
-point, but they do not have to be.
+祝贺您，ZSK的轮转完成了！至于实际的密钥文件(以 ``.key`` 和 ``.private``
+结尾的文件)，它们可以在这时被删除，但也不是必须被删除。
 
 .. _recipes_ksk_rollover:
 
-KSK Rollover
-^^^^^^^^^^^^
+KSK轮转
+^^^^^^^
 
-This recipe describes how to perform KSK rollover using the Double-DS
-method. For other KSK rolling methods, please see
-:ref:`ksk_rollover_methods` in
-:ref:`dnssec_advanced_discussions`. The registrar used in this
-recipe is `GoDaddy <https://www.godaddy.com>`__. Also for this recipe,
-we are keeping the number of DS records down to just one per active set
-using just SHA-1, for the sake of better clarity, although in practice
-most zone operators choose to upload two DS records as shown in
-:ref:`working_with_parent_zone`. For more information on key
-management and rollovers,
-please see :ref:`advanced_discussions_key_management`.
+本诀窍描述了如何使用双DS方法执行KSK轮转。关于其它KSK轮转方法，请参见
+:ref:`dnssec_advanced_discussions` 中的 :ref:`ksk_rollover_methods` 。
+使用这个诀窍的注册商是 `GoDaddy <https://www.godaddy.com>`__ 。同样在这
+个中，我们使用SHA-1将DS记录的数量控制在每个活动集只有一条，以便更清晰，
+虽然在实践中大多数区操作员选择上传两条DS记录，如
+:ref:`working_with_parent_zone` 所示。有关密钥管理和轮转的更多信息，请
+参阅 :ref:`advanced_discussions_key_management` 。
 
-Below is a sample timeline for a KSK rollover to occur on January 1, 2021:
+下面是发生在2021年1月1日的KSK轮转的时间线例子：
 
-1. December 1, 2020 (one month before rollover)
+1. 2020年12月1日 （在轮转之前一个月）
 
-   -  Change timer on the current KSK
+   -  修改当前KSK的定时器
 
-   -  Generate new KSK and DS records
+   -  生成新KSK和DS记录
 
-   -  Add DNSKEY for the new KSK to zone
+   -  将新KSK的DNSKEY增加到区中
 
-   -  Upload new DS records to parent zone
+   -  上传新的DS记录到父区
 
-2. January 1, 2021 (day of rollover)
+2. 2021年1月1日 （轮转日）
 
-   -  Use the new KSK to sign all DNSKEY RRsets, which generates new
-      RRSIGs
+   -  使用新KSK对所有的DNSKEY资源记录集签名，生成新的RRSIG
 
-   -  Add new RRSIGs to the zone
+   -  向区中添加新的RRSIG
 
-   -  Remove RRSIG for the old ZSK from zone
+   -  将旧ZSK的RRSIG从区中移除
 
-   -  Start using the new KSK to sign DNSKEY
+   -  开始使用新的KSK签名DNSKEY
 
-3. February 1, 2021 (one month after rollover)
+3. 2021年2月1日(轮转一个月之后)
 
-   -  Remove the old KSK DNSKEY from zone
+   -  从区中移除旧的KSK DNSKEY
 
-   -  Remove old DS records from parent zone
+   -  从父区移除旧的DS记录
 
-The current active KSK has the ID 24828, and this is the DS record that
-has already been published by the parent zone:
+当前活动的KSK的ID为24828，这是已在父区中发布的DS记录：
 
 ::
 
@@ -460,15 +410,12 @@ has already been published by the parent zone:
 
 .. _one_month_before_ksk_rollover:
 
-One Month Before KSK Rollover
-+++++++++++++++++++++++++++++
+在KSK轮转之前一个月
++++++++++++++++++++
 
-On December 1, 2020, a month before the planned rollover, you (as
-administrator) should
-change the parameters on the current key. Set it to become inactive on January
-1, 2021, and be deleted from the zone on February 1st, 2021;
-also generate a successor key (23550). Finally, generate a new
-DS record based on the new key, 23550:
+在2020年12月1日，也就是计划轮转的前一个月，您(作为管理员)应该更改当前密
+钥上的参数。将其设置为2021年1月1日失活，并在2021年2月1日从区中删除；还
+要生成一个后续密钥(23550)。最后，根据新密钥23550生成一个新DS记录：
 
 ::
 
@@ -482,35 +429,31 @@ DS record based on the new key, 23550:
    # dnssec-dsfromkey -a SHA-1 Kexample.com.+007+23550.key
    example.com. IN DS 23550 7 1 54FCF030AA1C79C0088FDEC1BD1C37DAA2E70DFB
 
-The first command gets us into the key directory
-``/etc/bind/keys/example.com/``, where keys for ``example.com`` are
-stored.
+第一条命令使我们转到密钥目录 ``/etc/bind/keys/example.com/`` ，这里存放
+着 ``example.com`` 的密钥。
 
-The second, ``dnssec-settime``, sets an inactive (``-I``) date of January 1,
-2021, and a deletion (``-D``) date of February 1, 2021 for the current KSK
-(``Kexample.com.+007+24848``).
+第二条命令 ``dnssec-settime`` 为当前KSK(``Kexample.com.+007+24848``)设
+置一个失活(``-I``)日期2021年1月1日，和一个删除(``-D``)日期2021年2月1日。
 
-The third command, ``dnssec-keygen``, creates a successor key, using
-the exact same parameters (algorithms, key sizes, etc.) as the current
-KSK. The new key pair created in our example is ``Kexample.com.+007+23550``.
 
-The fourth and final command, ``dnssec-dsfromkey``, creates a DS record
-from the new KSK (23550), using SHA-1 as the digest type. Again, in
-practice most people generate two DS records for both supported digest
-types (SHA-1 and SHA-256), but for our example here we are only using
-one to keep the output small and hopefully clearer.
+第三条命令 ``dnssec-keygen`` 创建一条后续密钥，使用与当前KSK完全相同的
+参数（算法，密钥大小等）。在我们的例子中创建的新KSK是
+``Kexample.com.+007+23550`` 。
 
-Make sure the successor keys are readable by ``named``.
+第四条也是最后一条命令， ``dnssec-dsfromkey`` ，使用SHA-1作为摘要类型，
+从新的KSK(23550)创建一条DS记录。同样，在实践中，大多数人都会为这两种受
+支持的摘要类型(SHA-1和SHA-256)生成两条DS记录，但对于我们的例子，我们只
+使用一个记录来保持输出较小，并希望更清楚。
 
-The ``syslog`` message indicates when the next key
-checking event is. The log message looks like this:
+确保后续密钥可以被 ``named`` 读取。
+
+``syslog`` 消息表明何时发生下一次密钥检查事件，日志消息如下所示：
 
 ::
 
    zone example.com/IN (signed): next key event: 01-Dec-2020 00:13:05.385
 
-You can check the publish date of the key by looking at the key
-file:
+您可以通过查看密钥文件来检查密钥的发布日期：
 
 ::
 
@@ -522,12 +465,10 @@ file:
    ; Activate: 20210101000000 (Sun Jan  1 08:00:00 2021)
    ...
 
-Since the publish date is set to the morning of December 2, and our example
-scenario takes place on December 1, the next
-morning you will notice that your zone has gained a new DNSKEY record
-based on your new KSK, but with no corresponding RRSIG yet. Below is the
-abbreviated output - with shortened DNSKEY and RRSIG - when querying the
-authoritative name server, 192.168.1.13:
+由于发布日期设置为12月2日上午，而我们的例子场景发生在12月1日，第二天早
+上您将注意到区已经基于新KSK获得了一个新DNSKEY记录，但是还没有相应的
+RRSIG。下面是查询权威名字服务器192.168.1.13时的简短输出 —— 使用了缩短后
+的DNSKEY和RRSIG：
 
 ::
 
@@ -553,16 +494,12 @@ authoritative name server, 192.168.1.13:
 
    ...
 
-Anytime after generating the DS record, you can upload it;
-it is not necessary to wait for the DNSKEY to be published in your zone,
-since this new KSK is not active yet. You can do it
-immediately after the new DS record has been generated on December 1,
-or you can wait until the next day after you have verified that the
-new DNSKEY record is added to the zone. Below are some screenshots from
-GoDaddy's web-based interface, used to add a new DS record [#]_.
+生成DS记录后，可以随时上传；没有必要等待DNSKEY在你的区发布，因为这个新
+的KSK还没有激活。您可以在12月1日生成新的DS记录后立即执行，也可以等到第
+二天确认新的DNSKEY记录已经添加到区中之后。下面是一些来自GoDaddy网站的截
+图，用来添加一个新的DS记录 [#]_ 。
 
-1. After logging in, click the green "Launch" button next to the domain
-   name you want to manage.
+1. 登录后，点击要管理的域名旁边的绿色“Launch”按钮。
 
    .. _add-ds-1:
 
@@ -570,9 +507,9 @@ GoDaddy's web-based interface, used to add a new DS record [#]_.
       :alt: Upload DS Record Step #1
       :width: 70.0%
 
-      Upload DS Record Step #1
+      上传DS记录步骤1
 
-2. Scroll down to the "DS Records" section and click "Manage."
+2. 向下滚动到“DS Records”部分，并单击“Manage”。
 
    .. _add-ds-2:
 
@@ -580,10 +517,10 @@ GoDaddy's web-based interface, used to add a new DS record [#]_.
       :alt: Upload DS Record Step #2
       :width: 40.0%
 
-      Upload DS Record Step #2
+      上传DS记录步骤2
 
-3. A dialog appears, displaying the current key (24828). Click "Add DS
-   Record."
+3. 将出现一个对话框，显示当前密钥(24828)。单击“Add DS Record”。
+
 
    .. _add-ds-3:
 
@@ -591,10 +528,9 @@ GoDaddy's web-based interface, used to add a new DS record [#]_.
       :alt: Upload DS Record Step #3
       :width: 80.0%
 
-      Upload DS Record Step #3
+      上传DS记录步骤3
 
-4. Enter the Key ID, algorithm, digest type, and the digest, then click
-   "Next."
+4. 输入Key ID、算法、摘要类型和摘要，然后单击“Next”。
 
    .. _add-ds-4:
 
@@ -602,9 +538,9 @@ GoDaddy's web-based interface, used to add a new DS record [#]_.
       :alt: Upload DS Record Step #4
       :width: 80.0%
 
-      Upload DS Record Step #4
+      上传DS记录步骤4
 
-5. Address any errors and click "Finish."
+5. 解决任何错误并单击“Finish”。
 
    .. _add-ds-5:
 
@@ -612,9 +548,9 @@ GoDaddy's web-based interface, used to add a new DS record [#]_.
       :alt: Upload DS Record Step #5
       :width: 80.0%
 
-      Upload DS Record Step #5
+      上传DS记录步骤5
 
-6. Both DS records are shown. Click "Save."
+6. 两个DS记录都显示了。点击“Save”。
 
    .. _add-ds-6:
 
@@ -622,14 +558,11 @@ GoDaddy's web-based interface, used to add a new DS record [#]_.
       :alt: Upload DS Record Step #6
       :width: 80.0%
 
-      Upload DS Record Step #6
+      上传DS记录步骤6
 
-Finally, let's verify that the registrar has published the new DS
-record. This may take anywhere from a few minutes to a few days,
-depending on your parent zone. You can verify whether your
-parent zone has published the new DS record by querying for the DS
-record of your zone. In the example below, the Google public DNS server
-8.8.8.8 is used:
+最后，让我们验证一下注册商是否已经发布了新的DS记录。这可能需要几分钟到
+几天的时间，取决于你的父区。您可以通过查询您的区的DS记录来验证父区是否
+已经发布了新的DS记录。在下面的例子中，使用的是谷歌公共DNS服务器8.8.8.8：
 
 ::
 
@@ -640,24 +573,20 @@ record of your zone. In the example below, the Google public DNS server
    example.com.    21552   IN  DS  24828 7 1 D4A33E8DD550A9567B4C4971A34AD6C4B80A6AD3
    example.com.    21552   IN  DS  23550 7 1 54FCF030AA1C79C0088FDEC1BD1C37DAA2E70DFB
 
-You can also query your parent zone's authoritative name servers
-directly to see if these records have been published. DS records will
-not show up on your own authoritative zone, so you cannot query your own
-name servers for them. In this recipe, the parent zone is ``.com``, so
-querying a few of the ``.com`` name servers is another appropriate
-verification.
+您还可以直接查询父区的权威名字服务器，以查看这些记录是否已发布。DS记录
+不会显示在您自己的权威区，所以您不能查询您自己的名字服务器。在本诀窍中，
+父区是 ``.com`` ，所以查询一些 ``.com`` 的名字服务器是另一个合适的验证
+方法。
 
-Day of KSK Rollover
-+++++++++++++++++++
+KSK轮转日
++++++++++
 
-If you have followed the examples in this document, as described in
-:ref:`easy_start_guide_for_authoritative_servers`, there is
-technically nothing you need to do manually on the actual day of the
-rollover. However, you should still keep an eye on the zone to make sure
-new signature(s) are being generated by the new KSK (23550 in this
-example). The easiest way is to query the authoritative name server
-192.168.1.13 for the same DNSKEY and signatures, as you did a month
-ago:
+如果您遵循了本文档中的例子，如
+:ref:`easy_start_guide_for_authoritative_servers` 中所描述的，那么在实
+际的轮转当天，从技术上讲，您不需要手动执行任何操作。但是，您仍然应该密
+切关注该区，以确保新的KSK(在本例中为23550)正在生成新的签名。最简单的方
+法是向权威名字服务器192.168.1.13查询同样的DNSKEY和签名，就像一个月前所
+做的那样：
 
 ::
 
@@ -682,18 +611,15 @@ ago:
                    VY5URQA2/d...OVKr1+KX8= )
    ...
 
-As you can see, the signature generated by the old KSK (24828) has
-disappeared, replaced by a new signature generated from the new KSK
-(23550).
+如您所见，由旧KSK(24828)生成的签名已经消失，被由新KSK(23550)生成的新签
+名所取代。
 
-One Month After KSK Rollover
-++++++++++++++++++++++++++++
+KSK轮转之后一个月
++++++++++++++++++
 
-While the removal of the old DNSKEY from the zone should be automated by
-``named``, the removal of the DS record is manual. You should make sure
-the old DNSKEY record is gone from your zone first, by querying for the
-DNSKEY records of the zone; this time we expect not to see
-the key with an ID of 24828:
+虽然从区中删除旧的DNSKEY应该通过 ``named`` 自动删除，但删除DS记录是手动
+的。首先，您应该通过查询区的DNSKEY记录来确保旧的DNSKEY记录已经从您的区
+中消失；这次我们希望不会看到ID为24828的密钥：
 
 ::
 
@@ -715,16 +641,14 @@ the key with an ID of 24828:
                    OuelpIlpY9...XfsKupQgc= )
    ...
 
-Since the key with the ID 24828 is gone, you can now remove the old DS
-record for that key from our parent zone.
-Be careful to remove the correct DS record. If you accidentally remove
-the new DS record(s) with key ID 23550, it could lead to a problem called
-"security lameness," as discussed in
-:ref:`troubleshooting_security_lameness`, and may cause users to be unable
-to resolve any names in the zone.
+因为ID为24828的密钥已经消失，您现在可以从父区中删除该密钥的旧DS记录。小
+心不要删除正确的DS记录。如果您不小心删除了密钥ID为23550的新DS记录，可能
+会导致称为“安全性缺陷”的问题，如在
+:ref:`troubleshooting_security_lameness` 中所述，并可能导致用户无法解析
+该区中的任何名称。
 
-1. After logging in (again, GoDaddy.com in our example) and launching the domain, scroll down to the "DS
-   Records" section and click Manage.
+1. 登录(在我们的示例中，同样是GoDaddy.com)并启动域之后，向下滚动到
+   “DS Records”部分并单击Manage。
 
    .. _remove-ds-1:
 
@@ -732,10 +656,10 @@ to resolve any names in the zone.
       :alt: Remove DS Record Step #1
       :width: 40.0%
 
-      Remove DS Record Step #1
+      删除DS记录步骤1
 
-2. A dialog appears, displaying both keys (24828 and 23550). Use the far
-   right-hand X button to remove key 24828.
+2. 出现一个对话框，显示两个密钥(24828和23550)。使用最右边的X按钮移除
+   24828密钥。
 
    .. _remove-ds-2:
 
@@ -743,10 +667,9 @@ to resolve any names in the zone.
       :alt: Remove DS Record Step #2
       :width: 80.0%
 
-      Remove DS Record Step #2
+      删除DS记录步骤2
 
-3. Key 24828 now appears crossed out; click "Save" to complete the
-   removal.
+3. 密钥24828现在被划掉了；点击“Save”，完成删除。
 
    .. _remove-ds-3:
 
@@ -754,48 +677,44 @@ to resolve any names in the zone.
       :alt: Remove DS Record Step #3
       :width: 80.0%
 
-      Remove DS Record Step #3
+      删除DS记录步骤3
 
 Congratulations, the KSK rollover is complete! As for the actual key
 files (ending in ``.key`` and ``.private``), they may be deleted at this
 point, but they do not have to be.
+祝贺，KSK轮转完成！至于实际的密钥文件(以 ``.key`` 和 ``.private`` 结尾)，
+它们可以在这时被删除，但也不是必须被删除。
 
 .. [#]
-   The screenshots were taken from GoDaddy's interface at the time the
-   original version of this guide was published (2015). It may have
-   changed since then.
+   截屏取自GoDaddy的接口，时间是本指南最早版本发布时（2015）。自那时以
+   来可能会有变化。
 
 .. _recipes_nsec3:
 
-NSEC and NSEC3
-~~~~~~~~~~~~~~
+NSEC和NSEC3
+~~~~~~~~~~~
 
 .. _recipes_nsec_to_nsec3:
 
-Migrating from NSEC to NSEC3
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+从NSEC迁移到NSEC3
+^^^^^^^^^^^^^^^^^
 
-This recipe describes how to transition from using NSEC to NSEC3, as described
-in :ref:`advanced_discussions_proof_of_nonexistence`. This recipe
-assumes that the zones are already signed, and that ``named`` is configured
-according to the steps described in
-:ref:`easy_start_guide_for_authoritative_servers`.
+这个诀窍描述了如何从使用NSEC过渡到使用NSEC3，如在
+:ref:`advanced_discussions_proof_of_nonexistence` 中描述的。此诀窍假定
+区已经签名，并且根据 :ref:`easy_start_guide_for_authoritative_servers`
+中描述的步骤配置 ``named`` 。
 
 .. warning::
 
-   If your zone is signed with RSASHA1 (algorithm 5), you cannot migrate
-   to NSEC3 without also performing an
-   algorithm rollover
-   to RSASHA1-NSEC3-SHA1 (algorithm 7), as described in
-   :ref:`advanced_discussions_DNSKEY_algorithm_rollovers`. This
-   ensures that older validating resolvers that do not understand
-   NSEC3 will fall back to treating the zone as unsecured (rather than
-   "bogus"), as described in Section 2 of :rfc:`5155`.
+   如果你的区用RSASHA1(算法5)签名，你需要执行一次算法轮转到
+   RSASHA1-NSEC3-SHA1(算法7)才能迁移到NSEC3，如在
+   :ref:`advanced_discussions_DNSKEY_algorithm_rollovers` 中所描述。
+   这确保了不理解NSEC3的旧验证解析器将退回到将该区域视为不安全的(而不是
+   “伪造的”)，如 :rfc:`5155` 的第2部份所述。
 
-To enable NSEC3, update your ``dnssec-policy`` and add the desired NSEC3
-parameters. The example below enables NSEC3 for zones with the ``standard``
-DNSSEC policy, using 10 iterations, no opt-out, and a random string that is
-16 characters long:
+要启用NSEC3，请更新您的 ``dnssec-policy`` 并添加所需的NSEC3参数。
+下面的例子对名为 ``standard`` DNSSEC策略的区启用NSEC3，使用10次迭代，无
+opt-out，以及一个16字符长度的随机字符串：
 
 ::
 
@@ -803,17 +722,16 @@ DNSSEC policy, using 10 iterations, no opt-out, and a random string that is
         nsec3param iterations optout no salt-length 16;
     };
 
-Then reconfigure the server with ``rndc``. You can tell that it worked if you
-see the following debug log messages:
+然后使用 ``rndc`` 重新配置服务器。如果看到下面的调试日志消息，就可以知
+道它工作了。
 
 ::
 
    Oct 21 13:47:21 received control channel command 'reconfig'
    Oct 21 13:47:21 zone example.com/IN (signed): zone_addnsec3chain(1,CREATE,10,1234567890ABCDEF)
 
-You can also verify that it worked by querying for a name that you know
-does not exist, and checking for the presence of the NSEC3 record.
-For example:
+您还可以通过查询一个知道其不存在的名字，并检查NSEC3记录的存在来验证它是
+否工作。例如：
 
 ::
 
@@ -825,28 +743,26 @@ For example:
                    NS SOA RRSIG DNSKEY NSEC3PARAM )
    ...
 
-Our example used four parameters: 1, 0, 10, and 1234567890ABCDEF, in
-order. 1 represents the algorithm, 0 represents the
-opt-out flag, 10 represents the number of iterations, and
-1234567890ABCDEF is the salt. To learn more about each of these
-parameters, please see :ref:`advanced_discussions_nsec3param`.
+我们的例子按顺序使用了4个参数：1,0,10和1234567890ABCDEF。1表示算法，0表
+示opt-out标志，10表示迭代次数，1234567890ABCDEF是盐。要了解这些参数的更
+多信息，请参见 :ref:`advanced_discussions_nsec3param` 。
 
 .. _recipes_nsec3_to_nsec:
 
-Migrating from NSEC3 to NSEC
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+从NSEC3迁移到NSEC
+^^^^^^^^^^^^^^^^^
 
-Migrating from NSEC3 back to NSEC is easy; just remove the ``nsec3param``
-configuration option from your ``dnssec-policy`` and reconfigure the name
-server. You can tell that it worked if you see these messages in the log:
+从NSEC3迁移回NSEC很容易；只需从您的 ``dnssec-policy`` 中删除
+``nsec3param`` 配置选项，并重新配置名字服务器。如果您在日志中看到这些消
+息，就知道它工作了：
 
 ::
 
    named[14093]: received control channel command 'reconfig'
    named[14093]: zone example.com/IN: zone_addnsec3chain(1,REMOVE,10,1234567890ABCDEF)
 
-You can also query for a name that you know does not exist,
-and you should no longer see any traces of NSEC3 records.
+您还可以查询一个知道其不存在的名字，并且您应该不再看到任何NSEC3记录的踪
+迹。
 
 ::
 
@@ -860,29 +776,25 @@ and you should no longer see any traces of NSEC3 records.
 
 .. _recipes_nsec3_salt:
 
-Changing the NSEC3 Salt
-^^^^^^^^^^^^^^^^^^^^^^^
+修改NSEC3盐
+^^^^^^^^^^^
 
-In :ref:`advanced_discussions_nsec3_salt`, we discuss the
-reasons why you may want to change your salt periodically for better
-privacy. In this recipe, we look at what command to execute to
-actually change the salt, and how to verify that it has been changed.
+在 :ref:`advanced_discussions_nsec3_salt` 中，我们讨论了为什么你可能想
+要定期改变你的盐以获得更好私密性的原因。在本诀窍中，我们看一下要执行什
+么命令来实际修改盐，以及如何验证它已被更改。
 
-The ``dnssec-policy`` currently has no easy way to re-salt using the
-same salt length, so to change your NSEC3 salt you need to change the
-``salt-length`` value and reconfigure your server. You should see
-the following messages in the log, assuming your old salt was
-"1234567890ABCDEF" and ``named`` created "FEDCBA09" (salt length 8)
-as the new salt:
+当前 ``dnssec-policy`` 没有简单的方法来使用相同的盐长度重新加盐，所以要
+改变你的NSEC3盐，你需要改变 ``salt-length`` 值并重新配置你的服务器。您
+应该在日志中看到以下消息，假设您的旧盐是“1234567890ABCDEF”，并且
+``named`` 创建了“FEDCBA09”(盐长度8)作为新盐：
 
 ::
 
    named[15848]: zone example.com/IN: zone_addnsec3chain(1,REMOVE,10,1234567890ABCDEF)
    named[15848]: zone example.com/IN: zone_addnsec3chain(1,CREATE|OPTOUT,10,FEDCBA0987654321)
 
-To verify that it worked, you can query the name server (192.168.1.13 in our
-example) for a name that you know does not exist, and check the NSEC3 record
-returned:
+为了验证它是否有效，您可以向名字服务器(在我们的示例中是192.168.1.13)，
+查询一个知道其不存在的名字，并检查返回的NSEC3记录：
 
 ::
 
@@ -894,29 +806,24 @@ returned:
                    NS SOA RRSIG DNSKEY NSEC3PARAM )
    ...
 
-If you want to use the same salt length, you can repeat the above steps and
-go back to your original length value.
+如果你想使用相同的盐长度，你可以重复以上步骤，回到原来的长度值。
 
 .. _recipes_nsec3_optout:
 
 NSEC3 Opt-Out
 ^^^^^^^^^^^^^
 
-This recipe discusses how to enable and disable NSEC3 opt-out, and how to show
-the results of each action. As discussed in
-:ref:`advanced_discussions_nsec3_optout`, NSEC3 opt-out is a feature
-that can help conserve resources on parent zones with many
-delegations that have not yet been signed.
+本诀窍讨论了如何启用和禁用NSEC3 opt-out，以及如何显示每个动作的结果。如
+在 :ref:`advanced_discussions_nsec3_optout` 中所讨论的，NSEC3 opt-out是
+一个可以帮助保存有许多未签名授权的父区上的资源的特性。
 
-Because the NSEC3PARAM record does not keep track of whether opt-out is used,
-it is hard to check whether changes need to be made to the NSEC3 chain if the flag
-is changed. Similar to changing the NSEC3 salt, your best option is to change
-the value of ``optout`` together with another NSEC3 parameter, like
-``iterations``, and in a following step restore the ``iterations`` value.
+因为NSEC3PARAM记录并不跟踪是否使用了opt-out，所以很难检查当标志改变时是
+否需要对NSEC3链进行更改。与更改NSEC3盐类似，您的最佳选择是连同另一个
+NSEC3参数(如 ``iterations`` )一起更改 ``optout`` 的值，并在接下来的步骤
+中恢复 ``iterations`` 的值。
 
-For this recipe we assume the zone ``example.com``
-has the following four entries (for this example, it is not relevant what
-record types these entries are):
+对于这个诀窍，我们假设区 ``example.com`` 有以下四个条目(对于这个示例，
+这些条目是什么记录类型并不相关)：
 
 -  ``ns1.example.com``
 
@@ -926,8 +833,8 @@ record types these entries are):
 
 -  ``web.example.com``
 
-And the zone ``example.com`` has five delegations to five subdomains, only one of
-which is signed and has a valid DS RRset:
+并且区 ``example.com`` 有五个授权到五个子域，其中只有一个已签名且具有有
+效的DS资源记录集：
 
 -  ``aaa.example.com``, not signed
 
@@ -939,9 +846,8 @@ which is signed and has a valid DS RRset:
 
 -  ``eee.example.com``, not signed
 
-Before enabling NSEC3 opt-out, the zone ``example.com`` contains ten
-NSEC3 records; below is the list with the plain text name before the actual
-NSEC3 record:
+在启用NSEC3 opt-out之前，区 ``example.com`` 包含10条NSEC3记录；下面是实
+际NSEC3记录之前的纯文本名称列表：
 
 -  *aaa.example.com*: 9NE0VJGTRTMJOS171EC3EDL6I6GT4P1Q.example.com.
 
@@ -963,8 +869,8 @@ NSEC3 record:
 
 -  *example.com*: TOM10UQBL336NFAQB3P6MOO53LSVG8UI.example.com.
 
-We can enable NSEC3 opt-out with the following configuration, changing
-the ``optout`` configuration value from ``no`` to ``yes``:
+我们可以通过以下配置启用NSEC3的opt-out，将 ``optout`` 的值从 ``no`` 更
+改为 ``yes`` ：
 
 ::
 
@@ -972,9 +878,8 @@ the ``optout`` configuration value from ``no`` to ``yes``:
        nsec3param iterations 10 optout yes salt-length 16;
    };
 
-After NSEC3 opt-out is enabled, the number of NSEC3 records is reduced.
-Notice that the unsigned delegations ``aaa``, ``ccc``, ``ddd``, and
-``eee`` no longer have corresponding NSEC3 records.
+启用NSEC3 opt-out功能后，可以减少NSEC3记录的数量。注意，未签名的授权
+``aaa`` ， ``ccc`` ， ``ddd`` 和 ``eee`` 不再有相应的NSEC3记录。
 
 -  *bbb.example.com*: AESO0NT3N44OOSDQS3PSL0HACHUE1O0U.example.com.
 
@@ -988,7 +893,7 @@ Notice that the unsigned delegations ``aaa``, ``ccc``, ``ddd``, and
 
 -  *example.com*: TOM10UQBL336NFAQB3P6MOO53LSVG8UI.example.com.
 
-To undo NSEC3 opt-out, change the configuration again:
+如果需要取消NSEC3 opt-out，请重新修改配置：
 
 ::
 
@@ -998,10 +903,9 @@ To undo NSEC3 opt-out, change the configuration again:
 
 .. note::
 
-   NSEC3 hashes the plain text domain name, and we can compute our own
-   hashes using the tool ``nsec3hash``. For example, to compute the
-   hashed name for ``www.example.com`` using the parameters we listed
-   above, we can execute this command:
+   NSEC3哈希纯文本域名，我们可以使用工具 ``nsec3hash`` 计算自己的哈希值。
+   例如，要使用上面列出的参数计算 ``www.example.com`` 的散列名称，可以
+   执行这个命令：
 
    ::
 
@@ -1010,22 +914,19 @@ To undo NSEC3 opt-out, change the configuration again:
 
 .. _revert_to_unsigned:
 
-Reverting to Unsigned
+恢复到未签名
 ~~~~~~~~~~~~~~~~~~~~~
 
-This recipe describes how to revert from a signed zone (DNSSEC) back to
-an unsigned (DNS) zone.
+此诀窍描述了如何从一个已签名区(DNSSEC)恢复到一个未签名区(DNS)。
 
-Whether the world thinks your zone is signed is determined by the
-presence of DS records hosted by your parent zone; if there are no DS records,
-the world sees your zone as unsigned. So reverting to unsigned is as
-easy as removing all DS records from the parent zone.
+世界是否认为你的区已签名是由你的父区所承载的DS记录的存在决定的；如果没
+有DS记录，世界会认为你的区是未签名的。因此，恢复到未签名状态就像从父区
+删除所有DS记录一样简单。
 
-Below is an example showing how to remove DS records using the
-`GoDaddy <https://www.godaddy.com>`__ web-based interface:
+以下的例子展示了如何使用 `GoDaddy <https://www.godaddy.com>`__ 的基于
+Web的接口删除DS记录：
 
-1. After logging in, click the green "Launch" button next to the domain
-   name you want to manage.
+1. 登录后，点击要管理的域名旁边的绿色“Launch”按钮。
 
 .. _unsign-1:
 
@@ -1033,9 +934,9 @@ Below is an example showing how to remove DS records using the
       :alt: Revert to Unsigned Step #1
       :width: 60.0%
 
-      Revert to Unsigned Step #1
+      恢复到未签名步骤1
 
-2. Scroll down to the "DS Records" section and click Manage.
+2. 向下滚动到"DS Records"部份并点击Manage。
 
 .. _unsign-2:
 
@@ -1043,10 +944,9 @@ Below is an example showing how to remove DS records using the
       :alt: Revert to Unsigned Step #2
       :width: 40.0%
 
-      Revert to Unsigned Step #2
+      恢复到未签名步骤2
 
-3. A dialog appears, displaying all current keys. Use the far right-hand
-   X button to remove each key.
+3. 出现一个对话框，显示所有当前的密钥。使用最右边的X按钮删除每个密钥。
 
 .. _unsign-3:
 
@@ -1054,9 +954,9 @@ Below is an example showing how to remove DS records using the
       :alt: Revert to Unsigned Step #3
       :width: 70.0%
 
-      Revert to Unsigned Step #3
+      恢复到未签名步骤3
 
-4. Click Save.
+4. 点击Save.
 
 .. _unsign-4:
 
@@ -1064,15 +964,13 @@ Below is an example showing how to remove DS records using the
       :alt: Revert to Unsigned Step #4
       :width: 70.0%
 
-      Revert to Unsigned Step #4
+      恢复到未签名步骤4
 
-To be on the safe side, wait a while before actually deleting
-all signed data from your zone, just in case some validating resolvers
-have cached information. After you are certain that all cached
-information has expired (usually this means one TTL interval has passed), you may
-reconfigure your zone.
+为了安全起见，在实际删除区中的所有签名数据之前，请等待一段时间，以防某
+些验证解析器缓存了信息。在您确定所有缓存的信息已经过期(通常这意味着一个
+TTL间隔已经过去)之后，您可以重新配置您的区。
 
-Here is what ``named.conf`` looks like when it is signed:
+下面是 ``named.conf`` 被签名时的样子：
 
 ::
 
@@ -1083,7 +981,7 @@ Here is what ``named.conf`` looks like when it is signed:
        dnssec-policy "default";
    };
 
-Remove the ``dnssec-policy`` line so your ``named.conf`` looks like this:
+删除 ``dnssec-policy`` 行，使你的 ``named.conf`` 看起来像这样：
 
 ::
 
@@ -1093,6 +991,6 @@ Remove the ``dnssec-policy`` line so your ``named.conf`` looks like this:
        allow-transfer { any; };
    };
 
-Then use ``rndc reload`` to reload the zone.
+然后使用 ``rndc reload`` 重新加载区。
 
-Your zone is now reverted back to the traditional, insecure DNS format.
+您的区现在已恢复到传统的、不安全的DNS格式。

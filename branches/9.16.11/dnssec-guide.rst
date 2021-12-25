@@ -8,8 +8,8 @@
    See the COPYRIGHT file distributed with this work for additional
    information regarding copyright ownership.
 
-DNSSEC Guide
-============
+DNSSEC指南
+==========
 
 .. include:: ./dnssec-guide/preface.rst
 .. include:: ./dnssec-guide/introduction.rst

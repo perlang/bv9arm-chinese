@@ -17,48 +17,38 @@ BIND 9.16.11注记
 - 在 BIND 9.16 中引入的新的网络代码(netmgr)被全面修改，以使其更稳定、
   可测试和容易维护。 [GL #2321]
 
-- Earlier releases of BIND versions 9.16 and newer required the
-  operating system to support load-balanced sockets in order for
-  ``named`` to be able to achieve high performance (by distributing
-  incoming queries among multiple threads). However, the only operating
-  systems currently known to support load-balanced sockets are Linux and
-  FreeBSD 12, which means both UDP and TCP performance were limited to a
-  single thread on other systems. As of BIND 9.17.8, ``named`` attempts
-  to distribute incoming queries among multiple threads on systems which
-  lack support for load-balanced sockets (except Windows). [GL #2137]
+- 早期的BIND 9.16和更新的版本要求操作系统支持负载均衡的套接字，以便
+  ``named`` 能够实现高性能(通过在多个线程中分配进入的查询)。然而，目前
+  已知的支持负载平衡套接字的操作系统只有Linux和FreeBSD 12，这意味着在其
+  它系统上UDP和TCP的性能都被限制在单个线程上。从BIND 9.17.8版本开始，
+  ``named`` 尝试在缺乏负载均衡套接字支持的系统(Windows除外)上将进入的查
+  询分配到多个线程中。 [GL #2137]
 
-- It is now possible to transition a zone from secure to insecure mode
-  without making it bogus in the process; changing to ``dnssec-policy
-  none;`` also causes CDS and CDNSKEY DELETE records to be published, to
-  signal that the entire DS RRset at the parent must be removed, as
-  described in RFC 8078. [GL #1750]
+- 现在可以将一个区从安全模式过渡到不安全模式，而不会在这个过程中让它变
+  成伪模式；改变为 ``dnssec-policy none;`` 也会导致CDS和CDNSKEY删除被发
+  布的记录，以表示父节点上的整个DS资源记录集必须被删除，如RFC 8078所述。
+  [GL #1750]
 
-- When using the ``unixtime`` or ``date`` method to update the SOA
-  serial number, ``named`` and ``dnssec-signzone`` silently fell back to
-  the ``increment`` method to prevent the new serial number from being
-  smaller than the old serial number (using serial number arithmetics).
-  ``dnssec-signzone`` now prints a warning message, and ``named`` logs a
-  warning, when such a fallback happens. [GL #2058]
+- 当使用 ``unixtime`` 或 ``date`` 方法更新SOA序列号时， ``named`` 和
+  ``dnssec-signzone`` 会悄悄地退回到 ``increment`` 方法，以防止新序列号
+  比旧序列号小(使用序列号算术)。当发生这种回退时， ``dnssec-signzone``
+  将打印一条警告消息， ``named`` 将记录一条警告. [GL #2058]
 
 漏洞修补
 ~~~~~~~~~
 
-- Multiple threads could attempt to destroy a single RBTDB instance at
-  the same time, resulting in an unpredictable but low-probability
-  assertion failure in ``free_rbtdb()``. This has been fixed. [GL #2317]
+- 多个线程可能尝试在同时销毁单个RBTDB实例，导致在 ``free_rbtdb()`` 中的
+  一个不可预料却低概率的断言失败。这已被修订。 [GL #2317]
 
-- ``named`` no longer attempts to assign threads to CPUs outside the CPU
-  affinity set. Thanks to Ole Bjørn Hessen. [GL #2245]
+- ``named`` 不再尝试将线程分配给CPU亲和集之外的CPU。感谢
+  Ole Bjørn Hessen。 [GL #2245]
 
-- When reconfiguring ``named``, removing ``auto-dnssec`` did not turn
-  off DNSSEC maintenance. This has been fixed. [GL #2341]
+- 当重配置 ``named`` 时，删除 ``auto-dnssec`` 没有关掉DNSSEC维护。这已
+  被修订。 [GL #2341]
 
-- The report of intermittent BIND assertion failures triggered in
-  ``lib/dns/resolver.c:dns_name_issubdomain()`` has now been closed
-  without further action. Our initial response to this was to add
-  diagnostic logging instead of terminating ``named``, anticipating that
-  we would receive further useful troubleshooting input. This workaround
-  first appeared in BIND releases 9.17.5 and 9.16.7. However, since
-  those releases were published, there have been no new reports of
-  assertion failures matching this issue, but also no further diagnostic
-  input, so we have closed the issue. [GL #2091]
+- 在 ``lib/dns/resolver.c:dns_name_issubdomain()`` 中触发的间歇性BIND断
+  言失败的报告现在已经关闭，无需进一步处理。对此，我们最初的反应是添加
+  诊断日志，而不是终止 ``named`` ，希望能收到更多有用的故障排除输入。这
+  个解决方案首先出现在BIND版本9.17.5和9.16.7中。但是，由于发布了这些版
+  本，没有匹配此问题的断言失败的新报告，而且也没有进一步的诊断输入，所
+  以我们已经关闭了该问题。 [GL #2091]

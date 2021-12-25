@@ -10,159 +10,123 @@
 
 .. _dnssec_commonly_asked_questions:
 
-Commonly Asked Questions
+常见问题
 ------------------------
 
-No questions are too stupid to ask. Below are some common
-questions you may have and (hopefully) some answers that help.
+没有什么问题是愚蠢到不能问的。下面是一些常见的问题，你可能会有一些(希望
+)帮助的答案。
 
-Do I need IPv6 to have DNSSEC?
-   No. DNSSEC can be deployed without IPv6.
+我需要IPv6有DNSSEC吗？
+   不。DNSSEC不需要IPv6也可以部署。
 
-Does DNSSEC encrypt my DNS traffic, so others cannot eavesdrop on my DNS queries?
-   No. Although cryptographic keys and digital signatures
-   are used in DNSSEC, they only provide authenticity and integrity, not
-   privacy. Someone who sniffs network traffic can still see all the DNS
-   queries and answers in plain text; DNSSEC just makes it very difficult
-   for the eavesdropper to alter or spoof the DNS responses.
+DNSSEC是否会加密我的DNS流量，以便其它人不能窃听我的DNS查询？
+   不会。虽然在DNSSEC中使用了加密密钥和数字签名，但它们只提供了真实性和
+   完整性，而不是隐私性。嗅探网络流量的人仍然可以看到所有的DNS查询和纯
+   文本的答案；DNSSEC只是让窃听者很难改变或伪造DNS响应。
 
-Does DNSSEC protect the communication between my laptop and my name server?
-   Unfortunately, not at the moment. DNSSEC is designed to protect the
-   communication between end clients (laptop) and name servers;
-   however, there are few applications or stub resolver libraries as of
-   mid-2020 that take advantage of this capability. While enabling DNSSEC today
-   does little to enhance the security of communications between a recursive
-   server and its clients (commonly called the "last mile"), we hope that
-   will change in the near future as more applications become DNSSEC-aware.
+DNSSEC是否保护我的笔记本电脑和我的名字服务器之间的通信？
+   很遗憾，现在没有。DNSSEC旨在保护终端客户端(笔记本电脑)和名字服务器之
+   间的通信；然而，截至2020年年中，很少有应用程序或存根解析器库能够利用
+   此功能。虽然今天启用DNSSEC对增强递归服务器与其客户端之间通信的安全性
+   (通常称为“最后一英里”)没有什么帮助，但我们希望在不久的将来，随着更多
+   应用程序变得支持DNSSEC，这种情况会有所改变。
 
-Does DNSSEC secure zone transfers?
-   No. You should consider using TSIG to secure zone transfers among your
-   name servers.
+DNSSEC是否包含区传输？
+   不是。您应该考虑使用TSIG来保护名字服务器之间的区传输。
 
-Does DNSSEC protect my network from malicious websites?
-   The answer in the early stages of DNSSEC deployment is, unfortunately,
-   no. DNSSEC is designed to provide
-   confidence that when you receive a DNS response for www.company.com over
-   port 53, it really came from Company's name servers and the
-   answers are authentic. But that does not mean the web server a user visits
-   over port 80 or port 443 is necessarily safe. Furthermore, 98.5% of
-   domain name operators (as of this writing in mid-2020) have not yet signed
-   their zones, so DNSSEC cannot even validate their answers.
+DNSSEC是否保护我的网络免受恶意网站的攻击？
+   在DNSSEC部署的早期阶段，很遗憾，答案是否。DNSSEC旨在提供信心，当您从
+   端口53接收到针对 www.company.com 的DNS响应时，它确实来自Comapny的名
+   字服务器，并且答案是真实的。但这并不意味着用户通过端口80或端口443访
+   问的Web服务器一定是安全的。此外，98.5%的域名运行者（在本文写作的
+   2020年年中）都没有将他们的区签名，这样DNSSEC甚至不能验证它们的答案。
+
+   未来的答案是，随着更多的区被签名，更多的递归服务器被验证，DNSSEC将使
+   攻击者更难伪造DNS响应或执行缓存中毒。它仍然不能防止用户访问攻击者拥
+   有和操作的恶意网站，或防止用户敲错域名；这将使攻击者不太可能劫持其它
+   域名。
+
+因为大多数域名还没有使用DNSSEC，如果我启用了DNSSEC验证，它会破坏DNS查找吗？
+   不会。DNSSEC向后兼容“标准的”DNS。在本文写作时（2020年年中），虽然仍
+   有98.5%的.com域没有签名，开启DNSSEC的验证解析器仍然可以查找所有这些
+   域名，因为它总是在标准DNS下。
+  
+   有四(4)类的响应(参见 :rfc:`4035`):
+  
+   *安全*:
+      域已正确部署DNSSEC。
+
+   *不安全*:
+      尚未部署DNSSEC的域。
+
+   *冒牌*:
+      域已经部署了DNSSEC，但做得不正确。
+
+   *不确定*:
+      不能确定这些域是否使用DNSSEC的域。
+
+   启用dnssec的验证解析器仍然会解析第1种和第2种情况；只有第3种和第4种会
+   得到一个SERVFAIL的结果。您可能已经在使用DNSSEC验证而没有意识到它，因
+   为一些ISP已经开始在它们的递归名字服务器上启用DNSSEC验证。谷歌公共DNS
+   (8.8.8.8)也启用了DNSSEC验证。
+
+我需要有特殊的客户端软件来使用DNSSEC吗？
+   不需要。DNSSEC只改变DNS服务器之间的通信行为，不改变DNS服务器(验证解
+   析器)和客户端(存根解析器)之间的通信行为。当你的递归服务器上启用了
+   DNSSEC验证，如果一个域名没有通过检查，将给客户端返回一条错误消息(通
+   常是SERVFAIL)；对于今天的大多数客户端软件，它似乎是DNS查询失败或域名
+   不存在。
+
+既然DNSSEC使用公钥加密，我需要公共密钥基础设施(Public Key Infrastructure，PKI)来使用DNSSEC吗？
+   不需要。DNSSEC不依赖一个PKI的存在。公钥存储在DNS层次体系中；每个区的
+   可信性由其父区保证，一直到根区域。根区的信任锚的副本随BIND 9一起分发。
+
+我是否需要从证书颁发机构(CA)购买SSL证书以使用DNSSEC？
+   不需要。通过DNSSEC，您可以生成和发布自己的密钥，并对自己的数据进行签
+   名。没有必要付钱给别人为你做这件事。
+
+我的父区不支持DNSSEC；我还能在我的区域上签名吗？
+   技术上说，是的，但是你无法获得DNSSEC的全部好处，因为其它验证解析器无
+   法验证区数据。如果父区中没有DS记录，其它验证解析器将您的区视为不安全
+   的(传统的)区，因此不会执行实际的验证。对世界上的其他人来说，你的区看
+   起来仍然是不安全的，并且它将继续是不安全的，直到你的父区可以为你保存
+   DS记录并告诉世界上的其他人你的区已经签名。
+
+DNSSEC和TSIG是一回事吗？
+   不是。TSIG通常用于主名字服务器和辅名字服务器之间，以确保区传输的安全，
+   而DNSSEC通过验证答案来确保DNS查找的安全。即使你启用了DNSSEC，区传输
+   仍然没有被验证；为了保护主名字服务器和辅名字服务器之间的通信，可以考
+   虑设置TSIG或类似的安全通道。
+
+如何将密钥从主服务器复制到辅服务器？
+   DNSSEC使用公钥加密机制，结果是两种类型的密钥：公钥和私钥。公钥是区数
+   据的一部分，存储为DNSKEY记录类型。因此，公共密钥作为区传输的一部分从
+   主服务器同步到辅服务器。私钥不会(也不应该)存储在主服务器上的安全位置
+   之外的任何地方。有关键存储选项和注意事项的更多信息，请参阅
+   :ref:`advanced_discussions_key_storage` 。
+
+我可以在多个区使用相同的密钥吗？
+   是也不是。良好的安全实践建议，您应该为每个区使用唯一的密钥对，就像您
+   应该为电子邮件帐户、社交媒体登录和在线银行凭证设置不同的密码一样。在
+   技术层面上，重用密钥是完全可行的，但如果一个密钥对被破坏，多个区就会
+   面临风险。但是，如果您有数百或数千个区域需要管理，那么针对所有区的一
+   个密钥对管理起来就不那么容易出错。你可以选择使用与密码管理相同的方法：
+   为你的银行账户和购物网站使用独特的密码，但对你不太重要的登录使用标准
+   密码。首先，对您的区进行分类：高价值的区域(或具有特定密钥轮转需求的
+   区)拥有它们自己的密钥对，而其它更“通用”的区域可以使用一个密钥对以方
+   便管理。请注意，目前(2020年年中)，全自动签名(使用 ``named`` 配置文件
+   中的 ``dnssec-policy`` 子句)不支持密钥重用，除非在多个视图中出现的同
+   一个区(见下一个问题)。若要对多个区使用相同的密钥，请使用半自动签名对
+   您的区进行签名。希望使用该密钥的每个区都应该指向相同的密钥目录。
+
+如何对出现在多个视图中的区的不同实例签名？
+   为配置文件中的每个 ``zone`` 定义添加一条 ``dnssec-policy`` 语句。为
+   避免一台计算机访问区的不同实例而信息仍在其缓存中(例如，一台笔记本电
+   脑从您的办公室移动到客户的站点)的问题，您应该使用相同的密钥对所有实
+   例进行签名。这意味着为该区的所有实例设置相同的DNSSEC策略，并确保该区
+   的所有实例的密钥目录是相同的。
    
-   The answer for sometime in
-   the future is that, as more zones are signed and more
-   recursive servers validate, DNSSEC will make it much more
-   difficult for attackers to spoof DNS responses or perform cache
-   poisoning. It will still not protect against users who visit a malicious
-   website that an attacker owns and operates, or prevent users from
-   mistyping a domain name; it will just become less likely that an attacker can
-   hijack other domain names.
-
-If I enable DNSSEC validation, will it break DNS lookup, since most domain names do not yet use DNSSEC?
-   No, DNSSEC is backwards-compatible to "standard"
-   DNS. As of this writing (in mid-2020), although 98.5% of the .com domains have yet to
-   be signed, a DNSSEC-enabled validating resolver can still look up all of
-   these domain names as it always has under standard DNS.
-   
-   There are four (4) categories of responses (see :rfc:`4035`):
-   
-   *Secure*:
-      Domains that have DNSSEC deployed correctly.
-
-   *Insecure*:
-      Domains that have yet to deploy DNSSEC.
-   
-   *Bogus*:
-      Domains that have deployed DNSSEC but have done it incorrectly.
-   
-   *Indeterminate*:
-      Domains for which it is not possible to determine whether these domains use DNSSEC.
-
-   A DNSSEC-enabled validating resolver still resolves #1 and #2; only #3
-   and #4 result in a SERVFAIL. You may already be using DNSSEC
-   validation without realizing it, since some ISPs have begun enabling
-   DNSSEC validation on their recursive name servers. Google public DNS
-   (8.8.8.8) also has enabled DNSSEC validation.
-
-Do I need to have special client software to use DNSSEC?
-   No. DNSSEC only changes the communication
-   behavior among DNS servers, not between a DNS server (validating resolver) and
-   a client (stub resolver). With DNSSEC validation enabled on your recursive
-   server, if a domain name does not pass the checks, an error message
-   (typically SERVFAIL) is returned to clients; to most client
-   software today, it appears that the DNS query has failed or that the domain
-   name does not exist.
-
-Since DNSSEC uses public key cryptography, do I need Public Key Infrastructure (PKI) in order to use DNSSEC?
-   No, DNSSEC does not depend on an existing PKI. Public keys are stored within
-   the DNS hierarchy; the trustworthiness of each zone is guaranteed by
-   its parent zone, all the way back to the root zone. A copy of the trust
-   anchor for the root zone is distributed with BIND 9.
-
-Do I need to purchase SSL certificates from a Certificate Authority (CA) to use DNSSEC?
-   No. With DNSSEC, you generate and publish your own keys, and sign your own
-   data as well. There is no need to pay someone else to do it for you.
-
-My parent zone does not support DNSSEC; can I still sign my zone?
-   Technically, yes, but you will not get
-   the full benefit of DNSSEC, as other validating resolvers are not
-   able to validate your zone data. Without the DS record(s) in your parent
-   zone, other validating resolvers treat your zone as an insecure
-   (traditional) zone, and no actual verification is carried out.
-   To the rest of the world, your zone still appears to be
-   insecure, and it will continue to be insecure until your parent zone can
-   host the DS record(s) for you and tell the rest of the world
-   that your zone is signed.
-
-Is DNSSEC the same thing as TSIG?
-   No. TSIG is typically used
-   between primary and secondary name servers to secure zone transfers,
-   while DNSSEC secures DNS lookup by validating answers. Even if you enable
-   DNSSEC, zone transfers are still not validated; to
-   secure the communication between your primary and secondary name
-   servers, consider setting up TSIG or similar secure channels.
-
-How are keys copied from primary to secondary server(s)?
-   DNSSEC uses public cryptography, which results in two types of keys: public and
-   private. The public keys are part of the zone data, stored as DNSKEY
-   record types. Thus the public keys are synchronized from primary to
-   secondary server(s) as part of the zone transfer. The private keys are
-   not, and should not be, stored anywhere other than secured on the primary server.
-   See :ref:`advanced_discussions_key_storage` for
-   more information on key storage options and considerations.
-
-Can I use the same key for multiple zones?
-   Yes and no. Good security practice
-   suggests that you should use unique key pairs for each zone, just as
-   you should have different passwords for your email account, social
-   media login, and online banking credentials. On a technical level, it
-   is completely feasible to reuse a key, but multiple zones are at risk if one key
-   pair is compromised. However, if you have hundreds or thousands
-   of zones to administer, a single key pair for all might be
-   less error-prone to manage. You may choose to use the same approach as
-   with password management: use unique passwords for your bank accounts and
-   shopping sites, but use a standard password for your not-very-important
-   logins. First, categorize your zones: high-value zones (or zones that have
-   specific key rollover requirements) get their own key pairs, while other,
-   more "generic" zones can use a single key pair for easier management. Note that
-   at present (mid-2020), fully automatic signing (using the ``dnssec-policy``
-   clause in your ``named`` configuration file) does not support reuse of keys
-   except when the same zone appears in multiple views (see next question).
-   To use the same key for multiple zones, sign your
-   zones using semi-automatic signing. Each zone wishing to use the key
-   should point to the same key directory.
-
-How do I sign the different instances of a zone that appears in multiple views?
-   Add a ``dnssec-policy`` statement to each ``zone`` definition in the
-   configuration file. To avoid problems when a single computer accesses
-   different instances of the zone while information is still in its cache
-   (e.g., a laptop moving from your office to a customer site), you
-   should sign all instances with the same key. This means setting the
-   same DNSSEC policy for all instances of the zone, and making sure that the
-   key directory is the same for all instances of the zone.
-
-Will there be any problems if I change the DNSSEC policy for a zone?
-   If you are using fully automatic signing, no. Just change the parameters in the
-   ``dnssec-policy`` statement and reload the configuration file. ``named``
-   makes a smooth transition to the new policy, ensuring that your zone
-   remains valid at all times.
+如果我改变一个区域的DNSSEC策略会有什么问题吗？
+   如果你使用全自动化签名，就没有问题。只需更改 ``dnssec-policy`` 语句
+   中的参数并重新加载配置文件。 ``named`` 平滑地过渡到新策略，确保您的
+   区在任何时候都是有效的。

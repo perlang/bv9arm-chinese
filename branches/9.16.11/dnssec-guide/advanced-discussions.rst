@@ -10,116 +10,89 @@
 
 .. _dnssec_advanced_discussions:
 
-Advanced Discussions
---------------------
+高级话题
+--------
 
 .. _signature_validity_periods:
 
-Signature Validity Periods and Zone Re-Signing Intervals
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+签名有效周期与区重签间隔
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-In :ref:`how_are_answers_verified`, we saw that record signatures
-have a validity period outside of which they are not valid. This means
-that at some point, a signature will no longer be valid and a query for
-the associated record will fail DNSSEC validation. But how long should a
-signature be valid for?
+在 :ref:`how_are_answers_verified` 中，我们看到记录的签名有一个有效期，
+超过这个有效期它们就无效了。这意味着在某一时刻，签名将不再有效，对相关
+记录的查询将无法通过DNSSEC验证。但是签名的有效期应该持续多长时间呢？
 
-The maximum value for the validity period should be determined by the impact of a
-replay attack: if this is low, the period can be long; if high,
-the period should be shorter. There is no "right" value, but periods of
-between a few days to a month are common.
+有效期的最大值应该由重放攻击的影响决定：如果这个值低，周期可以长；如果
+这个值高，周期应该短。没有“正确”的值，但是几天到一个月之间的周期是常见
+的。
 
-Deciding a minimum value is probably an easier task. Should something
-fail (e.g., a hidden primary distributing to secondary servers that
-actually answer queries), how long will it take before the failure is
-noticed, and how long before it is fixed? If you are a large 24x7
-operation with operators always on-site, the answer might be less than
-an hour. In smaller companies, if the failure occurs
-just after everyone has gone home for a long weekend, the answer might
-be several days.
+确定最小值可能是一项更简单的任务。如果出现故障（例如，数据从隐藏主服务
+器分发到实际回答查询的辅服务器)，需要多长时间才能发现故障，以及需要多
+长时间才能修复故障？如果您有一个大的 7x24 团队，始终有操作员在线，那么
+周期应当小于一小时。在小型公司，如果失败发生在所有人都回家度过一个长周
+末之后，周期可能是几天。
 
-Again, there are no "right" values - they depend on your circumstances. The
-signature validity period you decide to use should be a value between
-the two bounds. At the time of this writing (mid-2020), the default policy used by BIND
-sets a value of 14 days.
+再说一遍，没有“正确”的值————它们取决于你的环境。您决定使用的签名有效期
+应该是介于这两个界限值之间。在撰写本文时（2020年年中），BIND使用的默认
+策略将值设置为14天。
 
-To keep the zone valid, the signatures must be periodically refreshed
-since they expire - i.e., the zone must be periodically
-re-signed. The frequency of the re-signing depends on your network's
-individual needs. For example, signing puts a load on your server, so if
-the server is very highly loaded, a lower re-signing frequency is better. Another
-consideration is the signature lifetime: obviously the intervals between
-signings must not be longer than the signature validity period. But if
-you have set a signature lifetime close to the minimum (see above), the
-signing interval must be much shorter. What would happen if the system
-failed just before the zone was re-signed?
+为了保持区有效，签名必须在过期后定期刷新————即区必须定期重新签名。
+重新签名的频率取决于您的网络的个别需求。例如，签名会给服务器带来负载，
+因此如果服务器负载非常高，那么较低的重新签名频率会更好。另一个需要考虑
+的问题是签名的生命周期：显然两次签名的间隔不能超过签名的有效期。但是，
+如果您将签名的生命周期设置为接近最小值（参见上面），则签名间隔必须更短。
+如果系统恰好在重新签名区之前发生故障，会发生什么情况？
 
-Again, there is no single "right" answer; it depends on your circumstances. The
-BIND 9 default policy sets the signature refresh interval to 5 days.
+同样，没有单一的“正确”答案；这取决于你的情况。BIND 9缺省策略设置签名刷
+新周期为5天。
 
 .. _advanced_discussions_proof_of_nonexistence:
 
-Proof of Non-Existence (NSEC and NSEC3)
+不存在的证据（NSEC和NSEC3）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-How do you prove that something does not exist? This zen-like question
-is an interesting one, and in this section we provide an overview
-of how DNSSEC solves the problem.
+你如何证明某物不存在？这个类似禅宗的问题很有趣，在本节中，我们将概述
+DNSSEC是如何解决这个问题的。
 
-Why is it even important to have authenticated denial of existence in DNS?
-Couldn't we just send back "hey, what you asked for does not exist,"
-and somehow generate a digital signature to go with it, proving it
-really is from the correct authoritative source? Aside from the technical
-challenge of signing something that doesn't exist, this solution has flaws, one of
-which is it gives an attacker a way to create the appearance of denial
-of service by replaying this message on the network.
+为什么在DNS中对不存在的认证很重要？难道我们不能直接回复“嗨，你要的东西
+不存在“并且以某种方式为其生成一个数字签名，以证明它真的是来自正确的权
+威源吗？除了对不存在的内容进行签名的技术挑战之外，这种解决方案还存在缺
+陷，其中之一是它为攻击者提供了一种方法，通过在网络上重放这条消息来创建
+拒绝服务的假象。
 
-Let's use a little story, told three different ways, to
-illustrate how proof of nonexistence works. In our story, we run a small
-company with three employees: Alice, Edward, and Susan. For reasons that
-are far too complicated to go into, they don't have email accounts;
-instead, email for them is sent to a single account and a nameless
-intern passes the message to them. The intern has access to our private
-DNSSEC key to create signatures for their responses.
+让我们用一个小故事，用三种不同的方式，来说明不存在的证明是如何起作用的。
+在我们的故事中，我们经营着一家只有三个雇员的小公司：Alice，Edward和
+Susan。由于一些太复杂的原因，他们没有电子邮件账户；相反，他们的电子邮
+件被发送到一个单一的账户，然后由一个不知名的实习生将信息传递给他们。实
+习生可以访问我们的私有DNSSEC密钥，为他们的回复创建签名。
 
-If we followed the approach of giving back the same answer no matter
-what was asked, when people emailed and asked for the message to be
-passed to "Bob," our intern would simply answer "Sorry, that person
-doesn’t work here" and sign this message. This answer could be validated
-because our intern signed the response with our private DNSSEC key.
-However, since the signature doesn’t change, an attacker could record
-this message. If the attacker were able to intercept our email, when the next
-person emailed asking for the message to be passed to Susan, the attacker
-could return the exact same message: "Sorry, that person doesn’t work
-here," with the same signature. Now the attacker has successfully fooled
-the sender into thinking that Susan doesn’t work at our company, and
-might even be able to convince all senders that no one works at this
-company.
+如果我们遵循同样的方法，不管被问到什么问题，都给出相同的答案，当人们发
+电子邮件并要求将信息传递给“Bob”时，我们的实习生只会简单地回答“抱歉，那
+个人不在这里工作”，并在这条信息上签名。这个答案可以被验证，因为我们的
+实习生用我们的私有DNSSEC密钥给响应签名了。然而，由于签名没有变化，攻击
+者可能会记录该消息。如果攻击者能够拦截我们的电子邮件，当下一个人发送电
+子邮件要求将该消息传递给Susan时，攻击者可以返回完全相同的消息：“对不起，
+那个人不在这里工作”，并具有相同的签名。现在攻击者已经成功地欺骗发送者，
+使其认为Susan不是我们公司的员工，甚至可能能够使所有发送者相信，没有人
+在这家公司工作。
 
-To solve this problem, two different solutions were created. We will
-look at the first one, NSEC, next.
+为了解决这个问题，有两种不同的解决方案。接下来我们来看第一个，NSEC。
 
 .. _advanced_discussions_nsec:
 
 NSEC
 ^^^^
 
-The NSEC record is used to prove that something does not exist, by
-providing the name before it and the name after it. Using our tiny
-company example, this would be analogous to someone sending an email for
-Bob and our nameless intern responding with with: "I'm sorry, that
-person doesn't work here. The name before the location where 'Bob'
-would be is Alice, and the name after that is Edward." Let's say
-another email was received for a
-non-existent person, this time Oliver; our intern would respond "I'm
-sorry, that person doesn't work here. The name before the location
-where 'Oliver' would be is Edward,
-and the name after that is Susan." If another sender asked for Todd, the
-answer would be: "I'm sorry, that person doesn't work here. The name
-before the location where 'Todd' would be is Susan, and there are no
-other names after that."
+NSEC记录是用来证明某物不存在的，通过提供在它之前和之后的名字。
+以我们这个小公司为例，这类似于某人给Bob发了一封电子邮件，而我们的无名实
+习生的回应是：“对不起，那个人不在这里工作。‘Bob’所在位置之前的名字是
+Alice，后面的名字是Edward。”我们假设另一封邮件收到了一个不存在的人，这
+次是Oliver；我们的实习生会回答:“对不起，那个人不在这里工作。‘Oliver’所
+在的位置之前的名字是Edward，后面的名字是Susan。”如果另一个发件人问Todd，
+答案会是：“对不起，那个人不在这里工作。‘Todd’所在的位置之前的名字是
+Susan，在那之后就没有别的名字了。”
 
-So we end up with four NSEC records:
+所以我们最终得到了四条NSEC记录：
 
 ::
 
@@ -128,88 +101,70 @@ So we end up with four NSEC records:
    edward.example.com. 300 IN  NSEC    susan.example.com.  A RRSIG NSEC
    susan.example.com.  300 IN  NSEC    example.com.        A RRSIG NSEC
 
-What if the attacker tried to use the same replay method described
-earlier? If someone sent an email for Edward, none of the four answers
-would fit. If attacker replied with message #2, "I'm sorry, that person
-doesn't work here. The name before it is Alice, and the name after it is
-Edward," it is obviously false, since "Edward" is in the response; and the same
-goes for #3, Edward and Susan. As for #1 and #4, Edward does not fall in
-the alphabetical range before Alice or after Susan, so the sender can logically deduce
-that it was an incorrect answer.
+如果攻击者试图使用先前描述的相同的重放方法怎么办？如果某人发邮件给Edward，
+四条答复都不适合。如果攻击者重放第2条消息，“对不起，那个人不在这里工作。
+在其之前的名字是Alice，并且在其之后的名字是Edward，”这明显是错误的，因为
+“Edward”在响应中；对于第3条消息，Edward和Susan，也是类似的。而对于第1条
+和第4条消息，Edward不在Alice之前或Susan之后的字母表中，所以发件人可以从
+逻辑上推断出这是一条错误的回答。
 
-When BIND signs your zone, the zone data is automatically sorted on
-the fly before generating NSEC records, much like how a phone directory
-is sorted.
+当BIND为您的区签名时，在生成NSEC记录之前，将自动对区域数据进行动态排序，
+就像对电话目录进行排序一样。
 
-The NSEC record allows for a proof of non-existence for record types. If
-you ask a signed zone for a name that exists but for a record type that
-doesn't (for that name), the signed NSEC record returned lists all of
-the record types that *do* exist for the requested domain name.
+NSEC记录允许证明记录类型不存在。如果您向一个已签名的区请求一个存在的名字，
+但是这个名字不存在所请求的记录类型，返回的已签名NSEC记录将列出所有 *确实*
+存在的被请求域名的记录类型。
 
-NSEC records can also be used to show whether a record was generated as
-the result of a wildcard expansion. The details of this are not
-within the scope of this document, but are described well in
-:rfc:`7129`.
+NSEC记录还可以用于显示一个记录是否是通配符扩展而生成的结果。这方面的细节
+不在本文档的范围内，但在 :rfc:`7129` 中有详细描述。
 
-Unfortunately, the NSEC solution has a few drawbacks, one of which is
-trivial "zone walking." In our story, a curious person can keep sending emails, and
-our nameless, gullible intern keeps divulging information about our
-employees. Imagine if the sender first asked: "Is Bob there?" and
-received back the names Alice and Edward. Our sender could then email
-again: "Is Edwarda there?", and will get back Edward and Susan. (No,
-"Edwarda" is not a real name. However, it is the first name
-alphabetically after "Edward" and that is enough to get the intern to reply
-with a message telling us the next valid name after Edward.) Repeat the
-process enough times and the person sending the emails eventually
-learns every name in our company phone directory. For many of you, this
-may not be a problem, since the very idea of DNS is similar to a public
-phone book: if you don't want a name to be known publicly, don't put it
-in DNS! Consider using DNS views (split DNS) and only display your
-sensitive names to a select audience.
+不幸的是，NSEC解决方案有一些缺点，其中之一是易于“区遍历”。在我们的故事中，
+一个好奇的人可以继续发送电子邮件，而我们的匿名、易受骗的实习生不断泄露我
+们员工的信息。
 
-The second drawback of NSEC is actually increased operational
-overhead: there is no opt-out mechanism for insecure child zones. This generally
-is a problem for parent-zone operators dealing with a lot of insecure
-child zones, such as ``.com``. To learn more about opt-out, please see
-:ref:`advanced_discussions_nsec3_optout`.
+想象一下，如果发送者首先问：“Bob在吗?”并收到Alice和Edward的名字。然后发
+送者可以再发一封邮件：“Edwarda在吗?”并得到Edward和Susan。（不，“Edwarda”
+不是一个真实的名字。但是，它是按字母顺序排在Edward之后的第一个名字，这就
+足以让实习生回复我们一条消息，告诉我们Edward之后的下一个有效名字。）重复
+这个过程足够多次，发送邮件的人最终会记住我们公司电话号码簿上的每个名字。
+对于许多人来说，这可能不是问题，因为DNS的概念与公共电话簿类似：如果您不
+想让一个名字公开，就不要把它放在DNS中！考虑使用DNS视图(split DNS)，只向
+选定的受众显示敏感名称。
+
+NSEC的第二个缺点实际上是增加了操作开销：对于不安全的子区没有选择退出的
+机制。对于要处理大量不安全子区的父区，如 ``.com`` ，的操作者来说，这通
+常是一个问题。要了解更多关于选择退出，请参阅
+:ref:`advanced_discussions_nsec3_optout` 。
 
 .. _advanced_discussions_nsec3:
 
 NSEC3
 ^^^^^
 
-NSEC3 adds two additional features that NSEC does not have:
+NSEC3增加了两个NSEC没有的额外功能：
 
-1. It offers no easy zone enumeration.
+1. 它使得不能轻易进行区枚举。
 
-2. It provides a mechanism for the parent zone to exclude insecure
-   delegations (i.e., delegations to zones that are not signed) from the
-   proof of non-existence.
+2. 它为父区提供了一种机制，将不安全的授权（即，对未签名的区的授权）从不
+   存在的证明中排除。
 
-Recall that in :ref:`advanced_discussions_nsec` we provided a range of
-names to prove that something does not exist. But as it turns
-out, even disclosing these ranges of names becomes a problem: this made
-it very easy for the curious-minded to look at our entire zone. Not
-only that, unlike a zone transfer, this "zone walking" is more
-resource-intensive. So how do we disclose something without actually disclosing
-it?
+回想一下在 :ref:`advanced_discussions_nsec` 中，我们提供了一系列的名称
+来证明某些东西不存在。但事实证明，即使是透露这些名字的范围也会成为一个
+问题：这让那些有好奇心的人很容易看到我们的整个区域。不仅如此，与区传送
+不同，这种“区遍历”更加对资源敏感。那么我们如何在实际上不公开的情况下公
+开某些事呢？
 
-The answer is actually quite simple: hashing functions, or one-way
-hashes. Without going into many details, think of it like a magical meat
-grinder. A juicy piece of ribeye steak goes in one end, and out comes a
-predictable shape and size of ground meat (hash) with a somewhat unique
-pattern. No matter how hard you try, you cannot turn the ground meat
-back into the ribeye steak: that's what we call a one-way hash.
+答案其实很简单：散列函数，或者单向散列。不用讲太多细节，把它想象成一个
+神奇的绞肉机。一端放一块多汁的肋眼牛排，出来的是形状和大小都可以预测的
+碎肉（散列），形状和大小有些独特。无论你多么努力，你都无法把碎肉重新变
+回肋眼牛排：这就是我们所说的单向散列。
 
-NSEC3 basically runs the names through a one-way hash before giving them
-out, so the recipients can verify the non-existence without any
-knowledge of the actual names.
+NSEC3基本上是在给出这些名称之前通过一个单向散列来运行它们，因此接收方可
+以在不知道实际名字的情况下验证它们是否存在。
 
-So let's tell our little story for the third time, this
-time with NSEC3. In this version, our intern is not given a list of actual
-names; he is given a list of "hashed" names. So instead of Alice,
-Edward, and Susan, the list he is given reads like this (hashes
-shortened for easier reading):
+我们第三次讲这个小故事，这次讲的是NSEC3。在这个版本中，我们的实习生没有
+得到真实名字的列表；他得到了一个经过“散列”的名字列表。因此，给他的列表
+不是Alice、Edward和Susan，而是这样的（为方便阅读，哈希值被缩短了）：
 
 ::
 
@@ -217,13 +172,11 @@ shortened for easier reading):
    JKMA.... (produced from Susan)
    NTQ0.... (produced from Alice)
 
-Then, an email is received for Bob again. Our intern takes the name Bob
-through a hash function, and the result is L8J2..., so he replies: "I'm
-sorry, that person doesn't work here. The name before that is JKMA...,
-and the name after that is NTQ0...". There, we proved Bob doesn't exist,
-without giving away any names! To put that into proper NSEC3 resource
-records, they would look like this (again, hashes shortened for
-ease of display):
+然后，再次收到给Bob的电子邮件之后。我们的实习生用名字Bob通过一个哈希函
+数，结果是L8J2...，所以他回答说：“对不起，那个人不在这里工作。之前的名
+字是JKMA...，之后的名称是NTQ0...”。我们证明了Bob不存在，而且没有透露任
+何名字！为了将其放入正确的NSEC3资源记录中，它们应该是这样的（同样，为了
+便于显示而缩短了的哈希值）：
 
 ::
 
@@ -233,52 +186,42 @@ ease of display):
 
 .. note::
 
-   Just because we employed one-way hash functions does not mean there is
-   no way for a determined individual to figure out our zone data.
-   Someone could still gather all of our NSEC3 records and hashed
-   names and perform an offline brute-force attack by trying all
-   possible combinations to figure out what the original name is. In our
-   meat-grinder analogy, this would be like someone
-   buying all available cuts of meat and grinding them up at home using
-   the same model of meat grinder, and comparing the output with the meat
-   you gave him. It is expensive and time-consuming (especially with
-   real meat), but like everything else in cryptography, if someone has
-   enough resources and time, nothing is truly private forever. If you
-   are concerned about someone performing this type of attack on your
-   zone data, read more about adding salt as described in
-   :ref:`advanced_discussions_nsec3_salt`.
+   仅仅因为我们使用了单向散列函数，并不意味着没有办法让一个有决心的人知
+   道我们的区数据。仍然有人可以收集我们所有的NSEC3记录和散列名称，并执行
+   离线蛮力攻击，即通过尝试所有可能的组合来找出原始名称。在我们的绞肉机
+   类比中，这就像一个人买了所有可用的肉块，然后在家里用同样的绞肉机把它
+   们磨碎，然后把产出和你给他的肉进行比较。这是昂贵和耗时的（尤其是用真
+   正的肉），但就像密码学中的其它一切，如果有人有足够的资源和时间，就没
+   有真正的永远的秘密。如果你担心有人对你的区数据进行这种类型的攻击，阅
+   读更多关于添加盐（adding salt）的描述
+   :ref:`advanced_discussions_nsec3_salt` 。
 
 .. _advanced_discussions_nsec3param:
 
 NSEC3PARAM
-++++++++++
++++++++++++++++
 
-The above NSEC3 examples used four parameters: 1, 0, 10, and
-1234567890ABCDEF. 1 represents the algorithm, 0 represents the opt-out
-flag, 10 represents the number of iterations, and 1234567890ABCDEF is the
-salt. Let's look at how each one can be configured:
+上述的NSEC3例子中使用了4个参数：1，0，10和1234567890ABCDEF。1表示算法，
+0表示择退出标志，10表示迭代次数，1234567890ABCDEF是盐。让我们看看如何
+配置每个参数：
 
--  *Algorithm*: The only currently defined value is 1 for SHA-1, so there
-   is no configuration field for it.
+—  *Algorithm* ：目前唯一定义的值是1，表示SHA-1，所以没有配置字段。
 
--  *Opt-out*: Set this to 1 for NSEC3 opt-out, which we
-   discuss in :ref:`advanced_discussions_nsec3_optout`.
+-  *Opt-out* ：将NSEC3的Opt-out设置为1，我们在
+   :ref:`advanced_discussions_nsec3_optout` 中讨论。
 
--  *Iterations*: Iterations defines the number of additional times to
-   apply the algorithm when generating an NSEC3 hash. More iterations
-   yield more secure results, but consume more resources for both
-   authoritative servers and validating resolvers. The considerations
-   here are similar to those seen in :ref:`key_sizes`, of
-   security versus resources.
+-  *Iterations* ：Iterations定义生成NSEC3散列时额外应用该算法的次数。更
+   多的迭代会产生更安全的结果，但对于权威服务器和验证解析器来说，会消
+   耗更多的资源。这里的注意事项与 :ref:`key_sizes` 中关于安全性与资源
+   的注意事项类似。
 
--  *Salt*: The salt cannot be configured explicitly, but you can provide
-   a salt length and ``named`` generates a random salt of the given length.
-   We learn more about salt in :ref:`advanced_discussions_nsec3_salt`.
+-  *Salt* ：不能显式配置salt，但可以提供salt的长度， ``named`` 生成给定
+   长度的随机salt。我们将在 :ref:`advanced_discussions_nsec3_salt` 中
+   了解更多关于salt的内容。
 
-If you want to use these NSEC3 parameters for a zone, you can add the
-following configuration to your ``dnssec-policy``. For example, to create an
-NSEC3 chain using the SHA-1 hash algorithm, with no opt-out flag,
-5 iterations, and a salt that is 8 characters long, use:
+如果您想为一个区使用这些NSEC3参数，您可以将以下配置添加到您的
+``dnssec-policy`` 中。例如，使用SHA-1哈希算法创建一个NSEC3链，没有选择
+退出标志，5次迭代，长度为8个字符的salt，使用：
 
 ::
 
@@ -287,7 +230,7 @@ NSEC3 chain using the SHA-1 hash algorithm, with no opt-out flag,
        nsec3param iterations 5 optout no salt-length 8;
    };
 
-To set the opt-out flag, 15 iterations, and no salt, use:
+要设置选择退出标志，15次迭代，且不加盐，使用：
 
 ::
 
@@ -299,118 +242,91 @@ To set the opt-out flag, 15 iterations, and no salt, use:
 .. _advanced_discussions_nsec3_optout:
 
 NSEC3 Opt-Out
-+++++++++++++
++++++++++++++++
 
-One of the advantages of NSEC3 over NSEC is the ability for a parent zone
-to publish less information about its child or delegated zones. Why
-would you ever want to do that? If a significant number of your
-delegations are not yet DNSSEC-aware, meaning they are still insecure or
-unsigned, generating DNSSEC-records for their NS and glue records is not
-a good use of your precious name server resources.
+与NSEC相比，NSEC3的优势之一是父区域可以发布更少的关于其子区或授权区的信息。
+你为什么要这么做？如果您的大量授权还不是DNSSEC感知的，意味着它们仍然不安全
+或未签名，为其NS和粘连记录生成DNSSEC记录而耗费您宝贵的服务器资源不是一个好
+的做法。
 
-The resources may not seem like a lot, but imagine that you are the
-operator of busy top-level domains such as ``.com`` or ``.net``, with
-millions of insecure delegated domain names: it quickly
-adds up. As of mid-2020, less than 1.5% of all ``.com`` zones are
-signed. Basically, without opt-out, with 1,000,000 delegations,
-only 5 of which are secure, you still have to generate NSEC RRsets for
-the other 999,995 delegations; with NSEC3 opt-out, you will have saved
-yourself 999,995 sets of records.
+这个资源可能看起来并不多，但是想象一下您是诸如 ``.com`` 或 ``.net`` 这样
+带有数百万不安全的授权域名的繁忙顶级域的操作者：这个资源增长迅速。在2020年
+年中，不超过 1.5% 的 ``.com`` 区是签名了的。在没有退出选项的情况下，基本上
+每1,000,000个授权只有5个是安全的，您依然需要为其它999,995个授权生成NSEC资
+源记录集；而使用NSEC3的opt-out，您将节省999,995个记录集。
 
-For most DNS administrators who do not manage a large number of
-delegations, the decision whether to use NSEC3 opt-out is
-probably not relevant.
+对于大多数不管理大量授权的DNS管理员来说，是否使用NSEC3 opt-out的决定可能无
+关紧要。
 
-To learn more about how to configure NSEC3 opt-out, please see
-:ref:`recipes_nsec3_optout`.
+要了解更多关于如何配置NSEC3 opt-out的信息，请参阅
+:ref:`recipes_nsec3_optout` 。
 
 .. _advanced_discussions_nsec3_salt:
 
-NSEC3 Salt
-++++++++++
+NSEC3盐
++++++++
 
-As described in :ref:`advanced_discussions_nsec3`, while NSEC3
-does not put your zone data in plain public display, it is still not
-difficult for an attacker to collect all the hashed names and perform
-an offline attack. All that is required is running through all the
-combinations to construct a database of plaintext names to hashed names,
-also known as a "rainbow table."
+如 :ref:`advanced_discussions_nsec3` 所述，虽然NSEC3没有把你的区数据以普
+通文本的方式显示，但对攻击者来说，收集所有散列的名字并执行离线攻击并不困
+难。所需要做的就是遍历所有的组合，以构建一个纯文本名字到散列名字的数据库，
+也称为“彩虹表”。
 
-There is one more feature NSEC3 gives us to provide additional
-protection: salt. Basically, salt gives us the ability to introduce further
-randomness into the hashed results. Whenever the salt is changed, any
-pre-computed rainbow table is rendered useless, and a new rainbow table
-must be re-computed. If the salt is changed periodically, it
-becomes difficult to construct a useful rainbow table, and thus difficult to
-walk the DNS zone data programmatically. How often you want to change
-your NSEC3 salt is up to you.
+NSEC3还为我们提供了一个额外的保护功能：salt。基本上，salt让我们能够在散列
+结果中引入更多的随机性。无论何时改变了salt，任何预先计算的彩虹表都将无效，
+必须重新计算一个新的彩虹表。如果salt是周期性地改变的，就很难构造一个有用
+的彩虹表，因此很难以编程的方式遍历DNS区域数据。你多久换一次NSEC3 salt取决
+于你自己。
 
-To learn more about the steps to take to change NSEC3, please see
-:ref:`recipes_nsec3_salt`.
+要了解更多关于切换到NSEC3的步骤，请参阅 :ref:`recipes_nsec3_salt` 。
 
 .. _advanced_discussions_nsec_or_nsec3:
 
-NSEC or NSEC3?
+NSEC还是NSEC3?
 ^^^^^^^^^^^^^^
 
-So which one should you choose: NSEC or NSEC3? There is not a
-single right answer here that fits everyone; it comes down to your
-network's needs or requirements.
+所以你应该选择哪一个：NSEC还是NSEC3？没有一个简单的适合所有人的正确答案；
+它取决于你的网络需求或要求。
 
-If you prefer not to make your zone easily enumerable, implementing
-NSEC3 paired with a periodically changed salt provides a certain
-level of privacy protection. However, someone could still randomly guess
-the names in your zone (such as "ftp" or "www"), as in the traditional
-insecure DNS.
+如果您不喜欢让您的区易于被枚举，那么实现NSEC3与定期更改salt相结合可以提供
+一定程度的隐私保护。然而，某些人仍然能够随机地猜到你区中的名字（如"ftp"
+或"www"），如同在传统的不安全DNS中一样。
 
-If you have many delegations and need to be able to opt-out to save
-resources, NSEC3 is for you.
+如果你有很多授权，并且需要能够选择退出以节省资源，适合采用NSEC3。
 
-In other situations, NSEC is typically a good choice for most zone
-administrators, as it relieves the authoritative servers of the
-additional cryptographic operations that NSEC3 requires, and NSEC is
-comparatively easier to troubleshoot than NSEC3.
+在其他情况下，对于大多数区域管理员来说，NSEC通常是一个不错的选择，因为它
+减轻了权威服务器对NSEC3所需的额外加密操作的负担，而且NSEC比NSEC3更容易排
+除故障。
 
-NSEC3 in conjunction with ``dnssec-policy`` is supported in BIND
-as of version 9.16.9.
+BIND从9.16.9版本开始支持NSEC3和 ``dnssec-policy`` 的结合。
 
 .. _advanced_discussions_key_generation:
 
-DNSSEC Keys
-~~~~~~~~~~~
+DNSSEC密钥
+~~~~~~~~~~
 
-Types of Keys
-^^^^^^^^^^^^^
+密钥的类型
+^^^^^^^^^^
 
-Although DNSSEC
-documentation talks about three types of keys, they are all the same
-thing - but they have different roles. The roles are:
+虽然DNSSEC文档讨论了三种类型的密钥，但它们都是一样的东西——但它们有不同的
+角色。角色为：
 
-Zone-Signing Key (ZSK)
-   This is the key used to sign the zone. It signs all records in the
-   zone apart from the DNSSEC key-related RRsets: DNSKEY, CDS, and
-   CDNSKEY.
+区域签名密钥(ZSK)
+   这是用于签名区的密钥。它签名区内除了与DNSSEC密钥相关的资源记录集
+   （DNSKEY、CDS和CDNSKEY）的所有记录。
 
-Key-Signing Key (KSK)
-   This is the key used to sign the DNSSEC key-related RRsets and is the
-   key used to link the parent and child zones. The parent zone stores a
-   digest of the KSK. When a resolver verifies the chain of trust it
-   checks to see that the DS record in the parent (which holds the
-   digest of a key) matches a key in the DNSKEY RRset, and that it is
-   able to use that key to verify the DNSKEY RRset. If it can do
-   that, the resolver knows that it can trust the DNSKEY resource
-   records, and so can use one of them to validate the other records in
-   the zone.
+密钥签名密钥（Key-signing Key，KSK）
+   用于签名DNSSEC密钥相关的资源记录集，是连接父区和子区的密钥。
+   父区存储KSK的摘要。当解析器验证信任链时，它检查父区（其中存有密钥的摘
+   要）中的DS记录并与DNSKEY资源记录集中的密钥进行比对，然后就能够使用这
+   个密钥来验证DNSKEY资源记录集。如果能够验证，解析器就知道它可以信任
+   DNSKEY资源记录，因此可以使用其中一个来验证区中的其它记录。
 
-Combined Signing Key (CSK)
-   A CSK combines the functionality of a ZSK and a KSK. Instead of
-   having one key for signing the zone and one for linking the parent
-   and child zones, a CSK is a single key that serves both roles.
+组合签名密钥（Combined Signing Key，CSK）
+   CSK结合了ZSK和KSK的功能。CSK不是使用一个密钥用于签名区域，而使用另一
+   个密钥用于链接父区和子区，而是使用单一密钥服务于两个角色。
 
-It is important to realize the terms ZSK, KSK, and CSK describe how the
-keys are used - all these keys are represented by DNSKEY records. The
-following examples are the DNSKEY records from a zone signed with a KSK
-and ZSK:
+重要的是要认识到术语ZSK、KSK和CSK描述了如何使用密钥 ——— 所有这些密钥都由
+DNSKEY记录表示。下面的示例是来自使用KSK和ZSK签名的区的DNSKEY记录：
 
 ::
 
@@ -440,7 +356,7 @@ and ZSK:
                    VhiyQDmdgevKUhfG3SE1wbLChjJc2FAbvSZ1qk03Nw==
                    ) ; KSK; alg = ECDSAP256SHA256 ; key id = 42933
 
-... and a zone signed with just a CSK:
+... 和一个只用一条CSK签名的区：
 
 ::
 
@@ -466,477 +382,377 @@ and ZSK:
                    71wGtzR6jdUrTbXo5Z1W5QeeJF4dls4lh4z7DByF5Q==
                    ) ; KSK; alg = ECDSAP256SHA256 ; key id = 1231
 
-The only visible difference between the records (apart from the key data
-itself) is the value of the flags fields; this is 256
-for a ZSK and 257 for a KSK or CSK. Even then, the flags field is only a
-hint to the software using it as to the role of the key: zones can be
-signed by any key. The fact that a CSK and KSK both have the same flags
-emphasizes this. A KSK usually only signs the DNSSEC key-related RRsets
-in a zone, whereas a CSK is used to sign all records in the zone.
 
-The original idea of separating the function of the key into a KSK and
-ZSK was operational. With a single key, changing it for any reason is
-"expensive," as it requires interaction with the parent zone
-(e.g., uploading the key to the parent may require manual interaction
-with the organization running that zone). By splitting it, interaction
-with the parent is required only if the KSK is changed; the ZSK can be
-changed as often as required without involving the parent.
+（除了密钥数据本身之外）记录之间唯一可见的区别是标志字段的值；ZSK是256，
+KSK或CSK是257。即使这样，标志字段也只是给使用它的软件一个提示，提示其密
+钥的作用：区可以由任何密钥签名。CSK和KSK都有相同的标志的事实强调了这一
+点。KSK通常只对区内与密钥相关的DNSSEC资源记录集进行签名，而CSK用于对区
+内的所有记录进行签名。
 
-The split also allows the keys to be of different lengths. So the ZSK,
-which is used to sign the record in the zone, can be of a (relatively)
-short length, lowering the load on the server. The KSK, which is used
-only infrequently, can be of a much longer length. The relatively
-infrequent use also allows the private part of the key to be stored in a
-way that is more secure but that may require more overhead to access, e.g., on
-an HSM (see :ref:`hardware_security_modules`).
+最初将密钥的功能分为KSK和ZSK的想法是出于操作原因。对于单一密钥，因为任
+何原因而更改它都是“昂贵的”，因为它需要与父区交互（例如，将密钥上载到父
+区可能需要与运行该区的组织进行手动交互）。通过拆分它，只有当KSK发生变化
+时才需要与父区进行交互；ZSK可以根据需要经常更改，而不需要父区参与。
 
-In the early days of DNSSEC, the idea of splitting the key went more or
-less unchallenged. However, with the advent of more powerful computers
-and the introduction of signaling methods between the parent and child
-zones (see :ref:`cds_cdnskey`), the advantages of a ZSK/KSK split are
-less clear and, for many zones, a single key is all that is required.
+分割还允许密钥具有不同的长度。因此，用于签名区域中的记录的ZSK长度可以
+（相对地）较短，从而降低服务器上的负载。而很少使用的KSK可以更长。相对不
+频繁的使用也允许密钥的私钥部分以一种更安全的方式存储，但这可能需要更多
+的开销来访问，例如，在HSM上（参见 :ref:`hardware_security_modules` ）。
 
-As with many questions related to the choice of DNSSEC policy, the
-decision on which is "best" is not clear and depends on your circumstances.
+在DNSSEC的早期，分割密钥的想法或多或少没有受到挑战。然而，随着功能更强
+大的计算机的出现以及在父区和子区之间引入信号方法（参见
+:ref:`cds_cdnskey` ），ZSK-KSK分离的优势就不那么明显了，对于许多区来说，
+一个单一的密钥就足够了。
 
-Which Algorithm?
-^^^^^^^^^^^^^^^^
+与选择DNSSEC策略相关的许多问题一样，关于哪个是“最好的”的决定并不清晰，
+这取决于您的情况。
 
-There are three algorithm choices for DNSSEC as of this writing
-(mid-2020):
+哪种算法？
+^^^^^^^^^^
+
+截至撰写本文(2020年年中)，DNSSEC有三种算法选择：
 
 -  RSA
 
--  Elliptic Curve DSA (ECDSA)
+-  椭圆曲线DSA （Elliptic Curve DSA，ECDSA）
 
--  Edwards Curve Digital Security Algorithm (EdDSA)
+-  爱德华兹曲线数字安全算法 （Edwards Curve Digital Security Algorithm，EdDSA）
 
-All are supported in BIND 9, but only RSA and ECDSA (specifically
-RSASHA256 and ECDSAP256SHA256) are mandatory to implement in DNSSEC.
-However, RSA is a little long in the tooth, and ECDSA/EdDSA are emerging
-as the next new cryptographic standards. In fact, the US federal
-government recommended discontinuing RSA use altogether by September 2015
-and migrating to using ECDSA or similar algorithms.
+BIND 9支持所有这些，但只有RSA和ECDSA（特别是RSASHA256和
+ECDSAP256SHA256）是必须在DNSSEC中实现的，RSA的历史比较悠久了，
+ECDSA/EdDSA成为了下一代新密码标准。事实上，美国联邦政府建议在2015年9月
+完全停止使用RSA，并迁移到使用ECDSA或类似的算法。
 
-For now, use ECDSAP256SHA256 but keep abreast of developments in this
-area. For details about rolling over DNSKEYs to a new algorithm, see
-:ref:`advanced_discussions_DNSKEY_algorithm_rollovers`.
+现在，使用ECDSAP256SHA256，但要跟上这一领域的发展。关于将DNSKEY轮转到一
+个新算法的详细信息，请参见
+:ref:`advanced_discussions_DNSKEY_algorithm_rollovers` 。
 
 .. _key_sizes:
 
-Key Sizes
-^^^^^^^^^
+密钥大小
+^^^^^^^^
 
-If using RSA keys, the choice of key sizes is a classic issue of finding
-the balance between performance and security. The larger the key size,
-the longer it takes for an attacker to crack the key; but larger keys
-also mean more resources are needed both when generating signatures
-(authoritative servers) and verifying signatures (recursive servers).
+如果使用RSA密钥，密钥大小的选择是在性能和安全性之间找到平衡的一个经典问
+题。密钥越大，攻击者破解密钥所需的时间就越长；但是更大的密钥也意味着在
+生成签名（权威服务器）和验证签名（递归服务器）时需要更多的资源。
 
-Of the two sets of keys, ZSK is used much more frequently. ZSK is used whenever zone
-data changes or when signatures expire, so performance
-certainly is of a bigger concern. As for KSK, it is used less
-frequently, so performance is less of a factor, but its impact is bigger
-because of its role in signing other keys.
+在这两组密钥中，ZSK使用得更为频繁。ZSK在区数据变化或签名过期时使用，因
+此性能当然是一个更大的问题。对于KSK，它的使用频率较低，因此性能不是一个
+重要因素，但由于它在签名其它密钥方面的作用，它的影响更大。
 
-In earlier versions of this guide, the following key lengths were
-chosen for each set, with the recommendation that they be rotated more
-frequently for better security:
+在本指南的早期版本中，为每个密钥集选择了以下密钥长度，并建议更频繁地轮
+转它们以获得更好的安全性：
 
--  *ZSK*: RSA 1024 bits, rollover every year
+- *ZSK* ：RSA 1024位，每年轮转一次
 
--  *KSK*: RSA 2048 bits, rollover every five years
+- *KSK* ：RSA 2048位，每5年轮转一次
 
-These should be considered minimum RSA key sizes. At the time
-of this writing (mid-2020), the root zone and many TLDs are already using 2048
-bit ZSKs. If you choose to implement larger key sizes, keep in mind that
-larger key sizes result in larger DNS responses, which this may mean more
-load on network resources. Depending on your network configuration, end users
-may even experience resolution failures due to the increased response
-sizes, as discussed in :ref:`whats_edns0_all_about`.
+这些应该被认为是最小的RSA密钥大小。在撰写本文时（2020年年中），根区和许
+多顶级域已经在使用2048位ZSK。如果您选择实现更大的密钥大小，请记住，更大
+的密钥会导致更大的DNS响应，这可能意味着网络资源的负载更大。依赖于您的网
+络配置，终端用户甚至可能会因为响应大小的增加而遇到解析失败，如
+:ref:`whats_edns0_all_about` 中所讨论的。
 
-ECDSA key sizes can be much smaller for the same level of security, e.g.,
-an ECDSA key length of 224 bits provides the same level of security as a
-2048-bit RSA key. Currently BIND 9 sets a key size of 256 for all ECDSA keys.
+对于相同的安全级别，ECDSA密钥的大小可以小得多，例如，一个长度为224位的
+ECDSA密钥提供了与2048位RSA密钥相同的安全级别。目前，BIND 9为所有ECDSA密
+钥设置了256的密钥大小。
 
 .. _advanced_discussions_key_storage:
 
-Key Storage
-^^^^^^^^^^^
+密钥存储
+^^^^^^^^
 
-Public Key Storage
-++++++++++++++++++
+公钥存储
+++++++++
 
-The beauty of a public key cryptography system is that the public key
-portion can and should be distributed to as many people as possible. As
-the administrator, you may want to keep the public keys on an easily
-accessible file system for operational ease, but there is no need to
-securely store them, since both ZSK and KSK public keys are published in
-the zone data as DNSKEY resource records.
+公钥密码系统的美妙之处在于公钥部分可以而且应该分发给尽可能多的人。作为
+管理员，您可能希望将公钥保存在易于访问的文件系统上，以方便操作，但不需
+要安全地存储它们，因为ZSK和KSK公钥都作为DNSKEY资源记录发布在区数据中。
 
-Additionally, a hash of the KSK public key is also uploaded to the
-parent zone (see :ref:`working_with_parent_zone` for more details),
-and is published by the parent zone as DS records.
+此外，KSK公钥的散列还被上传到父区（请参阅
+:ref:`working_with_parent_zone` 以获得更多详细信息），并由父区域作为DS
+记录发布。
 
-Private Key Storage
-+++++++++++++++++++
+私钥存储
+++++++++
 
-Ideally, private keys should be stored offline, in secure devices such
-as a smart card. Operationally, however, this creates certain
-challenges, since the private key is needed to create RRSIG resource
-records, and it is a hassle to bring the private key out of
-storage every time the zone file changes or signatures expire.
+理想情况下，私钥应该离线存储在智能卡等安全设备中。然而，在操作上，这将
+产生某些挑战，因为创建RRSIG资源记录需要私钥，而且在每次区文件变化或签名
+过期时将私钥从存储中取出是一件麻烦的事情。
 
-A common approach to strike the balance between security and
-practicality is to have two sets of keys: a ZSK set and a KSK set. A ZSK
-private key is used to sign zone data, and can be kept online for ease
-of use, while a KSK private key is used to sign just the DNSKEY (the ZSK); it is
-used less frequently, and can be stored in a much more secure and
-restricted fashion.
+在安全性和实用性之间取得平衡的一种常见方法是使用两组密钥：ZSK集和KSK集。
+ZSK私钥用于签名区数据，并且可以在线保存以方便使用，而KSK私钥仅用于签名
+DNSKEY（ZSK）；它的使用频率较低，并且可以以一种更安全、更受限制的方式
+存储。
 
-For example, a KSK private key stored on a USB flash drive that is kept
-in a fireproof safe, only brought online once a year to sign a new pair
-of ZSKs, combined with a ZSK private key stored on the network
-file system and available for routine use, may be a good balance between
-operational flexibility and security.
+例如，KSK私钥存储在USB闪存盘，保存在一个安全防火的地方，每年只上线一次
+签名一对新的ZSK，配合ZSK私钥存储在网络文件系统并用于日常使用，可能是一
+个操作灵活性和安全性之间较好的平衡。
 
-For more information on changing keys, please see
-:ref:`key_rollovers`.
+更多关于修改密钥的信息，请参阅 :ref: `key_rollovers` 。
 
 .. _hardware_security_modules:
 
-Hardware Security Modules (HSMs)
-++++++++++++++++++++++++++++++++
+硬件安全模块（Hardware Security Modules，HSMs）
++++++++++++++++++++++++++++++++++++++++++++++++
 
-A Hardware Security Module (HSM) may come in different shapes and sizes,
-but as the name indicates, it is a physical device or devices, usually
-with some or all of the following features:
+硬件安全模块（HSM）可能有不同的形状和大小，但正如其名称所示，它是一个或
+多个物理设备，通常具有以下部分或全部特性：
 
--  Tamper-resistant key storage
+—  防篡改密钥存储
 
--  Strong random-number generation
+-  强随机数生成
 
--  Hardware for faster cryptographic operations
+-  更快的加密操作的硬件
 
-Most organizations do not incorporate HSMs into their security practices
-due to cost and the added operational complexity.
+由于成本和增加的操作复杂性，大多数组织没有将HSM合并到它们的安全实践中。
 
-BIND supports Public Key Cryptography Standard #11 (PKCS #11) for
-communication with HSMs and other cryptographic support devices. For
-more information on how to configure BIND to work with an HSM, please
-refer to the `BIND 9 Administrator Reference
-Manual <https://bind9.readthedocs.io/en/latest/index.html>`_.
+BIND支持公钥加密标准#11（Public Key Cryptography Standard #11， PKCS#11）
+以和HSM和其它支持加密的设备通信。更多关于如何配置BIND使其配合HSM工作的
+信息，请参考 `BIND 9 Administrator Reference
+Manual <https://bind9.readthedocs.io/en/latest/index.html>` 。
 
 .. _advanced_discussions_key_management:
 
-Rollovers
-~~~~~~~~~
+轮转
+~~~~
 
 .. _key_rollovers:
 
-Key Rollovers
-^^^^^^^^^^^^^
+密钥轮转
+^^^^^^^^
 
-A key rollover is where one key in a zone is replaced by a new one.
-There are arguments for and against regularly rolling keys. In essence
-these are:
+密钥轮转是指一个区中的一个密钥被一个新密钥替换。有赞成也有反对定期轮
+转密钥的意见。主要论点是：
 
-Pros:
+赞成方：
 
-1. Regularly changing the key hinders attempts at determination of the
-   private part of the key by cryptanalysis of signatures.
+1. 定期更改密钥会阻碍通过签名的密码分析来确定密钥的私钥部分。
 
-2. It gives administrators practice at changing a key; should a key ever need to be
-   changed in an emergency, they would not be doing it for the first time.
+2. 它为管理员提供了更改密钥的练习；如果在紧急情况下需要更改密钥，他
+   们不会是第一次这样做。
 
-Cons:
+反对方：
 
-1. A lot of effort is required to hack a key, and there are probably
-   easier ways of obtaining it, e.g., by breaking into the systems on
-   which it is stored.
+1. 要破解密钥需要付出大量的努力，而且可能有更简单的方法获得密钥，例
+   如，侵入存储密钥的系统。
 
-2. Rolling the key adds complexity to the system and introduces the
-   possibility of error. We are more likely to
-   have an interruption to our service than if we had not rolled it.
+2. 轮转密钥会增加系统的复杂性，以及引入错误的可能性。比起没有轮转，
+   我们更有可能中断服务。
 
-Whether and when to roll the key is up to you. How serious would the
-damage be if a key were compromised without you knowing about it? How
-serious would a key roll failure be?
+是否以及何时轮转密钥取决于你。如果钥匙在你不知情的情况下被盗，损失会
+有多严重？如果一次密钥轮转失败，损失有多严重？
 
-Before going any further, it is worth noting that if you sign your zone
-with either of the fully automatic methods (described in ref:`signing_alternative_ways`),
-you don't really need to
-concern yourself with the details of a key rollover: BIND 9 takes care of
-it all for you. If you are doing a manual key roll or are setting up the
-keys for a semi-automatic key rollover, you do need to familiarize yourself
-with the various steps involved and the timing details.
+在进一步讨论之前，值得注意的是，如果您使用其中任何一个全自动方法（在
+ref:`signing_alternative_ways` 中描述）签名您的区，您实际上不需要关
+心密钥轮转的细节：BIND 9会为您处理所有这些问题。如果您正在进行手动密
+钥轮转或正在设置半自动密钥轮转的密钥，那么您确实需要熟悉所涉及的各个
+步骤和时间细节。
 
-Rolling a key is not as simple as replacing the DNSKEY statement in the
-zone. That is an essential part of it, but timing is everything. For
-example, suppose that we run the ``example.com`` zone and that a friend
-queries for the AAAA record of ``www.example.com``. As part of the
-resolution process (described in
-:ref:`how_does_dnssec_change_dns_lookup`), their recursive server
-looks up the keys for the ``example.com`` zone and uses them to verify
-the signature associated with the AAAA record. We'll assume that the
-records validated successfully, so they can use the
-address to visit ``example.com``'s website.
+轮转一个密钥并不像替换区中的DNSKEY语句那么简单。这是至关重要的一部分，
+但时机就是一切。例如，假设我们运行 ``example.com`` 区，一个朋友查询
+``www.example.com`` 的AAAA记录。作为解析过程的一部分（在
+:ref:`how_does_dnssec_change_dns_lookup` 中描述)，他们的递归服务器查
+找 ``example.com`` 区的密钥，并使用它们来验证与AAAA记录关联的签名。
+我们假定这些记录已成功验证，因此它们可以使用该地址访问 ``example.com``
+的网站。
 
-Let's also assume that immediately after the lookup, we want to roll the ZSK
-for ``example.com``. Our first attempt at this is to remove the old
-DNSKEY record and signatures, add a new DNSKEY record, and re-sign the
-zone with it. So one minute our server is serving the old DNSKEY and
-records signed with the old key, and the next minute it is serving the
-new key and records signed with it. We've achieved our goal - we are
-serving a zone signed with the new keys; to check this is really the
-case, we booted up our laptop and looked up the AAAA record
-``ftp.example.com``. The lookup succeeded so all must be well. Or is it?
-Just to be sure, we called our friend and asked them to check. They
-tried to lookup ``ftp.example.com`` but got a SERVFAIL response from
-their recursive server. What's going on?
+让我们假设在查找之后，我们想要轮转 ``example.com`` 的ZSK。我们的第一
+个尝试是删除旧的DNSKEY记录和签名，添加一个新的DNSKEY记录，并用它重新
+签名区。所以前一分钟我们的服务器还在提供旧的DNSKEY和用旧密钥签名的记
+录，下一分钟它又在提供新密钥和用它签名的记录。我们已经实现了我们的目
+标 —— 我们正在为一个使用新密钥签名的区提供服务；为了检查是否真的如此，
+我们启动了笔记本电脑，并查找了AAAA记录 ``ftp.example.com`` 。查找成
+功，所以一切都很好。真是这样吗？为了确认，我们请求朋友来检查。他们试
+图查找 ``ftp.example.com`` ，但从他们的递归服务器得到了SERVFAIL响应。
+这是怎么回事？
 
-The answer, in a word, is "caching." When our friend looked up
-``www.example.com``, their recursive server retrieved and cached
-not only the AAAA record, but also a lot of other records. It cached
-the NS records for ``com`` and ``example.com``, as well as
-the AAAA (and A) records for those name servers (and this action may, in turn, have
-caused the lookup and caching of other NS and AAAA/A records). Most
-importantly for this example, it also looked up and cached the DNSKEY
-records for the root, ``com``, and ``example.com`` zones. When a query
-was made for ``ftp.example.com``, the recursive server believed it
-already had most of the information
-we needed. It knew what nameservers served ``example.com`` and their
-addresses, so it went directly to one of those to get the AAAA record for
-``ftp.example.com`` and its associated signature. But when it tried to
-validate the signature, it used the cached copy of the DNSKEY, and that
-is when our friend had the problem. Their recursive server had a copy of
-the old DNSKEY in its cache, but the AAAA record for ``ftp.example.com``
-was signed with the new key. So, not surprisingly, the signature could not
-validate.
+简单地说，答案就是“缓存”。当我们的朋友查询 ``www.example.com`` 时，
+他们的递归服务器不仅检索并缓存了AAAA记录，而且还缓存了许多其他记录。
+它缓存了 ``com`` 和 ``example.com`` 的NS记录，还有这些名字服务器（这
+个动作可能会导致查找和缓存其它的NS和AAAA/A记录）的AAAA（和A）记录。
+在这个例子中最重要的是，它也查找并缓存根、 ``com`` 和 ``example.com``
+区的DNSKEY记录。当对 ``ftp.example.com`` 进行查询时，递归服务器认为
+它已经拥有了我们需要的大部分信息。它知道服务于 ``example.com`` 的名
+字服务器及其地址，所以它直接去其中一个服务器获取 ``ftp.example.com``
+的AAAA记录及其相关签名。但是当它试图验证签名时，它使用了DNSKEY的缓存
+副本，这就是我们的朋友遇到的问题。他们的递归服务器在缓存中有一个旧的
+DNSKEY副本，但是 ``ftp.example.com`` 的AAAA记录是用新密钥签名的。因
+此，不出意料，签名无法验证。
 
-How should we roll the keys for ``example.com``? A clue to the
-answer is to note that the problem came about because the DNSKEY records
-were cached by the recursive server. What would have happened had our
-friend flushed the DNSKEY records from the recursive server's cache before
-making the query? That would have worked; those records would have been
-retrieved from ``example.com``'s nameservers at the same time that we
-retrieved the AAAA record for ``ftp.example.com``. Our friend's server would have
-obtained the new key along with the AAAA record and associated signature
-created with the new key, and all would have been well.
+我们应该如何轮转 ``example.com`` 的密钥？答案的一个线索是注意到问题
+来自于DNSKEY记录被递归服务器缓存了。如果我们的朋友在进行查询之前从递
+归服务器的缓存中刷新DNSKEY记录，会发生什么情况？这本来是可行的；在我
+们检索 ``ftp.example.com`` 的AAAA记录的同时，这些记录将从
+``example.com`` 的名称服务器中检索。我们朋友的服务器将获得新密钥、
+AAAA记录和用新密钥创建的相关签名，一切都会很好。
 
-As it is obviously impossible for us to notify all recursive server
-operators to flush our DNSKEY records every time we roll a key, we must
-use another solution. That solution is to wait
-for the recursive servers to remove old records from caches when they
-reach their TTL. How exactly we do this depends on whether we are trying
-to roll a ZSK, a KSK, or a CSK.
+显然，我们不可能在每次轮转一个密钥时通知所有递归服务器操作者刷新
+DNSKEY记录，因此必须使用另一种解决方案。这种解决方案是等待递归服务器
+在旧记录达到其TTL时从缓存中删除它们。具体怎么做取决于我们是要轮转的是
+ZSK、KSK还是CSK。
 
 .. _zsk_rollover_methods:
 
-ZSK Rollover Methods
-++++++++++++++++++++
+ZSK轮转方法
++++++++++++
 
-The ZSK can be rolled in one of the following two ways:
+ZSK可以通过以下两种方式之一滚动：
 
-1. *Pre-Publication*: Publish the new ZSK into zone data before it is
-   actually used. Wait at least one TTL interval, so the world's recursive servers
-   know about both keys, then stop using the old key and generate a new
-   RRSIG using the new key. Wait at least another TTL, so the cached old
-   key data is expunged from the world's recursive servers, and then remove
-   the old key.
+1. *预发布* ：在实际使用之前将新的ZSK发布到区数据中。等待至少一个TTL
+   间隔，以便全球的递归服务器知道这两个密钥，然后停止使用旧密钥，并使
+   用新密钥生成一个新的RRSIG。等待至少另一个TTL，以便从全球的递归服务
+   器中删除缓存的旧密钥数据，然后删除旧密钥。
 
-   The benefit of the pre-publication approach is it does not
-   dramatically increase the zone size; however, the duration of the rollover
-   is longer. If insufficient time has passed after the new ZSK is
-   published, some resolvers may only have the old ZSK cached when the
-   new RRSIG records are published, and validation may fail. This is the
-   method described in :ref:`recipes_zsk_rollover`.
+   预发布方法的好处是它不会显著增加区的大小；但是，轮转的持续时间更长。
+   如果新的ZSK发布后时间不足，一些解析器在发布新的RRSIG记录时可能只缓
+   存了旧的ZSK，验证可能会失败。这是在 :ref: `recipes_zsk_rollover`
+   中描述的方法。
 
-2. *Double-Signature*: Publish the new ZSK and new RRSIG, essentially
-   doubling the size of the zone. Wait at least one TTL interval, and then remove
-   the old ZSK and old RRSIG.
+2. *双签名* ：发布新的ZSK和新的RRSIG，本质上将区的大小增加一倍。等待
+   至少一个TTL间隔，然后移除旧的ZSK和旧的RRSIG。
 
-   The benefit of the double-signature approach is that it is easier to
-   understand and execute, but it causes a significantly increased zone size
-   during a rollover event.
+   双签名方法的优点是它更容易理解和执行，但它会在一次轮转事件期间显著
+   增加区大小。
 
 .. _ksk_rollover_methods:
 
-KSK Rollover Methods
-++++++++++++++++++++
+KSK轮转方法
++++++++++++
 
-Rolling the KSK requires interaction with the parent zone, so
-operationally this may be more complex than rolling ZSKs. There are
-three methods of rolling the KSK:
+轮转KSK需要与父区交互，因此在操作上这可能比轮转ZSK更复杂。。轮转KSK
+有三种方法：
 
-1. *Double-KSK*: Add the new KSK to the DNSKEY RRset, which is then
-   signed with both the old and new keys. After waiting for the old RRset
-   to expire from caches, change the DS record in the parent zone.
-   After waiting a further TTL interval for this change to be reflected in
-   caches, remove the old key from the RRset.
+1. *双KSK* ：将新的KSK添加到DNSKEY资源记录集，然后用旧密钥和新密钥签名。
+   在等待旧的资源记录集从缓存中过期之后，更改父区域中的DS记录。在等待
+   又一个TTL间隔以使这个更改反映到缓存中之后，从资源记录集中删除旧的密
+   钥。
 
-   Basically, the new KSK is added first at the child zone and
-   used to sign the DNSKEY; then the DS record is changed, followed by the
-   removal of the old KSK. Double-KSK keeps the interaction with the
-   parent zone to a minimum, but for the duration of the rollover, the
-   size of the DNSKEY RRset is increased.
+   基本上，新的KSK首先添加在子区，并用于签名DNSKEY；然后更改DS记录，然
+   后删除旧的KSK。双KSK将与父区的交互最小化，但是在轮转期间，DNSKEY
+   资源记录集的大小会增加。
 
-2. *Double-DS*: Publish the new DS record. After waiting for this
-   change to propagate into caches, change the KSK. After a further TTL
-   interval during which the old DNSKEY RRset expires from caches, remove the
-   old DS record.
+2. *双DS* ：发布新的DS记录。在等待此修改传播到缓存之后，修改KSK。再经过
+   一个TTL间隔，期间旧的DNSKEY资源记录集会从缓存中过期，之后，删除旧的
+   DS记录。
 
-   Double-DS is the reverse of Double-KSK: the new DS is published at
-   the parent first, then the KSK at the child is updated, then
-   the old DS at the parent is removed. The benefit is that the size of the DNSKEY
-   RRset is kept to a minimum, but interactions with the parent zone are
-   increased to two events. This is the method described in
-   :ref:`recipes_ksk_rollover`.
+   双DS与双KSK相反：新的DS首先在父区上发布，然后更新子区上的KSK，然后删
+   除父区上的旧DS。这样做的好处是，DNSKEY资源记录集的大小保持在最小值，
+   但是与父区的交互增加到两次。这是在 :ref:`recipes_ksk_rollover` 中描
+   述的方法。
 
-3. *Double-RRset*: Add the new KSK to the DNSKEY RRset, which is
-   then signed with both the old and new key, and add the new DS record
-   to the parent zone. After waiting a suitable interval for the
-   old DS and DNSKEY RRsets to expire from caches, remove the old DNSKEY and
-   old DS record.
+3. *双资源记录集* ：将新的KSK添加到DNSKEY资源记录集中，然后用旧密钥和新
+   密钥签名，并将新的DS记录添加到父区。在等待一个合适的时间间隔让旧的DS
+   和DNSKEY资源记录集从缓存中过期后，删除旧的DNSKEY和旧的DS记录。
 
-   Double-RRset is the fastest way to roll the KSK (i.e., it has the shortest rollover
-   time), but has the drawbacks of both of the other methods: a larger
-   DNSKEY RRset and two interactions with the parent.
+   双资源记录集是轮转KSK最快的方法（即，它有最短的轮转时间），但是也有
+   其他两种方法的缺点：一个更大的DNSKEY资源记录集以及与父区的两次交互。
 
 .. _csk_rollover_methods:
 
-CSK Rollover Methods
-++++++++++++++++++++
+CSK轮转方法
++++++++++++
 
-Rolling the CSK is more complex than rolling either the ZSK or KSK, as
-the timing constraints relating to both the parent zone and the caching
-of records by downstream recursive servers must be taken into
-account. There are numerous possible methods that are a combination of ZSK
-rollover and KSK rollover methods. BIND 9 automatic signing uses a
-combination of ZSK Pre-Publication and Double-KSK rollover.
+轮转CSK比轮转ZSK或KSK更复杂，因为必须考虑与父区和下游递归服务器缓存记录
+相关的时间约束。有许多可能的方法是ZSK轮转和KSK轮转方法的组合。 BIND 9自
+动签名结合使用了ZSK预发布和双KSK轮转。
 
 .. _advanced_discussions_emergency_rollovers:
 
-Emergency Key Rollovers
-^^^^^^^^^^^^^^^^^^^^^^^
+紧急密钥轮转
+^^^^^^^^^^^^
 
-Keys are generally rolled on a regular schedule - if you choose
-to roll them at all. But sometimes, you may have to rollover keys
-out-of-schedule due to a security incident. The aim of an emergency
-rollover is to re-sign the zone with a new key as soon as possible, because
-when a key is suspected of being compromised, a malicious attacker (or
-anyone who has access to the key) could impersonate your server and trick other
-validating resolvers into believing that they are receiving authentic,
-validated answers.
+密钥通常是按一个规律的时间表轮转的 —— 如果你选择轮转它们的话。但有时，由
+于安全事故，您可能不得不在计划之外轮转密钥。紧急轮转的目的是尽快使用一个
+新的密钥重签区，因为当一个密钥涉嫌被破解，恶意攻击者（或任何访问到密钥的
+人）的人都可以冒充你的服务器并欺骗其它验证解析器相信它们收到真实的、能验
+证的答案。
 
-During an emergency rollover, follow the same operational
-procedures described in :ref:`recipes_rollovers`, with the added
-task of reducing the TTL of the current active (potentially compromised) DNSKEY
-RRset, in an attempt to phase out the compromised key faster before the new
-key takes effect. The time frame should be significantly reduced from
-the 30-days-apart example, since you probably do not want to wait up to
-60 days for the compromised key to be removed from your zone.
+在紧急轮转期间，请遵循 :ref:`recipes_rollovers` 中描述的相同操作过程，并
+添加一项任务，减少当前活动的（可能被破解的）DNSKEY资源记录集的生存时间，
+以便在新密钥生效之前更快地逐步取消被破解的密钥。与例子中的30天相比，时间
+间隔应该大大缩短，因为您可能不希望等待60天，才将被破解的密钥从您的区中删
+除。
 
-Another method is to carry a spare key with you at all times. If
-you have a second key pre-published and that one
-is not compromised at the same time as the first key,
-you could save yourself some time by immediately
-activating the spare key if the active
-key is compromised. With pre-publication, all validating resolvers should already
-have this spare key cached, thus saving you some time.
+另一种方法是随时准备一个备用密钥。如果您预先发布了第二个密钥，并且该密钥
+不会与第一个密钥同时被破解，那么如果活动密钥被破坏，您可以通过立即激活备
+用密钥来节省一些时间。使用预发布，所有验证解析器都应该已经缓存了这个备用
+密钥，从而节省了一些时间。
 
-With a KSK emergency rollover, you also need to consider factors
-related to your parent zone, such as how quickly they can remove the old
-DS records and publish the new ones.
+对于KSK紧急轮转，还需要考虑与父区相关的因素，例如删除旧DS记录和发布新记
+录的速度有多快。
 
-As with many other facets of DNSSEC, there are multiple aspects to take into
-account when it comes to emergency key rollovers. For more in-depth
-considerations, please check out :rfc:`7583`.
+与DNSSEC的许多其它方面一样，当涉及到紧急密钥轮转时，需要考虑多个方面。有
+关更深入的考虑，请查看 :rfc:`7583` 。
 
 .. _advanced_discussions_DNSKEY_algorithm_rollovers:
 
-Algorithm Rollovers
-^^^^^^^^^^^^^^^^^^^
+算法轮转
+^^^^^^^^
 
-From time to time, new digital signature algorithms with improved
-security are introduced, and it may be desirable for administrators to
-roll over DNSKEYs to a new algorithm, e.g., from RSASHA1 (algorithm 5 or
-7) to RSASHA256 (algorithm 8). The algorithm rollover steps must be followed with
-care to avoid breaking DNSSEC validation.
+不时地，安全性得到改进的新数字签名算法被引入，并且管理员可能需要将
+DNSKEY切换到一个新算法，例如，从RSASHA1（算法5或7）到RSASHA256（算法8）。
+必须小心地遵循算法轮转步骤，以避免破坏DNSSEC验证。
 
-If you are managing DNSSEC by using the ``dnssec-policy`` configuration,
-``named`` handles the rollover for you. Simply change the algorithm
-for the relevant keys, and ``named`` uses the new algorithm when the
-key is next rolled. It performs a smooth transition to the new
-algorithm, ensuring that the zone remains valid throughout rollover.
+如果你通过 ``dnssec-policy`` 配置来管理DNSSEC， ``named`` 会为你处理轮转。
+只需更改相关密钥的算法，然后 ``named`` 在下次轮转密钥时使用新的算法。
+它执行到新算法的平稳过渡，确保区在整个轮转过程中保持有效。
 
-If you are using other methods to sign the zone, the administrator needs to do more work. As
-with other key rollovers, when the zone is a primary zone, an algorithm
-rollover can be accomplished using dynamic updates or automatic key
-rollovers. For secondary zones, only automatic key rollovers are
-possible, but the ``dnssec-settime`` utility can be used to control the
-timing.
+如果您使用其它方法签名区，管理员需要做更多的工作。与其它密钥轮转一样，当
+区是主区时，可以使用动态更新或自动密钥轮转来完成算法轮转。对于辅区，只有
+自动密钥轮转是可能的，但 ``dnssec-settime`` 实用程序可以用来控制时间。
 
-In any case, the first step is to put DNSKEYs in place using the new algorithm.
-You must generate the ``K*`` files for the new algorithm and put
-them in the zone's key directory, where ``named`` can access them. Take
-care to set appropriate ownership and permissions on the keys. If the
-``auto-dnssec`` zone option is set to ``maintain``, ``named``
-automatically signs the zone with the new keys, based on their timing
-metadata when the ``dnssec-loadkeys-interval`` elapses or when you issue the
-``rndc loadkeys`` command. Otherwise, for primary zones, you can use
-``nsupdate`` to add the new DNSKEYs to the zone; this causes ``named``
-to use them to sign the zone. For secondary zones, e.g., on a
-"bump in the wire" signing server, ``nsupdate`` cannot be used.
+在任何情况下，第一步是使用新算法生成DNSKEY。您必须为新算法生成 ``K*`` 文
+件，并将它们放在区的密钥目录中，在那里 ``named`` 可以访问它们。要注意对
+密钥设置适当的所有权和权限。如果 ``auto-dnssec`` zone选项被设置为
+``maintain `` ， ``named`` 会在 ``dnssec-loadkeys-interval`` 过期或你发
+出 ``rndc loadkeys`` 时，根据它们的定时元数据，自动用新的密钥对区进行签
+名。
 
-Once the zone has been signed by the new DNSKEYs (and you have waited
-for at least one TTL period), you must inform the parent zone and any trust
-anchor repositories of the new KSKs, e.g., you might place DS records in
-the parent zone through your DNS registrar's website.
+否则，对于主区，你可以使用 ``nsupdate`` 将新的DNSKEY添加到区中；这将导致
+``named`` 使用它们来签名区。对于辅区，例如，在“中间” [#BITW]_ 的签名服务
+器上，不能使用 ``nsupdate`` 。
 
-Before starting to remove the old algorithm from a zone, you must allow
-the maximum TTL on its DS records in the parent zone to expire. This
-assures that any subsequent queries retrieve the new DS records
-for the new algorithm. After the TTL has expired, you can remove the DS
-records for the old algorithm from the parent zone and any trust anchor
-repositories. You must then allow another maximum TTL interval to elapse
-so that the old DS records disappear from all resolver caches.
+.. [#BITW] 译注：此处原文为“bump in the wire”。意指通信信道中间插入的
+   设备，这里翻译为“中间”。
 
-The next step is to remove the DNSKEYs using the old algorithm from your
-zone. Again this can be accomplished using ``nsupdate`` to delete the
-old DNSKEYs (for primary zones only) or by automatic key rollover when
-``auto-dnssec`` is set to ``maintain``. You can cause the automatic key
-rollover to take place immediately by using the ``dnssec-settime``
-utility to set the *Delete* date on all keys to any time in the past.
-(See the ``dnssec-settime -D <date/offset>`` option.)
+一旦区被新的DNSKEY签名(并且你已经等待至少一个TTL周期)，你必须将新KSK通知
+父区和所有信任锚仓库，例如，你可以通过你的DNS注册商的网站将DS记录放在父
+区。
 
-After adjusting the timing metadata, the ``rndc loadkeys`` command
-causes ``named`` to remove the DNSKEYs and
-RRSIGs for the old algorithm from the zone. Note also that with the
-``nsupdate`` method, removing the DNSKEYs also causes ``named`` to
-remove the associated RRSIGs automatically.
+在开始从一个区删除旧算法之前，必须让父区中它的DS记录的最大TTL过期。这确
+保了任何后续查询检索新算法的新DS记录。在TTL过期之后，您可以从父区和所有
+信任锚存仓库中删除旧算法的DS记录。然后必须等待另一个最大TTL间隔过去，以
+便旧DS记录从所有解析器缓存中消失。
 
-Once you have verified that the old DNSKEYs and RRSIGs have been removed
-from the zone, the final (optional) step is to remove the key files for
-the old algorithm from the key directory.
+下一步是从您的区中删除使用旧算法的DNSKEY。同样，这可以使用 ``nsupdate``
+来删除旧的DNSKEY（仅用于主区），或者当 ``auto-dnssec`` 设置为
+``maintain`` 时，通过自动密钥轮转来完成。您可以通过使用
+``dnssec-settime`` 实用程序将所有密钥上的 *Delete* 日期设置为过去的任何
+时间，从而使自动密钥轮转立即启动。（参见 ``dnssec-settime -D <date/offset>``
+选项。）
 
-Other Topics
-~~~~~~~~~~~~
+调整定时元数据后， ``rndc loadkeys`` 命令会导致 ``named`` 从区中删除旧算
+法的DNSKEY和RRSIG。还要注意，使用 ``nsupdate`` 方法，删除DNSKEY也会使
+``named`` 自动删除相关的RRSIG。
 
-DNSSEC and Dynamic Updates
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+一旦您核实了旧的DNSKEY和RRSIG已经从区中删除，最后（可选）步骤是从密钥目
+录中删除旧算法的密钥文件。
 
-Dynamic DNS (DDNS) is actually independent of DNSSEC. DDNS provides a
-mechanism, separate from editing the zone file or zone database, to edit DNS
-data. Most DNS clients and servers are able to handle dynamic
-updates, and DDNS can also be integrated as part of your DHCP
-environment.
+其它话题
+~~~~~~~~
 
-When you have both DNSSEC and dynamic updates in your environment,
-updating zone data works the same way as with traditional (insecure)
-DNS: you can use ``rndc freeze`` before editing the zone file, and
-``rndc thaw`` when you have finished editing, or you can use the
-command ``nsupdate`` to add, edit, or remove records like this:
+DNSSEC与动态更新
+^^^^^^^^^^^^^^^^
+
+动态DNS（Dynamic DNS，DDNS）实际上是独立于DNSSEC的。DDNS提供了一种独立于
+编辑区文件或区数据库的机制来编辑DNS数据。大多数DNS客户端和服务器都能够处
+理动态更新，而且DDNS也可以被集成为DHCP环境的一部分。
+
+当你的环境中同时使用DNSSEC和动态更新时，更新区数据的方式与传统的（不安全
+的）DNS一样：你可以在编辑区文件之前使用 ``rndc freeze`` ，在完成编辑之后
+使用 ``rndc thaw`` ，或者你可以使用 ``nsupdate`` 命令增加、编辑或删除记
+录，就像这样：
 
 ::
 
@@ -946,125 +762,95 @@ command ``nsupdate`` to add, edit, or remove records like this:
    > send
    > quit
 
-The examples provided in this guide make ``named`` automatically
-re-sign the zone whenever its content has changed. If you decide to sign
-your own zone file manually, you need to remember to execute the
-``dnssec-signzone`` command whenever your zone file has been updated.
+本指南中提供的例子使 ``named`` 在区内容发生更改时自动重签区。如果您决定
+手动签名区文件，您需要记住在区文件被更新时执行 ``dnssec-signzone`` 命令。
 
-As far as system resources and performance are concerned, be mindful that
-with a DNSSEC zone that changes frequently, every time the zone
-changes your system is executing a series of cryptographic operations
-to (re)generate signatures and NSEC or NSEC3 records.
+在关注系统资源和性能而言，需要注意，对于频繁更改的DNSSEC区域，每次对区
+修改时，您的系统都要执行一系列加密操作，以（重新）生成签名和NSEC或NSEC3记录。
 
 .. _dnssec_on_private_networks:
 
-DNSSEC on Private Networks
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+私有网络中的DNSSEC
+^^^^^^^^^^^^^^^^^^
 
-Let's clarify what we mean: in this section, "private networks" really refers to
-a private or internal DNS view. Most DNS products offer the ability to
-have different versions of DNS answers, depending on the origin of the
-query. This feature is often called "DNS views" or "split DNS," and is most
-commonly implemented as an "internal" versus an "external" setup.
+让我们来澄清一下我们的意思：在本节中，“私有网络”实际上指的是一个私有的
+或内部的DNS视图。大多数具有这个功能的DNS产品都能够提供不同版本的DNS答案，
+这取决于请求的来源。这个特性通常被称为“DNS视图”或“分割DNS”，最常见的实
+现为一个“内部”而不是“外部”设置。
 
-For instance, your organization may have a version of ``example.com``
-that is offered to the world, and its names most likely resolve to
-publicly reachable IP addresses. You may also have an internal version
-of ``example.com`` that is only accessible when you are on the company's
-private networks or via a VPN connection. These private networks typically
-fall under 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16 for IPv4.
+例如，您的组织可能有一个版本的 ``example.com`` 向全世界提供，它的名称很
+可能解析为公开可达的IP地址。您也可能有一个内部版本的 ``example.com`` ，
+只有当您使用公司的私有网络或通过VPN连接时才能访问它。这些私有网络的IPv4
+地址通常是在10.0.0.0/8、172.16.0.0/12或者192.168.0.0/16下面。
 
-So what if you want to offer DNSSEC for your internal version of
-``example.com``? This can be done: the golden rule is to use the same
-key for both the internal and external versions of the zones. This
-avoids problems that can occur when machines (e.g., laptops) move
-between accessing the internal and external zones, when it is possible
-that they may have cached records from the wrong zone.
+所以如果你想为你的内部版本的 ``example.com`` 提供DNSSEC呢？这可以这样来
+获得：黄金准则是对内部和外部版本的区使用同样的密钥。这可以避免当机器（
+例如笔记本电脑）在访问内部和外部区之间移动时可能发生的问题，因为它们可
+能缓存了来自错误区的记录。
 
 .. _introduction_to_dane:
 
-Introduction to DANE
-^^^^^^^^^^^^^^^^^^^^
+DANE介绍
+^^^^^^^^
 
-With your DNS infrastructure secured with DNSSEC, information can
-now be stored in DNS and its integrity and authenticity can be proved.
-One of the new features that takes advantage of this is the DNS-Based
-Authentication of Named Entities, or DANE. This improves security in a
-number of ways, including:
+通过DNSSEC保护您的DNS基础设施，现在可以将信息存储在DNS中，并可以证明其
+完整性和真实性。利用这一点的新特性之一是基于DNS的命名实体认证（
+DNS-Based Authentication of Named Entities，DANE）。这在许多方面提高了
+安全性，包括：
 
--  The ability to store self-signed X.509 certificates and bypass having to pay a third
-   party (such as a Certificate Authority) to sign the certificates
-   (:rfc:`6698`).
+-  存储自签名X.509证书的能力，无需支付第三方（如证书授权中心）来签署证
+   书（ :rfc:`6698` ）。
 
--  Improved security for clients connecting to mail servers (:rfc:`7672`).
+-  改进了连接到邮件服务器的客户端的安全性（ :rfc:`7672` ）。
 
--  A secure way of getting public PGP keys (:rfc:`7929`).
+-  获取公共PGP密钥的安全方法（ :rfc:`7929` ）。
 
-Disadvantages of DNSSEC
-~~~~~~~~~~~~~~~~~~~~~~~
+DNSSEC的缺点
+~~~~~~~~~~~~
 
-DNSSEC, like many things in this world, is not without its problems.
-Below are a few challenges and disadvantages that DNSSEC faces.
+DNSSEC，就像这个世界上的许多事情一样，并不是没有问题。下面是DNSSEC面临
+的一些挑战和缺点。
 
-1. *Increased, well, everything*: With DNSSEC, signed zones are larger,
-   thus taking up more disk space; for DNSSEC-aware servers, the
-   additional cryptographic computation usually results in increased
-   system load; and the network packets are bigger, possibly putting
-   more strains on the network infrastructure.
+1. *增加，嗯，一切* ：使用DNSSEC，签名区域更大，因此占用更多的磁盘空间；
+   对于感知DNSSEC的服务器，额外的密码计算通常会导致系统负载增加；而且
+   网络数据包更大，可能给网络基础设施带来更多压力。
 
-2. *Different security considerations*: DNSSEC addresses many security
-   concerns, most notably cache poisoning. But at the same time, it may
-   introduce a set of different security considerations, such as
-   amplification attack and zone enumeration through NSEC. These
-   concerns are still being identified and addressed by the Internet
-   community.
+2. *不同的安全考虑* ：DNSSEC解决了许多安全问题，最明显的是缓存中毒。但
+   同时，它可能会引入一组不同的安全考虑，例如放大攻击和通过NSEC的区枚
+   举。这些问题仍在互联网社区中正在被确认和解决的过程中。
 
-3. *More complexity*: If you have read this far, you have probably already
-   concluded this yourself. With additional resource records, keys,
-   signatures, and rotations, DNSSEC adds many more moving pieces on top of
-   the existing DNS machine. The job of the DNS administrator changes,
-   as DNS becomes the new secure repository of everything from spam
-   avoidance to encryption keys, and the amount of work involved to
-   troubleshoot a DNS-related issue becomes more challenging.
+3. *更复杂* ：如果你已经读到这里，你自己可能已经得出这个结论了。通过使
+   用额外的资源记录、密钥、签名和轮转，DNSSEC在现有DNS机器上添加了更多
+   的活动部件。DNS管理员的工作发生了变化，因为DNS成为了新的安全存储库，
+   包括从避免垃圾邮件到加密密钥的所有内容，并且与DNS相关问题的排错所涉
+   及的工作量变得更具挑战性。
 
-4. *Increased fragility*: The increased complexity means more
-   opportunities for things to go wrong. Before DNSSEC, DNS
-   was essentially "add something to the zone and forget it." With DNSSEC,
-   each new component - re-signing, key rollover, interaction with
-   parent zone, key management - adds more opportunity for error. It is
-   entirely possible that a failure to validate a name may come down to
-   errors on the part of one or more zone operators rather than the
-   result of a deliberate attack on the DNS.
+4. *脆弱性增加* ：复杂性增加意味着出错机会的增加。在DNSSEC之前，DNS本
+   质上是“添加一些东西到区，然后忘记它。”通过DNSSEC，每个新组件 —— 重
+   签名、密钥轮转、与父区的交互、密钥管理 —— 都增加了更多的出错机会。
+   完全有可能的是，一个名字的验证失败可能归因于一个或多个区的操作员出
+   现错误，而不是故意攻击DNS的结果。
 
-5. *New maintenance tasks*: Even if your new secure DNS infrastructure
-   runs without any hiccups or security breaches, it still requires
-   regular attention, from re-signing to key rollovers. While most of
-   these can be automated, some of the tasks, such as KSK rollover,
-   remain manual for the time being.
+5. *新的维护任务* ：即使新的安全DNS基础设施运行没有任何问题或安全漏洞，
+   它仍然需要定期关注，从重签名到密钥轮转。虽然其中大多数可以自动化，
+   但一些任务（如KSK轮转）暂时仍是手动的。
 
-6. *Not enough people are using it today*: While it's estimated (as of
-   mid-2020) that roughly 30% of the global Internet DNS traffic is
-   validating  [#]_ , that doesn't mean that many of the DNS zones are
-   actually signed. What this means is, even if your company's zone is
-   signed today, fewer than 30% of the Internet's servers are taking
-   advantage of this extra security. It gets worse: with less than 1.5%
-   of the ``.com`` domains signed, even if your DNSSEC validation is enabled today,
-   it's not likely to buy you or your users a whole lot more protection
-   until these popular domain names decide to sign their zones.
+6. *当前没有足够的人使用它* ：虽然有估计（截止到2020年年中）大致有30%
+   的请求互联网DNS流量正在验证 [#]_ ，却并不意味着许多DNS区实际上是已
+   签名的。这表明，即使您公司的区今天已经签名，只有不到30%的互联网服务
+   器正在利用这种额外的安全性。更糟糕的是：少于1.5%的 ``.com`` 域被签
+   名，即使你的DNSSEC验证今天已经开启，也不太可能为您或您的用户带来更
+   多的保护，除非这些流行的域名决定签名它们的区。
 
-The last point may have more impact than you realize. Consider this:
-HTTP and HTTPS make up the majority of traffic on the Internet. While you may have
-secured your DNS infrastructure through DNSSEC, if your web hosting is
-outsourced to a third party that does not yet support DNSSEC in its
-own domain, or if your web page loads contents and components from
-insecure domains, end users may experience validation problems when
-trying to access your web page. For example, although you may have signed
-the zone ``company.com``, the web address ``www.company.com`` may actually be a
-CNAME to ``foo.random-cloud-provider.com``. As long as
-``random-cloud-provider.com`` remains an insecure DNS zone, users cannot
-fully validate everything when they visit your web page and could be
-redirected elsewhere by a cache poisoning attack.
+最后一点的影响可能比你意识到的要大。考虑一下：HTTP和HTTPS构成了互联网
+上的大部分流量。当你通过DNSSEC加强了你的DNS基础设施，如果你的Web主机外
+包给还没有在其域支持DNSSEC的第三方，或者如果你的Web页从不安全的域装载
+内容和部件，最终用户可能会在访问你的Web页时遇到验证问题。例如，虽然您
+可能已对区 ``company.com`` 签名了，但web地址 ``www.company.com`` 实际
+上可能通过CNAME指向 ``foo.random-cloud-provider.com`` 。只要
+``random-cloud-provider.com`` 仍然是一个不安全的DNS区域，用户在访问您
+的Web页时，无法完全验证整个流程，可能会被缓存中毒攻击重定向到其它地方。
 
 .. [#]
-   Based on APNIC statistics at
-   `<https://stats.labs.apnic.net/dnssec/XA>`__
+   基于位于 `<https://stats.labs.apnic.net/dnssec/XA>`__ 的APNIC统计。
+

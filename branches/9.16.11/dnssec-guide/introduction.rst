@@ -11,382 +11,293 @@
 .. _dnssec_guide_introduction:
 
 介绍
-------------
+----
 
 .. _who_should_read:
 
 谁应该阅读本指南？
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
-This guide is intended as an introduction to DNSSEC for the DNS
-administrator who is already comfortable working with the existing BIND and DNS
-infrastructure. He or she might be curious about DNSSEC, but may not have had the
-time to investigate DNSSEC, to learn whether DNSSEC should
-be a part of his or her environment, and understand what it means to deploy it in the
-field.
+本指南旨在为已经熟悉现有BIND和DNS基础设施的DNS管理员介绍DNSSEC。他或她可
+能对DNSSEC感到好奇，但可能没有时间研究DNSSEC，了解DNSSEC是否应该成为他或
+她的环境的一部分，并理解在现场部署它意味着什么。
 
-This guide provides basic information on how to configure DNSSEC using
-BIND 9.16.0 or later. Most of the information and examples in this guide also
-apply to versions of BIND later than 9.9.0, but some of the key features described here
-were only introduced in version 9.16.0. Readers are assumed to have basic
-working knowledge of the Domain Name System (DNS) and related network
-infrastructure, such as concepts of TCP/IP. In-depth knowledge of DNS and
-TCP/IP is not required. The guide assumes no prior knowledge of DNSSEC or
-related technology such as public key cryptography.
+本指南介绍BIND 9.16.0及以上版本配置DNSSEC的基本信息。本指南中的大多数信
+息和示例也适用于9.9.0之后的BIND版本，但这里描述的一些关键特性仅在9.16.0
+版本中引入。假设读者了解域名系统（Domain Name System，DNS）和相关网络基
+础设施的基础工作原理。不要求了解更深入的DNS和TCP/IP知识。本指南假设读者
+不了解DNSSEC或相关技术，如公钥加密。
 
 .. _who_should_not_read:
 
 谁不必阅读本指南？
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
-If you are already operating a DNSSEC-signed zone, you may not learn
-much from the first half of this document, and you may want to start with 
-:ref:`dnssec_advanced_discussions`. If you want to
-learn about details of the protocol extension, such as data fields and flags,
-or the new record types, this document can help you get started but it
-does not include all the technical details.
+如果你已经在运行一个DNSSEC签名的区，你可能不会从本文档的前半部分学到很多
+东西，你可能想从 :ref:`dnssec_advanced_discussions` 开始。如果您想了解协
+议扩展的细节，例如数据字段和标志，或者新的记录类型，本文档可以帮助您入门，
+但它不包括所有的技术细节。
 
-If you are experienced in DNSSEC, you
-may find some of the concepts in this document to be overly simplified for
-your taste, and some details are intentionally omitted at times for ease of
-illustration.
+如果您对DNSSEC有经验，您可能会发现本文中的一些概念对您来说过于简化了，为
+了便于说明，有时会故意省略一些细节。
 
-如果你管理着一个大型或者复杂的 BIND 环境，本指南可能没有为你提供足够的信息，
-因为其目的仅是提供基础的、通用的可工作的例子。
+如果你管理着一个大型或者复杂的 BIND 环境，本指南可能没有为你提供足够的信
+息，因为其目的仅是提供基础的、通用的可工作的例子。
 
-If you are a top-level domain (TLD) operator, or
-administer zones under signed TLDs, this guide can
-help you get started, but it does not provide enough details to serve all of your
-needs.
+如果您是顶级域(TLD)操作员，或者管理签名顶级域下的区域，本指南可以帮助您
+入门，但它没有提供足够的细节来满足您的所有需求。
 
-If your DNS environment uses DNS products other than (or in addition to)
-BIND, this document may provide some background or overlapping information, but you
-should check each product's vendor documentation for specifics.
+如果您的DNS环境使用了非BIND的DNS产品，或者除了BIND之外还包含别的DNS产品，
+本文档可能提供一些背景信息或重叠信息，但您应该检查每个产品的供应商文档
+以了解具体情况。
 
-Finally, deploying
-DNSSEC on internal or private networks is not covered in this document, with the
-exception of a brief discussion in :ref:`dnssec_on_private_networks`.
+最后，在内部或私有网络上部署DNSSEC未包含在本文档中，除了在
+:ref:`dnssec_on_private_networks` 中的一个简短讨论。
 
 .. _what_is_dnssec:
 
 DNSSEC 是什么？
 ~~~~~~~~~~~~~~~
 
-The Domain Name System (DNS) was designed in a day and age when the
-Internet was a friendly and trusting place. The protocol itself provides
-little protection against malicious or forged answers. DNS Security
-Extensions (DNSSEC) addresses this need, by adding digital signatures
-into DNS data so that each DNS response can be verified for integrity
-(the answer did not change during transit) and authenticity (the data
-came from the true source, not an impostor). In the ideal world, when
-DNSSEC is fully deployed, every single DNS answer can be validated and
-trusted.
+域名系统(Domain Name System，DNS)是在互联网是一个友好和信任的地方的时代
+设计的。协议本身对恶意或伪造的应答提供的保护很少。DNS安全扩展（
+DNS Security Extensions，DNSSEC）通过向DNS数据中添加数字签名来满足这一需
+求，这样就可以验证每个DNS响应的完整性（在传输过程中答案没有改变）和真实
+性（数据来自真实的源，而不是冒名者）。在理想的情况下，当DNSSEC完全部署时，
+每个DNS应答都可以被验证和信任。
 
-DNSSEC does not provide a secure tunnel; it does not encrypt or hide DNS
-data. It operates independently of an existing Public Key Infrastructure
-(PKI). It does not need SSL certificates or shared secrets. It was
-designed with backwards compatibility in mind, and can be deployed
-without impacting "old" unsecured domain names.
+DNSSEC不提供安全隧道；它不加密或隐藏DNS数据。它独立于现有的公钥基础设施
+（PKI）运行。它不需要SSL证书或共享秘密。它在设计时考虑了向后兼容性，并且
+可以在不影响“旧的”不安全域名的情况下部署。
 
-DNSSEC is deployed on the three major components of the DNS
-infrastructure:
+DNSSEC部署在DNS基础设施的三个主要组件上：
 
--  *Recursive Servers*: People use recursive servers to lookup external
-   domain names such as ``www.example.com``. Operators of recursive servers
-   need to enable DNSSEC validation. With validation enabled, recursive
-   servers carry out additional tasks on each DNS response they
-   receive to ensure its authenticity.
+-  *递归服务器* ：人们使用递归服务器查找外部域名，如 ``www.example.com`` 。
+   递归服务器的操作人员需要启用DNSSEC验证。启用验证后，递归服务器对它们收
+   到的每个DNS响应执行额外的任务，以确保其真实性。
 
--  *Authoritative Servers*: People who publish DNS data on their name
-   servers need to sign that data. This entails creating additional
-   resource records, and publishing them to parent domains where
-   necessary. With DNSSEC enabled, authoritative servers respond to
-   queries with additional DNS data, such as digital signatures and
-   keys, in addition to the standard answers.
+-  *权威服务器* ：在其名字服务器上发布DNS数据的人需要签名该数据。这需要创
+   建额外的资源记录，并在必要时将它们发布到父区。启用DNSSEC后，权威服务器
+   除了标准答案外，还会使用额外的DNS数据（如数字签名和密钥）响应查询。
 
--  *Applications*: This component lives on every client machine, from web
-   servers to smart phones. This includes resolver libraries on different
-   operating systems, and applications such as web browsers.
+-  *应用* ：该组件存在于每个客户端机器上，从Web服务器到智能手机。这包括不
+   同操作系统上的解析器库，以及Web浏览器等应用程序。
 
-In this guide, we focus on the first two components, Recursive
-Servers and Authoritative Servers, and only lightly touch on the third
-component. We look at how DNSSEC works, how to configure a
-validating resolver, how to sign DNS zone data, and other operational
-tasks and considerations.
+在本指南中，我们将重点介绍前两个组件，递归服务器和权威服务器，只简单介绍
+第三个组件。我们将了解DNSSEC如何工作、如何配置验证解析器、如何对DNS区数据
+签名以及其它操作任务和注意事项。
 
 .. _what_does_dnssec_add_to_dns:
 
-What Does DNSSEC Add to DNS?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+DNSSEC给DNS增加了什么？
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. note::
 
-   Public Key Cryptography works on the concept of a pair of keys: one
-   made available to the world publicly, and one kept in secrecy
-   privately. Not surprisingly, they are known as a public key and a private
-   key. If you are not familiar with the concept, think of it as a
-   cleverly designed lock, where one key locks and one key unlocks. In
-   DNSSEC, we give out the unlocking public key to the rest of the
-   world, while keeping the locking key private. To learn how this is
-   used to secure DNS messages, see :ref:`how_are_answers_verified`.
+   公钥密码学的工作原理是一对密钥：一个公开给全世界，另一个秘密地保存。毫
+   无疑问，它们被称为公钥和私钥。如果你不熟悉这个概念，可以把它想象成一个
+   巧妙设计的锁，一把钥匙上锁，一把钥匙开锁。在DNSSEC中，我们将解锁的公钥
+   分发给世界上的其他人，同时保持上锁密钥的私有性。要了解如何使用它来保护
+   DNS消息，请参阅 :ref:`how_are_answers_verified` 。
 
-DNSSEC introduces eight new resource record types:
+DNSSEC引入了八种新的资源记录类型：
 
--  RRSIG (digital resource record signature)
+-  RRSIG （资源记录的数字化签名）
 
--  DNSKEY (public key)
+-  DNSKEY （公开密钥）
 
 -  DS (parent-child)
 
--  NSEC (proof of nonexistence)
+-  NSEC （不存在的证明）
 
--  NSEC3 (proof of nonexistence)
+-  NSEC3 （不存在的证明）
 
--  NSEC3PARAM (proof of nonexistence)
+-  NSEC3PARAM （不存在的证明）
 
--  CDS (child-parent signaling)
+-  CDS （子-父信令）
 
--  CDNSKEY (child-parent signaling)
+-  CDNSKEY（子-父信令）
 
-This guide does not go deep into the anatomy of each resource record
-type; the details are left for the reader to research and explore.
-Below is a short introduction on each of the new record types:
+本指南并不深入剖析每种资源记录类型；详细信息留给读者自行研究和探索。
+以下是每种新资源记录的简短介绍：
 
--  *RRSIG*: With DNSSEC enabled, just about every DNS answer (A, PTR,
-   MX, SOA, DNSKEY, etc.) comes with at least one resource
-   record signature, or RRSIG. These signatures are used by recursive name
-   servers, also known as validating resolvers, to verify the answers
-   received. To learn how digital signatures are generated and used, see
-   :ref:`how_are_answers_verified`.
+-  *RRSIG* ：启用DNSSEC后，几乎每个DNS应答（A, PTR, MX, SOA, DNSKEY等）都
+   至少带有一个资源记录签名或RRSIG。递归名字服务器（也被称为验证解析器）
+   使用这些签名来验证接收到的答案。要了解如何生成和使用数字签名，请参阅
+   :ref:`how_are_answers_verified` 。
 
--  *DNSKEY*: DNSSEC relies on public-key cryptography for data
-   authenticity and integrity. There are several keys used in DNSSEC,
-   some private, some public. The public keys are published to the world
-   as part of the zone data, and they are stored in the DNSKEY record
-   type.
+-  *DNSKEY* ：DNSSEC依赖于公钥密码学来保证数据的真实性和完整性。在DNSSEC
+   中有几种密钥，一些是私有的，一些是公开的。公共密钥作为区数据的一部分
+   发布到世界上，它们存储在DNSKEY记录类型中。
 
-   In general, keys in DNSSEC are used for one or both of the following
-   roles: as a Zone Signing Key (ZSK), used to protect all zone data; or
-   as a Key Signing Key (KSK), used to protect the zone's keys. A key
-   that is used for both roles is referred to as a Combined Signing Key
-   (CSK). We talk about keys in more detail in
-   :ref:`advanced_discussions_key_generation`.
+   通常，DNSSEC中的密钥用于以下角色中的一个或两个：作为区签名密钥(ZSK)，
+   用于保护所有区数据，或者作为密钥签名密钥(KSK)，用于保护区的密钥。同时
+   用于两个角色的密钥被称为组合签名密钥(Combined Signing key, CSK)。我们
+   在 :ref:`advanced_discussions_key_generation` 中更详细地讨论密钥。
 
--  *DS*: One of the critical components of DNSSEC is that the parent
-   zone can "vouch" for its child zone. The DS record is verifiable
-   information (generated from one of the child's public keys) that a
-   parent zone publishes about its child as part of the chain of trust.
-   To learn more about the Chain of Trust, see
-   :ref:`chain_of_trust`.
+-  *DS* ：DNSSEC的一个关键组成部分是父区可以“担保”其子区。DS记录是可验证
+   的信息(由子节点的公钥之一生成)，父区作为信任链的一部分发布关于其子节点
+   的信息。要了解更多关于信任链，参见 :ref:`chain_of_trust` 。
 
--  *NSEC, NSEC3, NSEC3PARAM*: These resource records all deal with a
-   very interesting problem: proving that something does not exist. We
-   look at these record types in more detail in
-   :ref:`advanced_discussions_proof_of_nonexistence`.
+-  *NSEC, NSEC3, NSEC3PARAM* ：这些资源记录都处理一个非常有趣的问题：证明
+   某些东西不存在。我们在 :ref:`advanced_discussions_proof_of_nonexistence`
+   中更详细地研究了这些记录类型。
 
--  *CDS, CDNSKEY*: The CDS and CDNSKEY resource records apply to
-   operational matters and are a way to signal to the parent zone that
-   the DS records it holds for the child zone should be updated. This is
-   covered in more detail in :ref:`cds_cdnskey`.
+-  *CDS, CDNSKEY* ：CDS和CDNSKEY资源记录适用于操作事项，是一种向父区发出
+   信号的方式，它为子区保存的DS记录应该更新。这在 :ref:`cds_cdnskey` 中有
+   更详细的介绍。
 
 .. _how_does_dnssec_change_dns_lookup:
 
-How Does DNSSEC Change DNS Lookup?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+DNSSEC如何改变了DNS查找？
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Traditional (insecure) DNS lookup is simple: a recursive name server
-receives a query from a client to lookup a name like ``www.isc.org``. The
-recursive name server tracks down the authoritative name server(s)
-responsible, sends the query to one of the authoritative name servers,
-and waits for it to respond with the answer.
+传统的(不安全的)DNS查找很简单：递归名字服务器接收来自客户机的查询，以便
+查找 ``www.isc.org`` 之类的名称。递归名字服务器跟踪负责的权威名字服务器，
+将查询发送到其中一个权威名字服务器，并等待它响应答案。
 
-With DNSSEC validation enabled, a validating recursive name server
-(a.k.a. a *validating resolver*) asks for additional resource
-records in its query, hoping the remote authoritative name servers
-respond with more than just the answer to the query, but some proof to
-go along with the answer as well. If DNSSEC responses are received, the
-validating resolver performs cryptographic computation to verify the
-authenticity (the origin of the data) and integrity (that the data was not altered
-during transit) of the answers, and even asks the parent zone as part of
-the verification. It repeats this process of get-key, validate,
-ask-parent, and its parent, and its parent, all the way until
-the validating resolver reaches a key that it trusts. In the ideal,
-fully deployed world of DNSSEC, all validating resolvers only need to
-trust one key: the root key.
+启用DNSSEC验证后，验证递归名字服务器(又称 *验证解析器*)在其查询中请求额
+外的资源记录，希望远程权威名字服务器响应的不仅仅是查询的答案，还包括一些
+与答案一起的证明。如果接收到DNSSEC响应，验证解析器将执行加密计算来验证答
+案的真实性(数据的来源)和完整性(数据在传输过程中没有被更改)，甚至询问父区
+作为验证的一部分。它重复这个过程：获取密钥，验证，询问父区，父区的父区，
+... ，直到验证解析器到达它信任的密钥为止。在理想的、完全部署的DNSSEC中，
+所有验证解析器只需要信任一个密钥：根密钥。
 
 .. _dnssec_12_steps:
 
 12步 DNSSEC 验证流程（简化版）
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following example shows the 12 steps of the DNSSEC validating process 
-at a very high level, looking up the name ``www.isc.org`` :
+下面的示例在非常高的级别上显示了DNSSEC验证过程的12个步骤，查找名字
+``www.isc.org`` ：
 
 .. figure:: ./dnssec-guide/img/dnssec-12-steps.png
    :alt: DNSSEC Validation 12 Steps
 
-1.  Upon receiving a DNS query from a client to resolve ``www.isc.org``,
-    the validating resolver follows standard DNS protocol to track down
-    the name server for ``isc.org``, and sends it a DNS query to ask for the
-    A record of ``www.isc.org``. But since this is a DNSSEC-enabled
-    resolver, the outgoing query has a bit set indicating it wants
-    DNSSEC answers, hoping the name server that receives it is DNSSEC-enabled
-    and can honor this secure request.
+1.  在从客户端接收到解析 ``www.isc.org`` 的DNS查询后，验证解析器遵循标准
+    DNS协议来跟踪 ``isc.org`` 的名字服务器，并向它发送一个DNS查询来请求
+    ``www.isc.org`` 的A记录。但由于这是一个启用DNSSEC的解析器，因此发出
+    的查询设置了一个位，表明它希望得到DNSSEC的答案，希望接收它的名字服务
+    器是启用DNSSEC的，并能够满足这个安全请求。
 
-2.  The ``isc.org`` name server is DNSSEC-enabled, so it responds with both
-    the answer (in this case, an A record) and a digital signature for
-    verification purposes.
+2.  ``isc.org`` 名字服务器启用了dnssec，因此它的响应带有答案(在本例中是A
+    记录)和数字签名，用于验证目的。
 
-3.  The validating resolver requires cryptographic keys to be able to verify the
-    digital signature, so it asks the ``isc.org`` name server for those keys.
+3.  验证解析器需要能够验证数字签名的密码算法的密钥，因此它向 ``isc.org``
+    名字服务器询问这些密钥。
 
-4.  The ``isc.org`` name server responds with the cryptographic keys
-    (and digital signatures of the keys) used to generate the digital
-    signature that was sent in #2. At this point, the validating
-    resolver can use this information to verify the answers received in
-    #2.
+4.  ``isc.org`` 名字服务器的响应中包含密码算法的密钥(和密钥的数字签名)，
+    其用于生成在步骤2中发送的数字签名。此时，验证解析器可以使用此信息来
+    验证在步骤2所收到的答案。
 
-    Let's take a quick break here and look at what we've got so far...
-    how can our server trust this answer? If a clever attacker had taken over
-    the ``isc.org`` name server(s), or course she would send matching
-    keys and signatures. We need to ask someone else to have confidence
-    that we are really talking to the real ``isc.org`` name server. This
-    is a critical part of DNSSEC: at some point, the DNS administrators
-    at ``isc.org`` uploaded some cryptographic information to its
-    parent, ``.org``, maybe through a secure web form, maybe
-    through an email exchange, or perhaps in person. In
-    any event, at some point some verifiable information about the
-    child (``isc.org``) was sent to the parent (``.org``) for
-    safekeeping.
+    让我们稍微休息一下，看看目前为止我们都学了些什么。我们的服务器为什么
+    会信任这个答案？是否一位聪明的攻击者接管了 ``isc.org`` 名字服务器，
+    当然她会发送匹配的密钥和签名。我们需要询问其他人以获得信心，即我们真
+    的是在与真正的 ``isc.org`` 名字服务器交谈。这是DNSSEC的一个关键部分：
+    在某些时候， ``isc.org`` 的DNS管理员上载一些加密信息到它的父区， 
+    ``.org`` ，可能是通过一个安全的Web表单，也可能通过一个电子邮件交换，
+    甚至可能面对面方式。无论如何，在某种情况，关于子区(``isc.org``)的一
+    些可验证信息被发送给父区(``.org``)以安全保存。
 
-5.  The validating resolver asks the parent (``.org``) for the
-    verifiable information it keeps on its child, ``isc.org``.
+5.  验证解析器向父区(``.org``)询问它所保存的关于其子区 ``isc.org`` 的可
+    验证信息。
 
-6.  Verifiable information is sent from the ``.org`` server. At this
-    point, the validating resolver compares this to the answer it received
-    in #4; if the two of them match, it proves the authenticity of
-    ``isc.org``.
+6.  可验证的信息从 ``.org`` 服务器发送。此时，验证解析器将此结果与在步骤
+    4所收到的答复进行比较；如果两者匹配，就证明了 ``isc.org`` 的真实性。
 
-    Let's examine this process. You might be thinking to yourself,
-    what if the clever attacker that took over ``isc.org`` also
-    compromised the ``.org`` servers? Of course all this information
-    would match! That's why we turn our attention now to the
-    ``.org`` server, interrogate it for its cryptographic keys, and
-    move one level up to ``.org``'s parent, root.
+    让我们来看看这个过程。您可能在想，如果聪明的攻击者在接管了 ``isc.org``
+    服务器的同时也破解了 ``.org`` 服务器该怎么办？当然所有这些信息都会匹
+    配！这就是为什么我们现在将注意力转向 ``.org`` 服务器，查询它的密码算
+    法的密钥，并且向上移动一级到 ``.org`` 的父区，根。
 
-7.  The validating resolver asks the ``.org`` authoritative name server for
-    its cryptographic keys, to verify the answers received in #6.
+7.  验证解析器要求 ``.org`` 权威名字服务器提供其密码算法的密钥，以验证在
+    步骤6所收到的答案。
 
-8.  The ``.org`` name server responds with the answer (in this case,
-    keys and signatures). At this point, the validating resolver can
-    verify the answers received in #6.
+8.  ``.org`` 名字服务器响应答案(在本例中是密钥和签名)。此时，验证解析器
+    可以验证在步骤6所收到的答案。
 
-9.  The validating resolver asks root (``.org``'s parent) for the verifiable
-    information it keeps on its child, ``.org``.
+9.  验证解析器向根( ``.org`` 的父区)询问保存在其上的关于其子区 ``.org``
+    的可验证信息。
 
-10. The root name server sends back the verifiable information it keeps
-    on ``.org``. The validating resolver uses this information
-    to verify the answers received in #8.
+10. 根名字服务器发送回所保存的关于 ``.org`` 的可验证信息。 验证解析器使
+    用此信息验证在步骤8所收到的答案。
 
-    So at this point, both ``isc.org`` and ``.org`` check out. But
-    what about root? What if this attacker is really clever and somehow
-    tricked us into thinking she's the root name server? Of course she
-    would send us all matching information! So we repeat the
-    interrogation process and ask for the keys from the root name
-    server.
+    此时， ``isc.org`` 和 ``.org`` 都检查了。但是根呢？如果这个攻击者真
+    的很聪明，不知怎么地欺骗了我们，让我们认为她是根名称服务器呢？当然她
+    会发给我们全部都能匹配的信息！因此，我们重复这个询问过程，并要求从根
+    名字服务器获取密钥。
 
-11. The validating resolver asks the root name server for its cryptographic
-    keys to verify the answer(s) received in #10.
+11. 验证解析器要求根名字服务器提供其密码算法的密钥，以验证在步骤10所收到
+    的答案。
 
-12. The root name server sends its keys; at this point, the validating
-    resolver can verify the answer(s) received in #10.
+12. 根名字服务器发送它的密钥；此时，验证解析器可以验证在步骤10所收到的答
+    案。
 
 .. _chain_of_trust:
 
-Chain of Trust
-^^^^^^^^^^^^^^
+信任链
+^^^^^^
 
-But what about the root server itself? Who do we go to verify root's
-keys? There's no parent zone for root. In security, you have to trust
-someone, and in the perfectly protected world of DNSSEC (we talk later
-about the current imperfect state and ways to work around it),
-each validating resolver would only have to trust one entity, that is,
-the root name server. The validating resolver already has the root key
-on file (we discuss later how we got the root key file). So
-after the answer in #12 is received, the validating resolver compares it
-to the key it already has on file. Providing one of the keys in the
-answer matches the one on file, we can trust the answer from root. Thus
-we can trust ``.org``, and thus we can trust ``isc.org``. This is known
-as the "chain of trust" in DNSSEC.
+但是根服务器本身呢？我们向谁去验证根的密钥呢？根区没有父区。在安全性方面，
+您必须信任某个人，在DNSSEC(稍后我们将讨论当前的不完美状态和处理它的方法)
+的完美保护环境中，每个验证解析器只需要信任一个实体，即根名字服务器。验证
+解析器已经在文件中拥有根密钥(稍后我们将讨论如何获得根密钥文件)。所以在收
+到步骤12的答复之后，验证解析器将其与已在文件中的密钥相比较，如果答复中的
+一个密钥与文件中的一个密钥相匹配，我们就可以信任来自根的答复。因此我们可
+以信任 ``.org`` ，因此我们可以信任 ``.isc.org`` 。在DNSSEC中，这被称为
+“信任链”。
 
-We revisit this 12-step process again later in
-:ref:`how_does_dnssec_change_dns_lookup_revisited` with more
-technical details.
+我们稍后再在 :ref:`how_does_dnssec_change_dns_lookup_revisited` 中回顾这
+个12步骤的过程，其中有更多的技术细节。
 
 .. _why_is_dnssec_important:
 
 DNSSEC 为什么重要？（为什么我需要关注它？）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You might be thinking to yourself: all this DNSSEC stuff sounds
-wonderful, but why should I care? Below are some reasons why you may
-want to consider deploying DNSSEC:
+你可能会想：所有这些DNSSEC的东西听起来很棒，但我为什么要在乎？下面是一些
+你为什么要考虑部署DNSSEC的原因：
 
-1. *Being a good netizen*: By enabling DNSSEC validation (as described in
-   :ref:`dnssec_validation`) on your DNS servers, you're protecting
-   your users and yourself a little more by checking answers returned to
-   you; by signing your zones (as described in
-   :ref:`dnssec_signing`), you are making it possible for other
-   people to verify your zone data. As more people adopt DNSSEC, the
-   Internet as a whole becomes more secure for everyone.
+1. *作为一个好网民* ：通过在你的DNS服务器上启用DNSSEC验证(在
+   :ref:`dnssec_validation` 中描述的)，通过检查返回的答复，你正在更多的
+   保护你的用户和你自己；通过签名您的区(在 :ref:`dnssec_signing` 中描述
+   的)，您使其他人验证您的区数据成为可能。随着越来越多的人采用DNSSEC，互
+   联网整体上对每个人来说都变得更加安全。
 
-2. *Compliance*: You may not even get a say in
-   implementing DNSSEC, if your organization is subject to compliance
-   standards that mandate it. For example, the US government set a
-   deadline in 2008 to have all ``.gov`` subdomains signed by
-   December 2009  [#]_. So if you operate a subdomain in ``.gov``, you
-   must implement DNSSEC to be compliant. ICANN also requires
-   that all new top-level domains support DNSSEC.
+2. *合规性* ：如果您的组织受制于强制性的合规性标准，您甚至可能在实施
+   DNSSEC方面没有发言权。例如，美国政府在2008年设定了最后期限，要求所有
+   ``.gov`` 子域名在2009年12月之前签名 [#]_ 。因此，如果你运行着
+   ``.gov`` 的一个子域名，你必须实现DNSSEC合规。ICANN还要求所有新顶级域
+   名都支持DNSSEC。
 
-3. *Enhanced Security*: Okay, so the big lofty goal of "let's be good"
-   doesn't appeal to you, and you don't have any compliance standards to
-   worry about. Here is a more practical reason why you should consider
-   DNSSEC: in the event of a DNS-based security breach, such as cache
-   poisoning or domain hijacking, after all the financial and brand
-   damage done to your domain name, you might be placed under scrutiny
-   for any preventive measure that could have been put in place. Think
-   of this like having your website only available via HTTP but not
-   HTTPS.
+3. *增强安全性* ：好吧，所以“让我们做得好”这一崇高的目标并不吸引你，而且
+   你也没有任何合规标准需要担心。下面是一个为什么你应该考虑DNSSEC的更实际
+   的原因：在发生DNS安全事件时，例如缓存中毒或域劫持，当所有金融和品牌损
+   失降临到你的域名之后，你可能会被置于任何可能已经到位的预防措施的审查之
+   下。就像你的网站只能通过HTTP而不能通过HTTPS访问一样。
 
-4. *New Features*: DNSSEC brings not only enhanced security, but also
-   a whole new suite of features. Once DNS
-   can be trusted completely, it becomes possible to publish SSL
-   certificates in DNS, or PGP keys for fully automatic cross-platform
-   email encryption, or SSH fingerprints.... New features are still
-   being developed, but they all rely on a trustworthy DNS
-   infrastructure. To take a peek at these next-generation DNS features,
-   check out :ref:`introduction_to_dane`.
+4. *新特性* ：DNSSEC不仅增强了安全性，而且还带来了一套全新的特性。一旦DNS
+   可以完全信任，就有可能在DNS中发布SSL证书，或用于全自动跨平台电子邮件加
+   密的PGP密钥，或SSH指纹…… 新特性仍在开发中，但它们都依赖于可靠的DNS基础
+   设施。要浏览这些下一代DNS特性，请查阅 :ref:`introduction_to_dane` 。
 
 .. [#]
-   The Office of Management and Budget (OMB) for the US government
-   published `a memo in
+   美国政府管理和预算办公室(OMB)发布了
+   `a memo in
    2008 <https://www.whitehouse.gov/sites/whitehouse.gov/files/omb/memoranda/2008/m08-23.pdf>`__,
-   requesting all ``.gov`` subdomains to be DNSSEC-signed by December
-   2009. This explains why ``.gov`` is the most-deployed DNSSEC domain
-   currently, with `around 90% of subdomains
-   signed. <https://fedv6-deployment.antd.nist.gov/cgi-bin/generate-gov>`__
+   要求到2009年12月所有 ``.gov`` 子域完成DNSSEC签名。这解释了为什么
+   ``.gov`` 是当前部署DNSSEC签名最多的域，`其90%的子域已签名。
+   <https://fedv6-deployment.antd.nist.gov/cgi-bin/generate-gov>`__
 
 .. _how_does_dnssec_change_my_job:
 
-How Does DNSSEC Change My Job as a DNS Administrator?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+DNSSEC如何改变DNS管理员的工作？
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With this protocol extension, some of the things you were used to in DNS
-have changed. As the DNS administrator, you have new maintenance
-tasks to perform on a regular basis (as described in
-:ref:`signing_maintenance_tasks`); when there is a DNS resolution
-problem, you have new troubleshooting techniques and tools to use (as
-described in :ref:`dnssec_troubleshooting`). BIND 9 tries its best to
-make these things as transparent and seamless as possible. In this
-guide, we try to use configuration examples that result in the least
-amount of work for BIND 9 DNS administrators.
+有了这个协议扩展，您在DNS中习惯的一些事情已经改变了。作为DNS管理员，您需
+要定期执行新的维护任务(在 :ref:`signing_maintenance_tasks` 中所述)；当存
+在DNS解析问题时，你需要使用新的故障排除技术和工具(在
+:ref:`dnssec_troubleshooting` 中所述)。BIND 9尽最大努力使这些事情尽可能
+透明和无缝。在本指南中，我们尝试使用配置示例，使BIND 9 DNS管理员的工作量
+最小。

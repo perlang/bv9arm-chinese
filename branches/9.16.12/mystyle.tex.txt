@@ -1,0 +1,4 @@
+
+\usepackage[heading=true]{ctex} %载入ctex宏包
+%具体章节格式定义，这是关键的设置
+\ctexset{chapter={name={第,章}},section={name={第,节},format={\raggedright\Large}}}

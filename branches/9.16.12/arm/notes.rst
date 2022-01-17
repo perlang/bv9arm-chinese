@@ -52,19 +52,19 @@ BIND 9.16是BIND 的一个稳定分支。本文档汇总了此分支上自上一
 找到。那里，你会发现每个版本的附加信息，源码和为微软Windows操
 作系统预编译的版本。
 
-.. include:: ./notes-9.16.12.rst
-.. include:: ./notes-9.16.11.rst
-.. include:: ./notes-9.16.10.rst
-.. include:: ./notes-9.16.9.rst
-.. include:: ./notes-9.16.8.rst
-.. include:: ./notes-9.16.7.rst
-.. include:: ./notes-9.16.6.rst
-.. include:: ./notes-9.16.5.rst
-.. include:: ./notes-9.16.4.rst
-.. include:: ./notes-9.16.3.rst
-.. include:: ./notes-9.16.2.rst
-.. include:: ./notes-9.16.1.rst
-.. include:: ./notes-9.16.0.rst
+.. include:: ../notes/notes-9.16.12.rst
+.. include:: ../notes/notes-9.16.11.rst
+.. include:: ../notes/notes-9.16.10.rst
+.. include:: ../notes/notes-9.16.9.rst
+.. include:: ../notes/notes-9.16.8.rst
+.. include:: ../notes/notes-9.16.7.rst
+.. include:: ../notes/notes-9.16.6.rst
+.. include:: ../notes/notes-9.16.5.rst
+.. include:: ../notes/notes-9.16.4.rst
+.. include:: ../notes/notes-9.16.3.rst
+.. include:: ../notes/notes-9.16.2.rst
+.. include:: ../notes/notes-9.16.1.rst
+.. include:: ../notes/notes-9.16.0.rst
 
 .. _relnotes_license:
 

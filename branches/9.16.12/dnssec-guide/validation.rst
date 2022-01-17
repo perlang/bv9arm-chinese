@@ -426,7 +426,7 @@ DNSSEC 如何改变了 DNS 查找（再论）?
 的。在权威服务器上，每条DNS记录(或消息)都要经过一个哈希函数，然后用一个
 私钥对这个哈希值进行加密。这个加密的哈希值就是数字签名。
 
-.. figure:: ./dnssec-guide/img/signature-generation.png
+.. figure:: ../dnssec-guide/img/signature-generation.png
    :alt: Signature Generation
    :width: 80.0%
 
@@ -440,7 +440,7 @@ DNSSEC 如何改变了 DNS 查找（再论）?
 间是正确的(下面将详细说明这意味着什么)，那么答案将得到验证，这意味着这
 个答案来自权威服务器(真实性)，并且内容在传输过程中保持完整(完整性)。
 
-.. figure:: ./dnssec-guide/img/signature-verification.png
+.. figure:: ../dnssec-guide/img/signature-verification.png
    :alt: Signature Verification
    :width: 80.0%
 
@@ -516,7 +516,7 @@ DNSSEC验证。
 证解析器需要获取并安装 ``.gov`` 的密钥。当时 ``www.fbi.gov`` 这个例子的
 查找过程是8个步骤，而不是12个步骤：
 
-.. figure:: ./dnssec-guide/img/dnssec-8-steps.png
+.. figure:: ../dnssec-guide/img/dnssec-8-steps.png
    :alt: DNSSEC Validation with ``.gov`` Trust Anchor
 
 1. 验证解析器向 ``fbi.gov`` 名字服务器查询 ``www.fbi.gov`` 的A记录。

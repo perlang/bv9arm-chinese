@@ -40,7 +40,7 @@ DNSSEC签名
 
 .. _dnssec-signing-1:
 
-.. figure:: ./dnssec-guide/img/dnssec-inline-signing-1.png
+.. figure:: ../dnssec-guide/img/dnssec-inline-signing-1.png
    :alt: DNSSEC Signing Recipe #1
    :width: 80.0%
 
@@ -90,7 +90,7 @@ DNSSEC签名
 
 .. _dnssec-signing-2:
 
-.. figure:: ./dnssec-guide/img/dnssec-inline-signing-2.png
+.. figure:: ../dnssec-guide/img/dnssec-inline-signing-2.png
    :alt: DNSSEC Signing Recipe #2
    :width: 100.0%
 
@@ -503,7 +503,7 @@ RRSIG。下面是查询权威名字服务器192.168.1.13时的简短输出 —�
 
    .. _add-ds-1:
 
-   .. figure:: ./dnssec-guide/img/add-ds-1.png
+   .. figure:: ../dnssec-guide/img/add-ds-1.png
       :alt: Upload DS Record Step #1
       :width: 70.0%
 
@@ -513,7 +513,7 @@ RRSIG。下面是查询权威名字服务器192.168.1.13时的简短输出 —�
 
    .. _add-ds-2:
 
-   .. figure:: ./dnssec-guide/img/add-ds-2.png
+   .. figure:: ../dnssec-guide/img/add-ds-2.png
       :alt: Upload DS Record Step #2
       :width: 40.0%
 
@@ -524,7 +524,7 @@ RRSIG。下面是查询权威名字服务器192.168.1.13时的简短输出 —�
 
    .. _add-ds-3:
 
-   .. figure:: ./dnssec-guide/img/add-ds-3.png
+   .. figure:: ../dnssec-guide/img/add-ds-3.png
       :alt: Upload DS Record Step #3
       :width: 80.0%
 
@@ -534,7 +534,7 @@ RRSIG。下面是查询权威名字服务器192.168.1.13时的简短输出 —�
 
    .. _add-ds-4:
 
-   .. figure:: ./dnssec-guide/img/add-ds-4.png
+   .. figure:: ../dnssec-guide/img/add-ds-4.png
       :alt: Upload DS Record Step #4
       :width: 80.0%
 
@@ -544,7 +544,7 @@ RRSIG。下面是查询权威名字服务器192.168.1.13时的简短输出 —�
 
    .. _add-ds-5:
 
-   .. figure:: ./dnssec-guide/img/add-ds-5.png
+   .. figure:: ../dnssec-guide/img/add-ds-5.png
       :alt: Upload DS Record Step #5
       :width: 80.0%
 
@@ -554,7 +554,7 @@ RRSIG。下面是查询权威名字服务器192.168.1.13时的简短输出 —�
 
    .. _add-ds-6:
 
-   .. figure:: ./dnssec-guide/img/add-ds-6.png
+   .. figure:: ../dnssec-guide/img/add-ds-6.png
       :alt: Upload DS Record Step #6
       :width: 80.0%
 
@@ -652,7 +652,7 @@ KSK轮转之后一个月
 
    .. _remove-ds-1:
 
-   .. figure:: ./dnssec-guide/img/remove-ds-1.png
+   .. figure:: ../dnssec-guide/img/remove-ds-1.png
       :alt: Remove DS Record Step #1
       :width: 40.0%
 
@@ -663,7 +663,7 @@ KSK轮转之后一个月
 
    .. _remove-ds-2:
 
-   .. figure:: ./dnssec-guide/img/remove-ds-2.png
+   .. figure:: ../dnssec-guide/img/remove-ds-2.png
       :alt: Remove DS Record Step #2
       :width: 80.0%
 
@@ -673,7 +673,7 @@ KSK轮转之后一个月
 
    .. _remove-ds-3:
 
-   .. figure:: ./dnssec-guide/img/remove-ds-3.png
+   .. figure:: ../dnssec-guide/img/remove-ds-3.png
       :alt: Remove DS Record Step #3
       :width: 80.0%
 
@@ -930,7 +930,7 @@ Web的接口删除DS记录：
 
 .. _unsign-1:
 
-   .. figure:: ./dnssec-guide/img/unsign-1.png
+   .. figure:: ../dnssec-guide/img/unsign-1.png
       :alt: Revert to Unsigned Step #1
       :width: 60.0%
 
@@ -940,7 +940,7 @@ Web的接口删除DS记录：
 
 .. _unsign-2:
 
-   .. figure:: ./dnssec-guide/img/unsign-2.png
+   .. figure:: ../dnssec-guide/img/unsign-2.png
       :alt: Revert to Unsigned Step #2
       :width: 40.0%
 
@@ -950,7 +950,7 @@ Web的接口删除DS记录：
 
 .. _unsign-3:
 
-   .. figure:: ./dnssec-guide/img/unsign-3.png
+   .. figure:: ../dnssec-guide/img/unsign-3.png
       :alt: Revert to Unsigned Step #3
       :width: 70.0%
 
@@ -960,7 +960,7 @@ Web的接口删除DS记录：
 
 .. _unsign-4:
 
-   .. figure:: ./dnssec-guide/img/unsign-4.png
+   .. figure:: ../dnssec-guide/img/unsign-4.png
       :alt: Revert to Unsigned Step #4
       :width: 70.0%
 

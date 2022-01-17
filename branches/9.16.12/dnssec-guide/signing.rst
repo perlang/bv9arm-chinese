@@ -522,7 +522,7 @@ URL: `<https://dnssec-debugger.verisignlabs.com/>`__
 这个工具显示了一个对您的域名执行检查的很好的总结。您可以展开它以查看所
 检查的每个项目的更多详细信息，以获得详细报告。 
 
-.. figure:: ./dnssec-guide/img/verisign-dnssec-debugger-example.png
+.. figure:: ../dnssec-guide/img/verisign-dnssec-debugger-example.png
    :alt: Verisign DNSSEC Debugger
 
    Verisign DNSSEC调试器
@@ -537,7 +537,7 @@ URL: `<https://dnsviz.net/>`__
 DNSViz提供了对域名的DNSSEC认证链及其在DNS命名空间中的解析路径的可视化分
 析。
 
-.. figure:: ./dnssec-guide/img/dnsviz-example-small.png
+.. figure:: ../dnssec-guide/img/dnsviz-example-small.png
    :alt: DNSViz
    :width: 80.0%
 

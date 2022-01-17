@@ -172,7 +172,7 @@ DNSSEC如何改变了DNS查找？
 下面的示例在非常高的级别上显示了DNSSEC验证过程的12个步骤，查找名字
 ``www.isc.org`` ：
 
-.. figure:: ./dnssec-guide/img/dnssec-12-steps.png
+.. figure:: ../dnssec-guide/img/dnssec-12-steps.png
    :alt: DNSSEC Validation 12 Steps
 
 1.  在从客户端接收到解析 ``www.isc.org`` 的DNS查询后，验证解析器遵循标准

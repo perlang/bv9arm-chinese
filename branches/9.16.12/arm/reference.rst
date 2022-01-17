@@ -300,7 +300,7 @@ BIND 9的配置文件由语句和注释组成。语句以分号结束。语句�
 ``acl`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./acl.grammar.rst
+.. include:: ../misc/acl.grammar.rst
 
 .. _acl:
 
@@ -329,7 +329,7 @@ BIND 9的配置文件由语句和注释组成。语句以分号结束。语句�
 ``controls`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./controls.grammar.rst
+.. include:: ../misc/controls.grammar.rst
 
 .. _controls_statement_definition_and_usage:
 
@@ -400,7 +400,7 @@ BIND 9的配置文件由语句和注释组成。语句以分号结束。语句�
 ``key`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./key.grammar.rst
+.. include:: ../misc/key.grammar.rst
 
 .. _key_statement:
 
@@ -429,7 +429,7 @@ BIND 9的配置文件由语句和注释组成。语句以分号结束。语句�
 ``logging`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./logging.grammar.rst
+.. include:: ../misc/logging.grammar.rst
 
 .. _logging_statement:
 
@@ -683,7 +683,7 @@ category短语
 BIND发行版会添加更多的类别。
 
 
-.. include:: ./logging-categories.rst
+.. include:: logging-categories.rst
 
 .. _query_errors:
 
@@ -770,7 +770,7 @@ BIND发行版会添加更多的类别。
 ``primaries`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./primaries.grammar.rst
+.. include:: ../misc/primaries.grammar.rst
 
 .. _primaries_statement:
 
@@ -788,7 +788,7 @@ BIND发行版会添加更多的类别。
 
 这是 ``named.conf`` 文件中 ``options`` 语句的语法：
 
-.. include:: ./options.grammar.rst
+.. include:: ../misc/options.grammar.rst
 
 .. _options:
 
@@ -3595,7 +3595,7 @@ NXDOMAIN的数据保存在一个单独的区中，它不是通常的名字空间
 ``server`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./server.grammar.rst
+.. include:: ../misc/server.grammar.rst
 
 .. _server_statement_definition_and_usage:
 
@@ -3715,7 +3715,7 @@ EDNS EXPIRE值。EDNS EXPIRE指示在区数据将要过期并需要被刷新之�
 ``statistics-channels`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./statistics-channels.grammar.rst
+.. include:: ../misc/statistics-channels.grammar.rst
 
 .. _statistics_channels:
 
@@ -3776,7 +3776,7 @@ http://127.0.0.1:8888/json/v1/traffic（流量大小）。
 ``trust-anchors`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./trust-anchors.grammar.rst
+.. include:: ../misc/trust-anchors.grammar.rst
 
 .. _trust-anchors:
 
@@ -3880,7 +3880,7 @@ http://127.0.0.1:8888/json/v1/traffic（流量大小）。
 ``dnssec-policy`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./dnssec-policy.grammar.rst
+.. include:: ../misc/dnssec-policy.grammar.rst
 
 ``dnssec-policy`` 语句定义和用法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4047,7 +4047,7 @@ http://127.0.0.1:8888/json/v1/traffic（流量大小）。
 ``managed-keys`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./managed-keys.grammar.rst
+.. include:: ../misc/managed-keys.grammar.rst
 
 .. _managed_keys:
 
@@ -4062,7 +4062,7 @@ http://127.0.0.1:8888/json/v1/traffic（流量大小）。
 ``trusted-keys`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./trusted-keys.grammar.rst
+.. include:: ../misc/trusted-keys.grammar.rst
 
 .. _trusted_keys:
 
@@ -4169,16 +4169,16 @@ http://127.0.0.1:8888/json/v1/traffic（流量大小）。
 ``zone`` 语句语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: ./master.zoneopt.rst
-.. include:: ./slave.zoneopt.rst
-.. include:: ./mirror.zoneopt.rst
-.. include:: ./hint.zoneopt.rst
-.. include:: ./stub.zoneopt.rst
-.. include:: ./static-stub.zoneopt.rst
-.. include:: ./forward.zoneopt.rst
-.. include:: ./redirect.zoneopt.rst
-.. include:: ./delegation-only.zoneopt.rst
-.. include:: ./in-view.zoneopt.rst
+.. include:: ../misc/master.zoneopt.rst
+.. include:: ../misc/slave.zoneopt.rst
+.. include:: ../misc/mirror.zoneopt.rst
+.. include:: ../misc/hint.zoneopt.rst
+.. include:: ../misc/stub.zoneopt.rst
+.. include:: ../misc/static-stub.zoneopt.rst
+.. include:: ../misc/forward.zoneopt.rst
+.. include:: ../misc/redirect.zoneopt.rst
+.. include:: ../misc/delegation-only.zoneopt.rst
+.. include:: ../misc/in-view.zoneopt.rst
 
 .. _zone_statement:
 

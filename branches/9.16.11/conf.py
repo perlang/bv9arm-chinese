@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'BIND 9 管理员参考手册'
-copyright = u'2020, Internet Systems Consortium'
+copyright = u'2021, Internet Systems Consortium'
 author = u"Internet Systems Consortium \\and 翻译: sunguonian@yahoo.com"
 
 # The full version, including alpha/beta/rc tags

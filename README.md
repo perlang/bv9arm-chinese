@@ -8,9 +8,9 @@
   * 中文字体（Fedora系统上可选google和adobe的字体。）
 
 软件包：
-
-.. code-block:: 
-   # dnf -y install python3-sphinx python3-sphinx-theme-alabaster python3-sphinx_rtd_theme
+  ```
+  # dnf -y install python3-sphinx python3-sphinx-theme-alabaster python3-sphinx_rtd_theme
+  ```
 
 texlive-* （这个数量较多，如果缺少，构建时会有相应的错误提示。）
 

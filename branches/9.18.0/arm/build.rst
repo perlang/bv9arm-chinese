@@ -109,7 +109,6 @@ BIND 9.18要求 ``libuv`` 1.x或更高版本。在旧系统上，一个更新的
 ``--enable-dnstap`` 配置BIND。
 
 要在 ``dig`` 中支持国际化域名，必须安装 ``libidn2``
-To support internationalized domain names in ``dig``, ``libidn2``
 (https://www.gnu.org/software/libidn/#libidn2)。如果这个库安装在一个非
 标准位置，使用 ``--with-libidn2=/prefix`` 指定前缀或调整
 ``PKG_CONFIG_PATH`` 。

@@ -66,7 +66,7 @@
 地配置了关于 ``.org`` 的错误信息，这可能会导致 ``.org`` 域的所有验证失败。
 对于终端用户来说，似乎所有的 ``.org`` 网站都停止服务了 [#]_ 。如果你遇到
 与DNSSEC相关的问题，不要试图禁用验证；几乎肯定有某种解决方案使验证保持开
-启状态。一个基本的故障排除指南可以在:ref:`dnssec_troubleshooting` 中找到。
+启状态。一个基本的故障排除指南可以在 :ref:`dnssec_troubleshooting` 中找到。
 
 .. [#]
    当然，某些DNSSEC之外的原因也可能导致这种情况发生：例如，根为 ``.org``
@@ -368,7 +368,7 @@ DNSSEC 如何改变了 DNS 查找（再论）?
 了什么？在 :ref:`how_does_dnssec_change_dns_lookup` 中我们在一个较高的
 层次了解过DNSSEC验证过程的12个步骤的简化版本。现在让我们重走该过程，并
 更详细地查看您的验证解析器正在做什么。同样，作为一个例子，我们正在查找
-域名 ``www.isc.org`` 的A记录(参见:ref:`dnssec_12_steps`)
+域名 ``www.isc.org`` 的A记录(参见 :ref:`dnssec_12_steps`)
 
 1.  验证解析器向 ``isc.org`` 的名字服务器中请求 ``www.isc.org`` 的A记录。
     该请求将 ``DNSSEC OK`` (``do``)位设置为1，通知远程授权服务器需要

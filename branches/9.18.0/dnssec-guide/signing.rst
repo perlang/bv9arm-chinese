@@ -226,8 +226,8 @@ BIND会自动生成签名版本。
 
 想知道所有这些命令对您的区文件做了什么？请阅读
 :ref:`your_zone_before_and_after_dnssec` 将会了解。如果你对如何在现有的
-主服务器和辅服务器上使用这个功能感兴趣，请在:ref:`dnssec_recipes` 一章
-查看:ref: `recipes_inline_signing` 。
+主服务器和辅服务器上使用这个功能感兴趣，请在 :ref:`dnssec_recipes` 一章
+查看 :ref:`recipes_inline_signing` 。
 
 .. _your_zone_before_and_after_dnssec:
 
@@ -577,7 +577,7 @@ DNSViz提供了对域名的DNSSEC认证链及其在DNS命名空间中的解析�
 -  删除旧密钥。
 
 这是相当复杂的，它都是在BIND 9中通过一条 ``dnssec-policy default`` 语句
-处理的。稍后(在:ref:`signing_custom_policy` 一节中)我们将看到如何通过使
+处理的。稍后(在 :ref:`signing_custom_policy` 一节中)我们将看到如何通过使
 用自定义参数设置我们自己的DNSSEC策略来调整这些操作。然而，在许多情况下，
 默认值就足够了。
 

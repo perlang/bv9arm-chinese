@@ -490,7 +490,7 @@ DNSKEY（ZSK）；它的使用频率较低，并且可以以一种更安全、�
 签名一对新的ZSK，配合ZSK私钥存储在网络文件系统并用于日常使用，可能是一
 个操作灵活性和安全性之间较好的平衡。
 
-更多关于修改密钥的信息，请参阅 :ref: `key_rollovers` 。
+更多关于修改密钥的信息，请参阅 :ref:`key_rollovers` 。
 
 .. _hardware_security_modules:
 
@@ -511,7 +511,7 @@ DNSKEY（ZSK）；它的使用频率较低，并且可以以一种更安全、�
 BIND支持公钥加密标准#11（Public Key Cryptography Standard #11， PKCS#11）
 以和HSM和其它支持加密的设备通信。更多关于如何配置BIND使其配合HSM工作的
 信息，请参考 `BIND 9 Administrator Reference
-Manual <https://bind9.readthedocs.io/en/latest/index.html>` 。
+Manual <https://bind9.readthedocs.io/en/latest/index.html>`_ 。
 
 .. _advanced_discussions_key_management:
 
@@ -545,7 +545,7 @@ Manual <https://bind9.readthedocs.io/en/latest/index.html>` 。
 有多严重？如果一次密钥轮转失败，损失有多严重？
 
 在进一步讨论之前，值得注意的是，如果您使用其中任何一个全自动方法（在
-ref:`signing_alternative_ways` 中描述）签名您的区，您实际上不需要关
+:ref:`signing_alternative_ways` 中描述）签名您的区，您实际上不需要关
 心密钥轮转的细节：BIND 9会为您处理所有这些问题。如果您正在进行手动密
 钥轮转或正在设置半自动密钥轮转的密钥，那么您确实需要熟悉所涉及的各个
 步骤和时间细节。
@@ -607,7 +607,7 @@ ZSK可以通过以下两种方式之一滚动：
 
    预发布方法的好处是它不会显著增加区的大小；但是，轮转的持续时间更长。
    如果新的ZSK发布后时间不足，一些解析器在发布新的RRSIG记录时可能只缓
-   存了旧的ZSK，验证可能会失败。这是在 :ref: `recipes_zsk_rollover`
+   存了旧的ZSK，验证可能会失败。这是在 :ref:`recipes_zsk_rollover`
    中描述的方法。
 
 2. *双签名* ：发布新的ZSK和新的RRSIG，本质上将区的大小增加一倍。等待

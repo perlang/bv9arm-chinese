@@ -66,7 +66,7 @@ https://dnsflagday.net/2019 以获取更多细节。这个变化在BIND的9.14.0
 .. note::
 
    这个特性需要BIND 9构建时用到的加密库的支持。对OpenSSL而言，要求版本
-   1.1.1或更新版本（使用 ``named -v`` 来检查）。
+   1.1.1或更新版本（使用 ``named -V`` 来检查）。
 
 根据定义，TLS加密流量（例如，DNS over TLS，DNS over HTTPS）对于包嗅探器
 是不透明的，这使调试加密DNS的问题几乎是不可能的，然而， Wireshark_ 通过

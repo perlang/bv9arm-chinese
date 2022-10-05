@@ -3840,7 +3840,7 @@ EDNS EXPIRE值。EDNS EXPIRE指示在区数据将要过期并需要被刷新之�
 置。
 
 ``send-cookie`` 子句决定本地服务器在发送到其它服务器的请求中是否要添
-加一个COOKIE EDNS选项。这覆盖视图或全局选项中的 ``request-cookie`` 设
+加一个COOKIE EDNS选项。这覆盖视图或全局选项中的 ``send-cookie`` 设
 置。 ``named`` 服务器可以决定远程服务器不支持COOKIE并且不在请求中添加
 一个COOKIE EDNS选项。
 

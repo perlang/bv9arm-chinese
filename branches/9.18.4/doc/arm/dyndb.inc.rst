@@ -30,7 +30,7 @@ https://pagure.io/bind-dyndb-ldap 找到。
 配置DynDB
 ~~~~~~~~~~~~~~~~~
 
-一个DynDB数据库是在 :iscman:`named.conf` 中使用一个``dyndb`` 语句来配置：
+一个DynDB数据库是在 :iscman:`named.conf` 中使用一个 ``dyndb`` 语句来配置：
 
 ::
 

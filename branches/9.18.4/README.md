@@ -9,18 +9,20 @@
 
 软件包：
 
-.. code-block:: 
-   # dnf -y install python3-sphinx python3-sphinx-theme-alabaster python3-sphinx_rtd_theme
+```
+# dnf -y install python3-sphinx python3-sphinx-theme-alabaster python3-sphinx_rtd_theme
+```
 
 texlive-* （这个数量较多，如果缺少，构建时会有相应的错误提示。）
 
 # 生成PDF文件
 
-.. code-block:: 
-   $ autoreconf
-   $ ./configure
-   $ cd doc
-   $ make pdf
+```
+$ autoreconf
+$ ./configure
+$ cd doc
+$ make pdf
+```
 
 # 变化
 * bind-9.18.4的变化：

@@ -52,8 +52,6 @@
    RDATA
       资源数据。数据的格式是与类型相关的，有时也是与类相关的。
 
-有效资源记录的 **类型** 的网站清单，包括那些已经被废弃的，请参考
-https://en.wikipedia.org/wiki/List_of_DNS_record_types.
 
 以下是当前DNS中有效的资源记录的 **类** ：
 

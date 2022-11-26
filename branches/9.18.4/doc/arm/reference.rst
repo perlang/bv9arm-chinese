@@ -811,10 +811,10 @@ BIND发行版会添加更多的类别。
 
 .. warning::
 
-   请注意，到主服务器的TLS连接是 **未认证的** ，除非使用
-   :ref:`tls statement <tls>` （参见
-   :ref:`Strict TLS <strict-tls>` 和 :ref:`Mutual TLS <mutual-tls>`
-   查看更多详细内容）。 **非认证模式** 模式提供了对被
+   请注意，到主服务器的TLS连接是 **未认证的** ，除非在正在使用的
+   :ref:`tls statement <tls>` （参见 :ref:`Strict TLS <strict-tls>` 和
+   :ref:`Mutual TLS <mutual-tls>` 查看更多详细内容）中指定
+   ``remote-hostname`` 或 ``ca-file`` 。 **非认证模式** 模式提供了对被
    动观察攻击的保护，但不能保护对区传送的中间人攻击。
 
 .. _options_grammar:
@@ -1454,13 +1454,14 @@ BIND发行版会添加更多的类别。
    连接有效时对区进行验证。NOTIFY所发向的服务器可以通过 ``notify`` 和
    ``also-notify`` 来进行控制。
 
-   如果区是辅区或存根区，服务器将会超越普通的“区更新”（refresh）请求，而只会
-   在 ``heartbeat-interval`` 过期时执行，附带发送NOTIFY请求。
+   如果区是辅区或存根区，服务器将会超越普通的“区更新”（refresh）请求，
+   而只会在 ``heartbeat-interval`` 过期时执行，附带发送NOTIFY请求。
 
-   可以通过使用notify，它仅仅发送NOTIFY消息；使用notify-passive，它发送
-   NOTIFY消息并禁止普通刷新请求；使用refresh，它禁止普通刷新处理并在
-   ``heartbeat-interval`` 过期时发送刷新请求；以及使用 ``passive`` ，它
-   关闭普通刷新处理等来进行更细的控制。
+   可以通过使用 ``notify`` ，它仅仅发送NOTIFY消息；使用
+   ``notify-passive`` ，它发送NOTIFY消息并禁止普通刷新请求；使用
+   ``refresh`` ，它禁止普通刷新处理并在 ``heartbeat-interval`` 过期时
+   发送刷新请求；以及使用 ``passive`` ，它关闭普通刷新处理等来进行更细
+   的控制。
 
    +--------------------+-----------------+-----------------+-----------------+
    | dialup mode        | normal refresh  | heart-beat      | heart-beat      |

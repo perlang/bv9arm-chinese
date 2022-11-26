@@ -598,7 +598,7 @@ DoH-by-default设置：如果Mozilla所拥有的域 `use-application-dns.net
       allow-query { localhost; };
   };
 
-3. 增加``response-policy`` 到 ``options {}`` 部份，开启对所有进入的查
+3. 增加 ``response-policy`` 到 ``options {}`` 部份，开启对所有进入的查
    询使用响应策略区：
 
 .. code-block:: c

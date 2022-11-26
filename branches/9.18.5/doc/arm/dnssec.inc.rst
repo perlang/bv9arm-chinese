@@ -95,7 +95,7 @@ BIND提供了几种方法来生成签名和并在DNS区的生命周期内维护�
         dnssec-policy default;
     };
 
-这单一的一行足够建立所需的签名密钥，并为区生成 ``DNSKEY`` ， ``RRSIG``
+这单独的一行足够建立所需的签名密钥，并为区生成 ``DNSKEY`` ， ``RRSIG``
 和 ``NSEC`` 记录。BIND还负责这个区的DNSSEC维护，包括替换即将过期的签名
 和管理 :ref:`key_rollovers` 。
 
@@ -240,7 +240,7 @@ DNSSEC操作。
 发布DNSKEY记录
 ==============
 
-要通过动态更新插入密钥：
+通过动态更新插入密钥：
 
 ::
 
@@ -295,8 +295,8 @@ NSEC3PARAM记录。旧的链将会在更新请求完成之后被删除。
 
 .. _dnssec_dynamic_zones_dnskey_rollovers:
 
-动态DNS更新方法
-^^^^^^^^^^^^^^^
+DNSKEY轮转
+==========
 
 为通过一次动态更新执行密钥轮转，需要为新密钥添加 ``K*`` 文件，这
 样 :iscman:`named` 就能够找到它们。然后可以通过动态更新添加新的

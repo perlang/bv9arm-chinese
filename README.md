@@ -9,22 +9,28 @@
 
 软件包：
 
-.. code-block:: 
+```shell
    # dnf -y install python3-sphinx python3-sphinx-theme-alabaster python3-sphinx_rtd_theme
+```
 
-texlive-* （这个数量较多，如果缺少，构建时会有相应的错误提示。）
+texlive-* ，这个数量较多，如果缺少，构建时会有相应的错误提示。大致有以下这些：
+
+```shell
+   # dnf -y install texlive texlive-xecjk texlive-ctex texlive-fncychap texlive-wrapfig texlive-capt-of texlive-framed texlive-upquote texlive-needspace texlive-tabulary texlive-xindy texlive-gnu-freefont 
+```
 
 # 生成PDF文件
 
-.. code-block:: 
+```shell
    $ autoreconf
    $ ./configure
    $ cd doc
    $ make pdf
+```
 
 # 变化
 * bind-9.18.5的变化：
-  * 增加块的定义，每条语句都定义了语法即所属的块
+  * 增加块的定义，每条语句都定义了语法及所属的块
   * DNSSEC从第七章调整为第五章，并且内容有较大变化
 * bind-9.18.4的变化：
   * 章节结构调整

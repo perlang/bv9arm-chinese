@@ -28,9 +28,18 @@ texlive-* ，这个数量较多，如果缺少，构建时会有相应的错误�
    $ make pdf
 ```
 
+# 生成epub文件
+
+```shell
+   $ autoreconf
+   $ ./configure
+   $ cd doc/arm
+   $ make epub
+```
+
 # 变化
 * bind-9.18.8文档的变化：
-  * 可以在sphinx-doc 5.3.0环境构建了，之前的三个版本只能在sphinx-doc 4.4.0下构建
+  * 可以在sphinx-doc 5.3.0环境构建了，之前的三个版本(.5-.7)只能在sphinx-doc 4.4.0下构建
 * bind-9.18.6文档的变化：
   * 补齐了所有语句的语法/块/标记
 * bind-9.18.5文档的变化：

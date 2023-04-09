@@ -2815,7 +2815,7 @@ BIND发行版会添加更多的类别。
    :namedconf:ref:`port` ， :any:`tls-port` ， :any:`https-port` 和
    :any:`http-port` 选项覆盖。
 
-   允许使用多个 ``listenson`` 语句。例如：
+   允许使用多个 ``listen-on`` 语句。例如：
 
    ::
 

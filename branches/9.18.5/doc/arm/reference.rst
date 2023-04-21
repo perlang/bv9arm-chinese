@@ -1202,7 +1202,7 @@ BIND发行版会添加更多的类别。
 .. namedconf:statement:: qname-minimization
 
    这个选项控制 BIND 解析器中 QNAME 最小化行为。当设置为 ``strict`` 时，
-   BIND 将遵循 QNAME 最小化算法到字母，如同在 :rfc:`7816` 中所描述。将这
+   BIND 将严格遵循 QNAME 最小化算法，如同在 :rfc:`7816` 中所描述。将这
    个选项设置为 ``relaxed`` 将使 BIND 回退到普通（非最小化）请求模式，即
    当它收到 NXDOMAIN 或其它不可预期的响应（如，SERVFAIL，不正确的区截断，
    REFUSED）时成为一个最小化请求。 ``disabled`` 完全关闭 QNAME 最小化。

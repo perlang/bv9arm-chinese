@@ -20,7 +20,7 @@ open(FRD, "<$file0");
 open(FWR, ">$file1");
 while(<FRD>) {
 	chomp;
-	#if(/^diff / and (/\.(docbook|xml|conf\.py|Makefile.am|rst|xsl(\.in)*|sty(\.in)*)$/)) {
+	#if(/^diff / and (/\.(docbook|ac|xml|conf\.py|Makefile.am|rst|xsl(\.in)*|sty(\.in)*)$/)) {
 	if(/^diff /) {
 		next if(/\.(c|h)$/);
 		next if(/(ChangeLog|CHANGES|NEWS|README\.md|srcid|configure)$/);

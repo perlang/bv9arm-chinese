@@ -402,7 +402,7 @@ RPZ区。
   ns.partner1.com.rpz-nsdname      CNAME   rpz-passthru.
   ns.partner2.com.rpz-nsdname      CNAME   rpz-passthru.
 
-这里，我们知道答案落入地址快10.0.0.0/8表明是业务伙伴，同样还有答案涉及
+这里，我们知道答案落入地址块10.0.0.0/8表明是业务伙伴，同样还有答案涉及
 任何名字服务器的地址在128.45.0.0/16地址块，以及答案涉及名字服务器名为
 ns.partner1.com或ns.partner2.com也都是业务伙伴。
 

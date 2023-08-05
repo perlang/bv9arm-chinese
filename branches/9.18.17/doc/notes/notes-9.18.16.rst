@@ -36,8 +36,8 @@ BIND 9.18.16注记
 ~~~~~~~~~~
 
 - TKEY模式2（Diffie-Hellman Exchanged Keying）现已被废弃，并将在未来一个
- 版本中去除。当 ``named.conf`` 中使用了 :any:`tkey-dhkey` 选项时，会在日
- 志中记录一个告警。 :gl:`#3905`
+  版本中去除。当 ``named.conf`` 中使用了 :any:`tkey-dhkey` 选项时，会在日
+  志中记录一个告警。 :gl:`#3905`
 
 漏洞修补
 ~~~~~~~~

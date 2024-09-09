@@ -1,0 +1,59 @@
+.. Copyright (C) Internet Systems Consortium, Inc. ("ISC")
+..
+.. SPDX-License-Identifier: MPL-2.0
+..
+.. This Source Code Form is subject to the terms of the Mozilla Public
+.. License, v. 2.0.  If a copy of the MPL was not distributed with this
+.. file, you can obtain one at https://mozilla.org/MPL/2.0/.
+..
+.. See the COPYRIGHT file distributed with this work for additional
+.. information regarding copyright ownership.
+
+.. highlight: console
+
+.. iscman:: named-rrchecker
+.. program:: named-rrchecker
+.. _man_named-rrchecker:
+
+named-rrchecker - 针对单个DNS资源记录的语法检查器
+--------------------------------------------------------------------
+
+概要
+~~~~~~~~
+
+:program:`named-rrchecker` [**-h**] [**-o** origin] [**-p**] [**-u**] [**-C**] [**-T**] [**-P**]
+
+描述
+~~~~~~~~~~~
+
+:program:`named-rrchecker` 从标准输入读取单个DNS资源记录并检查其在语句
+构成上是否正确。
+
+选项
+~~~~~
+
+.. option:: -h
+
+   本选项打印输出标准菜单。
+
+.. option:: -o origin
+
+   本选项选项指定用于解释记录时的原点。
+
+.. option:: -p
+
+   本选项以正规形式打印输出结果记录。如果不存在正规形式的定义，就
+   以未知记录格式打印记录。
+
+.. option:: -u
+
+   本选项以未知记录形式打印输出结果记录。
+
+.. option:: -C, -T, -P
+
+   这些选项分别打印输出已知的类，标准类型和私有类型助记符。
+
+参见
+~~~~~~~~
+
+:rfc:`1034`, :rfc:`1035`, :iscman:`named(8) <named>`.

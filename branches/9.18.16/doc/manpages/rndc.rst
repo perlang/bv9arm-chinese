@@ -515,7 +515,7 @@ HMAC-SHA384和HMAC-SHA512。它们在连接的两端使用共享密钥。它为�
 
    参见 :option:`rndc freeze` 。
 
-.. option:: trace
+.. option:: trace [level]
 
    如果未指定级别，这个命令将服务器的调试级别加1。
 

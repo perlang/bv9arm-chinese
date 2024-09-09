@@ -11,7 +11,7 @@
 
 .. _security:
 
-安全考虑
+安全配置
 ========
 
 .. _file_permissions:

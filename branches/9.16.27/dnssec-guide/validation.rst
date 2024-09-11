@@ -613,7 +613,7 @@ DNSKEY。
    中断所有发向你的递归名字服务器的DNS请求。
 
 在DNSSEC的早期，显式管理密钥是很常见的，那时根区和许多顶级域都没有签名。
-从那以后， `over 90% <https://stats.research.icann.org/dns/tld_report/>`__
+从那以后， `超过90% <https://stats.research.icann.org/dns/tld_report/>`__
 的顶级域都已签名，包括所有最大的域。除非您自己有管理密钥的特殊需求，否
 则最好使用BIND默认值，并让软件管理根密钥。
 

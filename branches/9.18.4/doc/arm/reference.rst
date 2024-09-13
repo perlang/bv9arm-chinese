@@ -5138,7 +5138,7 @@ PTR记录。如果在一个更新中尝试增加两条PTR记录，第二条将�
   send
   EOF
 
-ruletype字段有16个值： ``name`` ， ``subdomain`` ， ``zonesub`` ，
+ruletype字段有18个值： ``name`` ， ``subdomain`` ， ``zonesub`` ，
 ``wildcard`` ， ``self`` ， ``selfsub`` , ``selfwild`` ， ``ms-self`` ，
 ``ms-selfsub`` ， ``ms-subdomain`` ， ``ms-subdomain-self-rhs`` ，
 ``krb5-self`` ， ``krb5-selfsub`` ， ``krb5-subdomain`` ，

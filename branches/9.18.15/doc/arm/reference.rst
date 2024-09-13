@@ -283,9 +283,6 @@ O(1)的时间。然而，密钥比较要求遍历密钥链表，直到找到一�
     ``domain_name``
         用作一个DNS名字的引号内字符串；如： ``my.test.domain`` 。
 
-    ``dscp``
-        一个介于 0 到 63 之间的 :term:`integer`，用于给支持差分服务代码点（DSCP）的操作系统的出向流量选择一个 DSCP 值。
-
     ``fixedpoint``
         一个非负实数，可以被指定为精确到百分之一。小数点前最大五位数，小数点后最大两位，即最大值为 99999.99。可接受的值受到其使用上下文中的更多限制。
 
@@ -592,7 +589,7 @@ BIND 9的配置文件由块，语句和注释组成。
    ``file`` 目标子句将通道定向到一个磁盘文件。它可以包含附加的参数指定
    文件在轮转到一个备份文件之前允许增长到多大（ ``size`` ），指定在每次
    轮转时可以保存多少个文件的备份版本（ ``versions`` ），以及用于命名备
-   份版本的格式（ :any:`suffix` ）。
+   份版本的格式（ ``suffix`` ）。
 
    ``size`` 选项用于限制日志文件的增长。如果文件超过了指定的大小，
    :iscman:`named` 将会停止写到文件，除非它有一个 ``versions`` 选项。
@@ -604,18 +601,18 @@ BIND 9的配置文件由块，语句和注释组成。
    版本；任何存在的日志文件都是简单地添加。 ``versions`` 选项指定文件
    应该保持多少备份版本。如果设置为 ``unlimited`` ，就没有限制。
 
-   :any:`suffix` 选项可以被设置为 ``increment`` 或者 ``timestamp`` 。
+   ``suffix`` 选项可以被设置为 ``increment`` 或者 ``timestamp`` 。
    如果被设置为 ``timestamp`` ，当一个日志文件轮转时， 它被保存为以当
    前时间戳作为文件的后缀。如果被设置为 ``increment`` ，备份文件被保存
    为以增加的数字作为后缀；轮转时，更旧的文件都被更名。例如，如果
-   ``versions`` 被设置为3并且 :any:`suffix` 被设置为 ``increment`` ，
+   ``versions`` 被设置为3并且 ``suffix`` 被设置为 ``increment`` ，
    那么当 ``filename.log`` 达到 ``size`` 所指定的大小时，
    ``filename.log.1`` 被更名为 ``filename.log.2`` ，
    ``filename.log.0`` 被更名为 ``filename.log.1`` ，而
    ``filename.log`` 被更名为 ``filename.log.0`` ， 同时一个新的
    ``filename.log`` 被打开。
 
-   这里是使用 ``size`` ， ``versions`` 和 :any:`suffix` 选项的一个例子：
+   这里是使用 ``size`` ， ``versions`` 和 ``suffix`` 选项的一个例子：
 
    ::
 
@@ -1160,10 +1157,10 @@ BIND发行版会添加更多的类别。
    如果第一个参数是 ``file`` ，就可以最大添加三个附加选项： ``size``
    指示一个 :any:`dnstap` 日志文件在轮转到一个新文件之前可以增长到的最
    大大小； ``versions`` 指定要保持的已经轮转的日志文件的数量；而
-   :any:`suffix` 指示是以一个增长的计数器（ ``increment`` ）还是以当前
+   ``suffix`` 指示是以一个增长的计数器（ ``increment`` ）还是以当前
    时间戳（ ``timestamp`` ）作为已经轮转的日志文件的后缀。这些类似于在
    一个 :any:`logging` 通道中的 ``size`` ， ``versions`` 和
-   :any:`suffix` 选项。缺省是允许 :any:`dnstap` 日志文件增长到任何大小
+   ``suffix`` 选项。缺省是允许 :any:`dnstap` 日志文件增长到任何大小
    而没有轮转。
 
    :any:`dnstap-output` 只能在 :namedconf:ref:`options` 中全局设置。当
@@ -1260,13 +1257,16 @@ BIND发行版会添加更多的类别。
    :tags: query
    :short: 控制在BIND 9解析器中QNAME最小化行为。
 
-   这个选项控制BIND解析器中QNAME最小化行为。当设置为 ``strict`` 时，
+   当这个选项被设置为 ``strict`` 时，
    BIND将严格遵循QNAME最小化算法，如同在 :rfc:`7816` 中所描述。将这
    个选项设置为 ``relaxed`` 将使BIND回退到普通（非最小化）请求模式，即
    当它收到NXDOMAIN或其它不可预期的响应（如，SERVFAIL，不正确的区截断，
-   REFUSED）时成为一个最小化请求。 ``disabled`` 完全关闭 QNAME 最小化。
-   ``off`` 是 ``disabled`` 的同义词。当前缺省是 ``relaxed`` ，但是在未
-   来的版本中可能被改为 ``strict`` 。
+   REFUSED）时成为一个最小化请求。一个解析器可以使用一个前导下划线，
+   如 ``_.example.com`` ，来提高互操作性。（参见 :rfc:`7816` 第3章。）
+  
+   ``disabled`` 完全关闭 QNAME 最小化。 ``off`` 是 ``disabled`` 的同义词。
+   
+   当前缺省是 ``relaxed`` ，但是在未来的版本中可能被改为 ``strict`` 。
 
 .. namedconf:statement:: tkey-gssapi-keytab
    :tags: security
@@ -1442,11 +1442,10 @@ BIND发行版会添加更多的类别。
 
 .. namedconf:statement:: dscp
    :tags: server, query
-   :short: 指定全局差分服务代码点（DSCP），对出向的DNS流量进行分类。
+   :short: 设置差分服务代码点（DSCP）的值（废弃的）。
 
-   这是全局的差分服务代码点（DSCP，Differentiated Services Code Point）
-   值，用于在支持DSCP的操作系统上分类所出向的DNS流量。有效值为从0到
-   63。缺省未配置。
+   这个选项用于设置全局的差分服务代码点（DSCP）的值，
+   以分类出向的DNS流量。现在已被废弃且已无效。
 
 .. namedconf:statement:: preferred-glue
    :tags: query
@@ -1457,7 +1456,7 @@ BIND发行版会添加更多的类别。
    求时，以及优先为AAAA记录，如果在响应经由IPv6到达的请求时。
 
 .. namedconf:statement:: root-delegation-only
-   :tags: query
+   :tags: deprecated
    :short: 使用一个可选的排除列表，在顶级域（TLD）和根区打开只授权模式的增强特性。
 
    这使用一个可选的排除列表，在顶级域（TLD）和根区中打开只授权模式的增强特性。
@@ -1484,6 +1483,8 @@ BIND发行版会添加更多的类别。
       options {
           root-delegation-only exclude { "de"; "lv"; "us"; "museum"; };
       };
+
+   这个选项已被废弃，并且将在未来的版本中呈现为不可操作的。
 
 .. namedconf:statement:: disable-algorithms
    :tags: dnssec
@@ -1701,7 +1702,7 @@ BIND发行版会添加更多的类别。
    缺省是五分钟。它不能超过 :any:`nta-lifetime` （后者不能超过一周）。
 
 :any:`max-zone-ttl`
-   :tags: zone, query
+   :tags: deprecated
    :short: 指定一个最大可能的以秒计的生存期（TTL）值。
 
    这应该作为 :namedconf:ref:`dnssec-policy` 的一部份来配置。对于已经
@@ -1917,10 +1918,13 @@ BIND发行版会添加更多的类别。
    :short: 控制服务器是否只添加必须的记录（例如，授权，否定响应）到权威和附件数据部份）。这提高了服务器的性能。
 
    这个选项控制对响应的权威和附加部份添加记录。这类记录可以被添加到响应
-   中以帮助客户端；例如，NS 或 MX 记录可以附带相应的地址记录在附加部份，
+   中以帮助客户端；例如，MX记录可以附带相应的地址记录在附加部份，
    避免了一次额外的地址查询。然而，向响应中添加这些记录不是必须的，且需
    要额外的数据库查找，在安排响应时带来额外的延迟。
    :any:`minimal-responses` 的取值为下列四种之一：
+
+   对DNSKEY，DS，CDNSKEY和CDS请求的响应将从不会添加可选的附加记录。对
+   NS请求的响应总会有对附加段的处理。
 
    -  ``no`` ：服务器在生成响应时将尽可能完整。
    -  ``yes`` ：服务器将只添加 DNS 协议所要求的记录到权威和附加部份（例
@@ -2523,8 +2527,7 @@ BIND发行版会添加更多的类别。
    :short: 定义一个或多个，请求将会被转发到的主机。
 
    这个指定一个请求会被转发到的IP地址列表。缺省是空列表（不转发）。列表中的每个
-   地址可以附带一个可选的端口号和/或DSCP值，还可以为整个列表设置一个缺省的端口号
-   和DSCP值。
+   地址可以附带一个可选的端口号，还可以为整个列表设置一个缺省的端口号。
 
 转发也可以按域来配置，允许全局转发选项被多种方式覆盖。可以设置某个特定
 的域使用不同的转发服务器，或者使用不同的 ``forward only/first`` 行为，
@@ -2859,11 +2862,11 @@ BIND发行版会添加更多的类别。
 
 .. namedconf:statement:: query-source
    :tags: query
-   :short: 控制发出递归查询的IPv4地址和端口。
+   :short: 控制发出查询的IPv4地址。
 
 .. namedconf:statement:: query-source-v6
    :tags: query
-   :short: 控制发出递归查询的IPv6地址和端口。
+   :short: 控制发出查询的IPv6地址。
 
    如果服务器不知道一个问题答案，它就会请求其它的名字服务器。
    :any:`query-source` 指定这样的请求所使用的地址和端口。对通过IPv6发
@@ -2878,19 +2881,23 @@ BIND发行版会添加更多的类别。
       query-source address * port *;
       query-source-v6 address * port *;
 
+   .. note:: ``port`` 配置已被废弃。当使用这个参数时，将会记录一条告警
+      到日志中。
+
    .. note:: 在 :any:`query-source` 选项中指定的地址用于UDP和TCP查询这
       两者中，但是端口仅适用于UDP查询。TCP查询总是使用一个随机的非特权
       端口。
 
 .. namedconf:statement:: use-v4-udp-ports
-   :tags: query
+   :tags: deprecated
    :short: 指定作为UDP/IPv4消息的有效源端口的列表。
 
 .. namedconf:statement:: use-v6-udp-ports
-   :tags: query
+   :tags: deprecated
    :short: 指定作为UDP/IPv6消息的有效源端口的列表。
 
-   这些语句指定一个IPv4和IPv6的UDP端口的列表，用作UDP消息的源端口。
+   这些语句，已被废弃并将从一个未来的版本中被删除，指定一个IPv4和IPv6
+   的UDP端口的列表，用作UDP消息的源端口。
 
    如果 :term:`port` 为 ``*`` 或被省略，就从一个预先配置的范围中随机选
    择一个端口号，并用在每个请求中。端口范围是在
@@ -2908,15 +2915,16 @@ BIND发行版会添加更多的类别。
       use-v6-udp-ports { range 1024 65535; };
 
 .. namedconf:statement:: avoid-v4-udp-ports
-   :tags: query
+   :tags: deprecated
    :short: 指定被排除作为UDP/IPv4消息源端口的端口范围。
 
 .. namedconf:statement:: avoid-v6-udp-ports
-   :tags: query
+   :tags: deprecated
    :short: 指定被排除作为UDP/IPv6消息源端口的端口范围。
 
-   这些范围分别从哪些在 :any:`avoid-v4-udp-ports` 和
-   :any:`avoid-v6-udp-ports` 选项中所指定的端口排除掉。
+   这些语句，已被废弃并将从一个未来的版本中被删除，指定分别排除了在
+   :any:`avoid-v4-udp-ports` 和 :any:`avoid-v6-udp-ports` 选项中所指定
+   端口的端口范围。
 
    ``avoid-v4-udp-ports`` 和 ``avoid-v6-udp-ports`` 选项缺省为：
 
@@ -3000,6 +3008,11 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
 
    入向区传送在这个分钟数之内没有进展将被终止。缺省为60分钟（1小时）。
    最大值为28天（40320分钟）。
+
+   .. note:: 入向区传送也受 ``tcp-idle-timeout`` 影响，如果有未完成的
+             AXFR或者IXFR块， ``max-transfer-idle-in`` 将关闭入向区传
+             送。如果在TCP层次没有进展， ``tcp-idle-timeout`` 将关闭连
+             接。
 
 .. namedconf:statement:: max-transfer-time-out
    :tags: transfer
@@ -3104,6 +3117,9 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
    :any:`zone` 块中包含 :any:`transfer-source` 语句而被覆盖成以每个视图或每
    个区为基础。
 
+   .. note:: ``port`` 配置已被废弃。当使用这个参数时，将会记录一条告警
+      到日志中。
+
    .. warning:: 不鼓励指定单一端口，因为它去掉了针对欺骗错误的一层保护。
 
    .. warning:: 配置的 :term:`port` 不能与监听端口相同。
@@ -3115,7 +3131,7 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
    这个选项与 :any:`transfer-source` 相似，除了区传送是使用IPv6之外。
 
 .. namedconf:statement:: alt-transfer-source
-   :tags: transfer
+   :tags: deprecated
    :short: 如果由 :any:`transfer-source` 定义的地址不能使用并且开启了 :any:`use-alt-transfer-source` ，这定义可以被服务器用于入向区传送的作为替换的本地IPv4地址。
 
    这个指示了一个可替换的传送源，如果在 :any:`transfer-source` 中列出的源
@@ -3125,14 +3141,14 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
       并且不要依赖从第一个更新请求获得回复。
 
 .. namedconf:statement:: alt-transfer-source-v6
-   :tags: transfer
+   :tags: deprecated
    :short: 定义可以被服务器用于入向区传送的作为替换的本地IPv6地址。
 
    这个指示了一个可替换的传送源，如果在 :any:`transfer-source-v6` 中列出的
    源失效并且设置了 :any:`use-alt-transfer-source` 。
 
 .. namedconf:statement:: use-alt-transfer-source
-   :tags: transfer
+   :tags: deprecated
    :short: 指示是否使用 :any:`alt-transfer-source` 和 :any:`alt-transfer-source-v6` 。
 
    这个指示是否使用可替换的传送源，如果使用视图，这个选项的缺省为 ``no`` ，
@@ -3147,6 +3163,9 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
    :any:`allow-notify` 子句中。本语句为全部区设置 :any:`notify-source` ，但是
    可以通过在配置文件的 :any:`zone` 或 :any:`view` 块中包含 :any:`notify-source`
    语句而被覆盖成以每个区或每个视图为基础。
+
+   .. note:: ``port`` 配置已被废弃。当使用这个参数时，将会记录一条告警
+      到日志中。
 
    .. warning:: 不鼓励指定单一端口，因为它去掉了针对欺骗错误的一层保护。
 
@@ -3168,18 +3187,17 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
 限制。 ``unlimited`` 要求不限制使用，或可利用的最大数量。 ``default``
 使用服务器启动时强制设定的限制。参见对 :term:`size` 的描述。
 
-下列选项为名字服务器进程设置操作系统限制。某些操作系统不支持某些或
-任何限制；在这样的系统上，如果使用一个不支持的限制，将会发出一条警
-告。
+以下选项已被废弃，转而支持从操作系统和/或进程管理器设置操作系统资源限
+制，不应再使用，并且在将来的版本中将呈现为不可操作状态。
 
 .. namedconf:statement:: coresize
-   :tags: server
+   :tags: deprecated
    :short: 设置内核转储的最大大小。
 
    这个设置内核转储的最大大小。缺省为 ``default`` 。
 
 .. namedconf:statement:: datasize
-   :tags: server
+   :tags: deprecated
    :short: 设置服务器可以使用的数据内存的最大数量。
 
    这个设置服务器可以使用的数据内存的最大数量。缺省为 ``default`` 。这是
@@ -3190,13 +3208,13 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
    :any:`max-cache-size` 和 :any:`recursive-clients` 选项来替代。
 
 .. namedconf:statement:: files
-   :tags: server
+   :tags: deprecated
    :short: 设置服务器可以同时打开的文件的最大数量。
 
    这个设置服务器可以同时打开的文件的最大数量。缺省为 ``unlimited`` 。
 
 .. namedconf:statement:: stacksize
-   :tags: server
+   :tags: deprecated
    :short: 设置服务器可以使用的栈内存的最大数量。
 
    这个设置服务器可以使用的栈内存的最大数量。缺省为 ``default`` 。
@@ -3438,6 +3456,13 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
    30秒），最大值是65535（大约1.8小时），最小值是0，这表示客户端必须立
    即关闭TCP连接。通常这应该被设置为与 :any:`tcp-keepalive-timeout` 相
    同的值。这个值可以在运行时使用 :option:`rndc tcp-timeouts` 更改。
+
+.. namedconf:statement:: update-quota
+   :tags: server
+   :short: 指定可以被服务器处理的并发DNS UPDATE消息的最大数目。
+
+   这是服务器为更新本地权威区或转发到一台主服务器而同时接受的
+   DNS UPDATE消息的最大数量。缺省是 ``100`` 。
 
 .. _intervals:
 
@@ -3870,9 +3895,8 @@ BIND有机制来做区传送，并在系统进行区传送的地方对负载量�
    缓冲区大小。依赖于观察到的包丢弃模式，查询在TCP上重试。每个服务器的
    EDNS统计信息仅为给定服务器ADB条目的生命周期而保留在内存中。
 
-   :iscman:`named` 现在对向外发出的UDP包设置
-   **不要分片（DON'T FRAGMENT）** 的标志。根据多个团队的测量，这不会导
-   致任何运行问题，由于大多数互联网“核心”都能够处理大小介于1400-1500字
+   根据多个团队的测量，缺省值不会导致分片，由于大多数互联网“核心”都能够
+   处理大小介于1400-1500字
    节的IP消息，1232被采用为一个保守的最小值，它可以被DNS操作员修改为一
    个估计的路径MTU减去估计的头大小。在实践中，在正常运行DNS的社区中可
    见证的MTU最小值是1500字节，即以太网最大荷载，所以在 **可靠的** 网络
@@ -4900,7 +4924,6 @@ NXDOMAIN的数据保存在一个单独的区中，它不是通常的名字空间
 .. namedconf:statement:: keys
    :tags: server, security
    :short: 指定一个或多个用于一台远程服务器的 :any:`server_key` 。
-
    :suppress_grammar:
 
    .. warning::
@@ -5573,6 +5596,9 @@ DS是否已实际发布。
    过在配置文件的 :any:`zone` 或 :any:`view` 块中包含一条 :any:`parental-source`
    语句而被覆盖为基于每个区或每个视图。
 
+   .. note:: ``port`` 配置已被废弃。当使用这个参数时，将会记录一条告警
+      到日志中。
+
    .. warning:: 不鼓励指定单一端口，因为它去掉了针对欺骗错误的一层保护。
 
    .. warning:: 配置的 :term:`port` 不能与监听端口相同。
@@ -5718,7 +5744,6 @@ DS是否已实际发布。
 .. namedconf:statement:: zone
    :tags: zone
    :short: 指定一个BIND 9配置中的区。
-
    :suppress_grammar:
 
 :any:`zone` 块定义和用法
@@ -5729,7 +5754,6 @@ DS是否已实际发布。
 .. namedconf:statement:: type
    :tags: zone
    :short: 指定一个给定配置中的区类型。
-
    :suppress_grammar:
 
    :any:`zone` 配置要求 :any:`type` 关键字，除非它是一个 :any:`in-view`
@@ -5923,7 +5947,7 @@ DS是否已实际发布。
    重载。
 
 .. namedconf:statement:: type delegation-only
-   :tags: query
+   :tags: deprecated
    :short: 强制基础设施区（COM，NET，ORG等）为只授权的状态。
 
    这个区类型用于强制基础设施区（如COM，NET，ORG）为只授权状态。任何
@@ -5933,6 +5957,8 @@ DS是否已实际发布。
    :any:`delegation-only` 对从转发服务器来的回答没有效果。
 
    参见 :any:`root-delegation-only` 中的说明。
+
+   这个选项已被废弃，并且将在未来的版本中呈现为不可操作的。
 
 .. namedconf:statement:: in-view
    :tags: view, zone
@@ -6055,13 +6081,15 @@ DS是否已实际发布。
    参见 :ref:`boolean_options` 中对 :any:`dialup` 的描述。
 
 .. namedconf:statement:: delegation-only
-   :tags: zone
+   :tags: deprecated
    :short: 指定一个转发、提示或存根区被当做一个只授权类型区对待。
 
    这个标志只用于转发区，提示区和存根区。如果设置为 ``yes`` ，区
    将被当成一个只授权类型的区。
 
    参见 :any:`root-delegation-only` 中的说明。
+
+   这个选项已被废弃，并且将在未来的版本中呈现为不可操作的。
 
 .. namedconf:statement:: file
    :tags: zone
@@ -6511,6 +6539,8 @@ BIND 9支持两种方法来授权客户端对一个区执行动态更新：
        服务进程以网络字节序回应一个四字节值，包含0或者1；0表示指定
        的更新不被允许，1表示其被允许。
 
+       .. warning:: 外部服务进程不必延迟通讯。这个策略被同步评估；任何等待周期都会对 :iscman:`named` 的性能产生负面影响。
+
 .. _multiple_views:
 
 多视图
@@ -6758,143 +6788,147 @@ Socket I/O Statistics（套接字I/O统计）
 ^^^^^^^^^^^^^^^^^^^^
 
 ``Requestv4``
-   这指示收到的IPv4请求数量。注意：这也会记录非查询的请求。
+    这指示收到的IPv4请求数量。注意：这也会记录非查询的请求。
 
 ``Requestv6``
-   这指示收到的IPv6请求数量。注意：这也会记录非查询的请求。
+    这指示收到的IPv6请求数量。注意：这也会记录非查询的请求。
 
 ``ReqEdns0``
-   这指示收到的带EDNS(0)请求的数量。
+    这指示收到的带EDNS(0)请求的数量。
 
 ``ReqBadEDN SVer``
-   这指示收到的带有一个不支持的EDNS版本的请求的数量。
+    这指示收到的带有一个不支持的EDNS版本的请求的数量。
 
 ``ReqTSIG``
-   这指示收到的带有TSIG的请求的数量。
+    这指示收到的带有TSIG的请求的数量。
 
 ``ReqSIG0``
-   这指示收到的带有SIG(0)的请求的数量。
+    这指示收到的带有SIG(0)的请求的数量。
 
 ``ReqBadSIG``
-   这指示收到的带有不正确（TSIG或SIG(0)）签名的请求的数量。
+    这指示收到的带有不正确（TSIG或SIG(0)）签名的请求的数量。
 
 ``ReqTCP``
-   这指示收到的TCP请求的数量。
+    这指示收到的TCP请求的数量。
 
 ``AuthQryRej``
-   这指示拒绝掉的权威（非递归）请求的数量。
+    这指示拒绝掉的权威（非递归）请求的数量。
 
 ``RecQryRej``
-   这指示拒绝掉的递归查询的数量。
+    这指示拒绝掉的递归查询的数量。
 
 ``XfrRej``
-   这指示拒绝掉的区传送请求的数量。
+    这指示拒绝掉的区传送请求的数量。
 
 ``UpdateRej``
-   这指示拒绝掉的动态更新请求的数量。
+    这指示拒绝掉的动态更新请求的数量。
 
 ``Response``
-   这指示已发出的响应的数量。
+    这指示已发出的响应的数量。
 
 ``RespTruncated``
-   这指示已发出的截断响应的数量。
+    这指示已发出的截断响应的数量。
 
 ``RespEDNS0``
-   这指示已发出的带EDNS(0)的响应的数量。
+    这指示已发出的带EDNS(0)的响应的数量。
 
 ``RespTSIG``
-   这指示已发出的带TSIG的响应的数量。
+    这指示已发出的带TSIG的响应的数量。
 
 ``RespSIG0``
-   这指示已发出的带SIG(0)的响应的数量。
+    这指示已发出的带SIG(0)的响应的数量。
 
 ``QrySuccess``
-   这指示导致一个成功回答的查询的数量，表示请求返回了一个NOERROR
-   应答，并至少带有一个回答资源记录。这相当于先前BIND 9版本中的
-   ``success`` 计数器。
+    这指示导致一个成功回答的查询的数量，表示请求返回了一个NOERROR
+    应答，并至少带有一个回答资源记录。这相当于先前BIND 9版本中的
+    ``success`` 计数器。
 
 ``QryAuthAns``
-   这指示导致一个权威回答的查询的数量。
+    这指示导致一个权威回答的查询的数量。
 
 ``QryNoauthAns``
-   这指示导致一个非权威回答的查询的数量。
+    这指示导致一个非权威回答的查询的数量。
 
 ``QryReferral``
-   这指示导致一个引用回答的查询的数量。这相当于先前BIND 9版本中
-   的 ``referral`` 计数器。
+    这指示导致一个引用回答的查询的数量。这相当于先前BIND 9版本中
+    的 ``referral`` 计数器。
 
 ``QryNxrrset``
-   这指示导致在NOERROR响应中没有数据的查询的数量。这相当于先前
-   BIND 9版本中的 ``nxrrset`` 计数器。
+    这指示导致在NOERROR响应中没有数据的查询的数量。这相当于先前
+    BIND 9版本中的 ``nxrrset`` 计数器。
 
 ``QrySERVFAIL``
-   这指示导致SERVFAIL的查询的数量。
+    这指示导致SERVFAIL的查询的数量。
 
 ``QryFORMERR``
-   这指示导致FORMERR的查询的数量。
+    这指示导致FORMERR的查询的数量。
 
 ``QryNXDOMAIN``
-   这指示导致NXDOMAIN的查询的数量。这相当于先前BIND 9版本中的
-   ``nxdomain`` 计数器。
+    这指示导致NXDOMAIN的查询的数量。这相当于先前BIND 9版本中的
+    ``nxdomain`` 计数器。
 
 ``QryRecursion``
-   这指示导致服务器执行递归解析以获取最终回答的查询的数量。这相
-   当于先前BIND 9版本中的 :any:`recursion` 计数器。
+    这指示导致服务器执行递归解析以获取最终回答的查询的数量。这相
+    当于先前BIND 9版本中的 :any:`recursion` 计数器。
 
 ``QryDuplicate``
-   这指示导致服务器试图进行递归解析但是却发现已经存在一个具有同
-   样IP地址、端口、查询ID、名字、类型和类的查询并且已经被处理过
-   的查询的数量。这相当于先前BIND 9版本中的 ``duplicate`` 计数
-   器。
+    这指示导致服务器试图进行递归解析但是却发现已经存在一个具有同
+    样IP地址、端口、查询ID、名字、类型和类的查询并且已经被处理过
+    的查询的数量。这相当于先前BIND 9版本中的 ``duplicate`` 计数
+    器。
 
 ``QryDropped``
-   这指示服务器所发现的已有的对同一名字、类型和类的递归查询并随后被丢
-   弃的巨量递归查询的数量。这是由于 :any:`clients-per-query` 和
-   :any:`max-clients-per-query` 选项所解释的原因而被丢弃的查询的数目。
-   这相当于先前BIND 9版本中的 ``dropped`` 计数器。
+    这指示服务器所发现的已有的对同一名字、类型和类的递归查询并随后被丢
+    弃的巨量递归查询的数量。这是由于 :any:`clients-per-query` 和
+    :any:`max-clients-per-query` 选项所解释的原因而被丢弃的查询的数目。
+    这相当于先前BIND 9版本中的 ``dropped`` 计数器。
 
 ``QryFailure``
-   这指示其它查询失败的数量。这相当于先前BIND 9版本中的 ``failure``
-   计数器。注意：提供这个计数器主要是为了向后兼容以前的版本。通
-   常情况一些更细粒度的计数器如 ``AuthQryRej`` 和 ``RecQryRej``
-   也落在这个计数器范围中，所以在实际中，这个计数器的意义不大。
+    这指示其它查询失败的数量。这相当于先前BIND 9版本中的 ``failure``
+    计数器。注意：提供这个计数器主要是为了向后兼容以前的版本。通
+    常情况一些更细粒度的计数器如 ``AuthQryRej`` 和 ``RecQryRej``
+    也落在这个计数器范围中，所以在实际中，这个计数器的意义不大。
 
 ``QryNXRedir``
-   这指示导致NXDOMAIN而被重定向的请求的数量。
+    这指示导致NXDOMAIN而被重定向的请求的数量。
 
 ``QryNXRedirRLookup``
-   这指示导致NXDOMAIN而被重定向并且结果是一个成功的远程查询的请
-   求的数量。
+    这指示导致NXDOMAIN而被重定向并且结果是一个成功的远程查询的请
+    求的数量。
 
 ``XfrReqDone``
-   这指示已完成的所请求的区传送的数量。
+    这指示已完成的所请求的区传送的数量。
 
 ``UpdateReqFwd``
-   这指示已转发的更新请求的数量。
+    这指示已转发的更新请求的数量。
 
 ``UpdateRespFwd``
-   这指示已转发的更新响应的数量。
+    这指示已转发的更新响应的数量。
 
 ``UpdateFwdFail``
-   这指示已失败的动态更新转发的数量。
+    这指示已失败的动态更新转发的数量。
 
 ``UpdateDone``
-   这指示已完成的动态更新的数量。
+    这指示已完成的动态更新的数量。
 
 ``UpdateFail``
-   这指示已失败的动态更新的数量。
+    这指示已失败的动态更新的数量。
 
 ``UpdateBadPrereq``
-   这指示由于先决条件失败而被拒绝的动态更新的数量。
+    这指示由于先决条件失败而被拒绝的动态更新的数量。
+
+``UpdateQuota``
+    这指示因为等待的请求数超过了 :any:`update-quota` 而导致一个动
+    态更新或更新转发请求被拒绝的次数。
 
 ``RateDropped``
-   这指示被比率限制丢弃的响应的数量。
+    这指示被比率限制丢弃的响应的数量。
 
 ``RateSlipped``
-   这指示被比率限制截断的响应的数量。
+    这指示被比率限制截断的响应的数量。
 
 ``RPZRewrites``
-   这指示响应策略区重写的数量。
+    这指示响应策略区重写的数量。
 
 .. _zone_stats:
 
@@ -6902,43 +6936,43 @@ Socket I/O Statistics（套接字I/O统计）
 ^^^^^^^^^^^^^^^^
 
 ``NotifyOutv4``
-   这指示已发送的IPv4通知的数量。
+    这指示已发送的IPv4通知的数量。
 
 ``NotifyOutv6``
-   这指示已发送的IPv6通知的数量。
+    这指示已发送的IPv6通知的数量。
 
 ``NotifyInv4``
-   这指示已收到的IPv4通知的数量。
+    这指示已收到的IPv4通知的数量。
 
 ``NotifyInv6``
-   这指示已收到的IPv6通知的数量。
+    这指示已收到的IPv6通知的数量。
 
 ``NotifyRej``
-   这指示拒绝掉的进入通知的数量。
+    这指示拒绝掉的进入通知的数量。
 
 ``SOAOutv4``
-   这指示已发送的IPv4 SOA查询的数量。
+    这指示已发送的IPv4 SOA查询的数量。
 
 ``SOAOutv6``
-   这指示已发送的IPv6 SOA查询的数量。
+    这指示已发送的IPv6 SOA查询的数量。
 
 ``AXFRReqv4``
-   这指示已请求的IPv4 AXFR的数量。
+    这指示已请求的IPv4 AXFR的数量。
 
 ``AXFRReqv6``
-   这指示已请求的IPv6 AXFR的数量。
+    这指示已请求的IPv6 AXFR的数量。
 
 ``IXFRReqv4``
-   这指示已请求的IPv4 IXFR的数量。
+    这指示已请求的IPv4 IXFR的数量。
 
 ``IXFRReqv6``
-   这指示已请求的IPv6 IXFR的数量。
+    这指示已请求的IPv6 IXFR的数量。
 
 ``XfrSuccess``
-   这指示成功的区传送请求的数量。
+    这指示成功的区传送请求的数量。
 
 ``XfrFail``
-   这指示失败的区传送请求的数量。
+    这指示失败的区传送请求的数量。
 
 .. _resolver_stats:
 
@@ -6946,87 +6980,87 @@ Socket I/O Statistics（套接字I/O统计）
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``Queryv4``
-   这指示已发送的IPv4查询的数量。
+    这指示已发送的IPv4查询的数量。
 
 ``Queryv6``
-   这指示已发送的IPv6查询的数量。
+    这指示已发送的IPv6查询的数量。
 
 ``Responsev4``
-   这指示已收到的IPv4响应的数量。
+    这指示已收到的IPv4响应的数量。
 
 ``Responsev6``
-   这指示已收到的IPv6响应的数量。
+    这指示已收到的IPv6响应的数量。
 
 ``NXDOMAIN``
-   这指示已收到的NXDOMAIN的数量。
+    这指示已收到的NXDOMAIN的数量。
 
 ``SERVFAIL``
-   这指示已收到的SERVFAIL的数量。
+    这指示已收到的SERVFAIL的数量。
 
 ``FORMERR``
-   这指示已收到的FORMERR的数量。
+    这指示已收到的FORMERR的数量。
 
 ``OtherError``
-   这指示已收到的其它错误的数量。
+    这指示已收到的其它错误的数量。
 
 ``EDNS0Fail``
-   这指示EDNS(0)查询失败的数量。
+    这指示EDNS(0)查询失败的数量。
 
 ``Mismatch``
-   这指示已收到的不匹配响应的数量。意谓着DNS ID，响应的源地址
-   和/或响应的源端口与期望的不匹配。（端口必须是53或 :namedconf:ref:`port` 所
-   定义的。）这可能暗示一个缓存污染攻击。
+    这指示已收到的不匹配响应的数量。意谓着DNS ID，响应的源地址
+    和/或响应的源端口与期望的不匹配。（端口必须是53或 :namedconf:ref:`port` 所
+    定义的。）这可能暗示一个缓存污染攻击。
 
 ``Truncated``
-   这指示已收到的截断响应的数量。
+    这指示已收到的截断响应的数量。
 
 ``Lame``
-   这指示已收到的不完整授权的数量。
+    这指示已收到的不完整授权的数量。
 
 ``Retry``
-   这指示执行过的查询重试的数量。
+    这指示执行过的查询重试的数量。
 
 ``QueryAbort``
-   这指示由于配额控制而被终止的查询的数量。
+    这指示由于配额控制而被终止的查询的数量。
 
 ``QuerySockFail``
-   这指示打开查询套接字时的失败的数量。这类失败的一个通常原因是
-   由于在文件描述符上的限制。
+    这指示打开查询套接字时的失败的数量。这类失败的一个通常原因是
+    由于在文件描述符上的限制。
 
 ``QueryTimeout``
-   这指示查询超时的数量。
+    这指示查询超时的数量。
 
 ``GlueFetchv4``
-   这指示发起的取IPv4 NS的地址操作的数量。
+    这指示发起的取IPv4 NS的地址操作的数量。
 
 ``GlueFetchv6``
-   这指示发起的取IPv6 NS的地址操作的数量。
+    这指示发起的取IPv6 NS的地址操作的数量。
 
 ``GlueFetchv4Fail``
-   这指示失败的取IPv4 NS的地址操作的数量。
+    这指示失败的取IPv4 NS的地址操作的数量。
 
 ``GlueFetchv6Fail``
-   这指示失败的取IPv6 NS的地址操作的数量。
+    这指示失败的取IPv6 NS的地址操作的数量。
 
 ``ValAttempt``
-   这指示试探过的DNSSEC验证的数量。
+    这指示试探过的DNSSEC验证的数量。
 
 ``ValOk``
-   这指示成功的DNSSEC验证的数量。
+    这指示成功的DNSSEC验证的数量。
 
 ``ValNegOk``
-   这指示在否定信息上成功的DNSSEC验证的数量。
+    这指示在否定信息上成功的DNSSEC验证的数量。
 
 ``ValFail``
-   这指示失败的DNSSEC验证的数量。
+    这指示失败的DNSSEC验证的数量。
 
 ``QryRTTnn``
-   这提供请求往返时间（RTT）的频率表。每个 ``nn`` 指定相应的频率。
-   在序列 ``nn_1`` ， ``nn_2`` ，...， ``nn_m`` 中， ``nn_i`` 的
-   值是其RTT在 ``nn_(i-1)`` （含）和 ``nn_i`` （不含）之间毫秒的请
-   求的数目。为方便起见，我们将 ``nn_0`` 定义为0。最后的条目应该表
-   示为 ``nn_m+`` ，它表示其RTT等于或大于 ``nn_m`` 毫秒的请求的数
-   目。
+    这提供请求往返时间（RTT）的频率表。每个 ``nn`` 指定相应的频率。
+    在序列 ``nn_1`` ， ``nn_2`` ，...， ``nn_m`` 中， ``nn_i`` 的
+    值是其RTT在 ``nn_(i-1)`` （含）和 ``nn_i`` （不含）之间毫秒的请
+    求的数目。为方便起见，我们将 ``nn_0`` 定义为0。最后的条目应该表
+    示为 ``nn_m+`` ，它表示其RTT等于或大于 ``nn_m`` 毫秒的请求的数
+    目。
 
 .. _socket_stats:
 
@@ -7040,34 +7074,34 @@ Socket I/O Statistics（套接字I/O统计）
 用所有的计数器；在描述字段会说明例外情况。
 
 ``<TYPE>Open``
-   这指示套接字成功打开的数量。这个计数器不适用于 ``FDwatch`` 类型。
+    这指示套接字成功打开的数量。这个计数器不适用于 ``FDwatch`` 类型。
 
 ``<TYPE>OpenFail``
-   这指示套接字打开失败的数量。这个计数器不适用于 ``FDwatch`` 类型。
+    这指示套接字打开失败的数量。这个计数器不适用于 ``FDwatch`` 类型。
 
 ``<TYPE>Close``
-   这指示套接字关闭的数量。
+    这指示套接字关闭的数量。
 
 ``<TYPE>BindFail``
-   这指示绑定套接字失败的数量。
+    这指示绑定套接字失败的数量。
 
 ``<TYPE>ConnFail``
-   这指示连接套接字失败的数量。
+    这指示连接套接字失败的数量。
 
 ``<TYPE>Conn``
-   这指示成功建立连接的数量。
+    这指示成功建立连接的数量。
 
 ``<TYPE>AcceptFail``
-   这指示接受进入连接请求失败的数量。这个计数器不能用于 ``UDP`` 和
-   ``FDwatch`` 类型。
+    这指示接受进入连接请求失败的数量。这个计数器不能用于 ``UDP`` 和
+    ``FDwatch`` 类型。
 
 ``<TYPE>Accept``
-   这指示成功接受进入连接请求的数量。这个计数器不能用于 ``UDP`` 和
-   ``FDwatch`` 类型。
+    这指示成功接受进入连接请求的数量。这个计数器不能用于 ``UDP`` 和
+    ``FDwatch`` 类型。
 
 ``<TYPE>SendErr``
-   这指示套接字发送操作中的错误的数量。
+    这指示套接字发送操作中的错误的数量。
 
 ``<TYPE>RecvErr``
-   这指示套接字接收操作中的错误的数量。这包括在一个收到ICMP错误消
-   息通知的已连接UDP套接字上发送操作的错误。
+    这指示套接字接收操作中的错误的数量。这包括在一个收到ICMP错误消
+    息通知的已连接UDP套接字上发送操作的错误。

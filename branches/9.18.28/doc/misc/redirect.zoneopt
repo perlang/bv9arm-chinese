@@ -1,0 +1,15 @@
+zone <string> [ <class> ] {
+	type redirect;
+	allow-query { <address_match_element>; ... };
+	allow-query-on { <address_match_element>; ... };
+	dlz <string>;
+	file <quoted_string>;
+	masterfile-format ( raw | text );
+	masterfile-style ( full | relative );
+	max-records <integer>;
+	max-records-per-type <integer>;
+	max-types-per-name <integer>;
+	max-zone-ttl ( unlimited | <duration> );
+	primaries [ port <integer> ]  { ( <remote-servers> | <ipv4_address> [ port <integer> ] | <ipv6_address> [ port <integer> ] ) [ key <string> ] [ tls <string> ]; ... };
+	zone-statistics ( full | terse | none | <boolean> );
+};
